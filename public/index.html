@@ -182,6 +182,8 @@ function drawGames(){
 }
 
 function drawRoom(){
+  roomPanel.classList.toggle('hidden', !room);
+  gameArea.classList.toggle('hidden', !room);
   roomLabel.innerText=room?room.id:'None';
   roomPrivacy.innerHTML=room?(room.private?'<span class="pill locked">Private 🔒</span>':'<span class="pill public">Public</span>'):'';
   roomHelp.innerHTML=room
