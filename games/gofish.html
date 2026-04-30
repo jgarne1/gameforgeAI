@@ -3,7 +3,7 @@
 <head>
 <title>Go Fish</title>
 <style>
-:root{--bg:#123524;--felt:#17633f;--card:#fff;--line:#d7d7d7;--gold:#facc15;--blue:#2563eb;--red:#dc2626;--muted:#d1d5db}
+:root{--felt:#17633f;--gold:#facc15;--blue:#2563eb;--muted:#d1d5db}
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#0f2f22,#1b6b45);color:white;text-align:center;overflow:hidden}
 .wrap{height:650px;padding:10px;display:grid;grid-template-rows:auto 1fr auto;gap:8px}
@@ -36,7 +36,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .meta{font-size:12px;color:var(--muted)}
 .handArea{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:8px;min-height:102px}
 .controls{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(0,0,0,.25);border-radius:14px;padding:8px}
-.log{height:78px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:12px;padding:8px;font-size:13px}
+.log{height:78px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:12px;padding:8px;font-size:13px;transition:opacity 1s ease}
+.fadeLog{opacity:.12}
 .books{font-size:12px;color:#fde68a}
 </style>
 </head>
@@ -75,7 +76,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
 <script>
 const GAME_META={id:'gofish',name:'Go Fish',minPlayers:2,maxPlayers:4,seats:4};
-
 const suits=['♠','♥','♦','♣'];
 const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
@@ -83,10 +83,10 @@ let players=[];
 let mySeat=null;
 let state=null;
 let selectedRank='';
+let logFadeTimer=null;
 
 window.onerror=function(msg){
-  let el=document.getElementById('status');
-  if(el)el.innerText='Game error: '+msg;
+  status.innerText='Game error: '+msg;
 };
 
 function receiveSetup(setupPlayers,setupSeat){
@@ -107,10 +107,8 @@ function receiveSetup(setupPlayers,setupSeat){
     ensureStateSeats();
   }
 
-  if(!selectedRank){
-    let hand=state.hands[mySeat]||[];
-    if(hand.length)selectedRank=hand[0].r;
-  }
+  let hand=state.hands[mySeat]||[];
+  if(!selectedRank&&hand.length)selectedRank=hand[0].r;
 
   draw();
 }
@@ -272,8 +270,14 @@ function drawPond(canFish){
 }
 
 function drawLog(){
+  log.classList.remove('fadeLog');
   log.innerHTML=state.log.slice(-8).map(x=>'• '+escapeHtml(x)).join('<br>');
   log.scrollTop=log.scrollHeight;
+
+  clearTimeout(logFadeTimer);
+  logFadeTimer=setTimeout(()=>{
+    log.classList.add('fadeLog');
+  },2000);
 }
 
 function selectRank(rank){
@@ -300,6 +304,7 @@ function ask(){
     add(name(target)+' gives '+matches.length+' card(s). '+name(mySeat)+' goes again.');
     checkBooks(state,mySeat,true);
     refillIfEmpty(mySeat);
+    checkBooks(state,mySeat,true);
   }else{
     add(name(target)+' says: Go Fish!');
     state.pendingFish={seat:mySeat,rank};
@@ -338,6 +343,7 @@ function fish(){
 
   checkBooks(state,mySeat,true);
   refillIfEmpty(mySeat);
+  checkBooks(state,mySeat,true);
   checkGameOver();
   draw();
   sync();
@@ -370,11 +376,11 @@ function checkBooks(s,seat,announce){
   hand.forEach(c=>counts[c.r]=(counts[c.r]||0)+1);
 
   ranks.forEach(r=>{
-    while(counts[r]>=4){
+    while(counts[r]>=2){
       let removed=0;
 
       s.hands[seat]=s.hands[seat].filter(c=>{
-        if(c.r===r&&removed<4){
+        if(c.r===r&&removed<2){
           removed++;
           return false;
         }
@@ -382,7 +388,7 @@ function checkBooks(s,seat,announce){
       });
 
       s.books[seat].push(r);
-      counts[r]-=4;
+      counts[r]-=2;
 
       if(announce)add(name(seat)+' made a book of '+r+'s.');
     }
@@ -393,7 +399,7 @@ function checkGameOver(){
   let totalBooks=players.reduce((n,p)=>n+(state.books[p.seat]||[]).length,0);
   let cardsLeft=state.deck.length+players.reduce((n,p)=>n+(state.hands[p.seat]||[]).length,0);
 
-  if(totalBooks>=13||cardsLeft===0){
+  if(totalBooks>=26||cardsLeft===0){
     state.gameOver=true;
 
     let best=players[0].seat;
@@ -462,9 +468,11 @@ function add(t){
 }
 
 function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    let j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
+  for(let pass=0;pass<3;pass++){
+    for(let i=a.length-1;i>0;i--){
+      let j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
   }
 }
 
