@@ -58,9 +58,17 @@ let players=[];
 let mySeat=null;
 let state=null;
 
+function el(id){
+  return document.getElementById(id);
+}
+
+function setStatus(title,msg){
+  el('status').innerText=title;
+  el('hint').innerText=msg||'';
+}
+
 window.onerror=function(msg){
-  let el=document.getElementById('status');
-  if(el)el.innerText='Game error: '+msg;
+  setStatus('Game error: '+msg,'Check the browser console for details.');
 };
 
 function receiveSetup(setupPlayers,setupSeat){
@@ -74,8 +82,7 @@ function receiveSetup(setupPlayers,setupSeat){
   mySeat=setupSeat;
 
   if(players.length<2){
-    status.innerText='Waiting for 2 players...';
-    hint.innerText='Both seats must be filled before starting.';
+    setStatus('Waiting for 2 players...','Both seats must be filled before starting.');
     drawEmptyBoard();
     return;
   }
@@ -93,8 +100,7 @@ function fresh(){
     turn:players[0].seat,
     winner:null,
     draw:false,
-    lastMove:null,
-    log:'New game started.'
+    lastMove:null
   };
 }
 
@@ -108,33 +114,33 @@ function draw(){
   drawPlayers();
 
   if(state.winner!==null){
-    status.innerText=name(state.winner)+' wins!';
-    hint.innerText='Start a new game to play again.';
+    setStatus(name(state.winner)+' wins!','Start a new game to play again.');
   }else if(state.draw){
-    status.innerText='Draw game!';
-    hint.innerText='No more open spaces.';
+    setStatus('Draw game!','No more open spaces.');
   }else{
-    status.innerText='Current Turn: '+name(state.turn);
-    hint.innerText=state.turn===mySeat?'Your move. Click a column.':'Waiting for '+name(state.turn)+'.';
+    setStatus(
+      'Current Turn: '+name(state.turn),
+      state.turn===mySeat?'Your move. Click a column.':'Waiting for '+name(state.turn)+'.'
+    );
   }
 }
 
 function drawEmptyBoard(){
-  board.innerHTML='';
+  el('board').innerHTML='';
 
   for(let r=0;r<ROWS;r++){
     for(let c=0;c<COLS;c++){
       let cell=document.createElement('div');
       cell.className='cell disabled';
-      board.appendChild(cell);
+      el('board').appendChild(cell);
     }
   }
 
-  playerPanel.innerHTML='';
+  el('playerPanel').innerHTML='';
 }
 
 function drawBoard(){
-  board.innerHTML='';
+  el('board').innerHTML='';
 
   for(let r=0;r<ROWS;r++){
     for(let c=0;c<COLS;c++){
@@ -145,13 +151,13 @@ function drawBoard(){
         ((state.winner!==null||state.draw||state.turn!==mySeat)?' disabled':'');
 
       cell.onclick=()=>drop(c);
-      board.appendChild(cell);
+      el('board').appendChild(cell);
     }
   }
 }
 
 function drawPlayers(){
-  playerPanel.innerHTML='';
+  el('playerPanel').innerHTML='';
 
   players.forEach((p,i)=>{
     let d=document.createElement('div');
@@ -160,7 +166,7 @@ function drawPlayers(){
       '<span class="dot '+(i===0?'red':'yellow')+'"></span>'+
       '<b>'+escapeHtml(p.name)+'</b><br>'+
       '<span class="muted">'+(p.seat===mySeat?'You':'Opponent')+'</span>';
-    playerPanel.appendChild(d);
+    el('playerPanel').appendChild(d);
   });
 }
 
@@ -228,7 +234,8 @@ function isFull(){
 
 function newGame(sendIt){
   if(players.length<2){
-    status.innerText='Waiting for 2 players...';
+    setStatus('Waiting for 2 players...','Both seats must be filled before starting.');
+    drawEmptyBoard();
     return;
   }
 
@@ -293,22 +300,27 @@ function escapeHtml(s){
 }
 
 function init(){
+  drawEmptyBoard();
+
   receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
 
   setTimeout(function(){
-    if((!players||!players.length)&&window.GAME_PLAYERS){
-      receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
-    }
+    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+  },100);
 
-    if(players&&players.length>=2&&!state){
-      state=fresh();
-      draw();
-    }
+  setTimeout(function(){
+    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
 
-    if(document.getElementById('status').innerText==='Loading players...'){
-      receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+    if(el('status').innerText==='Loading players...'){
+      if(players.length>=2){
+        if(!state)state=fresh();
+        draw();
+      }else{
+        setStatus('Waiting for 2 players...','Both seats must be filled before starting.');
+        drawEmptyBoard();
+      }
     }
-  },250);
+  },350);
 }
 
 init();
