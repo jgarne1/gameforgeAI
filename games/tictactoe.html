@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html><head><title>Tic Tac Toe</title><style>body{font-family:Arial;text-align:center}.board{display:grid;grid-template-columns:repeat(3,100px);gap:6px;justify-content:center}.cell{width:100px;height:100px;font-size:44px;border:2px solid #222;display:flex;align-items:center;justify-content:center;cursor:pointer}button{margin:10px;padding:8px}</style></head><body>
-<h2>Tic Tac Toe</h2><div id="status">X turn</div><button onclick="newGame(true)">New Game</button><div class="board" id="board"></div>
-<script>
-let b=Array(9).fill(''), turn='X', over=false;
-function draw(){board.innerHTML=''; b.forEach((v,i)=>{let c=document.createElement('div');c.className='cell';c.innerText=v;c.onclick=()=>move(i,true);board.appendChild(c);});}
-function move(i,sendIt){if(over||b[i])return;b[i]=turn;if(win(turn)){status.innerText=turn+' wins';over=true;window.parent.postMessage({type:'gameResult',winnerSeat:turn==='X'?'p1':'p2'},'*');}else if(!b.includes('')){status.innerText='Tie';over=true;window.parent.postMessage({type:'gameResult',winnerSeat:'tie'},'*');}else{turn=turn==='X'?'O':'X';status.innerText=turn+' turn';}draw();if(sendIt)window.sendMove({type:'move',i});}
-function win(p){return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(x=>x.every(i=>b[i]===p));}
-function newGame(sendIt){b=Array(9).fill('');turn='X';over=false;status.innerText='X turn';draw();if(sendIt)window.sendMove({type:'new'});}
-window.sendMove=data=>parent.postMessage({type:'move',data},'*');
-window.onMove=data=>{if(data.type==='move')move(data.i,false); if(data.type==='new')newGame(false);};
-draw();
+<!DOCTYPE html><html><head><title>Multiplayer Tic Tac Toe</title><style>
+body{font-family:Arial;text-align:center;background:#f6f3ea}button{margin:5px;padding:8px 12px;border-radius:8px;cursor:pointer}.board{display:grid;grid-template-columns:repeat(3,100px);gap:6px;justify-content:center;margin:18px}.cell{width:100px;height:100px;background:white;border:2px solid #222;border-radius:10px;font-size:48px;display:flex;align-items:center;justify-content:center;cursor:pointer}.panel{background:white;border:2px solid #333;border-radius:12px;padding:10px;margin:10px auto;max-width:520px}#status{font-size:20px;font-weight:bold;min-height:28px}.win{background:#c9ffd0}.score{font-weight:bold}
+</style></head><body><h1>Tic Tac Toe</h1><div class="panel"><div id="status">Choose a side.</div><button onclick="chooseSide('X')">Sit as X</button><button onclick="chooseSide('O')">Sit as O</button><button onclick="cpuGame()">Play vs CPU</button><button onclick="newGame(true)">New Game</button><button onclick="resetStats()">Reset Stats</button><div>Side: <b id="side">None</b></div><div class="score">Wins <span id="w">0</span> | Losses <span id="l">0</span> | Ties <span id="t">0</span></div></div><div class="board" id="board"></div><script>
+let side=localStorage.tttSide||'', vsCPU=false, game={b:Array(9).fill(''),turn:'X',over:false,last:''};let stats=JSON.parse(localStorage.tttStats||'{"w":0,"l":0,"t":0}');const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function chooseSide(s){side=s;vsCPU=false;localStorage.tttSide=s;draw();}
+function cpuGame(){side='X';vsCPU=true;newGame(false);}
+function newGame(broadcast){game={b:Array(9).fill(''),turn:'X',over:false,last:'New game started.'};draw();if(broadcast)send({type:'state',game});}
+function draw(){document.getElementById('side').textContent=side||'None';document.getElementById('w').textContent=stats.w;document.getElementById('l').textContent=stats.l;document.getElementById('t').textContent=stats.t;let st=!side?'Choose a side.':game.over?game.last:(game.turn===side?'Your turn.':'Waiting for '+game.turn+'.');if(vsCPU&&!game.over&&game.turn==='O')st='CPU is thinking...';document.getElementById('status').textContent=st;let bd=document.getElementById('board');bd.innerHTML='';let winLine=getWinLine();game.b.forEach((v,i)=>{let c=document.createElement('div');c.className='cell'+(winLine&&winLine.includes(i)?' win':'');c.textContent=v;c.onclick=()=>move(i);bd.appendChild(c);});}
+function move(i){if(!side||game.over||game.b[i]||game.turn!==side)return;applyMove(i,side,true);}
+function applyMove(i,p,broadcast){game.b[i]=p;let line=getWinLine();if(line){game.over=true;game.last=p+' wins!';record(p);}else if(!game.b.includes('')){game.over=true;game.last='Tie game!';stats.t++;saveStats();}else game.turn=p==='X'?'O':'X';draw();if(broadcast)send({type:'state',game});if(vsCPU&&!game.over&&game.turn==='O')setTimeout(cpuMove,700);}
+function cpuMove(){let empty=game.b.map((v,i)=>v?'':i).filter(v=>v!=='');let pick=findBest('O')??findBest('X')??empty[Math.floor(Math.random()*empty.length)];applyMove(pick,'O',false);}
+function findBest(p){for(let line of wins){let vals=line.map(i=>game.b[i]);if(vals.filter(x=>x===p).length===2&&vals.includes(''))return line[vals.indexOf('')];}return null;}
+function getWinLine(){return wins.find(line=>line.every(i=>game.b[i]&&game.b[i]===game.b[line[0]]));}
+function record(p){if(side){if(p===side)stats.w++;else stats.l++;saveStats();}}
+function saveStats(){localStorage.tttStats=JSON.stringify(stats);}
+function resetStats(){stats={w:0,l:0,t:0};saveStats();draw();}
+function send(data){window.sendMove(data);}window.sendMove=function(data){parent.postMessage({type:'move',data},'*');};window.onMove=function(data){if(data.type==='state'){game=data.game;draw();}};draw();
 </script></body></html>
