@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Simple Yahtzee</title>
+<style>
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  background:#f4efe6;
+  color:#222;
+  text-align:center;
+}
+#game{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:16px;
+  padding:16px;
+  max-width:1100px;
+  margin:auto;
+}
+.panel{
+  background:white;
+  border:2px solid #333;
+  border-radius:12px;
+  padding:12px;
+}
+#status{
+  font-size:20px;
+  font-weight:bold;
+  margin:10px;
+  min-height:28px;
+}
+#diceArea{
+  height:180px;
+  border:3px dashed #aaa;
+  border-radius:16px;
+  background:#e8f4e8;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  margin:15px 0;
+  position:relative;
+  overflow:hidden;
+}
+.die{
+  width:62px;
+  height:62px;
+  border:2px solid #111;
+  border-radius:12px;
+  background:white;
+  font-size:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:3px 4px 0 #999;
+  transition:transform .2s, background .2s;
+}
+.held{
+  background:#ffeaa7;
+  transform:translateY(-10px);
+}
+.roll{
+  animation:fallRoll .75s ease;
+}
+@keyframes fallRoll{
+  0%{transform:translateY(-160px) rotate(0deg);}
+  45%{transform:translateY(20px) rotate(220deg);}
+  70%{transform:translateY(-12px) rotate(330deg);}
+  100%{transform:translateY(0) rotate(360deg);}
+}
+#cupButton{
+  font-size:18px;
+  padding:14px 28px;
+  border-radius:0 0 28px 28px;
+  background:#8b5a2b;
+  color:white;
+  border:4px solid #4a2b12;
+  cursor:pointer;
+  box-shadow:0 6px 0 #2d1809;
+}
+#cupButton:active{
+  transform:translateY(4px);
+  box-shadow:0 2px 0 #2d1809;
+}
+button{
+  margin:6px;
+  padding:8px 12px;
+  cursor:pointer;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+th,td{
+  border:1px solid #999;
+  padding:6px;
+}
+.scoreChoice{
+  background:#f7f7f7;
+  cursor:pointer;
+}
+.scoreChoice:hover{
+  background:#dff0ff;
+}
+.used{
+  background:#ddd;
+  color:#777;
+}
+.small{
+  font-size:13px;
+  color:#555;
+}
+</style>
+</head>
+<body>
+
+<h1>Yahtzee Cup</h1>
+<div id="status">Your turn. Roll the cup.</div>
+
+<div id="game">
+  <div class="panel">
+    <h2>Dice Table</h2>
+    <p class="small">Roll up to 3 times. Click dice to hold them. Then choose a score row.</p>
+
+```
+<div id="diceArea"></div>
+
+<button id="cupButton" onclick="rollDice()">🎲 Roll Cup</button>
+<button onclick="newGame()">New Game</button>
+<button onclick="resetStats()">Reset Stats</button>
+
+<p>Rolls left: <span id="rollsLeft">3</span></p>
+<p>Session: Player Wins <span id="pWins">0</span> | CPU Wins <span id="cWins">0</span> | Ties <span id="ties">0</span></p>
+```
+
+  </div>
+
+  <div class="panel">
+    <h2>Score Sheet</h2>
+    <table>
+      <thead>
+        <tr><th>Category</th><th>You</th><th>CPU</th></tr>
+      </thead>
+      <tbody id="scoreSheet"></tbody>
+      <tfoot>
+        <tr><th>Total</th><th id="playerTotal">0</th><th id="cpuTotal">0</th></tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<script>
+const categories=[
+  "Ones","Twos","Threes","Fours","Fives","Sixes",
+  "Three Kind","Four Kind","Full House","Small Straight","Large Straight","Yahtzee","Chance"
+];
+
+let dice=[1,1,1,1,1];
+let held=[false,false,false,false,false];
+let rollsLeft=3;
+let currentPlayer="player";
+let gameOver=false;
+let locked=false;
+
+let scores={
+  player:{},
+  cpu:{}
+};
+
+let stats=JSON.parse(localStorage.getItem("yahtzeeStats")||'{"p":0,"c":0,"t":0}');
+
+function draw(){
+  document.getElementById("rollsLeft").innerText=rollsLeft;
+  document.getElementById("pWins").innerText=stats.p;
+  document.getElementById("cWins").innerText=stats.c;
+  document.getElementById("ties").innerText=stats.t;
+
+  const diceArea=document.getElementById("diceArea");
+  diceArea.innerHTML="";
+  dice.forEach((v,i)=>{
+    const d=document.createElement("div");
+    d.className="die"+(held[i]?" held":"");
+    d.innerText=dieFace(v);
+    d.onclick=()=>toggleHold(i);
+    diceArea.appendChild(d);
+  });
+
+  const sheet=document.getElementById("scoreSheet");
+  sheet.innerHTML="";
+  categories.forEach(cat=>{
+    const tr=document.createElement("tr");
+
+    const name=document.createElement("td");
+    name.innerText=cat;
+
+    const p=document.createElement("td");
+    p.innerText=scores.player[cat]!==undefined?scores.player[cat]:"";
+    if(currentPlayer==="player" && scores.player[cat]===undefined && rollsLeft<3 && !gameOver){
+      p.className="scoreChoice";
+      p.innerText=scoreCategory(cat,dice);
+      p.onclick=()=>chooseScore(cat);
+    } else if(scores.player[cat]!==undefined){
+      p.className="used";
+    }
+
+    const c=document.createElement("td");
+    c.innerText=scores.cpu[cat]!==undefined?scores.cpu[cat]:"";
+    if(scores.cpu[cat]!==undefined)c.className="used";
+
+    tr.appendChild(name);
+    tr.appendChild(p);
+    tr.appendChild(c);
+    sheet.appendChild(tr);
+  });
+
+  document.getElementById("playerTotal").innerText=total("player");
+  document.getElementById("cpuTotal").innerText=total("cpu");
+}
+
+function dieFace(n){
+  return ["","⚀","⚁","⚂","⚃","⚄","⚅"][n];
+}
+
+function rollDice(){
+  if(gameOver||locked||currentPlayer!=="player"||rollsLeft<=0)return;
+
+  setStatus("You shake the cup...");
+  for(let i=0;i<dice.length;i++){
+    if(!held[i])dice[i]=randDie();
+  }
+  rollsLeft--;
+
+  draw();
+  animateDice();
+  setTimeout(()=>setStatus("Choose dice to hold, roll again, or pick a score."),700);
+  sendMove({type:"roll",dice,held,rollsLeft});
+}
+
+function animateDice(){
+  document.querySelectorAll(".die").forEach((d,i)=>{
+    if(!held[i]){
+      d.classList.remove("roll");
+      void d.offsetWidth;
+      d.classList.add("roll");
+    }
+  });
+}
+
+function toggleHold(i){
+  if(gameOver||locked||currentPlayer!=="player"||rollsLeft===3)return;
+  held[i]=!held[i];
+  draw();
+  setStatus(held[i]?"Die held.":"Die released.");
+  sendMove({type:"hold",index:i,value:held[i]});
+}
+
+function chooseScore(cat){
+  if(gameOver||locked||currentPlayer!=="player"||rollsLeft===3)return;
+
+  scores.player[cat]=scoreCategory(cat,dice);
+  setStatus("You scored "+scores.player[cat]+" in "+cat+". CPU turn.");
+  sendMove({type:"score",cat,score:scores.player[cat]});
+  draw();
+
+  if(checkGameOver())return;
+
+  locked=true;
+  setTimeout(cpuTurn,900);
+}
+
+async function cpuTurn(){
+  currentPlayer="cpu";
+  held=[false,false,false,false,false];
+  rollsLeft=3;
+  draw();
+
+  setStatus("CPU shakes the cup...");
+  await wait(900);
+
+  for(let r=0;r<3;r++){
+    for(let i=0;i<5;i++){
+      if(!held[i])dice[i]=randDie();
+    }
+    rollsLeft--;
+    draw();
+    animateDice();
+    await wait(850);
+
+    const counts=countDice(dice);
+    const bestNum=bestRepeatedNumber(counts);
+    held=dice.map(v=>v===bestNum);
+    setStatus("CPU keeps its best dice...");
+    draw();
+    await wait(700);
+  }
+
+  const cat=bestCpuCategory();
+  scores.cpu[cat]=scoreCategory(cat,dice);
+  setStatus("CPU scores "+scores.cpu[cat]+" in "+cat+". Your turn.");
+  await wait(1000);
+
+  if(checkGameOver())return;
+
+  currentPlayer="player";
+  held=[false,false,false,false,false];
+  rollsLeft=3;
+  locked=false;
+  draw();
+}
+
+function bestCpuCategory(){
+  let best=null,bestScore=-1;
+  categories.forEach(cat=>{
+    if(scores.cpu[cat]===undefined){
+      let s=scoreCategory(cat,dice);
+      if(s>bestScore){
+        bestScore=s;
+        best=cat;
+      }
+    }
+  });
+  return best;
+}
+
+function scoreCategory(cat,d){
+  const counts=countDice(d);
+  const sum=d.reduce((a,b)=>a+b,0);
+  if(cat==="Ones")return countNum(d,1)*1;
+  if(cat==="Twos")return countNum(d,2)*2;
+  if(cat==="Threes")return countNum(d,3)*3;
+  if(cat==="Fours")return countNum(d,4)*4;
+  if(cat==="Fives")return countNum(d,5)*5;
+  if(cat==="Sixes")return countNum(d,6)*6;
+  if(cat==="Three Kind")return Object.values(counts).some(x=>x>=3)?sum:0;
+  if(cat==="Four Kind")return Object.values(counts).some(x=>x>=4)?sum:0;
+  if(cat==="Full House")return hasCount(counts,3)&&hasCount(counts,2)?25:0;
+  if(cat==="Small Straight")return smallStraight(d)?30:0;
+  if(cat==="Large Straight")return largeStraight(d)?40:0;
+  if(cat==="Yahtzee")return Object.values(counts).some(x=>x===5)?50:0;
+  if(cat==="Chance")return sum;
+  return 0;
+}
+
+function countDice(d){
+  const c={};
+  d.forEach(v=>c[v]=(c[v]||0)+1);
+  return c;
+}
+function countNum(d,n){return d.filter(x=>x===n).length;}
+function hasCount(c,n){return Object.values(c).includes(n);}
+function smallStraight(d){
+  const s=[...new Set(d)].sort().join("");
+  return s.includes("1234")||s.includes("2345")||s.includes("3456");
+}
+function largeStraight(d){
+  const s=[...new Set(d)].sort().join("");
+  return s==="12345"||s==="23456";
+}
+function bestRepeatedNumber(c){
+  let best=1,max=0;
+  for(let n in c){
+    if(c[n]>max){max=c[n];best=Number(n);}
+  }
+  return best;
+}
+
+function randDie(){return Math.floor(Math.random()*6)+1;}
+function total(who){
+  return Object.values(scores[who]).reduce((a,b)=>a+b,0);
+}
+function checkGameOver(){
+  if(categories.every(c=>scores.player[c]!==undefined&&scores.cpu[c]!==undefined)){
+    gameOver=true;
+    const p=total("player"), c=total("cpu");
+    if(p>c){stats.p++;setStatus("Game over. You win "+p+" to "+c+"!");}
+    else if(c>p){stats.c++;setStatus("Game over. CPU wins "+c+" to "+p+".");}
+    else{stats.t++;setStatus("Game over. Tie game!");}
+    localStorage.setItem("yahtzeeStats",JSON.stringify(stats));
+    draw();
+    return true;
+  }
+  return false;
+}
+
+function newGame(){
+  dice=[1,1,1,1,1];
+  held=[false,false,false,false,false];
+  rollsLeft=3;
+  currentPlayer="player";
+  gameOver=false;
+  locked=false;
+  scores={player:{},cpu:{}};
+  setStatus("New game. Your turn. Roll the cup.");
+  draw();
+  sendMove({type:"newGame"});
+}
+
+function resetStats(){
+  stats={p:0,c:0,t:0};
+  localStorage.setItem("yahtzeeStats",JSON.stringify(stats));
+  draw();
+}
+
+function setStatus(t){
+  document.getElementById("status").innerText=t;
+}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// multiplayer hooks
+window.sendMove=function(data){
+  parent.postMessage({type:"move",data},"*");
+};
+window.onMove=function(data){};
+function sendMove(data){window.sendMove(data);}
+
+draw();
+</script>
+
+</body>
+</html>
