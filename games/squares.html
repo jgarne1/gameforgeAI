@@ -34,6 +34,7 @@ button.gold{background:var(--gold);border-color:var(--gold)}
 .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
 </style>
 </head>
+
 <body>
 <div class="wrap">
   <div class="top">
@@ -43,4 +44,448 @@ button.gold{background:var(--gold);border-color:var(--gold)}
 
   <div class="status">
     <div id="statusMain" class="statusMain">Loading players...</div>
-    <div id="statusHelp" class="muted">Draw lines
+    <div id="statusHelp" class="muted">Draw lines. Complete a box to score and go again.</div>
+  </div>
+
+  <div class="game">
+    <div id="board" class="board"></div>
+  </div>
+
+  <div class="bottom">
+    <div id="playersPanel" class="players"></div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+const GAME_META={id:'dots',name:"James' Square Game",minPlayers:2,maxPlayers:4,seats:4};
+
+const ROWS=7;
+const COLS=8;
+const COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b'];
+
+let players=[];
+let mySeat=null;
+let state=null;
+let lastClaimed=[];
+
+function el(id){
+  return document.getElementById(id);
+}
+
+function setStatus(a,b){
+  el('statusMain').innerText=a;
+  el('statusHelp').innerText=b||'';
+}
+
+window.onerror=function(msg){
+  setStatus('Game error: '+msg,'Check console for details.');
+};
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(Array.isArray(setupPlayers)&&setupPlayers.length){
+    players=setupPlayers.slice(0,4).map((p,i)=>({
+      seat:p.seat,
+      name:p.name||('Seat '+(p.seat+1)),
+      color:COLORS[i],
+      initial:(p.name||('S'+(p.seat+1))).trim().charAt(0).toUpperCase()
+    }));
+  }
+
+  mySeat=setupSeat;
+
+  if(players.length<2){
+    setStatus('Waiting for players...',"James' Square Game needs 2–4 seated players.");
+    drawEmpty();
+    return;
+  }
+
+  if(!state){
+    state=fresh();
+  }
+
+  draw();
+}
+
+function fresh(){
+  return {
+    h:{},
+    v:{},
+    boxes:{},
+    turn:players[0].seat,
+    gameOver:false,
+    log:['New game started.']
+  };
+}
+
+function draw(){
+  if(!state||players.length<2){
+    drawEmpty();
+    return;
+  }
+
+  drawBoard();
+  drawPlayers();
+  drawLog();
+
+  if(state.gameOver){
+    setStatus('Game Over — Winner: '+getWinner(),'Start a new game to play again.');
+  }else{
+    setStatus(
+      'Current Turn: '+name(state.turn),
+      state.turn===mySeat?'Your move. Draw a line.':'Waiting for '+name(state.turn)+'.'
+    );
+  }
+}
+
+function drawEmpty(){
+  el('board').innerHTML='';
+  el('playersPanel').innerHTML='';
+  el('log').innerHTML='';
+}
+
+function drawBoard(){
+  let b=el('board');
+  b.innerHTML='';
+
+  let marginX=40;
+  let marginY=30;
+  let gapX=(560-marginX*2)/(COLS-1);
+  let gapY=(430-marginY*2)/(ROWS-1);
+
+  for(let r=0;r<ROWS-1;r++){
+    for(let c=0;c<COLS-1;c++){
+      let owner=state.boxes[boxKey(r,c)];
+
+      if(owner!==undefined){
+        let p=playerBySeat(owner);
+        let bk=boxKey(r,c);
+
+        let box=document.createElement('div');
+        box.className='box '+(lastClaimed.includes(bk)?'pop':'');
+        box.style.left=(marginX+c*gapX+6)+'px';
+        box.style.top=(marginY+r*gapY+6)+'px';
+        box.style.width=(gapX-12)+'px';
+        box.style.height=(gapY-12)+'px';
+        box.style.background=p?p.color:'#64748b';
+        box.innerText=p?p.initial:'?';
+
+        b.appendChild(box);
+      }
+    }
+  }
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS-1;c++){
+      let k=hKey(r,c);
+      let edge=document.createElement('div');
+
+      edge.className='edge h '+(state.h[k]!==undefined?'taken':'')+(isDangerLine('h',r,c)?' danger':'');
+      edge.style.left=(marginX+c*gapX+6)+'px';
+      edge.style.top=(marginY+r*gapY)+'px';
+      edge.style.width=(gapX-12)+'px';
+
+      if(state.h[k]!==undefined){
+        edge.style.background=colorOf(state.h[k]);
+      }
+
+      edge.onclick=function(){takeLine('h',r,c);};
+      b.appendChild(edge);
+    }
+  }
+
+  for(let r=0;r<ROWS-1;r++){
+    for(let c=0;c<COLS;c++){
+      let k=vKey(r,c);
+      let edge=document.createElement('div');
+
+      edge.className='edge v '+(state.v[k]!==undefined?'taken':'')+(isDangerLine('v',r,c)?' danger':'');
+      edge.style.left=(marginX+c*gapX)+'px';
+      edge.style.top=(marginY+r*gapY+6)+'px';
+      edge.style.height=(gapY-12)+'px';
+
+      if(state.v[k]!==undefined){
+        edge.style.background=colorOf(state.v[k]);
+      }
+
+      edge.onclick=function(){takeLine('v',r,c);};
+      b.appendChild(edge);
+    }
+  }
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      let d=document.createElement('div');
+      d.className='dot';
+      d.style.left=(marginX+c*gapX)+'px';
+      d.style.top=(marginY+r*gapY)+'px';
+      b.appendChild(d);
+    }
+  }
+}
+
+function takeLine(type,r,c){
+  if(!state||state.gameOver||state.turn!==mySeat)return;
+
+  let store=type==='h'?state.h:state.v;
+  let key=type==='h'?hKey(r,c):vKey(r,c);
+
+  if(store[key]!==undefined)return;
+
+  store[key]=mySeat;
+
+  let claimed=[];
+  let made=claimBoxes(type,r,c,mySeat,claimed);
+  lastClaimed=claimed;
+
+  if(made>0){
+    add(name(mySeat)+' completed '+made+' box'+(made>1?'es':'')+' and goes again.');
+  }else{
+    nextTurn();
+  }
+
+  if(Object.keys(state.boxes).length===(ROWS-1)*(COLS-1)){
+    state.gameOver=true;
+    add('Game over.');
+  }
+
+  draw();
+  sync();
+
+  setTimeout(function(){
+    lastClaimed=[];
+    draw();
+  },300);
+}
+
+function claimBoxes(type,r,c,seat,claimed){
+  let made=0;
+  let candidates=[];
+
+  if(type==='h'){
+    candidates.push([r-1,c]);
+    candidates.push([r,c]);
+  }else{
+    candidates.push([r,c-1]);
+    candidates.push([r,c]);
+  }
+
+  candidates.forEach(function(x){
+    let br=x[0];
+    let bc=x[1];
+
+    if(br<0||br>=ROWS-1||bc<0||bc>=COLS-1)return;
+
+    let bk=boxKey(br,bc);
+    if(state.boxes[bk]!==undefined)return;
+
+    if(boxSideCount(br,bc)===4){
+      state.boxes[bk]=seat;
+      claimed.push(bk);
+      made++;
+    }
+  });
+
+  return made;
+}
+
+function boxSideCount(r,c){
+  let n=0;
+
+  if(state.h[hKey(r,c)]!==undefined)n++;
+  if(state.h[hKey(r+1,c)]!==undefined)n++;
+  if(state.v[vKey(r,c)]!==undefined)n++;
+  if(state.v[vKey(r,c+1)]!==undefined)n++;
+
+  return n;
+}
+
+function isDangerLine(type,r,c){
+  if(!state||state.gameOver)return false;
+
+  let store=type==='h'?state.h:state.v;
+  let key=type==='h'?hKey(r,c):vKey(r,c);
+
+  if(store[key]!==undefined)return false;
+
+  let candidates=[];
+
+  if(type==='h'){
+    candidates.push([r-1,c]);
+    candidates.push([r,c]);
+  }else{
+    candidates.push([r,c-1]);
+    candidates.push([r,c]);
+  }
+
+  return candidates.some(function(x){
+    let br=x[0];
+    let bc=x[1];
+
+    if(br<0||br>=ROWS-1||bc<0||bc>=COLS-1)return false;
+    if(state.boxes[boxKey(br,bc)]!==undefined)return false;
+
+    return boxSideCount(br,bc)===3;
+  });
+}
+
+function drawPlayers(){
+  let html='';
+
+  players.forEach(function(p){
+    html+='<div class="player '+(state.turn===p.seat&&!state.gameOver?'turn':'')+'">'+
+      '<b style="color:'+p.color+'">'+escapeHtml(p.name)+'</b><br>'+
+      '<span class="muted">Score: '+score(p.seat)+(p.seat===mySeat?' · You':'')+'</span>'+
+    '</div>';
+  });
+
+  el('playersPanel').innerHTML=html;
+}
+
+function drawLog(){
+  el('log').innerHTML=state.log.slice(-4).map(function(x){
+    return '• '+escapeHtml(x);
+  }).join('<br>');
+
+  el('log').scrollTop=el('log').scrollHeight;
+}
+
+function score(seat){
+  return Object.values(state.boxes).filter(function(x){
+    return x===seat;
+  }).length;
+}
+
+function getWinner(){
+  let scores=players.map(function(p){
+    return {p:p,score:score(p.seat)};
+  });
+
+  scores.sort(function(a,b){
+    return b.score-a.score;
+  });
+
+  if(scores.length>1&&scores[0].score===scores[1].score){
+    return 'Tie at '+scores[0].score+' boxes';
+  }
+
+  return scores[0].p.name+' with '+scores[0].score+' boxes';
+}
+
+function nextTurn(){
+  let i=players.findIndex(function(p){
+    return p.seat===state.turn;
+  });
+
+  state.turn=players[(i+1)%players.length].seat;
+}
+
+function newGame(sendIt){
+  if(players.length<2){
+    setStatus('Waiting for players...',"James' Square Game needs 2–4 seated players.");
+    return;
+  }
+
+  lastClaimed=[];
+  state=fresh();
+  draw();
+
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state:state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    lastClaimed=[];
+    state=data.state;
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  let data=event.data||{};
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+  }
+
+  if(data.type==='gameMove'&&window.onMove){
+    window.onMove(data.data);
+  }
+});
+
+function hKey(r,c){return r+','+c;}
+function vKey(r,c){return r+','+c;}
+function boxKey(r,c){return r+','+c;}
+
+function playerBySeat(seat){
+  return players.find(function(p){
+    return p.seat===seat;
+  });
+}
+
+function colorOf(seat){
+  let p=playerBySeat(seat);
+  return p?p.color:'#64748b';
+}
+
+function name(seat){
+  let p=playerBySeat(seat);
+  return p?p.name:'Seat '+(Number(seat)+1);
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>50)state.log.shift();
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[c];
+  });
+}
+
+function init(){
+  drawEmpty();
+
+  receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+
+  setTimeout(function(){
+    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+
+    if(el('statusMain').innerText==='Loading players...'){
+      if(players.length>=2){
+        if(!state)state=fresh();
+        draw();
+      }else{
+        setStatus('Waiting for players...',"James' Square Game needs 2–4 seated players.");
+        drawEmpty();
+      }
+    }
+  },350);
+}
+
+init();
+</script>
+</body>
+</html>
