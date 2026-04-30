@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>UNO</title>
+<style>
+:root{--bg:#111827;--panel:#1f2937;--line:#374151;--red:#ef4444;--yellow:#facc15;--green:#22c55e;--blue:#3b82f6;--wild:#111827;--card:#fff;--muted:#cbd5e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#374151,#111827);color:white;text-align:center;overflow:hidden}
+.wrap{height:650px;padding:10px;display:grid;grid-template-rows:auto 1fr auto;gap:8px}
+.top,.table,.controls,.log{background:rgba(31,41,55,.94);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 22px rgba(0,0,0,.25)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:9px 12px}
+h2{margin:0}
+button,select{padding:8px 10px;border-radius:10px;border:1px solid #94a3b8;cursor:pointer;font-weight:bold}
+button.primary{background:#60a5fa;border-color:#60a5fa;color:#111}
+button.gold{background:#facc15;border-color:#facc15;color:#111}
+button:disabled{opacity:.45;cursor:not-allowed}
+.table{position:relative;overflow:hidden;min-height:405px;background:radial-gradient(circle,#14532d,#052e16)}
+.center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:360px}
+.status{font-size:18px;font-weight:bold;margin-bottom:6px}
+.muted{font-size:12px;color:var(--muted)}
+.pileRow{display:flex;justify-content:center;align-items:center;gap:18px;margin:8px 0}
+.card{display:inline-flex;align-items:center;justify-content:center;width:56px;height:84px;border-radius:11px;border:3px solid white;margin:4px;font-weight:bold;font-size:15px;box-shadow:2px 4px 0 rgba(0,0,0,.35);cursor:pointer;color:white;position:relative}
+.card.small{width:28px;height:42px;font-size:10px;border-radius:6px;margin:1px;border-width:2px}
+.card.back{background:#111827;color:white}
+.card.red{background:var(--red)}
+.card.yellow{background:var(--yellow);color:#111}
+.card.green{background:var(--green)}
+.card.blue{background:var(--blue)}
+.card.wild{background:linear-gradient(135deg,#ef4444,#facc15,#22c55e,#3b82f6)}
+.card.disabled{opacity:.55;cursor:not-allowed}
+.card.playable{outline:4px solid #facc15;transform:translateY(-5px)}
+.label{position:absolute;top:4px;left:5px;font-size:11px}
+.big{font-size:24px}
+.player{position:absolute;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:7px;min-width:150px}
+.player.turn{outline:3px solid #facc15}
+.p0{left:50%;bottom:8px;transform:translateX(-50%);width:84%;max-width:800px}
+.p1{left:8px;top:88px}
+.p2{left:50%;top:8px;transform:translateX(-50%)}
+.p3{right:8px;top:88px}
+.handArea{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:7px;min-height:98px;overflow:hidden}
+.controls{padding:8px;display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap}
+.log{height:58px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;padding:8px;font-size:13px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>UNO</h2>
+    <div>
+      <span id="meLabel" class="badge"></span>
+      <button class="gold" onclick="newGame(true)">New Game</button>
+    </div>
+  </div>
+
+  <div class="table">
+    <div id="playersLayer"></div>
+
+    <div class="center">
+      <div id="status" class="status">Loading players...</div>
+      <div id="hint" class="muted">Match color, number, or symbol.</div>
+
+      <div class="pileRow">
+        <div>
+          <div class="muted">Draw Pile</div>
+          <div id="drawPile" class="card back" onclick="drawCardAction()">UNO</div>
+          <div id="deckCount" class="muted"></div>
+        </div>
+
+        <div>
+          <div class="muted">Discard</div>
+          <div id="discardPile"></div>
+          <div id="directionLabel" class="muted"></div>
+        </div>
+      </div>
+
+      <div id="colorPicker" style="display:none">
+        <div class="muted">Choose color</div>
+        <button onclick="chooseColor('red')" style="background:#ef4444;color:white">Red</button>
+        <button onclick="chooseColor('yellow')" style="background:#facc15">Yellow</button>
+        <button onclick="chooseColor('green')" style="background:#22c55e;color:white">Green</button>
+        <button onclick="chooseColor('blue')" style="background:#3b82f6;color:white">Blue</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="controls">
+      <button id="drawBtn" class="primary" onclick="drawCardAction()">Draw Card</button>
+      <button id="passBtn" onclick="passTurn()">Pass</button>
+      <span id="currentColorLabel" class="badge"></span>
+    </div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+const GAME_META={id:'uno',name:'UNO',minPlayers:2,maxPlayers:4,seats:4};
+
+const COLORS=['red','yellow','green','blue'];
+const VALUES=['0','1','2','3','4','5','6','7','8','9','skip','reverse','draw2'];
+
+let players=[];
+let mySeat=null;
+let state=null;
+let pendingWildCard=null;
+
+function el(id){return document.getElementById(id);}
+function setStatus(a,b){el('status').innerText=a;el('hint').innerText=b||'';}
+
+window.onerror=function(msg){
+  setStatus('Game error: '+msg,'Check console for details.');
+};
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(Array.isArray(setupPlayers)&&setupPlayers.length){
+    players=setupPlayers.slice(0,4).map(p=>({seat:p.seat,name:p.name||('Seat '+(p.seat+1))}));
+  }
+
+  mySeat=setupSeat;
+
+  if(players.length<2){
+    setStatus('Waiting for 2 players...','UNO needs at least 2 seated players.');
+    drawEmpty();
+    return;
+  }
+
+  if(!state){
+    state=fresh();
+  }else{
+    ensureState();
+  }
+
+  draw();
+}
+
+function fresh(){
+  let deck=buildDeck();
+  shuffle(deck);
+
+  let hands={};
+  players.forEach(p=>{
+    hands[p.seat]=deck.splice(0,7);
+  });
+
+  let first=deck.pop();
+  while(first.wild||first.action){
+    deck.unshift(first);
+    shuffle(deck);
+    first=deck.pop();
+  }
+
+  return {
+    deck,
+    discard:[first],
+    hands,
+    turn:players[0].seat,
+    direction:1,
+    currentColor:first.color,
+    pendingDraw:0,
+    drewThisTurn:false,
+    winner:null,
+    log:['New UNO game started.']
+  };
+}
+
+function buildDeck(){
+  let deck=[];
+
+  COLORS.forEach(color=>{
+    deck.push({color,value:'0'});
+    for(let i=1;i<=9;i++){
+      deck.push({color,value:String(i)});
+      deck.push({color,value:String(i)});
+    }
+    ['skip','reverse','draw2'].forEach(v=>{
+      deck.push({color,value:v,action:true});
+      deck.push({color,value:v,action:true});
+    });
+  });
+
+  for(let i=0;i<4;i++){
+    deck.push({color:'wild',value:'wild',wild:true});
+    deck.push({color:'wild',value:'draw4',wild:true,draw4:true});
+  }
+
+  return deck;
+}
+
+function ensureState(){
+  if(!state.hands)state.hands={};
+  players.forEach(p=>{
+    if(!state.hands[p.seat])state.hands[p.seat]=[];
+  });
+}
+
+function draw(){
+  if(!state||players.length<2){
+    drawEmpty();
+    return;
+  }
+
+  drawPlayers();
+  drawCenter();
+  drawControls();
+  drawLog();
+
+  if(state.winner!==null){
+    setStatus(name(state.winner)+' wins!','Start a new game to play again.');
+  }else if(state.turn===mySeat){
+    if(state.pendingDraw>0){
+      setStatus('Your Turn — Draw '+state.pendingDraw,'You must draw the penalty cards.');
+    }else{
+      setStatus('Your Turn','Play a highlighted card or draw.');
+    }
+  }else{
+    setStatus('Current Turn: '+name(state.turn),'Waiting for '+name(state.turn)+'.');
+  }
+}
+
+function drawEmpty(){
+  el('playersLayer').innerHTML='';
+  el('discardPile').innerHTML='';
+  el('deckCount').innerText='';
+  el('directionLabel').innerText='';
+  el('currentColorLabel').innerText='';
+  el('drawBtn').disabled=true;
+  el('passBtn').disabled=true;
+}
+
+function drawPlayers(){
+  let layer=el('playersLayer');
+  layer.innerHTML='';
+
+  let ordered=[mySeat,...players.map(p=>p.seat).filter(s=>s!==mySeat)];
+  if(mySeat===null||mySeat===undefined)ordered=players.map(p=>p.seat);
+
+  ordered.forEach((seat,idx)=>{
+    let p=players.find(x=>x.seat===seat);
+    if(!p)return;
+
+    let hand=state.hands[seat]||[];
+    let box=document.createElement('div');
+    box.className='player p'+idx+(state.turn===seat?' turn':'');
+
+    let html='<div><b>'+escapeHtml(p.name)+'</b></div>';
+    html+='<div class="muted">'+hand.length+' cards'+(hand.length===1?' · UNO!':'')+'</div>';
+
+    if(seat===mySeat){
+      html+='<div class="handArea">';
+      hand.forEach((card,i)=>{
+        let playable=state.turn===mySeat && canPlay(card) && state.pendingDraw===0 && state.winner===null;
+        html+=cardHtml(card,'card '+(playable?'playable':''),'playCard('+i+')');
+      });
+      html+='</div>';
+    }else{
+      html+='<div>';
+      hand.forEach(()=>html+='<span class="card small back">UNO</span>');
+      html+='</div>';
+    }
+
+    box.innerHTML=html;
+    layer.appendChild(box);
+  });
+}
+
+function drawCenter(){
+  let top=topDiscard();
+
+  el('discardPile').innerHTML=cardHtml(top,'card','');
+  el('deckCount').innerText=state.deck.length+' cards left';
+  el('directionLabel').innerText=state.direction===1?'Direction: clockwise':'Direction: counter-clockwise';
+  el('currentColorLabel').innerText='Current Color: '+state.currentColor.toUpperCase();
+
+  el('colorPicker').style.display=pendingWildCard?'block':'none';
+}
+
+function drawControls(){
+  let isTurn=state.turn===mySeat && state.winner===null;
+
+  el('drawBtn').disabled=!isTurn;
+  el('passBtn').disabled=!isTurn || !state.drewThisTurn || state.pendingDraw>0;
+}
+
+function drawLog(){
+  el('log').innerHTML=state.log.slice(-5).map(x=>'• '+escapeHtml(x)).join('<br>');
+  el('log').scrollTop=el('log').scrollHeight;
+}
+
+function canPlay(card){
+  let top=topDiscard();
+
+  if(card.wild)return true;
+  if(card.color===state.currentColor)return true;
+  if(card.value===top.value)return true;
+
+  return false;
+}
+
+function playCard(index){
+  if(state.turn!==mySeat||state.winner!==null||state.pendingDraw>0)return;
+
+  let hand=state.hands[mySeat]||[];
+  let card=hand[index];
+
+  if(!card||!canPlay(card))return;
+
+  hand.splice(index,1);
+  state.discard.push(card);
+  state.drewThisTurn=false;
+
+  add(name(mySeat)+' played '+cardLabel(card)+'.');
+
+  if(card.wild){
+    pendingWildCard=card;
+    draw();
+    return;
+  }
+
+  state.currentColor=card.color;
+  applyCardEffect(card);
+
+  if(hand.length===0){
+    state.winner=mySeat;
+    add(name(mySeat)+' wins!');
+  }else if(card.value==='skip'||card.value==='reverse'||card.value==='draw2'){
+    // effects already moved turn
+  }else{
+    nextTurn();
+  }
+
+  draw();
+  sync();
+}
+
+function chooseColor(color){
+  if(!pendingWildCard||state.turn!==mySeat)return;
+
+  state.currentColor=color;
+  let card=pendingWildCard;
+  pendingWildCard=null;
+
+  add(name(mySeat)+' chose '+color+'.');
+
+  applyCardEffect(card);
+
+  if((state.hands[mySeat]||[]).length===0){
+    state.winner=mySeat;
+    add(name(mySeat)+' wins!');
+  }else if(card.draw4){
+    // effect already moved turn
+  }else{
+    nextTurn();
+  }
+
+  draw();
+  sync();
+}
+
+function applyCardEffect(card){
+  if(card.value==='skip'){
+    add(name(nextSeat())+' was skipped.');
+    advanceTurn(2);
+    return;
+  }
+
+  if(card.value==='reverse'){
+    state.direction*=-1;
+    add('Direction reversed.');
+
+    if(players.length===2){
+      advanceTurn(2);
+    }else{
+      nextTurn();
+    }
+    return;
+  }
+
+  if(card.value==='draw2'){
+    let target=nextSeat();
+    state.pendingDraw=2;
+    state.turn=target;
+    add(name(target)+' must draw 2.');
+    return;
+  }
+
+  if(card.value==='draw4'){
+    let target=nextSeat();
+    state.pendingDraw=4;
+    state.turn=target;
+    add(name(target)+' must draw 4.');
+    return;
+  }
+}
+
+function drawCardAction(){
+  if(state.turn!==mySeat||state.winner!==null)return;
+
+  if(state.pendingDraw>0){
+    for(let i=0;i<state.pendingDraw;i++){
+      drawOne(mySeat);
+    }
+    add(name(mySeat)+' drew '+state.pendingDraw+' penalty cards.');
+    state.pendingDraw=0;
+    state.drewThisTurn=false;
+    nextTurn();
+    draw();
+    sync();
+    return;
+  }
+
+  drawOne(mySeat);
+  state.drewThisTurn=true;
+  add(name(mySeat)+' drew a card.');
+  draw();
+  sync();
+}
+
+function passTurn(){
+  if(state.turn!==mySeat||state.winner!==null||!state.drewThisTurn||state.pendingDraw>0)return;
+
+  state.drewThisTurn=false;
+  add(name(mySeat)+' passed.');
+  nextTurn();
+  draw();
+  sync();
+}
+
+function drawOne(seat){
+  if(state.deck.length===0)recycleDeck();
+
+  if(state.deck.length){
+    state.hands[seat].push(state.deck.pop());
+  }
+}
+
+function recycleDeck(){
+  if(state.discard.length<=1)return;
+
+  let top=state.discard.pop();
+  state.deck=state.discard;
+  state.discard=[top];
+  shuffle(state.deck);
+  add('Discard pile reshuffled into draw pile.');
+}
+
+function nextTurn(){
+  advanceTurn(1);
+}
+
+function nextSeat(){
+  let i=players.findIndex(p=>p.seat===state.turn);
+  let ni=(i+state.direction+players.length)%players.length;
+  return players[ni].seat;
+}
+
+function advanceTurn(steps){
+  let i=players.findIndex(p=>p.seat===state.turn);
+
+  for(let s=0;s<steps;s++){
+    i=(i+state.direction+players.length)%players.length;
+  }
+
+  state.turn=players[i].seat;
+}
+
+function topDiscard(){
+  return state.discard[state.discard.length-1];
+}
+
+function cardLabel(card){
+  if(card.value==='wild')return 'Wild';
+  if(card.value==='draw4')return 'Wild Draw 4';
+  if(card.value==='draw2')return card.color+' Draw 2';
+  return card.color+' '+card.value;
+}
+
+function cardHtml(card,classes,onclick){
+  let color=card.color==='wild'?'wild':card.color;
+  let symbol=card.value;
+
+  if(card.value==='skip')symbol='⊘';
+  if(card.value==='reverse')symbol='↺';
+  if(card.value==='draw2')symbol='+2';
+  if(card.value==='draw4')symbol='+4';
+  if(card.value==='wild')symbol='W';
+
+  return '<span '+(onclick?'onclick="'+onclick+'"':'')+' class="'+classes+' '+color+'">'+
+    '<span class="label">'+escapeHtml(card.color==='wild'?'WILD':card.color.toUpperCase())+'</span>'+
+    '<span class="big">'+escapeHtml(symbol)+'</span>'+
+  '</span>';
+}
+
+function newGame(sendIt){
+  if(players.length<2){
+    setStatus('Waiting for 2 players...','UNO needs at least 2 seated players.');
+    return;
+  }
+
+  pendingWildCard=null;
+  state=fresh();
+  draw();
+
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    pendingWildCard=null;
+    state=data.state;
+    ensureState();
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  let data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>50)state.log.shift();
+}
+
+function shuffle(a){
+  for(let pass=0;pass<2;pass++){
+    for(let i=a.length-1;i>0;i--){
+      let j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+  }
+}
+
+function name(seat){
+  let p=players.find(x=>x.seat===seat);
+  return p?p.name:'Seat '+(Number(seat)+1);
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+
+drawEmpty();
+receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+
+setTimeout(function(){
+  receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+},250);
+</script>
+</body>
+</html>
