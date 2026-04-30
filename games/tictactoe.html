@@ -1,7 +1,263 @@
-<!DOCTYPE html><html><head><title>Tic Tac Toe</title><style>body{font-family:Arial;text-align:center}#b{display:grid;grid-template-columns:repeat(3,100px);gap:6px;justify-content:center}.c{width:100px;height:100px;border:2px solid #111;font-size:42px;display:flex;align-items:center;justify-content:center;cursor:pointer}button{padding:8px;margin:8px}</style></head><body><h2>Tic Tac Toe</h2><div id="s"></div><button onclick="newGame(true)">New Game</button><div id="b"></div><script>
-const GAME_META={id:'tictactoe',name:'Tic Tac Toe',minPlayers:1,maxPlayers:2,seats:2};let players=['X','O'];setTimeout(()=>{if(window.GAME_PLAYERS){window.GAME_PLAYERS.forEach((p,i)=>players[i]=p.name)}draw()},100);let board=Array(9).fill(''),turn=0,over=false;
-function draw(){s.innerText=over?'Game over':players[turn]+"'s turn";b.innerHTML='';board.forEach((v,i)=>{let d=document.createElement('div');d.className='c';d.innerText=v;d.onclick=()=>move(i,true);b.appendChild(d)})}
-function move(i,send){if(over||board[i])return;board[i]=turn===0?'X':'O';if(win(board[i])){s.innerText=players[turn]+' wins!';over=true}else if(!board.includes('')){s.innerText='Tie!';over=true}else turn=1-turn;draw();if(send)sendMove({type:'state',board,turn,over})}
-function win(p){return[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(a=>a.every(i=>board[i]===p))}
-function newGame(send){board=Array(9).fill('');turn=0;over=false;draw();if(send)sendMove({type:'state',board,turn,over})}
-window.sendMove=d=>parent.postMessage({type:'move',data:d},'*');window.onMove=d=>{if(d.type==='state'){board=d.board;turn=d.turn;over=d.over;draw()}};draw();</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tic Tac Toe</title>
+<style>
+body{font-family:Arial;text-align:center;background:#f4efe6;margin:0;color:#222}
+#wrap{max-width:720px;margin:auto;padding:14px}
+.panel{background:#fff;border:2px solid #333;border-radius:12px;padding:12px;margin:10px}
+#status{font-size:20px;font-weight:bold;margin:10px;min-height:30px}
+#board{display:grid;grid-template-columns:repeat(3,110px);gap:8px;justify-content:center;margin:18px auto}
+.cell{width:110px;height:110px;border:3px solid #222;border-radius:12px;background:white;font-size:54px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cell:hover{background:#fff3b0}
+.cell.disabled{cursor:not-allowed;background:#eee}
+.score{font-weight:bold}
+button{padding:8px 14px;margin:5px;border-radius:8px;cursor:pointer}
+.small{font-size:13px;color:#555}
+</style>
+</head>
+<body>
+
+<div id="wrap">
+<h1>Tic Tac Toe</h1>
+
+<div class="panel">
+  <div id="status">Loading players...</div>
+  <p>You are: <b id="meLabel">Spectator</b></p>
+  <p>Current Turn: <b id="turnLabel">...</b></p>
+  <button onclick="newGame(true)">New Game</button>
+  <p class="small">Only the current player can place a mark. Everyone else watches live.</p>
+</div>
+
+<div class="panel">
+  <div id="board"></div>
+</div>
+
+<div class="panel score">
+  <span id="p0Name">Player 1</span>: <span id="p0Score">0</span>
+  |
+  <span id="p1Name">Player 2</span>: <span id="p1Score">0</span>
+  |
+  Ties: <span id="tieScore">0</span>
+</div>
+</div>
+
+<script>
+const GAME_META={id:'tictactoe',name:'Tic Tac Toe',minPlayers:2,maxPlayers:2,seats:2};
+
+let players=[
+  {seat:0,name:'Player 1'},
+  {seat:1,name:'Player 2'}
+];
+
+let mySeat=null;
+let setupReceived=false;
+
+let state=freshState();
+
+function freshState(){
+  return {
+    board:['','','','','','','','',''],
+    turn:players[0].seat,
+    marks:{},
+    scores:{},
+    ties:0,
+    gameOver:false,
+    message:'New game. '+nameOf(players[0].seat)+' goes first.'
+  };
+}
+
+function receiveSetup(newPlayers,newSeat){
+  setupReceived=true;
+
+  if(newPlayers && newPlayers.length){
+    players=newPlayers
+      .slice(0,2)
+      .map(p=>({
+        seat:Number(p.seat),
+        name:p.name || ('Seat '+(Number(p.seat)+1))
+      }))
+      .sort((a,b)=>a.seat-b.seat);
+  }
+
+  if(newSeat!==undefined && newSeat!==null){
+    mySeat=Number(newSeat);
+    if(!players.some(p=>p.seat===mySeat)) mySeat=null;
+  }
+
+  ensureStateShape();
+
+  if(!players.some(p=>p.seat===state.turn)){
+    state.turn=players[0].seat;
+  }
+
+  draw();
+}
+
+function ensureStateShape(){
+  if(!state) state=freshState();
+
+  if(!state.marks) state.marks={};
+  if(!state.scores) state.scores={};
+  if(state.ties===undefined) state.ties=0;
+
+  if(players[0]){
+    state.marks[players[0].seat]='X';
+    if(state.scores[players[0].seat]===undefined) state.scores[players[0].seat]=0;
+  }
+
+  if(players[1]){
+    state.marks[players[1].seat]='O';
+    if(state.scores[players[1].seat]===undefined) state.scores[players[1].seat]=0;
+  }
+}
+
+function draw(){
+  ensureStateShape();
+
+  let meName=mySeat===null?'Spectator':nameOf(mySeat);
+  let turnName=nameOf(state.turn);
+  let myTurn=mySeat===state.turn && !state.gameOver;
+
+  document.getElementById('meLabel').innerText=meName;
+  document.getElementById('turnLabel').innerText=turnName+"'s turn";
+
+  document.getElementById('p0Name').innerText=players[0]?players[0].name:'Player 1';
+  document.getElementById('p1Name').innerText=players[1]?players[1].name:'Player 2';
+  document.getElementById('p0Score').innerText=players[0]?(state.scores[players[0].seat]||0):0;
+  document.getElementById('p1Score').innerText=players[1]?(state.scores[players[1].seat]||0):0;
+  document.getElementById('tieScore').innerText=state.ties||0;
+
+  if(state.gameOver){
+    document.getElementById('status').innerText=state.message;
+  }else if(myTurn){
+    document.getElementById('status').innerText='Your turn. Place your mark.';
+  }else{
+    document.getElementById('status').innerText=turnName+"'s turn. Watching live.";
+  }
+
+  const board=document.getElementById('board');
+  board.innerHTML='';
+
+  state.board.forEach((value,index)=>{
+    let cell=document.createElement('div');
+    cell.className='cell';
+    cell.innerText=value;
+
+    if(value || !myTurn || state.gameOver){
+      cell.className+=' disabled';
+    }else{
+      cell.onclick=()=>makeMove(index);
+    }
+
+    board.appendChild(cell);
+  });
+}
+
+function makeMove(index){
+  if(state.gameOver) return;
+  if(mySeat!==state.turn) return;
+  if(state.board[index]) return;
+
+  let mark=state.marks[mySeat];
+  state.board[index]=mark;
+
+  if(checkWin(mark)){
+    state.gameOver=true;
+    state.scores[mySeat]=(state.scores[mySeat]||0)+1;
+    state.message=nameOf(mySeat)+' wins!';
+  }else if(state.board.every(x=>x)){
+    state.gameOver=true;
+    state.ties=(state.ties||0)+1;
+    state.message='Tie game!';
+  }else{
+    nextTurn();
+    state.message=nameOf(state.turn)+" is next.";
+  }
+
+  draw();
+  sync();
+}
+
+function nextTurn(){
+  let idx=players.findIndex(p=>p.seat===state.turn);
+  if(idx<0) idx=0;
+  state.turn=players[(idx+1)%players.length].seat;
+}
+
+function checkWin(mark){
+  const wins=[
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  return wins.some(combo=>combo.every(i=>state.board[i]===mark));
+}
+
+function newGame(sendIt){
+  let oldScores=state && state.scores ? state.scores : {};
+  let oldTies=state && state.ties ? state.ties : 0;
+
+  state={
+    board:['','','','','','','','',''],
+    turn:players[0].seat,
+    marks:{},
+    scores:oldScores,
+    ties:oldTies,
+    gameOver:false,
+    message:'New game. '+nameOf(players[0].seat)+' goes first.'
+  };
+
+  ensureStateShape();
+  draw();
+  if(sendIt) sync();
+}
+
+function nameOf(seat){
+  let p=players.find(x=>x.seat===seat);
+  return p ? p.name : 'Seat '+(seat+1);
+}
+
+function sync(){
+  window.sendMove({type:'state',state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data},'*');
+};
+
+window.onMove=function(data){
+  if(data.type==='state'){
+    state=data.state;
+    ensureStateShape();
+    draw();
+  }
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+  }
+};
+
+window.addEventListener('message',function(event){
+  let data=event.data || {};
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+  }
+});
+
+parent.postMessage({type:'gameReady'},'*');
+
+setTimeout(function(){
+  if(!setupReceived){
+    if(window.GAME_PLAYERS && window.GAME_PLAYERS.length){
+      receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
+    }else{
+      ensureStateShape();
+      draw();
+    }
+  }
+},100);
+</script>
+</body>
+</html>
