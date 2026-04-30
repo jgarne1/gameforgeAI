@@ -1,7 +1,7 @@
 {
-  "name": "gameforge-v4",
+  "name": "gameforge-ai-wrapper-v5",
   "version": "1.0.0",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "express": "^4.18.2", "ws": "^8.16.0" }
+  "scripts": {"start":"node server.js"},
+  "dependencies": {"express":"^4.18.2","ws":"^8.16.0"}
 }

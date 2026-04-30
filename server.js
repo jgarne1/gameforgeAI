@@ -1,193 +1,147 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
+const http = require('http');
 const WebSocket = require('ws');
 
 const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 const PORT = process.env.PORT || 3000;
-const DATA = path.join(__dirname, 'data');
-const USERS_FILE = path.join(DATA, 'users.json');
-const ADMINS_FILE = path.join(DATA, 'admins.json');
-const GAMES_FILE = path.join(__dirname, 'games', '_games.json');
 
 app.use(express.json());
-app.use(express.static('public'));
-app.use('/games', express.static('games'));
+app.use(express.static(path.join(__dirname, 'public')));
 
-function readJson(file, fallback){ try { return JSON.parse(fs.readFileSync(file,'utf8')); } catch { return fallback; } }
-function writeJson(file, data){ fs.mkdirSync(path.dirname(file), {recursive:true}); fs.writeFileSync(file, JSON.stringify(data,null,2)); }
-function hash(pw){ return crypto.createHash('sha256').update(String(pw)).digest('hex'); }
-function cleanUser(u){ return String(u||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24); }
-function isAdmin(username){ const a=readJson(ADMINS_FILE,{admins:[]}); return a.admins.includes(cleanUser(username)); }
-function publicUser(username,u){ return {username, wins:u.wins||0, losses:u.losses||0, ties:u.ties||0, gamesPlayed:u.gamesPlayed||0, favoriteGame:u.favoriteGame||''}; }
+const DATA = path.join(__dirname, 'data');
+const GAMES = path.join(__dirname, 'games');
+const usersFile = path.join(DATA, 'users.json');
+const adminsFile = path.join(DATA, 'admins.json');
+const metaFile = path.join(DATA, 'game-meta.json');
 
-const rooms = {}; // roomId -> {id, owner, users:{username:{name}}, chat:[], selectedGame, table:{gameId,seats,players,started}}
-const sockets = new Map(); // ws -> {username, roomId}
+function ensure(){ if(!fs.existsSync(DATA)) fs.mkdirSync(DATA); if(!fs.existsSync(GAMES)) fs.mkdirSync(GAMES); if(!fs.existsSync(usersFile)) fs.writeFileSync(usersFile,'{}'); if(!fs.existsSync(adminsFile)) fs.writeFileSync(adminsFile,'["admin"]'); if(!fs.existsSync(metaFile)) fs.writeFileSync(metaFile,'{}'); }
+ensure();
+function readJSON(file, fallback){ try { return JSON.parse(fs.readFileSync(file,'utf8')); } catch { return fallback; } }
+function writeJSON(file, data){ fs.writeFileSync(file, JSON.stringify(data,null,2)); }
+function roomCode(){ return Math.random().toString(36).substring(2,6).toUpperCase(); }
+function safeUser(u){ return String(u||'').trim().replace(/[^a-zA-Z0-9_-]/g,'').slice(0,24); }
+function isAdminName(u){ return readJSON(adminsFile,[]).includes(u); }
 
-function roomView(room){
-  return {
-    id: room.id,
-    owner: room.owner,
-    users: Object.keys(room.users),
-    chat: room.chat.slice(-40),
-    selectedGame: room.selectedGame,
-    table: room.table
-  };
+const rooms = {}; // code -> room
+const presence = {}; // username -> {location, roomId, game, privateRoom, lastSeen}
+const sockets = new Set();
+
+function publicRoom(room){
+  if(!room) return null;
+  return { id:room.id, owner:room.owner, private:!!room.private, users:room.users, chat:room.chat.slice(-50), selectedGame:room.selectedGame, selectedMeta:room.selectedMeta, seats:room.seats, started:room.started, closed:room.closed };
 }
-function broadcast(roomId, msg){
-  const text = JSON.stringify(msg);
-  for (const [ws, meta] of sockets.entries()) {
-    if (meta.roomId === roomId && ws.readyState === WebSocket.OPEN) ws.send(text);
-  }
+function broadcastPresence(){
+  const now=Date.now();
+  Object.keys(presence).forEach(u=>{ if(now-presence[u].lastSeen>1000*60*10) delete presence[u]; });
+  const list=Object.keys(presence).sort().map(username=>({username,...presence[username]}));
+  broadcastAll({type:'presence', users:list});
 }
-function getGames(){ return readJson(GAMES_FILE, {games:[]}).games; }
-function getGame(id){ return getGames().find(g=>g.id===id); }
-function makeRoomId(){ return Math.random().toString(36).slice(2,6).toUpperCase(); }
+function broadcastAll(obj){ const msg=JSON.stringify(obj); sockets.forEach(s=>{ if(s.readyState===1) s.send(msg); }); }
+function broadcastRoom(roomId,obj){ const msg=JSON.stringify(obj); sockets.forEach(s=>{ if(s.readyState===1 && s.roomId===roomId) s.send(msg); }); }
+function updatePresence(username, patch){ if(!username) return; presence[username]={...(presence[username]||{}),...patch,lastSeen:Date.now()}; broadcastPresence(); }
+function roomUserList(room){ return Object.keys(room.users || {}); }
 
-app.get('/', (req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
-app.get('/admin', (req,res)=>res.sendFile(path.join(__dirname,'public','admin.html')));
-app.get('/api/games', (req,res)=>res.json({games:getGames()}));
-
-app.post('/api/create-account', (req,res)=>{
-  const username = cleanUser(req.body.username);
-  const password = String(req.body.password||'');
-  if(!username || password.length<3) return res.status(400).json({error:'Use a username and password of at least 3 characters.'});
-  const users = readJson(USERS_FILE,{});
-  if(users[username]) return res.status(400).json({error:'User already exists.'});
-  users[username] = { passwordHash: hash(password), wins:0, losses:0, ties:0, gamesPlayed:0, favoriteGame:'' };
-  writeJson(USERS_FILE, users);
-  res.json({user:publicUser(username,users[username]), admin:isAdmin(username)});
+app.get('/api/games',(req,res)=>{
+  const meta=readJSON(metaFile,{});
+  const files=fs.readdirSync(GAMES).filter(f=>f.endsWith('.html'));
+  res.json(files.map(file=>({file, name:(meta[file]&&meta[file].name)||file.replace('.html',''), minSeats:(meta[file]&&meta[file].minSeats)||2, maxSeats:(meta[file]&&meta[file].maxSeats)||2})));
 });
-
-app.post('/api/login', (req,res)=>{
-  const username = cleanUser(req.body.username);
-  const password = String(req.body.password||'');
-  const users = readJson(USERS_FILE,{});
-  if(!users[username] || users[username].passwordHash !== hash(password)) return res.status(401).json({error:'Invalid login.'});
-  res.json({user:publicUser(username,users[username]), admin:isAdmin(username)});
+app.get('/game/:file',(req,res)=>{
+  const f=path.basename(req.params.file);
+  const p=path.join(GAMES,f);
+  if(!fs.existsSync(p)) return res.status(404).send('Game not found');
+  res.sendFile(p);
 });
-
-app.post('/api/create-room', (req,res)=>{
-  const username = cleanUser(req.body.username) || 'guest';
-  const id = makeRoomId();
-  rooms[id] = { id, owner: username, users:{[username]:{name:username}}, chat:[], selectedGame:null, table:null };
-  res.json({roomId:id});
+app.post('/api/register',(req,res)=>{
+  const username=safeUser(req.body.username); const password=String(req.body.password||'');
+  if(!username || !password) return res.json({ok:false,error:'Username and password required'});
+  const users=readJSON(usersFile,{});
+  if(users[username]) return res.json({ok:false,error:'User already exists'});
+  users[username]={password, stats:{wins:0,losses:0,ties:0,gamesPlayed:0}, favoriteGame:''};
+  writeJSON(usersFile,users); updatePresence(username,{location:'Home', roomId:null, game:null, privateRoom:false});
+  res.json({ok:true, username, admin:isAdminName(username)});
 });
-
-app.get('/api/admin/users', (req,res)=>{
-  if(!isAdmin(req.headers['x-user'])) return res.status(403).json({error:'Admin only.'});
-  const users = readJson(USERS_FILE,{});
-  res.json({users:Object.entries(users).map(([name,u])=>publicUser(name,u))});
+app.post('/api/login',(req,res)=>{
+  const username=safeUser(req.body.username); const password=String(req.body.password||'');
+  const users=readJSON(usersFile,{});
+  if(!users[username] || users[username].password!==password) return res.json({ok:false,error:'Invalid login'});
+  updatePresence(username,{location:'Home', roomId:null, game:null, privateRoom:false});
+  res.json({ok:true, username, admin:isAdminName(username), stats:users[username].stats||{}});
 });
-app.delete('/api/admin/users/:username', (req,res)=>{
-  if(!isAdmin(req.headers['x-user'])) return res.status(403).json({error:'Admin only.'});
-  const username=cleanUser(req.params.username);
-  if(isAdmin(username)) return res.status(400).json({error:'Do not delete admins from here.'});
-  const users = readJson(USERS_FILE,{});
-  delete users[username];
-  writeJson(USERS_FILE, users);
+app.post('/api/logout',(req,res)=>{ const username=safeUser(req.body.username); delete presence[username]; broadcastPresence(); res.json({ok:true}); });
+app.get('/api/admin/users',(req,res)=>{
+  const admin=safeUser(req.query.admin); if(!isAdminName(admin)) return res.status(403).json({error:'Admin only'});
+  const users=readJSON(usersFile,{}); res.json(Object.keys(users).map(u=>({username:u, stats:users[u].stats||{}, favoriteGame:users[u].favoriteGame||'', admin:isAdminName(u)})));
+});
+app.delete('/api/admin/users/:username',(req,res)=>{
+  const admin=safeUser(req.query.admin); if(!isAdminName(admin)) return res.status(403).json({error:'Admin only'});
+  const target=safeUser(req.params.username); const users=readJSON(usersFile,{}); delete users[target]; writeJSON(usersFile,users); delete presence[target]; broadcastPresence(); res.json({ok:true});
+});
+app.get('/api/admin/rooms',(req,res)=>{
+  const admin=safeUser(req.query.admin); if(!isAdminName(admin)) return res.status(403).json({error:'Admin only'});
+  res.json(Object.values(rooms).filter(r=>!r.closed).map(publicRoom));
+});
+app.post('/api/admin/rooms/:id/close',(req,res)=>{
+  const admin=safeUser(req.body.admin); if(!isAdminName(admin)) return res.status(403).json({error:'Admin only'});
+  const r=rooms[req.params.id]; if(r){ r.closed=true; broadcastRoom(r.id,{type:'roomClosed'}); delete rooms[r.id]; broadcastPresence(); }
   res.json({ok:true});
 });
-app.get('/api/admin/rooms', (req,res)=>{
-  if(!isAdmin(req.headers['x-user'])) return res.status(403).json({error:'Admin only.'});
-  res.json({rooms:Object.values(rooms).map(roomView)});
-});
-app.post('/api/admin/rooms/:roomId/close', (req,res)=>{
-  if(!isAdmin(req.headers['x-user'])) return res.status(403).json({error:'Admin only.'});
-  const id=String(req.params.roomId).toUpperCase();
-  if(rooms[id]) { broadcast(id,{type:'closed'}); delete rooms[id]; }
-  res.json({ok:true});
-});
-
-const server = app.listen(PORT, ()=>console.log('GameForge running on http://localhost:'+PORT));
-const wss = new WebSocket.Server({server});
 
 wss.on('connection', ws=>{
-  sockets.set(ws, {username:'guest', roomId:null});
+  sockets.add(ws);
+  ws.on('close',()=>{ sockets.delete(ws); });
   ws.on('message', raw=>{
     let msg; try{ msg=JSON.parse(raw); }catch{return;}
-    const meta=sockets.get(ws);
-    const username=cleanUser(msg.username)||meta.username||'guest';
+    const username=safeUser(msg.username || ws.username);
+    if(username) ws.username=username;
 
+    if(msg.type==='hello') { updatePresence(username,{location:'Home', roomId:null, game:null, privateRoom:false}); ws.send(JSON.stringify({type:'presence',users:Object.keys(presence).map(u=>({username:u,...presence[u]}))})); return; }
+
+    if(msg.type==='createRoom'){
+      const id=roomCode();
+      rooms[id]={id, owner:username, private:!!msg.private, users:{[username]:{username}}, chat:[], selectedGame:null, selectedMeta:null, seats:[], started:false, closed:false};
+      ws.roomId=id; updatePresence(username,{location:'Room',roomId:id,game:null,privateRoom:!!msg.private});
+      ws.send(JSON.stringify({type:'roomJoined', room:publicRoom(rooms[id])}));
+      broadcastPresence(); return;
+    }
     if(msg.type==='joinRoom'){
-      const roomId=String(msg.roomId||'').toUpperCase();
-      if(!rooms[roomId]) return ws.send(JSON.stringify({type:'error', error:'Room not found.'}));
-      meta.username=username; meta.roomId=roomId;
-      rooms[roomId].users[username]={name:username};
-      rooms[roomId].chat.push({system:true,text:username+' joined the room.'});
-      broadcast(roomId,{type:'room', room:roomView(rooms[roomId])});
+      const id=String(msg.roomId||'').trim().toUpperCase(); const r=rooms[id];
+      if(!r||r.closed){ ws.send(JSON.stringify({type:'error',error:'Room not found'})); return; }
+      r.users[username]={username}; ws.roomId=id; updatePresence(username,{location:'Room',roomId:id,game:r.started?'Game':null,privateRoom:!!r.private});
+      broadcastRoom(id,{type:'roomUpdate',room:publicRoom(r)}); broadcastPresence(); return;
     }
-
-    if(!meta.roomId || !rooms[meta.roomId]) return;
-    const room=rooms[meta.roomId];
-
-    if(msg.type==='chat'){
-      const text=String(msg.text||'').slice(0,200);
-      if(text){ room.chat.push({user:username,text}); broadcast(room.id,{type:'room',room:roomView(room)}); }
+    if(msg.type==='leaveRoom'){
+      const r=rooms[ws.roomId]; if(r){ delete r.users[username]; r.seats=(r.seats||[]).map(s=>s===username?null:s); if(r.owner===username) r.owner=roomUserList(r)[0]||''; broadcastRoom(r.id,{type:'roomUpdate',room:publicRoom(r)}); }
+      ws.roomId=null; updatePresence(username,{location:'Home',roomId:null,game:null,privateRoom:false}); return;
     }
+    const r=rooms[ws.roomId];
+    if(!r) return;
+    if(msg.type==='chat') { r.chat.push({user:username,text:String(msg.text||'').slice(0,300),time:Date.now()}); broadcastRoom(r.id,{type:'roomUpdate',room:publicRoom(r)}); return; }
     if(msg.type==='selectGame'){
-      const game=getGame(msg.gameId); if(!game) return;
-      room.selectedGame=game.id;
-      room.table={gameId:game.id,seats:game.seats||2,players:Array(game.seats||2).fill(null),started:false};
-      room.chat.push({system:true,text:username+' selected '+game.name+'. Sit at the table, then the owner starts.'});
-      broadcast(room.id,{type:'room',room:roomView(room)});
+      const meta=readJSON(metaFile,{}); const file=path.basename(msg.file); const m=meta[file]||{name:file,minSeats:2,maxSeats:2};
+      r.selectedGame=file; r.selectedMeta=m; r.started=false; r.seats=Array(m.maxSeats||2).fill(null);
+      broadcastRoom(r.id,{type:'roomUpdate',room:publicRoom(r)}); return;
     }
     if(msg.type==='sit'){
-      if(!room.table) return;
-      const idx=Number(msg.seat);
-      if(idx<0 || idx>=room.table.seats) return;
-      room.table.players=room.table.players.map(p=>p===username?null:p);
-      if(!room.table.players[idx]) room.table.players[idx]=username;
-      broadcast(room.id,{type:'room',room:roomView(room)});
+      const idx=Number(msg.index); if(!r.seats||idx<0||idx>=r.seats.length)return;
+      r.seats=r.seats.map(s=>s===username?null:s); if(!r.seats[idx]) r.seats[idx]=username;
+      broadcastRoom(r.id,{type:'roomUpdate',room:publicRoom(r)}); return;
     }
-    if(msg.type==='stand'){
-      if(room.table){ room.table.players=room.table.players.map(p=>p===username?null:p); broadcast(room.id,{type:'room',room:roomView(room)}); }
-    }
+    if(msg.type==='stand') { r.seats=r.seats.map(s=>s===username?null:s); broadcastRoom(r.id,{type:'roomUpdate',room:publicRoom(r)}); return; }
     if(msg.type==='startGame'){
-      if(room.owner!==username) return;
-      if(!room.table) return;
-      room.table.started=true;
-      room.chat.push({system:true,text:'Game started.'});
-      broadcast(room.id,{type:'room',room:roomView(room)});
-      broadcast(room.id,{type:'startGame', table:room.table});
+      if(r.owner!==username) return;
+      if(!r.selectedGame) return;
+      r.started=true; r.seats.filter(Boolean).forEach(u=> updatePresence(u,{location:'Game',roomId:r.id,game:r.selectedMeta&&r.selectedMeta.name,privateRoom:!!r.private}));
+      broadcastRoom(r.id,{type:'roomUpdate',room:publicRoom(r)}); broadcastPresence(); return;
     }
-    if(msg.type==='passOwner'){
-      if(room.owner!==username) return;
-      const target=cleanUser(msg.target);
-      if(room.users[target]) { room.owner=target; room.chat.push({system:true,text:'Ownership passed to '+target+'.'}); broadcast(room.id,{type:'room',room:roomView(room)}); }
-    }
-    if(msg.type==='closeRoom'){
-      if(room.owner!==username && !isAdmin(username)) return;
-      broadcast(room.id,{type:'closed'}); delete rooms[room.id];
-    }
-    if(msg.type==='gameMove'){
-      const payload=JSON.stringify({type:'gameMove', data:msg.data, from:username});
-      for (const [client, m] of sockets.entries()) {
-        if(client!==ws && m.roomId===room.id && client.readyState===WebSocket.OPEN) client.send(payload);
-      }
-    }
-    if(msg.type==='gameResult'){
-      const users=readJson(USERS_FILE,{});
-      const result=msg.result; // {winner, loser, tieUsers, gameId}
-      if(result && result.gameId){
-        [result.winner,result.loser,...(result.tieUsers||[])].filter(Boolean).forEach(u=>{ if(users[u]) users[u].gamesPlayed=(users[u].gamesPlayed||0)+1; });
-        if(result.winner && users[result.winner]) users[result.winner].wins=(users[result.winner].wins||0)+1;
-        if(result.loser && users[result.loser]) users[result.loser].losses=(users[result.loser].losses||0)+1;
-        (result.tieUsers||[]).forEach(u=>{ if(users[u]) users[u].ties=(users[u].ties||0)+1; });
-        writeJson(USERS_FILE,users);
-      }
-    }
-  });
-  ws.on('close',()=>{
-    const meta=sockets.get(ws); sockets.delete(ws);
-    if(meta && meta.roomId && rooms[meta.roomId]){
-      const room=rooms[meta.roomId];
-      delete room.users[meta.username];
-      if(room.table) room.table.players=room.table.players.map(p=>p===meta.username?null:p);
-      if(room.owner===meta.username) room.owner=Object.keys(room.users)[0]||room.owner;
-      room.chat.push({system:true,text:meta.username+' left.'});
-      broadcast(room.id,{type:'room',room:roomView(room)});
-    }
+    if(msg.type==='passOwner') { if(r.owner===username && r.users[msg.to]){ r.owner=msg.to; broadcastRoom(r.id,{type:'roomUpdate',room:publicRoom(r)});} return; }
+    if(msg.type==='closeRoom') { if(r.owner===username){ r.closed=true; broadcastRoom(r.id,{type:'roomClosed'}); roomUserList(r).forEach(u=>updatePresence(u,{location:'Home',roomId:null,game:null,privateRoom:false})); delete rooms[r.id]; } return; }
+    if(msg.type==='move') { broadcastRoom(r.id,{type:'move',data:msg.data,from:username}); return; }
   });
 });
+
+server.listen(PORT,()=>console.log('GameForge running on port '+PORT));
