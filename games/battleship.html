@@ -34,6 +34,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:800px){.grid{grid-template-columns:repeat(10,24px);grid-template-rows:repeat(10,24px)}.cell{width:24px;height:24px}.boards{gap:6px}}
 </style>
 </head>
+
 <body>
 <div class="wrap">
   <div class="top">
@@ -64,7 +65,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <div>
     <div class="controls">
       <span id="fleetStatus" class="badge"></span>
-      <button class="primary" onclick="autoPlaceAndSync()">Auto Place Ships</button>
+      <button id="placeBtn" class="primary" onclick="autoPlaceAndSync()">Auto Place Ships</button>
     </div>
     <div id="log" class="log"></div>
   </div>
@@ -86,20 +87,36 @@ let players=[];
 let mySeat=null;
 let state=null;
 
+function el(id){
+  return document.getElementById(id);
+}
+
+window.onerror=function(msg){
+  el('statusMain').innerText='Game error: '+msg;
+  el('statusHelp').innerText='Check the browser console for details.';
+};
+
 function receiveSetup(setupPlayers,setupSeat){
   if(Array.isArray(setupPlayers)&&setupPlayers.length){
-    players=setupPlayers.slice(0,2).map(p=>({seat:p.seat,name:p.name||('Seat '+(p.seat+1))}));
+    players=setupPlayers.slice(0,2).map(p=>({
+      seat:p.seat,
+      name:p.name||('Seat '+(p.seat+1))
+    }));
   }
 
   mySeat=setupSeat;
 
   if(players.length<2){
-    statusMain.innerText='Waiting for 2 players...';
-    statusHelp.innerText='Both seats must be filled before starting Battleship.';
+    el('statusMain').innerText='Waiting for 2 players...';
+    el('statusHelp').innerText='Both seats must be filled before starting Battleship.';
+    drawEmptyBoards();
+    updatePlaceButton();
     return;
   }
 
-  if(!state)state=fresh();
+  if(!state){
+    state=fresh();
+  }
 
   ensurePlayerState();
   draw();
@@ -116,7 +133,7 @@ function fresh(){
     ready[p.seat]=false;
   });
 
-  let s={
+  return {
     boards,
     shots,
     ready,
@@ -125,8 +142,6 @@ function fresh(){
     winner:null,
     log:['New game started. Place your fleet.']
   };
-
-  return s;
 }
 
 function emptyBoard(){
@@ -134,6 +149,10 @@ function emptyBoard(){
 }
 
 function ensurePlayerState(){
+  if(!state.boards)state.boards={};
+  if(!state.shots)state.shots={};
+  if(!state.ready)state.ready={};
+
   players.forEach(p=>{
     if(!state.boards[p.seat])state.boards[p.seat]=emptyBoard();
     if(!state.shots[p.seat])state.shots[p.seat]=[];
@@ -141,8 +160,26 @@ function ensurePlayerState(){
   });
 }
 
+function drawEmptyBoards(){
+  el('myBoard').innerHTML='';
+  el('enemyBoard').innerHTML='';
+
+  for(let i=0;i<SIZE*SIZE;i++){
+    let a=document.createElement('div');
+    a.className='cell disabled';
+    el('myBoard').appendChild(a);
+
+    let b=document.createElement('div');
+    b.className='cell disabled';
+    el('enemyBoard').appendChild(b);
+  }
+
+  el('fleetStatus').innerText='Waiting for players';
+  el('log').innerHTML='';
+}
+
 function autoPlaceAndSync(){
-  if(mySeat===null||mySeat===undefined||!state||state.winner!==null)return;
+  if(!state||state.phase!=='setup'||state.ready[mySeat]||state.winner!==null)return;
 
   state.boards[mySeat]=placeFleet();
   state.ready[mySeat]=true;
@@ -196,32 +233,59 @@ function canPlace(board,r,c,size,horizontal){
 }
 
 function draw(){
-  if(!state||players.length<2)return;
+  if(!state||players.length<2){
+    drawEmptyBoards();
+    return;
+  }
+
+  ensurePlayerState();
 
   let enemy=opponentSeat();
 
-  meLabel.innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
+  el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
 
   if(state.winner!==null){
-    statusMain.innerText=name(state.winner)+' wins!';
-    statusHelp.innerText='Start a new game to play again.';
+    el('statusMain').innerText=name(state.winner)+' wins!';
+    el('statusHelp').innerText='Start a new game to play again.';
   }else if(state.phase==='setup'){
-    statusMain.innerText='Fleet Setup';
-    statusHelp.innerText=state.ready[mySeat]?'Waiting for opponent to place ships.':'Click Auto Place Ships to begin.';
+    el('statusMain').innerText='Fleet Setup';
+    el('statusHelp').innerText=state.ready[mySeat]
+      ? 'Your fleet is locked. Waiting for opponent to place ships.'
+      : 'Click Auto Place Ships to lock your fleet.';
   }else{
-    statusMain.innerText='Current Turn: '+name(state.turn);
-    statusHelp.innerText=state.turn===mySeat?'Fire on the enemy grid.':'Waiting for '+name(state.turn)+'.';
+    el('statusMain').innerText='Current Turn: '+name(state.turn);
+    el('statusHelp').innerText=state.turn===mySeat
+      ? 'Fire on the enemy grid.'
+      : 'Waiting for '+name(state.turn)+'.';
   }
 
-  fleetStatus.innerText=players.map(p=>name(p.seat)+': '+(state.ready[p.seat]?'Ready':'Placing')).join(' | ');
+  el('fleetStatus').innerText=players
+    .map(p=>name(p.seat)+': '+(state.ready[p.seat]?'Ready':'Placing'))
+    .join(' | ');
 
+  updatePlaceButton();
   drawMyBoard();
   drawEnemyBoard(enemy);
   drawLog();
 }
 
+function updatePlaceButton(){
+  let btn=el('placeBtn');
+  if(!btn)return;
+
+  btn.disabled=!state||state.phase!=='setup'||state.ready[mySeat]||state.winner!==null||players.length<2;
+
+  if(!state||players.length<2){
+    btn.innerText='Auto Place Ships';
+  }else if(state.ready[mySeat]){
+    btn.innerText='Fleet Locked';
+  }else{
+    btn.innerText='Auto Place Ships';
+  }
+}
+
 function drawMyBoard(){
-  myBoard.innerHTML='';
+  el('myBoard').innerHTML='';
 
   let board=state.boards[mySeat]||emptyBoard();
   let enemyShots=state.shots[opponentSeat()]||[];
@@ -232,16 +296,20 @@ function drawMyBoard(){
       let shot=hasShot(enemyShots,r,c);
       let hasShip=!!board[r][c];
 
-      cell.className='cell disabled '+(hasShip?'ship ':'')+(shot&&hasShip?'hit ':'')+(shot&&!hasShip?'miss ':'');
+      cell.className='cell disabled '+
+        (hasShip?'ship ':'')+
+        (shot&&hasShip?'hit ':'')+
+        (shot&&!hasShip?'miss ':'');
+
       cell.innerText=shot&&hasShip?'✕':shot?'•':'';
 
-      myBoard.appendChild(cell);
+      el('myBoard').appendChild(cell);
     }
   }
 }
 
 function drawEnemyBoard(enemy){
-  enemyBoard.innerHTML='';
+  el('enemyBoard').innerHTML='';
 
   let myShots=state.shots[mySeat]||[];
   let enemyBoardData=state.boards[enemy]||emptyBoard();
@@ -253,14 +321,16 @@ function drawEnemyBoard(enemy){
       let hit=shot&&enemyBoardData[r][c];
       let miss=shot&&!enemyBoardData[r][c];
 
-      cell.className='cell '+(hit?'hit ':'')+(miss?'miss ':'')+
+      cell.className='cell '+
+        (hit?'hit ':'')+
+        (miss?'miss ':'')+
         (state.phase!=='battle'||state.turn!==mySeat||state.winner!==null||shot?'disabled':'');
 
       cell.innerText=hit?'✕':miss?'•':'';
 
       cell.onclick=()=>fire(r,c);
 
-      enemyBoard.appendChild(cell);
+      el('enemyBoard').appendChild(cell);
     }
   }
 }
@@ -317,13 +387,15 @@ function opponentOf(seat){
 }
 
 function hasShot(shots,r,c){
-  return shots.some(s=>s.r===r&&s.c===c);
+  return (shots||[]).some(s=>s.r===r&&s.c===c);
 }
 
 function newGame(sendIt){
   if(players.length<2)return;
+
   state=fresh();
   draw();
+
   if(sendIt)sync();
 }
 
@@ -352,13 +424,19 @@ window.onMove=function(data){
 
 window.addEventListener('message',function(event){
   let data=event.data||{};
-  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
-  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+  }
+
+  if(data.type==='gameMove'&&window.onMove){
+    window.onMove(data.data);
+  }
 });
 
 function drawLog(){
-  log.innerHTML=state.log.slice(-6).map(x=>'• '+escapeHtml(x)).join('<br>');
-  log.scrollTop=log.scrollHeight;
+  el('log').innerHTML=state.log.slice(-6).map(x=>'• '+escapeHtml(x)).join('<br>');
+  el('log').scrollTop=el('log').scrollHeight;
 }
 
 function add(t){
@@ -381,6 +459,7 @@ function escapeHtml(s){
   }[c]));
 }
 
+drawEmptyBoards();
 receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
 
 setTimeout(function(){
