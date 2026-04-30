@@ -14,11 +14,14 @@
 
     <div class="card" id="auth">
       <h3>Account</h3>
-      <div class="row">
+      <div class="row" id="loginControls">
         <input id="user" placeholder="username">
         <input id="pass" type="password" placeholder="password">
         <button onclick="register()">Create Account</button>
         <button onclick="login()" class="primary">Login</button>
+      </div>
+      <div class="row hidden" id="loggedInControls">
+        <span id="loggedInLabel" class="pill"></span>
         <button onclick="logout()">Logout</button>
         <a href="/admin" target="_blank">Admin</a>
       </div>
@@ -90,6 +93,19 @@ let room=null;
 let games=[];
 let loadedGameKey='';
 
+function drawAuth(){
+  if(me){
+    loginControls.classList.add('hidden');
+    loggedInControls.classList.remove('hidden');
+    loggedInLabel.innerText='Logged in as '+me;
+    authStatus.innerText='';
+  }else{
+    loginControls.classList.remove('hidden');
+    loggedInControls.classList.add('hidden');
+    loggedInLabel.innerText='';
+  }
+}
+
 async function loadGames(){
   games=await (await fetch('/api/games')).json();
   drawGames();
@@ -129,12 +145,12 @@ async function login(){
 function setLogin(d){
   me=d.user.username; admin=!!d.admin;
   localStorage.setItem('gf_user',me); localStorage.setItem('gf_admin',admin);
-  authStatus.innerText='Logged in as '+me; connect();
+  drawAuth(); connect();
   setTimeout(()=>socket&&socket.send(JSON.stringify({type:'hello',username:me})),200);
 }
 function logout(){
   me=''; admin=false; localStorage.removeItem('gf_user'); localStorage.removeItem('gf_admin');
-  authStatus.innerText='Logged out'; if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
+  drawAuth(); if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
 }
 
 function send(obj){connect(); if(socket.readyState===1)socket.send(JSON.stringify(obj)); else setTimeout(()=>socket.send(JSON.stringify(obj)),200);}
@@ -205,8 +221,9 @@ async function maybeLoadGame(){
   if(loadedGameKey===key)return;
   loadedGameKey=key;
   let players=room.seats.map((x,i)=>x?{seat:i,name:x.name}:null).filter(Boolean);
+  let mySeatIndex=room.seats.findIndex(x=>x&&x.name===me);
   let html=await (await fetch('/games/'+room.selectedGame.file+'?v='+Date.now())).text();
-  let inject='<script>window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';<\/script>';
+  let inject='<script>window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';<\/script>';
   if(html.includes('<head>')) html=html.replace('<head>','<head>'+inject);
   else html=inject+html;
   gameFrame.srcdoc=html;
@@ -230,7 +247,7 @@ function scrollToArea(a){setTimeout(()=>document.getElementById(a==='game'?'game
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function escapeAttr(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'');}
 window.addEventListener('message',e=>{if(e.data&&e.data.type==='move'&&socket){send({type:'gameMove',data:e.data.data});}});
-if(me)authStatus.innerText='Logged in as '+me; connect(); loadGames(); drawRoom();
+drawAuth(); if(me)connect(); loadGames(); drawRoom();
 </script>
 </body>
 </html>
