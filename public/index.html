@@ -1,132 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>GameForge AI</title>
-  <style>
-    body{font-family:Arial;margin:0;background:#f5f5f5;color:#222}.layout{display:grid;grid-template-columns:1fr 280px;min-height:100vh}.main{padding:18px}.side{background:#202938;color:white;padding:14px;border-left:4px solid #111;overflow:auto}.card{background:white;border:1px solid #ccc;border-radius:10px;padding:14px;margin:10px 0}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}input,select,button{padding:8px;margin:4px;border-radius:6px;border:1px solid #999}button{cursor:pointer;background:#224f8f;color:white}.danger{background:#9b1c1c}.muted{color:#666}.userItem{padding:8px;border-bottom:1px solid #3b4658}.clickable{color:#87ceff;cursor:pointer;text-decoration:underline}.privateUser{color:#ddd}.roomGrid{display:grid;grid-template-columns:1fr 260px;gap:10px}.chat{height:170px;overflow:auto;border:1px solid #aaa;padding:8px;background:#fffbe8}.people{border:1px solid #aaa;padding:8px;background:#f9f9f9}.seat{display:inline-block;min-width:130px;padding:12px;border:2px dashed #777;border-radius:10px;margin:6px;background:#fafafa}.seat.filled{border-style:solid;background:#e4f1ff}.hidden{display:none}iframe{width:100%;height:640px;border:3px solid #222;background:white;border-radius:8px}.step{border-left:6px solid #224f8f;padding-left:10px}.owner{font-weight:bold;color:#b8860b}
-  </style>
-</head>
-<body>
-<div class="layout">
-  <div class="main">
-    <h1>GameForge AI</h1>
-    <div class="card" id="authCard">
-      <h2>Account</h2>
-      <div id="loggedOut">
-        <input id="username" placeholder="username"><input id="password" type="password" placeholder="password">
-        <button onclick="register()">Create Account</button><button onclick="login()">Login</button>
-      </div>
-      <div id="loggedIn" class="hidden">
-        Logged in as <b id="meLabel"></b> <span id="adminLink"></span>
-        <button onclick="logout()">Logout</button>
-      </div>
-      <div id="authMsg" class="muted"></div>
-    </div>
-
-    <div class="card step">
-      <h2>1. Create or Join a Room</h2>
-      <label><input type="checkbox" id="privateRoom"> Private room — users cannot click your name to join</label><br>
-      <button onclick="createRoom()">Create Room</button>
-      <input id="joinCode" placeholder="Room code"><button onclick="joinRoomByCode()">Join by Code</button>
-      <div>Current room: <b id="roomLabel">None</b></div>
-    </div>
-
-    <div class="card hidden" id="roomCard">
-      <div class="roomGrid">
-        <div>
-          <h2>Room</h2>
-          <p>Owner: <span id="ownerLabel"></span></p>
-          <div class="step">
-            <h3>2. Choose a Game</h3>
-            <p class="muted">Anyone can choose the game. The seat count updates automatically.</p>
-            <select id="gameSelect"></select><button onclick="selectGame()">Select Game</button>
-            <div id="selectedGameLabel" class="muted">No game selected yet.</div>
-          </div>
-          <div class="step">
-            <h3>3. Sit at the Table</h3>
-            <div id="seats"></div>
-            <button onclick="standUp()">Stand Up</button>
-          </div>
-          <div class="step">
-            <h3>4. Start</h3>
-            <p class="muted">Only the owner can start the game. Seated players enter the game area. Others remain in the room.</p>
-            <button onclick="startGame()">Start Game</button><button onclick="passOwner()">Pass Ownership</button><button class="danger" onclick="closeRoom()">Close Room</button><button onclick="leaveRoom()">Leave Room</button>
-          </div>
-        </div>
-        <div>
-          <h3>People in Room</h3><div class="people" id="roomPeople"></div>
-          <h3>Room Chat</h3><div class="chat" id="chatBox"></div>
-          <input id="chatInput" placeholder="chat message"><button onclick="sendChat()">Send</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card hidden" id="gameCard">
-      <h2>Game Area</h2>
-      <iframe id="gameFrame"></iframe>
-    </div>
-  </div>
-  <div class="side">
-    <h2>Logged-in Users</h2>
-    <p class="muted" style="color:#bfc7d5">Click users in public rooms to join them.</p>
-    <div id="presenceList"></div>
-  </div>
-</div>
+<!DOCTYPE html><html><head><title>GameForge AI</title><style>
+body{font-family:Arial;margin:0;background:#f3f3f3;color:#222}.wrap{display:grid;grid-template-columns:1fr 260px;min-height:100vh}.main{padding:16px}.side{background:#fff;border-left:2px solid #ccc;padding:12px;position:sticky;top:0;height:100vh;overflow:auto}.card{background:#fff;border:1px solid #bbb;border-radius:10px;padding:12px;margin:10px 0}button,input,select{padding:8px;margin:4px;border-radius:7px}button{cursor:pointer}.gameBtn{display:block;width:100%;text-align:left;margin:6px 0}.selected{background:#dff0ff!important}.seat{display:inline-block;border:1px solid #888;border-radius:8px;padding:10px;margin:6px;background:#fafafa;min-width:120px}.empty{background:#fff}.filled{background:#e8ffe8}.owner{font-weight:bold}.chatBox{height:160px;overflow:auto;background:#fffbea;border:1px solid #aaa;padding:8px;text-align:left}.userItem{border-bottom:1px solid #ddd;padding:6px;cursor:pointer}.userItem:hover{background:#eee}iframe{width:100%;height:650px;border:3px solid #333;border-radius:10px;background:#fff}#gameArea{margin-top:20px}
+</style></head><body><div class="wrap"><div class="main">
+<h1>GameForge AI</h1>
+<div class="card" id="auth"><h3>Account</h3><input id="user" placeholder="username"><input id="pass" type="password" placeholder="password"><button onclick="register()">Create Account</button><button onclick="login()">Login</button><button onclick="logout()">Logout</button><span id="authStatus"></span> <a href="/admin" target="_blank">Admin</a></div>
+<div class="card"><h3>Create / Join Room</h3><label><input type="checkbox" id="privateRoom"> Private room</label><br><button onclick="createRoom()">Create Room</button><input id="roomCode" placeholder="room code"><button onclick="joinRoom()">Join Room</button><button onclick="leaveRoom()">Leave Room</button><p>Room: <b id="roomLabel">None</b></p></div>
+<div class="card" id="roomPanel"><h3>Room</h3><p id="roomHelp">Create or join a room first.</p><div id="roomPeople"></div><div id="ownerControls"></div><h3>1) Select a Game</h3><p><b>Pick a game first.</b> Seats will appear after a game is selected.</p><div id="gameList"></div><div id="tableArea"><h3>2) Sit at the Table</h3><div id="seats"></div><button id="startBtn" onclick="startGame()">Start Game</button></div><div><h3>Room Chat</h3><div class="chatBox" id="chat"></div><input id="chatText" placeholder="message"><button onclick="sendChat()">Send</button></div></div>
+<div id="gameArea"><h2>Game Area</h2><p id="gameHint">The started game appears here for seated players.</p><iframe id="gameFrame"></iframe></div>
+</div><div class="side"><h3>Logged In Users</h3><div id="presence"></div></div></div>
 <script>
-let username=localStorage.getItem('gfUser')||'';
-let isAdmin=localStorage.getItem('gfAdmin')==='true';
-let socket=null, currentRoom=null, currentRoomData=null, games=[];
-
-function api(path,opts={}){return fetch(path,{headers:{'Content-Type':'application/json'},...opts}).then(r=>r.json());}
-function connect(){
-  if(socket&&socket.readyState===1)return;
-  socket=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);
-  socket.onopen=()=>{ if(username) socket.send(JSON.stringify({type:'hello',username})); };
-  socket.onmessage=e=>{ const m=JSON.parse(e.data); handleSocket(m); };
-}
-function handleSocket(m){
-  if(m.type==='presence') drawPresence(m.users||[]);
-  if(m.type==='roomJoined'||m.type==='roomUpdate'){ currentRoomData=m.room; currentRoom=m.room.id; drawRoom(); }
-  if(m.type==='roomClosed'){ alert('Room closed.'); currentRoom=null; currentRoomData=null; document.getElementById('roomCard').classList.add('hidden'); document.getElementById('gameCard').classList.add('hidden'); document.getElementById('roomLabel').innerText='None'; }
-  if(m.type==='error') alert(m.error);
-  if(m.type==='move'){ const f=document.getElementById('gameFrame'); if(f.contentWindow&&f.contentWindow.onMove) f.contentWindow.onMove(m.data); }
-}
-async function loadGames(){ games=await api('/api/games'); const sel=document.getElementById('gameSelect'); sel.innerHTML=''; games.forEach(g=>{const o=document.createElement('option');o.value=g.file;o.innerText=`${g.name} (${g.minSeats}-${g.maxSeats} seats)`;sel.appendChild(o);}); }
-async function register(){ const r=await api('/api/register',{method:'POST',body:JSON.stringify({username:val('username'),password:val('password')})}); authResult(r); }
-async function login(){ const r=await api('/api/login',{method:'POST',body:JSON.stringify({username:val('username'),password:val('password')})}); authResult(r); }
-function authResult(r){ if(!r.ok){msg(r.error);return;} username=r.username; isAdmin=!!r.admin; localStorage.setItem('gfUser',username); localStorage.setItem('gfAdmin',isAdmin); connect(); drawAuth(); msg('Logged in.'); }
-async function logout(){ if(username) await api('/api/logout',{method:'POST',body:JSON.stringify({username})}); localStorage.clear(); username=''; isAdmin=false; drawAuth(); }
-function drawAuth(){ document.getElementById('loggedOut').classList.toggle('hidden',!!username); document.getElementById('loggedIn').classList.toggle('hidden',!username); document.getElementById('meLabel').innerText=username; document.getElementById('adminLink').innerHTML=isAdmin?' | <a href="/admin.html">Admin</a>':''; }
-function msg(t){document.getElementById('authMsg').innerText=t||'';} function val(id){return document.getElementById(id).value.trim();}
-function needLogin(){ if(!username){alert('Please login first.');return true;} connect(); return false; }
-function send(o){ if(needLogin())return; socket.send(JSON.stringify({...o,username})); }
-function createRoom(){ if(needLogin())return; send({type:'createRoom',private:document.getElementById('privateRoom').checked}); }
-function joinRoomByCode(){ joinRoom(val('joinCode').toUpperCase()); }
-function joinRoom(id){ if(!id)return; send({type:'joinRoom',roomId:id}); }
-function leaveRoom(){ send({type:'leaveRoom'}); currentRoom=null; currentRoomData=null; document.getElementById('roomCard').classList.add('hidden'); document.getElementById('gameCard').classList.add('hidden'); document.getElementById('roomLabel').innerText='None'; }
-function selectGame(){ send({type:'selectGame',file:document.getElementById('gameSelect').value}); }
-function sit(i){ send({type:'sit',index:i}); }
-function standUp(){ send({type:'stand'}); }
-function startGame(){ send({type:'startGame'}); }
-function closeRoom(){ if(confirm('Close this room?')) send({type:'closeRoom'}); }
-function passOwner(){ const to=prompt('Pass ownership to username:'); if(to) send({type:'passOwner',to}); }
-function sendChat(){ const t=val('chatInput'); if(t){ send({type:'chat',text:t}); document.getElementById('chatInput').value=''; }}
-function drawRoom(){
-  const r=currentRoomData; if(!r)return;
-  document.getElementById('roomCard').classList.remove('hidden'); document.getElementById('roomLabel').innerText=r.id+(r.private?' (private)':''); document.getElementById('ownerLabel').innerHTML=r.owner===username?'<span class="owner">You</span>':r.owner;
-  document.getElementById('selectedGameLabel').innerText=r.selectedGame?`Selected: ${r.selectedMeta.name} — ${r.selectedMeta.maxSeats} seats`:'No game selected yet. Select a game before sitting/starting.';
-  const seats=document.getElementById('seats'); seats.innerHTML=''; (r.seats||[]).forEach((s,i)=>{ const d=document.createElement('div'); d.className='seat '+(s?'filled':''); d.innerHTML=`Seat ${i+1}<br><b>${s||'Open'}</b><br>`; if(!s)d.innerHTML+=`<button onclick="sit(${i})">Sit</button>`; seats.appendChild(d); });
-  document.getElementById('roomPeople').innerHTML=Object.keys(r.users||{}).map(u=>`${u}${u===r.owner?' 👑':''}`).join('<br>')||'None';
-  document.getElementById('chatBox').innerHTML=(r.chat||[]).map(c=>`<b>${c.user}:</b> ${escapeHtml(c.text)}`).join('<br>');
-  const seated=(r.seats||[]).includes(username); document.getElementById('gameCard').classList.toggle('hidden',!(r.started&&seated)); if(r.started&&seated){ document.getElementById('gameFrame').src='/game/'+r.selectedGame; }
-}
-function drawPresence(list){
-  const div=document.getElementById('presenceList'); div.innerHTML='';
-  list.forEach(u=>{ const d=document.createElement('div'); d.className='userItem'; let loc=u.location||'Home'; if(u.location==='Room')loc='Room '+u.roomId; if(u.location==='Game')loc='In Game: '+(u.game||'Game'); const canClick=u.roomId&&!u.privateRoom; d.innerHTML=`<b>${u.username}</b><br><span>${loc}</span><br>`+(canClick?`<span class="clickable">Join room</span>`:`<span class="privateUser">${u.privateRoom?'Private room':'Not in a room'}</span>`); if(canClick)d.querySelector('.clickable').onclick=()=>joinRoom(u.roomId); div.appendChild(d); });
-}
-window.addEventListener('message',e=>{ if(e.data&&e.data.type==='move') send({type:'move',data:e.data.data}); });
-function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-loadGames(); drawAuth(); if(username) connect();
-</script>
-</body>
-</html>
+let me=localStorage.getItem('gf_user')||'';let admin=localStorage.getItem('gf_admin')==='true';let socket=null;let currentRoom=null;let room=null;let games=[];
+async function loadGames(){games=await (await fetch('/api/games')).json();drawGames()}
+function connect(){if(socket&&socket.readyState===1)return;socket=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);socket.onopen=()=>socket.send(JSON.stringify({type:'hello',username:me}));socket.onmessage=e=>{let m=JSON.parse(e.data);if(m.type==='presence')drawPresence(m.users,m.rooms);if(m.type==='roomJoined'||m.type==='roomUpdate'){room=m.room;currentRoom=room.id;drawRoom();if(m.scroll)scrollToArea(m.scroll)}if(m.type==='chat')drawChat(m.chat);if(m.type==='roomClosed'){alert('Room closed');room=null;currentRoom=null;drawRoom()}if(m.type==='gameMove'){let f=document.getElementById('gameFrame');if(f.contentWindow&&f.contentWindow.onMove)f.contentWindow.onMove(m.data)}}}
+async function register(){let r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user.value,password:pass.value})});let d=await r.json();if(d.error)return alert(d.error);setLogin(d)}
+async function login(){let r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user.value,password:pass.value})});let d=await r.json();if(d.error)return alert(d.error);setLogin(d)}
+function setLogin(d){me=d.user.username;admin=!!d.admin;localStorage.setItem('gf_user',me);localStorage.setItem('gf_admin',admin);authStatus.innerText='Logged in as '+me;connect();setTimeout(()=>socket.send(JSON.stringify({type:'hello',username:me})),300)}
+function logout(){me='';admin=false;localStorage.removeItem('gf_user');localStorage.removeItem('gf_admin');authStatus.innerText='Logged out'; if(socket)socket.send(JSON.stringify({type:'hello',username:''}))}
+function createRoom(){connect();socket.onopen=socket.onopen||(()=>{});setTimeout(()=>socket.send(JSON.stringify({type:'createRoom',private:privateRoom.checked})),100)}
+function joinRoom(code){connect();let c=(code||roomCode.value||'').toUpperCase();setTimeout(()=>socket.send(JSON.stringify({type:'joinRoom',roomId:c})),100)}
+function leaveRoom(){if(socket)socket.send(JSON.stringify({type:'leaveRoom'}));room=null;currentRoom=null;drawRoom()}
+function selectGame(id){socket.send(JSON.stringify({type:'selectGame',gameId:id}))}
+function sit(i){socket.send(JSON.stringify({type:'sit',seat:i}))}
+function startGame(){socket.send(JSON.stringify({type:'startGame'}))}
+function passOwner(to){socket.send(JSON.stringify({type:'passOwner',to}))}
+function closeRoom(){if(confirm('Close room?'))socket.send(JSON.stringify({type:'closeRoom'}))}
+function sendChat(){let t=chatText.value.trim();if(t){socket.send(JSON.stringify({type:'chat',text:t}));chatText.value=''}}
+function drawGames(){let g=document.getElementById('gameList');g.innerHTML='';games.forEach(x=>{let b=document.createElement('button');b.className='gameBtn '+(room&&room.selectedGame&&room.selectedGame.id===x.id?'selected':'');b.innerText=x.name+' ('+x.minPlayers+'-'+x.maxPlayers+' players)';b.onclick=()=>selectGame(x.id);g.appendChild(b)})}
+function drawRoom(){roomLabel.innerText=room?room.id:'None';roomHelp.innerText=room?(room.private?'Private room - join by code only':'Public room - users can click your name to join'):'Create or join a room first.';drawGames();roomPeople.innerHTML=room?'<b>People in room:</b> '+room.players.join(', '):'';ownerControls.innerHTML='';if(room&&room.owner===me){ownerControls.innerHTML='<p class="owner">You are room owner</p><button onclick="closeRoom()">Close Room</button><br>Pass ownership: '+room.players.map(p=>p!==me?'<button onclick="passOwner(\''+p+'\')">'+p+'</button>':'').join('')}
+let s=document.getElementById('seats');s.innerHTML='';if(room&&room.selectedGame){room.seats.forEach((seat,i)=>{let d=document.createElement('div');d.className='seat '+(seat?'filled':'empty');d.innerHTML='<b>Seat '+(i+1)+'</b><br>'+(seat?seat.name:'Open')+'<br><button onclick="sit('+i+')">Sit</button>';s.appendChild(d)});startBtn.style.display=room.owner===me?'inline-block':'none';}else{startBtn.style.display='none';s.innerHTML='<i>Select a game to create seats.</i>'}
+if(room&&room.started&&room.selectedGame){let seated=room.seats.filter(Boolean);let mySeated=seated.some(x=>x.name===me);gameHint.innerText=mySeated?'You are seated. Play below.':'You are watching. Sit at a new table later.';let frame=gameFrame;let players=room.seats.map((x,i)=>x?{seat:i,name:x.name}:null).filter(Boolean);frame.onload=()=>{try{frame.contentWindow.GAME_PLAYERS=players}catch(e){}};frame.src='/games/'+room.selectedGame.file;scrollToArea('game');}drawChat(room?room.chat:[])}
+function drawChat(items){chat.innerHTML=(items||[]).map(x=>'<div><b>'+x.user+':</b> '+escapeHtml(x.text)+'</div>').join('');chat.scrollTop=chat.scrollHeight}
+function drawPresence(users,rooms){let p=document.getElementById('presence');p.innerHTML='';users.forEach(u=>{let d=document.createElement('div');d.className='userItem';d.innerHTML='<b>'+u.username+'</b><br><small>'+u.location+(u.roomId?' '+u.roomId:'')+(u.privateRoom?' 🔒':'')+'</small>';if(u.roomId&&!u.privateRoom)d.onclick=()=>joinRoom(u.roomId);p.appendChild(d)})}
+function scrollToArea(a){setTimeout(()=>document.getElementById(a==='game'?'gameArea':'tableArea').scrollIntoView({behavior:'smooth',block:'start'}),150)}
+function escapeHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='move'&&socket){socket.send(JSON.stringify({type:'gameMove',data:e.data.data}))}});
+if(me)authStatus.innerText='Logged in as '+me;connect();loadGames();drawRoom();
+</script></body></html>
