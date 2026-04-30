@@ -274,11 +274,27 @@ function drawPresence(users,rooms){
   users.forEach(u=>{
     let d=document.createElement('div');
     let canJoin=u.roomId&&!u.privateRoom;
-    d.className='userItem '+(canJoin?'clickable':'')+(u.privateRoom?' private':'');
-    let selectedGame = u.selectedGameName ? ' · Selected: '+u.selectedGameName : '';
 
-    d.innerHTML='<b>'+escapeHtml(u.username)+'</b><br><span class="roomBadge">'+escapeHtml(u.location||'Home')+(u.roomId?' · '+escapeHtml(u.roomId):'')+selectedGame+(u.privateRoom?' 🔒 private':'')+'</span>'+(canJoin?'<br><small>Click to join room</small>':'');
+    let matchingRoom=(rooms||[]).find(r=>r.id===u.roomId);
+    let selectedGameName =
+      matchingRoom && matchingRoom.selectedGame
+        ? matchingRoom.selectedGame.name
+        : '';
+
+    d.className='userItem '+(canJoin?'clickable':'')+(u.privateRoom?' private':'');
+
+    d.innerHTML=
+      '<b>'+escapeHtml(u.username)+'</b><br>'+
+      '<span class="roomBadge">'+
+        escapeHtml(u.location||'Home')+
+        (u.roomId?' · '+escapeHtml(u.roomId):'')+
+        (selectedGameName?' · Waiting: '+escapeHtml(selectedGameName):'')+
+        (u.privateRoom?' 🔒 private':'')+
+      '</span>'+
+      (canJoin?'<br><small>Click to join room</small>':'');
+
     if(canJoin)d.onclick=()=>joinRoom(u.roomId);
+
     p.appendChild(d);
   });
 }
