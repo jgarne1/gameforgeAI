@@ -275,7 +275,9 @@ function drawPresence(users,rooms){
     let d=document.createElement('div');
     let canJoin=u.roomId&&!u.privateRoom;
     d.className='userItem '+(canJoin?'clickable':'')+(u.privateRoom?' private':'');
-    d.innerHTML='<b>'+escapeHtml(u.username)+'</b><br><span class="roomBadge">'+escapeHtml(u.location||'Home')+(u.roomId?' · '+escapeHtml(u.roomId):'')+(u.privateRoom?' 🔒 private':'')+'</span>'+(canJoin?'<br><small>Click to join room</small>':'');
+    let selectedGame = u.selectedGameName ? ' · Selected: '+u.selectedGameName : '';
+
+    d.innerHTML='<b>'+escapeHtml(u.username)+'</b><br><span class="roomBadge">'+escapeHtml(u.location||'Home')+(u.roomId?' · '+escapeHtml(u.roomId):'')+selectedGame+(u.privateRoom?' 🔒 private':'')+'</span>'+(canJoin?'<br><small>Click to join room</small>':'');
     if(canJoin)d.onclick=()=>joinRoom(u.roomId);
     p.appendChild(d);
   });
