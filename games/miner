@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Block Miner</title>
+<style>
+:root{--bg:#12351f;--panel:#1f2937;--line:#475569;--grass:#3f8f3f;--dirt:#8b5a2b;--stone:#64748b;--iron:#cbd5e1;--diamond:#38bdf8;--gold:#facc15;--red:#ef4444;--muted:#cbd5e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#12351f,#0f172a);color:white;text-align:center;overflow:hidden}
+.wrap{height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
+.top,.status,.game,.bottom{background:rgba(15,23,42,.92);border:2px solid rgba(255,255,255,.15);border-radius:16px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:9px 12px}
+h2{margin:0;font-size:24px;text-shadow:2px 2px #000}
+button{padding:8px 12px;border-radius:8px;border:2px solid #111;background:#e5e7eb;color:#111;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #64748b}
+button.gold{background:var(--gold)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.status{padding:8px}
+.statusMain{font-size:18px;font-weight:bold}
+.muted{font-size:12px;color:var(--muted)}
+.game{display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px}
+.board{display:grid;grid-template-columns:repeat(12,38px);grid-template-rows:repeat(10,38px);gap:3px;background:#111827;border:5px solid #5b3418;border-radius:12px;padding:8px}
+.tile{width:38px;height:38px;border-radius:4px;border:2px solid rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:15px;cursor:pointer;user-select:none;box-shadow:inset 3px 3px rgba(255,255,255,.18), inset -3px -3px rgba(0,0,0,.22)}
+.tile.hidden{background:linear-gradient(135deg,#4ade80,#166534)}
+.tile.hidden:hover{outline:3px solid var(--gold)}
+.tile.revealed{background:#8b5a2b;color:white}
+.tile.stone{background:#64748b}
+.tile.iron{background:#cbd5e1;color:#111}
+.tile.diamond{background:#38bdf8;color:#082f49}
+.tile.gold{background:#facc15;color:#111}
+.tile.tnt{background:#dc2626;color:white}
+.tile.chest{background:#92400e;color:#facc15}
+.tile.flag{background:#166534;color:#facc15}
+.tile.locked{filter:brightness(.65)}
+.players{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px}
+.player{min-width:145px;border-radius:12px;padding:7px 10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+.player.turn{outline:3px solid var(--gold)}
+.log{height:50px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:6px;font-size:12px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
+.tool{font-weight:bold;color:#facc15}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Block Miner</h2>
+    <div>
+      <span id="meLabel" class="badge"></span>
+      <button class="gold" onclick="newGame(true)">New Game</button>
+    </div>
+  </div>
+
+  <div class="status">
+    <div id="statusMain" class="statusMain">Loading players...</div>
+    <div id="statusHelp" class="muted">Mine blocks, avoid TNT, find chests, upgrade your pickaxe.</div>
+  </div>
+
+  <div class="game">
+    <div id="board" class="board"></div>
+  </div>
+
+  <div class="bottom">
+    <div id="playersPanel" class="players"></div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+const GAME_META={id:'blockminer',name:'Block Miner',minPlayers:1,maxPlayers:4,seats:4};
+
+const ROWS=10;
+const COLS=12;
+const TNT_COUNT=16;
+const CHEST_COUNT=7;
+
+const TOOLS=[
+  {id:'wood',name:'Wood Pickaxe',level:1},
+  {id:'stone',name:'Stone Pickaxe',level:2},
+  {id:'iron',name:'Iron Pickaxe',level:3},
+  {id:'diamond',name:'Diamond Pickaxe',level:4}
+];
+
+const BLOCKS=[
+  {type:'dirt',label:'Dirt',level:1,points:1,icon:''},
+  {type:'stone',label:'Stone',level:2,points:2,icon:'S'},
+  {type:'iron',label:'Iron Ore',level:3,points:4,icon:'Fe'},
+  {type:'diamond',label:'Diamond Ore',level:4,points:8,icon:'D'}
+];
+
+let players=[];
+let mySeat=null;
+let state=null;
+
+function el(id){return document.getElementById(id);}
+function setStatus(a,b){el('statusMain').innerText=a;el('statusHelp').innerText=b||'';}
+
+window.onerror=function(msg){
+  setStatus('Game error: '+msg,'Check console for details.');
+};
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(Array.isArray(setupPlayers)&&setupPlayers.length){
+    players=setupPlayers.slice(0,4).map(function(p,i){
+      return {
+        seat:p.seat,
+        name:p.name||('Seat '+(p.seat+1)),
+        color:['#ef4444','#3b82f6','#22c55e','#f59e0b'][i]
+      };
+    });
+  }
+
+  mySeat=setupSeat;
+
+  if(!players.length){
+    players=[{seat:0,name:'Player',color:'#3b82f6'}];
+    mySeat=0;
+  }
+
+  if(!state)state=fresh();
+
+  ensurePlayers();
+  draw();
+}
+
+function fresh(){
+  let tools={};
+  let scores={};
+  let alive={};
+
+  players.forEach(function(p){
+    tools[p.seat]=1;
+    scores[p.seat]=0;
+    alive[p.seat]=true;
+  });
+
+  return {
+    grid:createGrid(),
+    turn:players[0].seat,
+    tools:tools,
+    scores:scores,
+    alive:alive,
+    gameOver:false,
+    winner:null,
+    log:['New mining world generated. Find chests to upgrade your pickaxe.']
+  };
+}
+
+function createGrid(){
+  let grid=[];
+
+  for(let r=0;r<ROWS;r++){
+    grid[r]=[];
+    for(let c=0;c<COLS;c++){
+      let roll=Math.random();
+      let block='dirt';
+
+      if(roll>.88)block='diamond';
+      else if(roll>.74)block='iron';
+      else if(roll>.42)block='stone';
+
+      grid[r][c]={
+        revealed:false,
+        flagged:false,
+        tnt:false,
+        chest:false,
+        block:block,
+        owner:null,
+        number:0
+      };
+    }
+  }
+
+  placeRandom(grid,'tnt',TNT_COUNT);
+  placeRandom(grid,'chest',CHEST_COUNT);
+  computeNumbers(grid);
+
+  return grid;
+}
+
+function placeRandom(grid,kind,count){
+  let placed=0;
+
+  while(placed<count){
+    let r=Math.floor(Math.random()*ROWS);
+    let c=Math.floor(Math.random()*COLS);
+    let cell=grid[r][c];
+
+    if(cell.tnt||cell.chest)continue;
+
+    if(kind==='tnt')cell.tnt=true;
+    if(kind==='chest')cell.chest=true;
+
+    placed++;
+  }
+}
+
+function computeNumbers(grid){
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      let n=0;
+      neighbors(r,c).forEach(function(p){
+        if(grid[p.r][p.c].tnt)n++;
+      });
+      grid[r][c].number=n;
+    }
+  }
+}
+
+function ensurePlayers(){
+  if(!state.tools)state.tools={};
+  if(!state.scores)state.scores={};
+  if(!state.alive)state.alive={};
+
+  players.forEach(function(p){
+    if(state.tools[p.seat]===undefined)state.tools[p.seat]=1;
+    if(state.scores[p.seat]===undefined)state.scores[p.seat]=0;
+    if(state.alive[p.seat]===undefined)state.alive[p.seat]=true;
+  });
+}
+
+function draw(){
+  if(!state){
+    drawEmpty();
+    return;
+  }
+
+  drawBoard();
+  drawPlayers();
+  drawLog();
+
+  el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
+
+  if(state.gameOver){
+    setStatus('Game Over — Winner: '+name(state.winner),'Start a new game to mine again.');
+  }else{
+    setStatus(
+      'Current Turn: '+name(state.turn),
+      state.turn===mySeat?'Mine a block. Right-click / long-press behavior may vary, so flags are visual only.':'Waiting for '+name(state.turn)+'.'
+    );
+  }
+}
+
+function drawEmpty(){
+  el('board').innerHTML='';
+  el('playersPanel').innerHTML='';
+  el('log').innerHTML='';
+}
+
+function drawBoard(){
+  let b=el('board');
+  b.innerHTML='';
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      let cell=state.grid[r][c];
+      let d=document.createElement('div');
+
+      d.className='tile '+tileClass(cell);
+      d.innerText=tileText(cell);
+
+      d.onclick=function(){mine(r,c);};
+
+      b.appendChild(d);
+    }
+  }
+}
+
+function tileClass(cell){
+  if(!cell.revealed)return cell.flagged?'flag hidden':'hidden';
+
+  if(cell.tnt)return 'tnt';
+  if(cell.chest)return 'chest';
+
+  return cell.block;
+}
+
+function tileText(cell){
+  if(!cell.revealed)return cell.flagged?'⚑':'';
+
+  if(cell.tnt)return 'TNT';
+  if(cell.chest)return 'CHEST';
+
+  if(cell.number>0)return String(cell.number);
+
+  let block=blockInfo(cell.block);
+  return block.icon;
+}
+
+function mine(r,c){
+  if(state.gameOver||state.turn!==mySeat)return;
+
+  let cell=state.grid[r][c];
+
+  if(cell.revealed)return;
+
+  let block=blockInfo(cell.block);
+  let toolLevel=state.tools[mySeat]||1;
+
+  if(!cell.tnt&&!cell.chest&&toolLevel<block.level){
+    add(name(mySeat)+' needs a better pickaxe for '+block.label+'.');
+    draw();
+    sync();
+    return;
+  }
+
+  reveal(r,c,mySeat);
+
+  if(cell.tnt){
+    add(name(mySeat)+' hit TNT and is out!');
+    state.alive[mySeat]=false;
+    revealAllTnt();
+  }else if(cell.chest){
+    upgradeTool(mySeat);
+    state.scores[mySeat]+=3;
+    add(name(mySeat)+' found a chest and upgraded to '+toolName(state.tools[mySeat])+'!');
+  }else{
+    state.scores[mySeat]+=block.points;
+    add(name(mySeat)+' mined '+block.label+' for '+block.points+' point'+(block.points===1?'':'s')+'.');
+  }
+
+  checkGameOver();
+
+  if(!state.gameOver){
+    nextTurn();
+  }
+
+  draw();
+  sync();
+}
+
+function reveal(r,c,seat){
+  let cell=state.grid[r][c];
+  if(cell.revealed)return;
+
+  cell.revealed=true;
+  cell.owner=seat;
+
+  if(!cell.tnt&&!cell.chest&&cell.number===0&&cell.block==='dirt'){
+    neighbors(r,c).forEach(function(p){
+      let n=state.grid[p.r][p.c];
+      if(!n.revealed&&!n.tnt&&!n.chest&&n.block==='dirt'){
+        reveal(p.r,p.c,seat);
+      }
+    });
+  }
+}
+
+function revealAllTnt(){
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      if(state.grid[r][c].tnt)state.grid[r][c].revealed=true;
+    }
+  }
+}
+
+function upgradeTool(seat){
+  state.tools[seat]=Math.min(4,(state.tools[seat]||1)+1);
+}
+
+function nextTurn(){
+  let active=players.filter(function(p){
+    return state.alive[p.seat];
+  });
+
+  if(!active.length){
+    state.gameOver=true;
+    state.winner=getScoreWinner();
+    return;
+  }
+
+  let i=players.findIndex(function(p){return p.seat===state.turn;});
+
+  for(let step=1;step<=players.length;step++){
+    let next=players[(i+step)%players.length];
+    if(state.alive[next.seat]){
+      state.turn=next.seat;
+      return;
+    }
+  }
+}
+
+function checkGameOver(){
+  let active=players.filter(function(p){return state.alive[p.seat];});
+  let hiddenSafe=0;
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      let cell=state.grid[r][c];
+      if(!cell.revealed&&!cell.tnt)hiddenSafe++;
+    }
+  }
+
+  if(active.length<=0||hiddenSafe===0){
+    state.gameOver=true;
+    state.winner=getScoreWinner();
+  }
+}
+
+function getScoreWinner(){
+  let best=players[0].seat;
+
+  players.forEach(function(p){
+    if((state.scores[p.seat]||0)>(state.scores[best]||0))best=p.seat;
+  });
+
+  return best;
+}
+
+function drawPlayers(){
+  let html='';
+
+  players.forEach(function(p){
+    html+='<div class="player '+(state.turn===p.seat&&!state.gameOver?'turn':'')+'">'+
+      '<b style="color:'+p.color+'">'+escapeHtml(p.name)+'</b><br>'+
+      '<span class="muted">Score: '+(state.scores[p.seat]||0)+' · <span class="tool">'+toolName(state.tools[p.seat]||1)+'</span></span><br>'+
+      '<span class="muted">'+(state.alive[p.seat]?'Mining':'Out')+(p.seat===mySeat?' · You':'')+'</span>'+
+    '</div>';
+  });
+
+  el('playersPanel').innerHTML=html;
+}
+
+function drawLog(){
+  el('log').innerHTML=state.log.slice(-4).map(function(x){
+    return '• '+escapeHtml(x);
+  }).join('<br>');
+  el('log').scrollTop=el('log').scrollHeight;
+}
+
+function newGame(sendIt){
+  state=fresh();
+  draw();
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state:state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    state=data.state;
+    ensurePlayers();
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  let data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function neighbors(r,c){
+  let out=[];
+  for(let dr=-1;dr<=1;dr++){
+    for(let dc=-1;dc<=1;dc++){
+      if(dr===0&&dc===0)continue;
+      let rr=r+dr;
+      let cc=c+dc;
+      if(rr>=0&&rr<ROWS&&cc>=0&&cc<COLS)out.push({r:rr,c:cc});
+    }
+  }
+  return out;
+}
+
+function blockInfo(type){
+  return BLOCKS.find(function(b){return b.type===type;})||BLOCKS[0];
+}
+
+function toolName(level){
+  let t=TOOLS.find(function(x){return x.level===level;})||TOOLS[0];
+  return t.name;
+}
+
+function name(seat){
+  let p=players.find(function(x){return x.seat===seat;});
+  return p?p.name:'Seat '+(Number(seat)+1);
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>60)state.log.shift();
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+drawEmpty();
+receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+
+setTimeout(function(){
+  receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+},250);
+</script>
+</body>
+</html>
