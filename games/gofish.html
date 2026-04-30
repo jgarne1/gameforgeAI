@@ -1,10 +1,436 @@
-<!DOCTYPE html><html><head><title>Go Fish</title><style>body{font-family:Arial;text-align:center;background:#f3efe4;margin:0}.panel{background:white;border:2px solid #333;border-radius:12px;padding:12px;margin:10px}.card{display:inline-block;min-width:35px;padding:10px;margin:4px;border:1px solid #111;border-radius:8px;background:white;box-shadow:2px 3px 0 #999;cursor:pointer}.back,.pool{background:#555;color:white}#log{min-height:70px;text-align:left;max-width:800px;margin:auto;background:#fffbea;border:1px solid #aaa;padding:8px;border-radius:8px}</style></head><body><h2>Go Fish</h2><div id="status">Loading...</div><button onclick="newGame(true)">New Game</button><div class="panel"><h3>Current Turn: <span id="turnLabel"></span></h3></div><div class="panel"><h3>Other Players</h3><div id="others"></div></div><div class="panel"><h3>Fishing Pond</h3><div id="pond"></div></div><div class="panel"><h3>Your Hand - click a rank to ask</h3><div id="hand"></div></div><div class="panel"><h3>Pairs</h3><div id="pairs"></div></div><div class="panel"><h3>Game Log</h3><div id="log"></div></div><script>
-const GAME_META={id:'gofish',name:'Go Fish',minPlayers:1,maxPlayers:4,seats:4};const suits=['♠','♥','♦','♣'];const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];let players=[{seat:0,name:'Player'}];let state;
-setTimeout(()=>{if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length)players=window.GAME_PLAYERS.map(p=>({seat:p.seat,name:p.name}));state=fresh();draw()},120);
-function fresh(){let deck=[];suits.forEach(s=>ranks.forEach(r=>deck.push({r,s})));shuffle(deck);let hands={},pairs={};players.forEach(p=>{hands[p.seat]=deck.splice(0,7);pairs[p.seat]=[]});let s={deck,hands,pairs,turn:players[0].seat,log:['New game started.']};players.forEach(p=>checkPairs(s,p.seat));return s}
-function draw(){if(!state)return;let cur=name(state.turn);status.innerText=cur+"'s turn";turnLabel.innerText=cur;let my=players[0].seat; // wrapper sends each iframe same file, show all hands only if no identity available
-let handSeat=state.turn;hand.innerHTML='';(state.hands[handSeat]||[]).sort(cardSort).forEach(c=>{let el=document.createElement('div');el.className='card';el.innerText=c.r+c.s;el.onclick=()=>ask(c.r);hand.appendChild(el)});others.innerHTML=players.filter(p=>p.seat!==handSeat).map(p=>'<b>'+p.name+'</b>: '+(state.hands[p.seat]||[]).map(()=>'<span class="card back">?</span>').join('')).join('<br>');pond.innerHTML=state.deck.map((_,i)=>'<span class="card pool">?</span>').join('');pairs.innerHTML=players.map(p=>'<b>'+p.name+':</b> '+((state.pairs[p.seat]||[]).join(', ')||'none')).join('<br>');log.innerHTML=state.log.slice(-8).map(x=>'• '+x).join('<br>')}
-function ask(rank){let me=state.turn;let opps=players.filter(p=>p.seat!==me);let opp=opps[Math.floor(Math.random()*opps.length)]||players[0];add(name(me)+' asks '+name(opp.seat)+' for '+rank+'.');let matches=(state.hands[opp.seat]||[]).filter(c=>c.r===rank);if(matches.length){state.hands[opp.seat]=state.hands[opp.seat].filter(c=>c.r!==rank);state.hands[me]=state.hands[me].concat(matches);add(name(opp.seat)+' gives '+matches.length+' card(s).');checkPairs(state,me)}else{add('Go Fish! '+name(me)+' draws from the pond.');if(state.deck.length)state.hands[me].push(state.deck.pop());nextTurn()}checkPairs(state,me);draw();sync()}
-function nextTurn(){let i=players.findIndex(p=>p.seat===state.turn);state.turn=players[(i+1)%players.length].seat}function checkPairs(s,seat){let h=s.hands[seat]||[];let counts={};h.forEach(c=>counts[c.r]=(counts[c.r]||0)+1);ranks.forEach(r=>{while(counts[r]>=2){let rem=0;s.hands[seat]=s.hands[seat].filter(c=>{if(c.r===r&&rem<2){rem++;return false}return true});s.pairs[seat].push(r);counts[r]-=2;add(name(seat)+' made a pair of '+r+'s.')}})}function add(t){state.log.push(t);if(state.log.length>40)state.log.shift()}function name(seat){return (players.find(p=>p.seat===seat)||{}).name||('Seat '+(seat+1))}function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}function cardSort(a,b){return ranks.indexOf(a.r)-ranks.indexOf(b.r)}function newGame(send){state=fresh();draw();if(send)sync()}function sync(){window.sendMove({type:'state',state})}
-window.sendMove=d=>parent.postMessage({type:'move',data:d},'*');window.onMove=d=>{if(d.type==='state'){state=d.state;draw()}};
-</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Go Fish</title>
+<style>
+:root{--bg:#123524;--felt:#17633f;--card:#fff;--line:#d7d7d7;--gold:#facc15;--blue:#2563eb;--red:#dc2626;--muted:#d1d5db}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#0f2f22,#1b6b45);color:white;text-align:center;overflow:hidden}
+.wrap{height:650px;padding:10px;display:grid;grid-template-rows:auto 1fr auto;gap:8px}
+.top{display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:8px 12px}
+h2{margin:0}
+button,select{padding:8px 10px;border-radius:9px;border:1px solid #aaa;cursor:pointer}
+button.primary{background:var(--blue);color:white;border-color:var(--blue);font-weight:bold}
+button.gold{background:var(--gold);border-color:var(--gold);font-weight:bold}
+button:disabled{opacity:.45;cursor:not-allowed}
+.table{position:relative;background:radial-gradient(circle,var(--felt),#0e3f2a);border:4px solid #5b3418;border-radius:24px;min-height:390px;overflow:hidden}
+.center{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:360px}
+.status{font-size:18px;font-weight:bold;margin-bottom:8px}
+.pond{min-height:72px}
+.card{display:inline-flex;align-items:center;justify-content:center;width:48px;height:68px;background:white;color:#111;border:1px solid #111;border-radius:8px;margin:3px;box-shadow:2px 3px 0 rgba(0,0,0,.35);font-weight:bold;cursor:pointer}
+.card.small{width:26px;height:38px;font-size:11px;margin:1px;border-radius:5px}
+.card.back{background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:white;border-color:#dbeafe}
+.card.pool{background:linear-gradient(135deg,#374151,#111827);color:white}
+.card.red{color:#dc2626}
+.card.disabled{opacity:.55;cursor:not-allowed}
+.player{position:absolute;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:7px;min-width:145px}
+.player.turn{outline:3px solid var(--gold)}
+.p0{left:50%;bottom:8px;transform:translateX(-50%);width:82%;max-width:760px}
+.p1{left:8px;top:70px}
+.p2{left:50%;top:8px;transform:translateX(-50%)}
+.p3{right:8px;top:70px}
+.name{font-weight:bold}
+.meta{font-size:12px;color:var(--muted)}
+.handArea{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:8px;min-height:102px}
+.controls{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(0,0,0,.25);border-radius:14px;padding:8px}
+.log{height:78px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:12px;padding:8px;font-size:13px}
+.books{font-size:12px;color:#fde68a}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Go Fish</h2>
+    <div>
+      <span id="meLabel"></span>
+      <button onclick="newGame(true)" class="gold">New Game</button>
+    </div>
+  </div>
+
+  <div class="table">
+    <div id="playersLayer"></div>
+
+    <div class="center">
+      <div class="status" id="status">Loading players...</div>
+      <div class="meta" id="helpText">Ask another player for a rank from your hand.</div>
+      <div class="pond" id="pond"></div>
+      <div class="meta" id="deckCount"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="controls">
+      <b>Ask:</b>
+      <select id="targetSelect"></select>
+      <select id="rankSelect"></select>
+      <button id="askBtn" class="primary" onclick="ask()">Ask Player</button>
+      <button id="fishBtn" class="gold" onclick="fish()" style="display:none">Fish From Pond</button>
+    </div>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
+<script>
+const GAME_META={id:'gofish',name:'Go Fish',minPlayers:2,maxPlayers:4,seats:4};
+
+const suits=['♠','♥','♦','♣'];
+const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+let players=[];
+let mySeat=null;
+let state=null;
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(Array.isArray(setupPlayers)&&setupPlayers.length){
+    players=setupPlayers.slice(0,4).map(p=>({seat:p.seat,name:p.name||('Seat '+(p.seat+1))}));
+  }
+  mySeat=setupSeat;
+
+  if(!state){
+    state=fresh();
+  }else{
+    ensureStateSeats();
+  }
+
+  draw();
+}
+
+function init(){
+  receiveSetup(window.GAME_PLAYERS||[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}],window.GAME_MY_SEAT);
+}
+
+function fresh(){
+  let deck=[];
+  suits.forEach(s=>ranks.forEach(r=>deck.push({r,s})));
+  shuffle(deck);
+
+  let hands={};
+  let books={};
+  let dealCount=players.length<=2?7:5;
+
+  players.forEach(p=>{
+    hands[p.seat]=deck.splice(0,dealCount);
+    books[p.seat]=[];
+  });
+
+  let s={
+    deck,
+    hands,
+    books,
+    turn:players[0]?players[0].seat:0,
+    pendingFish:null,
+    gameOver:false,
+    winner:null,
+    log:['New game started.']
+  };
+
+  players.forEach(p=>checkBooks(s,p.seat,false));
+  return s;
+}
+
+function ensureStateSeats(){
+  players.forEach(p=>{
+    if(!state.hands[p.seat])state.hands[p.seat]=[];
+    if(!state.books[p.seat])state.books[p.seat]=[];
+  });
+}
+
+function draw(){
+  if(!state||!players.length)return;
+
+  let current=name(state.turn);
+  let isMyTurn=state.turn===mySeat && !state.gameOver;
+  let mustFish=state.pendingFish && state.pendingFish.seat===mySeat;
+
+  meLabel.innerText=mySeat===null?'Watching':'You are '+name(mySeat);
+  status.innerText=state.gameOver?'Game Over — Winner: '+name(state.winner):'Current Turn: '+current;
+
+  helpText.innerText=state.gameOver
+    ? 'Start a new game to play again.'
+    : mustFish
+      ? 'Go Fish! Pick a card from the pond.'
+      : isMyTurn
+        ? 'Choose a player and a rank from your hand.'
+        : 'Waiting for '+current+'.';
+
+  drawPlayers();
+  drawControls(isMyTurn,mustFish);
+  drawPond(mustFish);
+  drawLog();
+}
+
+function drawPlayers(){
+  playersLayer.innerHTML='';
+
+  let ordered=[mySeat, ...players.map(p=>p.seat).filter(s=>s!==mySeat)];
+  if(mySeat===null||mySeat===undefined)ordered=players.map(p=>p.seat);
+
+  ordered.forEach((seat,idx)=>{
+    let p=players.find(x=>x.seat===seat);
+    if(!p)return;
+
+    let box=document.createElement('div');
+    box.className='player p'+idx+(state.turn===seat?' turn':'');
+    let hand=state.hands[seat]||[];
+    let books=state.books[seat]||[];
+
+    let html='<div class="name">'+escapeHtml(p.name)+'</div>';
+    html+='<div class="meta">'+hand.length+' cards · '+books.length+' books</div>';
+    html+='<div class="books">'+(books.length?'Books: '+books.join(', '):'No books yet')+'</div>';
+
+    if(seat===mySeat){
+      html+='<div class="handArea">';
+      hand.slice().sort(cardSort).forEach(c=>{
+        html+='<span class="card '+(isRed(c.s)?'red':'')+'">'+c.r+c.s+'</span>';
+      });
+      html+='</div>';
+    }else{
+      html+='<div>';
+      hand.forEach(()=>html+='<span class="card small back">?</span>');
+      html+='</div>';
+    }
+
+    box.innerHTML=html;
+    playersLayer.appendChild(box);
+  });
+}
+
+function drawControls(isMyTurn,mustFish){
+  targetSelect.innerHTML='';
+  rankSelect.innerHTML='';
+
+  players
+    .filter(p=>p.seat!==mySeat && (state.hands[p.seat]||[]).length>0)
+    .forEach(p=>{
+      let o=document.createElement('option');
+      o.value=p.seat;
+      o.textContent=p.name;
+      targetSelect.appendChild(o);
+    });
+
+  let myRanks=[...new Set((state.hands[mySeat]||[]).map(c=>c.r))]
+    .sort((a,b)=>ranks.indexOf(a)-ranks.indexOf(b));
+
+  myRanks.forEach(r=>{
+    let o=document.createElement('option');
+    o.value=r;
+    o.textContent=r;
+    rankSelect.appendChild(o);
+  });
+
+  askBtn.disabled=!isMyTurn||mustFish||!myRanks.length||!targetSelect.options.length;
+  targetSelect.disabled=askBtn.disabled;
+  rankSelect.disabled=askBtn.disabled;
+
+  fishBtn.style.display=mustFish?'inline-block':'none';
+}
+
+function drawPond(canFish){
+  pond.innerHTML='';
+  let shown=Math.min(9,state.deck.length);
+
+  for(let i=0;i<shown;i++){
+    let c=document.createElement('span');
+    c.className='card pool '+(canFish?'':'disabled');
+    c.innerText='?';
+    c.onclick=()=>{if(canFish)fish();};
+    pond.appendChild(c);
+  }
+
+  if(!shown){
+    pond.innerHTML='<span class="meta">Pond is empty</span>';
+  }
+
+  deckCount.innerText=state.deck.length+' cards left in pond';
+}
+
+function drawLog(){
+  log.innerHTML=state.log.slice(-8).map(x=>'• '+escapeHtml(x)).join('<br>');
+  log.scrollTop=log.scrollHeight;
+}
+
+function ask(){
+  if(state.gameOver||state.turn!==mySeat||state.pendingFish)return;
+
+  let target=Number(targetSelect.value);
+  let rank=rankSelect.value;
+  if(!rank||Number.isNaN(target))return;
+
+  add(name(mySeat)+' asks '+name(target)+' for '+rank+'s.');
+
+  let matches=(state.hands[target]||[]).filter(c=>c.r===rank);
+
+  if(matches.length){
+    state.hands[target]=state.hands[target].filter(c=>c.r!==rank);
+    state.hands[mySeat]=state.hands[mySeat].concat(matches);
+    add(name(target)+' gives '+matches.length+' card(s). '+name(mySeat)+' goes again.');
+    checkBooks(state,mySeat,true);
+    refillIfEmpty(mySeat);
+  }else{
+    add(name(target)+' says: Go Fish!');
+    state.pendingFish={seat:mySeat,rank};
+  }
+
+  checkGameOver();
+  draw();
+  sync();
+}
+
+function fish(){
+  if(state.gameOver||!state.pendingFish||state.pendingFish.seat!==mySeat)return;
+
+  let askedRank=state.pendingFish.rank;
+  state.pendingFish=null;
+
+  if(state.deck.length){
+    let idx=Math.floor(Math.random()*state.deck.length);
+    let drawn=state.deck.splice(idx,1)[0];
+    state.hands[mySeat].push(drawn);
+    add(name(mySeat)+' fishes from the pond.');
+
+    if(drawn.r===askedRank){
+      add(name(mySeat)+' drew the requested rank and goes again!');
+    }else{
+      checkBooks(state,mySeat,true);
+      nextTurn();
+    }
+  }else{
+    add('The pond is empty.');
+    nextTurn();
+  }
+
+  checkBooks(state,mySeat,true);
+  refillIfEmpty(mySeat);
+  checkGameOver();
+  draw();
+  sync();
+}
+
+function refillIfEmpty(seat){
+  if((state.hands[seat]||[]).length===0 && state.deck.length){
+    let count=Math.min(5,state.deck.length);
+    state.hands[seat]=state.deck.splice(0,count);
+    add(name(seat)+' draws a new hand.');
+  }
+}
+
+function nextTurn(){
+  let active=players.filter(p=>(state.hands[p.seat]||[]).length>0 || state.deck.length>0);
+  if(!active.length)return;
+
+  let i=players.findIndex(p=>p.seat===state.turn);
+  for(let step=1;step<=players.length;step++){
+    let next=players[(i+step)%players.length];
+    if(next && ((state.hands[next.seat]||[]).length>0 || state.deck.length>0)){
+      state.turn=next.seat;
+      return;
+    }
+  }
+}
+
+function checkBooks(s,seat,announce){
+  let hand=s.hands[seat]||[];
+  let counts={};
+
+  hand.forEach(c=>counts[c.r]=(counts[c.r]||0)+1);
+
+  ranks.forEach(r=>{
+    while(counts[r]>=4){
+      let removed=0;
+      s.hands[seat]=s.hands[seat].filter(c=>{
+        if(c.r===r && removed<4){
+          removed++;
+          return false;
+        }
+        return true;
+      });
+      s.books[seat].push(r);
+      counts[r]-=4;
+      if(announce)add(name(seat)+' made a book of '+r+'s.');
+    }
+  });
+}
+
+function checkGameOver(){
+  let totalBooks=players.reduce((n,p)=>n+(state.books[p.seat]||[]).length,0);
+  let cardsLeft=state.deck.length+players.reduce((n,p)=>n+(state.hands[p.seat]||[]).length,0);
+
+  if(totalBooks>=13 || cardsLeft===0){
+    state.gameOver=true;
+    let best=players[0].seat;
+    players.forEach(p=>{
+      if((state.books[p.seat]||[]).length>(state.books[best]||[]).length)best=p.seat;
+    });
+    state.winner=best;
+    add('Game over. Winner: '+name(best)+'.');
+  }
+}
+
+function newGame(sendIt){
+  state=fresh();
+  draw();
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    state=data.state;
+    ensureStateSeats();
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  let data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function name(seat){
+  let p=players.find(x=>x.seat===seat);
+  return p?p.name:'Seat '+(Number(seat)+1);
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>60)state.log.shift();
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+}
+
+function cardSort(a,b){
+  return ranks.indexOf(a.r)-ranks.indexOf(b.r) || suits.indexOf(a.s)-suits.indexOf(b.s);
+}
+
+function isRed(s){
+  return s==='♥'||s==='♦';
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+setTimeout(init,50);
+</script>
+</body>
+</html>
