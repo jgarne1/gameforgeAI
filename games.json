@@ -3,5 +3,6 @@
   {"id":"gofish","name":"Go Fish","file":"gofish.html","minPlayers":1,"maxPlayers":4,"seats":4},
   {"id":"yahtzee","name":"Yahtzee","file":"yahtzee.html","minPlayers":1,"maxPlayers":4,"seats":4},
   {"id":"connect4","name":"Connect4","file":"connect4.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"battleship","name":"Battleship","file":"battleship.html","minPlayers":2,"maxPlayers":2,"seats":2}
+  {"id":"battleship","name":"Battleship","file":"battleship.html","minPlayers":2,"maxPlayers":2,"seats":2},
+  {"id":"uno","name":"Uno","file":"uno.html","minPlayers":2,"maxPlayers":4,"seats":4}
 ]
