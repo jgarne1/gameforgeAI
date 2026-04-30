@@ -60,19 +60,42 @@ const cats=[
 let players = [{seat:0,name:'Player 1'}];
 let mySeat = null;
 let state = null;
+let setupReceived = false;
 
 function initPlayers(){
   if(window.GAME_PLAYERS && window.GAME_PLAYERS.length){
-    players = window.GAME_PLAYERS.map(p=>({seat:Number(p.seat),name:p.name || ('Seat '+(Number(p.seat)+1))}));
+    receiveSetup(window.GAME_PLAYERS, window.GAME_MY_SEAT);
+  }else{
+    state = freshState();
+    draw();
   }
+}
+
+function receiveSetup(newPlayers,newSeat){
+  setupReceived = true;
+
+  if(newPlayers && newPlayers.length){
+    players = newPlayers.map(p=>({
+      seat:Number(p.seat),
+      name:p.name || ('Seat '+(Number(p.seat)+1))
+    }));
+  }
+
   players.sort((a,b)=>a.seat-b.seat);
 
-  if(window.GAME_MY_SEAT !== undefined && window.GAME_MY_SEAT !== null){
-    mySeat = Number(window.GAME_MY_SEAT);
+  if(newSeat !== undefined && newSeat !== null){
+    mySeat = Number(newSeat);
     if(!players.some(p=>p.seat===mySeat)) mySeat = null;
   }
 
-  state = freshState();
+  if(!state || !players.some(p=>p.seat===state.turn)){
+    state = freshState();
+  }else{
+    players.forEach(p=>{
+      if(!state.scores[p.seat]) state.scores[p.seat]={};
+    });
+  }
+
   draw();
 }
 
@@ -125,6 +148,7 @@ function draw(){
 
 function drawSheet(){
   headRow.innerHTML='<th>Category</th>';
+
   players.forEach(p=>{
     let th=document.createElement('th');
     th.innerText=p.name;
@@ -133,6 +157,7 @@ function drawSheet(){
   });
 
   sheet.innerHTML='';
+
   cats.forEach(cat=>{
     let tr=document.createElement('tr');
     let name=document.createElement('td');
@@ -165,6 +190,7 @@ function drawSheet(){
   });
 
   totalRow.innerHTML='<th>Total</th>';
+
   players.forEach(p=>{
     let th=document.createElement('th');
     th.innerText=totalScore(p.seat);
@@ -179,8 +205,10 @@ function rollDice(){
   for(let i=0;i<5;i++){
     if(!state.held[i]) state.dice[i]=rand();
   }
+
   state.rolls--;
   state.message = nameOf(mySeat)+' rolled.';
+
   draw();
   animateDice();
   sync();
@@ -188,8 +216,10 @@ function rollDice(){
 
 function toggleHold(i){
   if(state.gameOver || mySeat!==state.turn || state.rolls===3) return;
+
   state.held[i]=!state.held[i];
   state.message = state.held[i] ? nameOf(mySeat)+' held a die.' : nameOf(mySeat)+' released a die.';
+
   draw();
   sync();
 }
@@ -198,6 +228,7 @@ function chooseScore(cat){
   if(state.gameOver || mySeat!==state.turn || state.rolls===3) return;
 
   if(!state.scores[state.turn]) state.scores[state.turn]={};
+
   let val=score(cat,state.dice);
   state.scores[state.turn][cat]=val;
   state.message = nameOf(state.turn)+' scored '+val+' in '+cat+'.';
@@ -214,7 +245,10 @@ function chooseScore(cat){
 
 function nextTurn(){
   let idx=players.findIndex(p=>p.seat===state.turn);
+  if(idx<0) idx=0;
+
   let next=players[(idx+1)%players.length];
+
   state.turn=next.seat;
   state.rolls=3;
   state.held=[false,false,false,false,false];
@@ -228,12 +262,20 @@ function isGameOver(){
 
 function finishGame(){
   state.gameOver=true;
-  let best=-1,winners=[];
+
+  let best=-1;
+  let winners=[];
+
   players.forEach(p=>{
     let t=totalScore(p.seat);
-    if(t>best){best=t;winners=[p.seat];}
-    else if(t===best)winners.push(p.seat);
+    if(t>best){
+      best=t;
+      winners=[p.seat];
+    }else if(t===best){
+      winners.push(p.seat);
+    }
   });
+
   state.message = winners.length===1
     ? 'Game over. '+nameOf(winners[0])+' wins with '+best+' points!'
     : 'Game over. Tie game at '+best+' points!';
@@ -257,15 +299,36 @@ function score(cat,d){
   if(cat==='Large Straight')return largeStraight(d)?40:0;
   if(cat==='Yahtzee')return Object.values(counts).some(x=>x===5)?50:0;
   if(cat==='Chance')return sum;
+
   return 0;
 }
 
-function count(d,n){return d.filter(x=>x===n).length;}
-function smallStraight(d){let s=[...new Set(d)].sort().join('');return s.includes('1234')||s.includes('2345')||s.includes('3456');}
-function largeStraight(d){let s=[...new Set(d)].sort().join('');return s==='12345'||s==='23456';}
-function totalScore(seat){return Object.values(state.scores[seat]||{}).reduce((a,b)=>a+b,0);}
-function rand(){return Math.floor(Math.random()*6)+1;}
-function nameOf(seat){let p=players.find(x=>x.seat===seat);return p?p.name:'Seat '+(seat+1);}
+function count(d,n){
+  return d.filter(x=>x===n).length;
+}
+
+function smallStraight(d){
+  let s=[...new Set(d)].sort().join('');
+  return s.includes('1234')||s.includes('2345')||s.includes('3456');
+}
+
+function largeStraight(d){
+  let s=[...new Set(d)].sort().join('');
+  return s==='12345'||s==='23456';
+}
+
+function totalScore(seat){
+  return Object.values(state.scores[seat]||{}).reduce((a,b)=>a+b,0);
+}
+
+function rand(){
+  return Math.floor(Math.random()*6)+1;
+}
+
+function nameOf(seat){
+  let p=players.find(x=>x.seat===seat);
+  return p ? p.name : 'Seat '+(seat+1);
+}
 
 function animateDice(){
   document.querySelectorAll('.die').forEach((d,i)=>{
@@ -280,7 +343,7 @@ function animateDice(){
 function newGame(sendIt){
   state=freshState();
   draw();
-  if(sendIt)sync();
+  if(sendIt) sync();
 }
 
 function sync(){
@@ -296,9 +359,27 @@ window.onMove=function(data){
     state=data.state;
     draw();
   }
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+  }
 };
 
-initPlayers();
+window.addEventListener('message',function(event){
+  let data=event.data || {};
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+  }
+});
+
+parent.postMessage({type:'gameReady'},'*');
+
+setTimeout(function(){
+  if(!setupReceived){
+    initPlayers();
+  }
+},100);
 </script>
 </body>
 </html>
