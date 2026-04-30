@@ -1,10 +1,412 @@
-<!DOCTYPE html><html><head><title>Go Fish</title><style>body{font-family:Arial;text-align:center;background:#f3efe4;margin:0}.panel{background:white;border:2px solid #333;border-radius:12px;padding:12px;margin:10px}.card{display:inline-block;min-width:35px;padding:10px;margin:4px;border:1px solid #111;border-radius:8px;background:white;box-shadow:2px 3px 0 #999;cursor:pointer}.back,.pool{background:#555;color:white}#log{min-height:70px;text-align:left;max-width:800px;margin:auto;background:#fffbea;border:1px solid #aaa;padding:8px;border-radius:8px}</style></head><body><h2>Go Fish</h2><div id="status">Loading...</div><button onclick="newGame(true)">New Game</button><div class="panel"><h3>Current Turn: <span id="turnLabel"></span></h3></div><div class="panel"><h3>Other Players</h3><div id="others"></div></div><div class="panel"><h3>Fishing Pond</h3><div id="pond"></div></div><div class="panel"><h3>Your Hand - click a rank to ask</h3><div id="hand"></div></div><div class="panel"><h3>Pairs</h3><div id="pairs"></div></div><div class="panel"><h3>Game Log</h3><div id="log"></div></div><script>
-const GAME_META={id:'gofish',name:'Go Fish',minPlayers:1,maxPlayers:4,seats:4};const suits=['♠','♥','♦','♣'];const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];let players=[{seat:0,name:'Player'}];let state;
-setTimeout(()=>{if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length)players=window.GAME_PLAYERS.map(p=>({seat:p.seat,name:p.name}));state=fresh();draw()},120);
-function fresh(){let deck=[];suits.forEach(s=>ranks.forEach(r=>deck.push({r,s})));shuffle(deck);let hands={},pairs={};players.forEach(p=>{hands[p.seat]=deck.splice(0,7);pairs[p.seat]=[]});let s={deck,hands,pairs,turn:players[0].seat,log:['New game started.']};players.forEach(p=>checkPairs(s,p.seat));return s}
-function draw(){if(!state)return;let cur=name(state.turn);status.innerText=cur+"'s turn";turnLabel.innerText=cur;let my=players[0].seat; // wrapper sends each iframe same file, show all hands only if no identity available
-let handSeat=state.turn;hand.innerHTML='';(state.hands[handSeat]||[]).sort(cardSort).forEach(c=>{let el=document.createElement('div');el.className='card';el.innerText=c.r+c.s;el.onclick=()=>ask(c.r);hand.appendChild(el)});others.innerHTML=players.filter(p=>p.seat!==handSeat).map(p=>'<b>'+p.name+'</b>: '+(state.hands[p.seat]||[]).map(()=>'<span class="card back">?</span>').join('')).join('<br>');pond.innerHTML=state.deck.map((_,i)=>'<span class="card pool">?</span>').join('');pairs.innerHTML=players.map(p=>'<b>'+p.name+':</b> '+((state.pairs[p.seat]||[]).join(', ')||'none')).join('<br>');log.innerHTML=state.log.slice(-8).map(x=>'• '+x).join('<br>')}
-function ask(rank){let me=state.turn;let opps=players.filter(p=>p.seat!==me);let opp=opps[Math.floor(Math.random()*opps.length)]||players[0];add(name(me)+' asks '+name(opp.seat)+' for '+rank+'.');let matches=(state.hands[opp.seat]||[]).filter(c=>c.r===rank);if(matches.length){state.hands[opp.seat]=state.hands[opp.seat].filter(c=>c.r!==rank);state.hands[me]=state.hands[me].concat(matches);add(name(opp.seat)+' gives '+matches.length+' card(s).');checkPairs(state,me)}else{add('Go Fish! '+name(me)+' draws from the pond.');if(state.deck.length)state.hands[me].push(state.deck.pop());nextTurn()}checkPairs(state,me);draw();sync()}
-function nextTurn(){let i=players.findIndex(p=>p.seat===state.turn);state.turn=players[(i+1)%players.length].seat}function checkPairs(s,seat){let h=s.hands[seat]||[];let counts={};h.forEach(c=>counts[c.r]=(counts[c.r]||0)+1);ranks.forEach(r=>{while(counts[r]>=2){let rem=0;s.hands[seat]=s.hands[seat].filter(c=>{if(c.r===r&&rem<2){rem++;return false}return true});s.pairs[seat].push(r);counts[r]-=2;add(name(seat)+' made a pair of '+r+'s.')}})}function add(t){state.log.push(t);if(state.log.length>40)state.log.shift()}function name(seat){return (players.find(p=>p.seat===seat)||{}).name||('Seat '+(seat+1))}function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}function cardSort(a,b){return ranks.indexOf(a.r)-ranks.indexOf(b.r)}function newGame(send){state=fresh();draw();if(send)sync()}function sync(){window.sendMove({type:'state',state})}
-window.sendMove=d=>parent.postMessage({type:'move',data:d},'*');window.onMove=d=>{if(d.type==='state'){state=d.state;draw()}};
-</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Go Fish - 4 Players</title>
+<style>
+body{font-family:Arial;text-align:center;background:#f3efe4;margin:0;color:#222}
+#wrap{max-width:1150px;margin:auto;padding:12px}
+.panel{background:white;border:2px solid #333;border-radius:12px;padding:12px;margin:10px}
+.card{display:inline-block;min-width:38px;padding:12px 8px;margin:5px;border:1px solid #111;border-radius:8px;background:white;box-shadow:2px 3px 0 #999;cursor:pointer}
+.back{background:#39506b;color:white}
+.poolCard{background:#777;color:white;transform:rotate(var(--r))}
+.clickable:hover{background:#ffeaa7}
+#status{font-size:20px;font-weight:bold;margin:8px;min-height:30px}
+#log{text-align:left;max-width:760px;margin:auto;background:#fffbea;border:1px solid #aaa;padding:8px;border-radius:8px;min-height:80px}
+.row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.active{background:#fff3b0}
+.small{font-size:13px;color:#555}
+</style>
+</head>
+<body>
+<div id="wrap">
+<h1>Go Fish</h1>
+<div id="status">Waiting for game...</div>
+
+<div class="panel">
+  <button onclick="newGame(true)">New Game</button>
+  <p class="small">Ask a player for a rank you already have. If they do not have it, draw from the pond.</p>
+</div>
+
+<div class="panel">
+  <h3>Players</h3>
+  <div id="players"></div>
+</div>
+
+<div class="panel">
+  <h3>Fishing Pond</h3>
+  <div id="pond"></div>
+</div>
+
+<div class="panel">
+  <h3>Your Hand</h3>
+  <div id="yourHand"></div>
+</div>
+
+<div class="panel">
+  <h3>Pairs</h3>
+  <div id="pairs"></div>
+</div>
+
+<div class="panel">
+  <h3>Game Log</h3>
+  <div id="log"></div>
+</div>
+</div>
+
+<script>
+const GAME_META={id:"gofish",name:"Go Fish",minPlayers:2,maxPlayers:4,seats:4};
+
+const suits=["♠","♥","♦","♣"];
+const ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+let gamePlayers=[
+  {seat:0,name:"Player 1"},
+  {seat:1,name:"Player 2"},
+  {seat:2,name:"Player 3"},
+  {seat:3,name:"Player 4"}
+];
+
+if(window.GAME_PLAYERS && window.GAME_PLAYERS.length){
+  gamePlayers=window.GAME_PLAYERS.map(p=>({
+    seat:p.seat,
+    name:p.name || ("Player "+(p.seat+1))
+  }));
+}
+
+gamePlayers.sort((a,b)=>a.seat-b.seat);
+
+let mySeat=null;
+let selectedTarget=null;
+let state=null;
+let locked=false;
+
+function inferSeat(){
+  if(window.GAME_MY_SEAT!==undefined){
+    mySeat=window.GAME_MY_SEAT;
+  }else if(gamePlayers.length===1){
+    mySeat=gamePlayers[0].seat;
+  }else{
+    let saved=localStorage.getItem("gofishSeat");
+    if(saved!==null) mySeat=Number(saved);
+  }
+}
+inferSeat();
+
+function freshState(){
+  let deck=[];
+  suits.forEach(s=>ranks.forEach(r=>deck.push({r,s})));
+  shuffle(deck);
+
+  let hands={}, pairs={};
+  gamePlayers.forEach(p=>{
+    hands[p.seat]=[];
+    pairs[p.seat]=[];
+  });
+
+  let dealCount=gamePlayers.length<=2?7:5;
+  for(let i=0;i<dealCount;i++){
+    gamePlayers.forEach(p=>{
+      if(deck.length)hands[p.seat].push(deck.pop());
+    });
+  }
+
+  let s={
+    deck,
+    hands,
+    pairs,
+    turn:gamePlayers[0].seat,
+    gameOver:false,
+    log:["New Go Fish game started. "+nameOf(gamePlayers[0].seat)+" goes first."]
+  };
+
+  gamePlayers.forEach(p=>checkPairs(s,p.seat));
+  return s;
+}
+
+function newGame(syncIt){
+  state=freshState();
+  selectedTarget=null;
+  locked=false;
+  draw();
+  if(syncIt)sendState();
+}
+
+function draw(){
+  if(!state) state=freshState();
+
+  drawPlayers();
+  drawPond();
+  drawHand();
+  drawPairs();
+  drawLog();
+
+  if(state.gameOver){
+    setStatus("Game over. Start a new game when ready.");
+  }else if(mySeat===state.turn){
+    setStatus("Your turn. Choose a player, then click a rank in your hand.");
+  }else{
+    setStatus(nameOf(state.turn)+"'s turn.");
+  }
+}
+
+function drawPlayers(){
+  const div=document.getElementById("players");
+  div.innerHTML="";
+
+  gamePlayers.forEach(p=>{
+    let box=document.createElement("div");
+    box.className="panel"+(p.seat===state.turn?" active":"");
+    box.style.display="inline-block";
+    box.style.minWidth="160px";
+
+    let isMe=p.seat===mySeat;
+    let cardCount=state.hands[p.seat]?.length || 0;
+    let pairCount=state.pairs[p.seat]?.length || 0;
+
+    box.innerHTML=
+      "<b>"+nameOf(p.seat)+(isMe?" (You)":"")+"</b><br>"+
+      "Cards: "+cardCount+"<br>"+
+      "Pairs: "+pairCount+"<br>";
+
+    if(mySeat===state.turn && p.seat!==mySeat && !state.gameOver){
+      let btn=document.createElement("button");
+      btn.innerText=selectedTarget===p.seat?"Selected":"Ask This Player";
+      btn.onclick=()=>{selectedTarget=p.seat;draw();};
+      box.appendChild(btn);
+    }
+
+    if(!isMe){
+      let backs=document.createElement("div");
+      for(let i=0;i<cardCount;i++){
+        let c=document.createElement("span");
+        c.className="card back";
+        c.innerText="?";
+        backs.appendChild(c);
+      }
+      box.appendChild(backs);
+    }
+
+    div.appendChild(box);
+  });
+}
+
+function drawPond(){
+  const div=document.getElementById("pond");
+  div.innerHTML="";
+  if(state.deck.length===0){
+    div.innerHTML="<i>Pond is empty</i>";
+    return;
+  }
+
+  state.deck.forEach((_,i)=>{
+    let c=document.createElement("span");
+    c.className="card poolCard";
+    c.style.setProperty("--r",((i%11)-5)+"deg");
+    c.innerText="?";
+    div.appendChild(c);
+  });
+}
+
+function drawHand(){
+  const div=document.getElementById("yourHand");
+  div.innerHTML="";
+
+  if(mySeat===null || !state.hands[mySeat]){
+    div.innerHTML="<i>You are not seated in this game.</i>";
+    return;
+  }
+
+  let hand=state.hands[mySeat].slice().sort(cardSort);
+
+  if(hand.length===0){
+    div.innerHTML="<i>No cards</i>";
+    return;
+  }
+
+  hand.forEach(card=>{
+    let c=document.createElement("span");
+    c.className="card";
+    if(mySeat===state.turn && !state.gameOver)c.className+=" clickable";
+    c.innerText=card.r+card.s;
+    c.onclick=()=>askRank(card.r);
+    div.appendChild(c);
+  });
+}
+
+function drawPairs(){
+  const div=document.getElementById("pairs");
+  div.innerHTML="";
+  gamePlayers.forEach(p=>{
+    let line=document.createElement("div");
+    line.innerHTML="<b>"+nameOf(p.seat)+":</b> "+((state.pairs[p.seat]||[]).join(", ") || "none");
+    div.appendChild(line);
+  });
+}
+
+function drawLog(){
+  const div=document.getElementById("log");
+  div.innerHTML=state.log.slice(-8).map(x=>"• "+x).join("<br>");
+}
+
+async function askRank(rank){
+  if(!state || locked || state.gameOver)return;
+  if(mySeat!==state.turn)return;
+  if(!selectedTarget && gamePlayers.length>1){
+    addLog("Choose who to ask first.");
+    draw();
+    return;
+  }
+  if(!state.hands[mySeat].some(c=>c.r===rank))return;
+
+  locked=true;
+
+  let asker=mySeat;
+  let target=selectedTarget;
+  addLog(nameOf(asker)+" asks "+nameOf(target)+" for "+rank+"s.");
+  sendState();
+  draw();
+  await wait(900);
+
+  let matches=state.hands[target].filter(c=>c.r===rank);
+
+  if(matches.length>0){
+    state.hands[target]=state.hands[target].filter(c=>c.r!==rank);
+    state.hands[asker]=state.hands[asker].concat(matches);
+    addLog(nameOf(target)+" gives "+matches.length+" card(s) to "+nameOf(asker)+".");
+    checkPairs(state,asker);
+    refillIfEmpty(asker);
+    refillIfEmpty(target);
+    addLog(nameOf(asker)+" gets another turn.");
+  }else{
+    addLog("Go Fish! "+nameOf(asker)+" draws from the pond.");
+    await wait(700);
+
+    if(state.deck.length){
+      let drawn=state.deck.pop();
+      state.hands[asker].push(drawn);
+      addLog(nameOf(asker)+" drew a card.");
+
+      if(drawn.r===rank){
+        addLog("Lucky draw! "+nameOf(asker)+" drew the requested rank and goes again.");
+      }else{
+        nextTurn();
+      }
+    }else{
+      addLog("The pond is empty.");
+      nextTurn();
+    }
+
+    checkPairs(state,asker);
+    refillIfEmpty(asker);
+  }
+
+  selectedTarget=null;
+  checkGameOver();
+  locked=false;
+  draw();
+  sendState();
+}
+
+function nextTurn(){
+  let seats=gamePlayers.map(p=>p.seat);
+  let idx=seats.indexOf(state.turn);
+  state.turn=seats[(idx+1)%seats.length];
+}
+
+function checkPairs(s,seat){
+  let counts={};
+  s.hands[seat].forEach(c=>counts[c.r]=(counts[c.r]||0)+1);
+
+  ranks.forEach(r=>{
+    while(counts[r]>=2){
+      let removed=0;
+      s.hands[seat]=s.hands[seat].filter(c=>{
+        if(c.r===r && removed<2){
+          removed++;
+          return false;
+        }
+        return true;
+      });
+      s.pairs[seat].push(r);
+      counts[r]-=2;
+      addLog(nameOf(seat)+" made a pair of "+r+"s.");
+    }
+  });
+}
+
+function refillIfEmpty(seat){
+  while(state.hands[seat].length===0 && state.deck.length>0){
+    state.hands[seat].push(state.deck.pop());
+    addLog(nameOf(seat)+" draws because their hand was empty.");
+  }
+}
+
+function checkGameOver(){
+  let noCards=gamePlayers.every(p=>state.hands[p.seat].length===0);
+  if(state.deck.length===0 && noCards){
+    state.gameOver=true;
+
+    let best=-1,winners=[];
+    gamePlayers.forEach(p=>{
+      let count=state.pairs[p.seat].length;
+      if(count>best){best=count;winners=[p.seat];}
+      else if(count===best){winners.push(p.seat);}
+    });
+
+    if(winners.length===1){
+      addLog("Game over. "+nameOf(winners[0])+" wins!");
+    }else{
+      addLog("Game over. Tie game!");
+    }
+  }
+}
+
+function nameOf(seat){
+  let p=gamePlayers.find(x=>x.seat===seat);
+  return p ? p.name : "Seat "+(seat+1);
+}
+
+function addLog(t){
+  state.log.push(t);
+  if(state.log.length>40)state.log.shift();
+}
+
+function setStatus(t){
+  document.getElementById("status").innerText=t;
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+}
+
+function cardSort(a,b){
+  return ranks.indexOf(a.r)-ranks.indexOf(b.r);
+}
+
+function wait(ms){
+  return new Promise(r=>setTimeout(r,ms));
+}
+
+function sendState(){
+  window.sendMove({type:"state",state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:"move",data},"*");
+};
+
+window.onMove=function(data){
+  if(data.type==="state"){
+    state=data.state;
+    selectedTarget=null;
+    draw();
+  }
+};
+
+newGame(false);
+</script>
+</body>
+</html>
