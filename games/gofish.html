@@ -14,15 +14,18 @@ button.primary{background:var(--blue);color:white;border-color:var(--blue);font-
 button.gold{background:var(--gold);border-color:var(--gold);font-weight:bold}
 button:disabled{opacity:.45;cursor:not-allowed}
 .table{position:relative;background:radial-gradient(circle,var(--felt),#0e3f2a);border:4px solid #5b3418;border-radius:24px;min-height:390px;overflow:hidden}
-.center{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:360px}
+.center{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:420px}
 .status{font-size:18px;font-weight:bold;margin-bottom:8px}
-.pond{min-height:72px}
+.pond{height:76px;display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;overflow:hidden}
+.pond .card.pool{margin-left:-18px}
+.pond .card.pool:first-child{margin-left:0}
 .card{display:inline-flex;align-items:center;justify-content:center;width:48px;height:68px;background:white;color:#111;border:1px solid #111;border-radius:8px;margin:3px;box-shadow:2px 3px 0 rgba(0,0,0,.35);font-weight:bold;cursor:pointer}
 .card.small{width:26px;height:38px;font-size:11px;margin:1px;border-radius:5px}
 .card.back{background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:white;border-color:#dbeafe}
 .card.pool{background:linear-gradient(135deg,#374151,#111827);color:white}
 .card.red{color:#dc2626}
 .card.disabled{opacity:.55;cursor:not-allowed}
+.card.selected{outline:4px solid var(--gold);transform:translateY(-6px)}
 .player{position:absolute;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:7px;min-width:145px}
 .player.turn{outline:3px solid var(--gold)}
 .p0{left:50%;bottom:8px;transform:translateX(-50%);width:82%;max-width:760px}
@@ -62,7 +65,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
     <div class="controls">
       <b>Ask:</b>
       <select id="targetSelect"></select>
-      <select id="rankSelect"></select>
+      <select id="rankSelect" onchange="selectedRank=this.value;draw();"></select>
       <button id="askBtn" class="primary" onclick="ask()">Ask Player</button>
       <button id="fishBtn" class="gold" onclick="fish()" style="display:none">Fish From Pond</button>
     </div>
@@ -79,12 +82,24 @@ const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let players=[];
 let mySeat=null;
 let state=null;
+let selectedRank='';
+
+window.onerror=function(msg){
+  let el=document.getElementById('status');
+  if(el)el.innerText='Game error: '+msg;
+};
 
 function receiveSetup(setupPlayers,setupSeat){
   if(Array.isArray(setupPlayers)&&setupPlayers.length){
     players=setupPlayers.slice(0,4).map(p=>({seat:p.seat,name:p.name||('Seat '+(p.seat+1))}));
   }
+
   mySeat=setupSeat;
+
+  if(!players.length){
+    players=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];
+    if(mySeat===null||mySeat===undefined)mySeat=0;
+  }
 
   if(!state){
     state=fresh();
@@ -92,11 +107,16 @@ function receiveSetup(setupPlayers,setupSeat){
     ensureStateSeats();
   }
 
+  if(!selectedRank){
+    let hand=state.hands[mySeat]||[];
+    if(hand.length)selectedRank=hand[0].r;
+  }
+
   draw();
 }
 
 function init(){
-  receiveSetup(window.GAME_PLAYERS||[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}],window.GAME_MY_SEAT);
+  receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
 }
 
 function fresh(){
@@ -139,10 +159,10 @@ function draw(){
   if(!state||!players.length)return;
 
   let current=name(state.turn);
-  let isMyTurn=state.turn===mySeat && !state.gameOver;
-  let mustFish=state.pendingFish && state.pendingFish.seat===mySeat;
+  let isMyTurn=state.turn===mySeat&&!state.gameOver;
+  let mustFish=state.pendingFish&&state.pendingFish.seat===mySeat;
 
-  meLabel.innerText=mySeat===null?'Watching':'You are '+name(mySeat);
+  meLabel.innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
   status.innerText=state.gameOver?'Game Over — Winner: '+name(state.winner):'Current Turn: '+current;
 
   helpText.innerText=state.gameOver
@@ -150,7 +170,7 @@ function draw(){
     : mustFish
       ? 'Go Fish! Pick a card from the pond.'
       : isMyTurn
-        ? 'Choose a player and a rank from your hand.'
+        ? 'Choose a player and click a card/rank to ask for.'
         : 'Waiting for '+current+'.';
 
   drawPlayers();
@@ -162,7 +182,7 @@ function draw(){
 function drawPlayers(){
   playersLayer.innerHTML='';
 
-  let ordered=[mySeat, ...players.map(p=>p.seat).filter(s=>s!==mySeat)];
+  let ordered=[mySeat,...players.map(p=>p.seat).filter(s=>s!==mySeat)];
   if(mySeat===null||mySeat===undefined)ordered=players.map(p=>p.seat);
 
   ordered.forEach((seat,idx)=>{
@@ -171,6 +191,7 @@ function drawPlayers(){
 
     let box=document.createElement('div');
     box.className='player p'+idx+(state.turn===seat?' turn':'');
+
     let hand=state.hands[seat]||[];
     let books=state.books[seat]||[];
 
@@ -181,7 +202,7 @@ function drawPlayers(){
     if(seat===mySeat){
       html+='<div class="handArea">';
       hand.slice().sort(cardSort).forEach(c=>{
-        html+='<span class="card '+(isRed(c.s)?'red':'')+'">'+c.r+c.s+'</span>';
+        html+='<span onclick="selectRank(\''+c.r+'\')" class="card '+(isRed(c.s)?'red ':'')+(selectedRank===c.r?'selected':'')+'">'+c.r+c.s+'</span>';
       });
       html+='</div>';
     }else{
@@ -200,7 +221,7 @@ function drawControls(isMyTurn,mustFish){
   rankSelect.innerHTML='';
 
   players
-    .filter(p=>p.seat!==mySeat && (state.hands[p.seat]||[]).length>0)
+    .filter(p=>p.seat!==mySeat&&(state.hands[p.seat]||[]).length>0)
     .forEach(p=>{
       let o=document.createElement('option');
       o.value=p.seat;
@@ -211,10 +232,15 @@ function drawControls(isMyTurn,mustFish){
   let myRanks=[...new Set((state.hands[mySeat]||[]).map(c=>c.r))]
     .sort((a,b)=>ranks.indexOf(a)-ranks.indexOf(b));
 
+  if(selectedRank&&!myRanks.includes(selectedRank)){
+    selectedRank=myRanks[0]||'';
+  }
+
   myRanks.forEach(r=>{
     let o=document.createElement('option');
     o.value=r;
     o.textContent=r;
+    if(r===selectedRank)o.selected=true;
     rankSelect.appendChild(o);
   });
 
@@ -227,7 +253,8 @@ function drawControls(isMyTurn,mustFish){
 
 function drawPond(canFish){
   pond.innerHTML='';
-  let shown=Math.min(9,state.deck.length);
+
+  let shown=Math.min(12,state.deck.length);
 
   for(let i=0;i<shown;i++){
     let c=document.createElement('span');
@@ -249,11 +276,18 @@ function drawLog(){
   log.scrollTop=log.scrollHeight;
 }
 
+function selectRank(rank){
+  selectedRank=rank;
+  if(rankSelect)rankSelect.value=rank;
+  draw();
+}
+
 function ask(){
   if(state.gameOver||state.turn!==mySeat||state.pendingFish)return;
 
   let target=Number(targetSelect.value);
-  let rank=rankSelect.value;
+  let rank=selectedRank||rankSelect.value;
+
   if(!rank||Number.isNaN(target))return;
 
   add(name(mySeat)+' asks '+name(target)+' for '+rank+'s.');
@@ -285,7 +319,10 @@ function fish(){
   if(state.deck.length){
     let idx=Math.floor(Math.random()*state.deck.length);
     let drawn=state.deck.splice(idx,1)[0];
+
     state.hands[mySeat].push(drawn);
+    selectedRank=drawn.r;
+
     add(name(mySeat)+' fishes from the pond.');
 
     if(drawn.r===askedRank){
@@ -307,7 +344,7 @@ function fish(){
 }
 
 function refillIfEmpty(seat){
-  if((state.hands[seat]||[]).length===0 && state.deck.length){
+  if((state.hands[seat]||[]).length===0&&state.deck.length){
     let count=Math.min(5,state.deck.length);
     state.hands[seat]=state.deck.splice(0,count);
     add(name(seat)+' draws a new hand.');
@@ -315,13 +352,11 @@ function refillIfEmpty(seat){
 }
 
 function nextTurn(){
-  let active=players.filter(p=>(state.hands[p.seat]||[]).length>0 || state.deck.length>0);
-  if(!active.length)return;
-
   let i=players.findIndex(p=>p.seat===state.turn);
+
   for(let step=1;step<=players.length;step++){
     let next=players[(i+step)%players.length];
-    if(next && ((state.hands[next.seat]||[]).length>0 || state.deck.length>0)){
+    if(next&&((state.hands[next.seat]||[]).length>0||state.deck.length>0)){
       state.turn=next.seat;
       return;
     }
@@ -337,15 +372,18 @@ function checkBooks(s,seat,announce){
   ranks.forEach(r=>{
     while(counts[r]>=4){
       let removed=0;
+
       s.hands[seat]=s.hands[seat].filter(c=>{
-        if(c.r===r && removed<4){
+        if(c.r===r&&removed<4){
           removed++;
           return false;
         }
         return true;
       });
+
       s.books[seat].push(r);
       counts[r]-=4;
+
       if(announce)add(name(seat)+' made a book of '+r+'s.');
     }
   });
@@ -355,12 +393,14 @@ function checkGameOver(){
   let totalBooks=players.reduce((n,p)=>n+(state.books[p.seat]||[]).length,0);
   let cardsLeft=state.deck.length+players.reduce((n,p)=>n+(state.hands[p.seat]||[]).length,0);
 
-  if(totalBooks>=13 || cardsLeft===0){
+  if(totalBooks>=13||cardsLeft===0){
     state.gameOver=true;
+
     let best=players[0].seat;
     players.forEach(p=>{
       if((state.books[p.seat]||[]).length>(state.books[best]||[]).length)best=p.seat;
     });
+
     state.winner=best;
     add('Game over. Winner: '+name(best)+'.');
   }
@@ -368,6 +408,10 @@ function checkGameOver(){
 
 function newGame(sendIt){
   state=fresh();
+
+  let hand=state.hands[mySeat]||[];
+  selectedRank=hand.length?hand[0].r:'';
+
   draw();
   if(sendIt)sync();
 }
@@ -391,6 +435,12 @@ window.onMove=function(data){
   if(data.type==='state'){
     state=data.state;
     ensureStateSeats();
+
+    let hand=state.hands[mySeat]||[];
+    if(selectedRank&&!hand.some(c=>c.r===selectedRank)){
+      selectedRank=hand.length?hand[0].r:'';
+    }
+
     draw();
   }
 };
@@ -419,7 +469,7 @@ function shuffle(a){
 }
 
 function cardSort(a,b){
-  return ranks.indexOf(a.r)-ranks.indexOf(b.r) || suits.indexOf(a.s)-suits.indexOf(b.s);
+  return ranks.indexOf(a.r)-ranks.indexOf(b.r)||suits.indexOf(a.s)-suits.indexOf(b.s);
 }
 
 function isRed(s){
@@ -430,7 +480,13 @@ function escapeHtml(s){
   return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-setTimeout(init,50);
+init();
+
+setTimeout(function(){
+  if((!players||!players.length)&&window.GAME_PLAYERS){
+    receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
+  }
+},150);
 </script>
 </body>
 </html>
