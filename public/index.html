@@ -3,14 +3,335 @@
 <head>
 <title>GameForge AI</title>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--line:#d2d7de;--blue:#1d72f3;--green:#16a34a;--red:#dc2626;--muted:#64748b;}
-*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:#1f2937}.wrap{display:grid;grid-template-columns:minmax(0,1fr)300px;min-height:100vh}.main{padding:18px;max-width:1200px}.side{background:#fff;border-left:2px solid var(--line);padding:14px;position:sticky;top:0;height:100vh;overflow:auto}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.04)}h1,h2,h3{margin:6px 0 10px}.muted{color:var(--muted);font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}button,input,select{padding:9px 11px;margin:3px;border-radius:9px;border:1px solid #b8c1cc}button{cursor:pointer;background:#f8fafc}button.primary{background:var(--blue);color:white;border-color:var(--blue);font-weight:bold}button.good{background:var(--green);color:white;border-color:var(--green)}button.danger{background:var(--red);color:white;border-color:var(--red)}button:disabled{opacity:.45;cursor:not-allowed}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px}.gameBtn{display:block;width:100%;text-align:left;margin:7px 0;padding:12px;border-radius:10px;background:#fff;border:1px solid #cbd5e1}.gameBtn:hover{background:#f1f5f9}.selected{background:#dbeafe!important;border-color:#60a5fa!important}.seat{display:inline-block;border:1px solid #94a3b8;border-radius:12px;padding:12px;margin:6px;background:#fafafa;min-width:145px;text-align:center}.empty{background:#fff}.filled{background:#dcfce7}.owner{font-weight:bold;color:#92400e}.chatBox{height:170px;overflow:auto;background:#fffbea;border:1px solid #d6bd6b;padding:8px;text-align:left;border-radius:10px}.userItem{border-bottom:1px solid #e5e7eb;padding:8px;border-radius:8px}.userItem.clickable{cursor:pointer}.userItem.clickable:hover{background:#eef6ff}.userItem.private{opacity:.8}.roomBadge{font-size:12px;color:#475569}.roomSteps{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:900px){.wrap{grid-template-columns:1fr}.side{position:static;height:auto;border-left:0;border-top:2px solid var(--line)}.roomSteps{grid-template-columns:1fr}}iframe{width:100%;height:650px;border:3px solid #222;border-radius:12px;background:#fff}#gameArea{margin-top:20px}.notice{background:#ecfeff;border:1px solid #67e8f9;border-radius:10px;padding:10px}.locked{color:#b45309}.public{color:#047857}.hidden{display:none!important}
+:root{
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --line:#d8dee8;
+  --blue:#2563eb;
+  --blue2:#1d4ed8;
+  --green:#16a34a;
+  --red:#dc2626;
+  --muted:#64748b;
+  --text:#1f2937;
+  --soft:#f8fafc;
+  --side:#ffffff;
+}
+
+*{box-sizing:border-box}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  margin:0;
+  background:linear-gradient(135deg,#eef2f7,#f8fafc);
+  color:var(--text);
+}
+
+.wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr)340px;
+  min-height:100vh;
+}
+
+.main{
+  padding:20px;
+  max-width:1200px;
+}
+
+.side{
+  background:var(--side);
+  border-left:2px solid var(--line);
+  padding:14px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:auto;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.logo{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.logo h1{
+  margin:0;
+  font-size:30px;
+}
+
+.logo span{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:15px;
+  margin:12px 0;
+  box-shadow:0 8px 22px rgba(15,23,42,.06);
+}
+
+.sideCard{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  margin-bottom:12px;
+  box-shadow:0 4px 14px rgba(15,23,42,.05);
+}
+
+h1,h2,h3{
+  margin:6px 0 10px;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+button,input,select{
+  padding:9px 11px;
+  margin:3px;
+  border-radius:10px;
+  border:1px solid #b8c1cc;
+  font-size:14px;
+}
+
+input{
+  background:#fff;
+}
+
+button{
+  cursor:pointer;
+  background:#f8fafc;
+  transition:.15s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 3px 10px rgba(15,23,42,.08);
+}
+
+button.primary{
+  background:var(--blue);
+  color:white;
+  border-color:var(--blue);
+  font-weight:bold;
+}
+
+button.primary:hover{
+  background:var(--blue2);
+}
+
+button.good{
+  background:var(--green);
+  color:white;
+  border-color:var(--green);
+}
+
+button.danger{
+  background:var(--red);
+  color:white;
+  border-color:var(--red);
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.pill{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:#3730a3;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.gameBtn{
+  display:block;
+  width:100%;
+  text-align:left;
+  margin:7px 0;
+  padding:13px;
+  border-radius:13px;
+  background:#fff;
+  border:1px solid #cbd5e1;
+}
+
+.gameBtn:hover{
+  background:#f1f5f9;
+}
+
+.selected{
+  background:#dbeafe!important;
+  border-color:#60a5fa!important;
+}
+
+.seat{
+  display:inline-block;
+  border:1px solid #94a3b8;
+  border-radius:14px;
+  padding:12px;
+  margin:6px;
+  background:#fafafa;
+  min-width:145px;
+  text-align:center;
+}
+
+.empty{
+  background:#fff;
+}
+
+.filled{
+  background:#dcfce7;
+}
+
+.owner{
+  font-weight:bold;
+  color:#92400e;
+}
+
+.chatBox{
+  height:260px;
+  overflow:auto;
+  background:#fffbea;
+  border:1px solid #d6bd6b;
+  padding:8px;
+  text-align:left;
+  border-radius:12px;
+  font-size:13px;
+}
+
+.chatInput{
+  display:flex;
+  gap:6px;
+  margin-top:8px;
+}
+
+.chatInput input{
+  flex:1;
+  min-width:0;
+}
+
+.userItem{
+  border-bottom:1px solid #e5e7eb;
+  padding:9px;
+  border-radius:10px;
+}
+
+.userItem.clickable{
+  cursor:pointer;
+}
+
+.userItem.clickable:hover{
+  background:#eef6ff;
+}
+
+.userItem.private{
+  opacity:.8;
+}
+
+.roomBadge{
+  font-size:12px;
+  color:#475569;
+  line-height:1.45;
+}
+
+.roomSteps{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.notice{
+  background:#ecfeff;
+  border:1px solid #67e8f9;
+  border-radius:12px;
+  padding:10px;
+}
+
+.locked{
+  color:#b45309;
+}
+
+.public{
+  color:#047857;
+}
+
+.hidden{
+  display:none!important;
+}
+
+iframe{
+  width:100%;
+  height:650px;
+  border:3px solid #1f2937;
+  border-radius:16px;
+  background:#fff;
+}
+
+#gameArea{
+  margin-top:20px;
+}
+
+.sidebarTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.sidebarTitle h3{
+  margin:4px 0;
+}
+
+@media(max-width:950px){
+  .wrap{
+    grid-template-columns:1fr;
+  }
+
+  .side{
+    position:static;
+    height:auto;
+    border-left:0;
+    border-top:2px solid var(--line);
+  }
+
+  .roomSteps{
+    grid-template-columns:1fr;
+  }
+}
 </style>
 </head>
+
 <body>
 <div class="wrap">
   <div class="main">
-    <h1>GameForge AI</h1>
+    <div class="header">
+      <div class="logo">
+        <h1>GameForge AI</h1>
+        <span>Rooms, tables, chat, and multiplayer browser games.</span>
+      </div>
+    </div>
 
     <div class="card" id="auth">
       <h3>Account</h3>
@@ -20,17 +341,20 @@
         <button onclick="register()">Create Account</button>
         <button onclick="login()" class="primary">Login</button>
       </div>
+
       <div class="row hidden" id="loggedInControls">
         <span id="loggedInLabel" class="pill"></span>
         <button onclick="logout()">Logout</button>
         <a href="/admin" target="_blank">Admin</a>
       </div>
+
       <p id="authStatus" class="muted"></p>
     </div>
 
     <div class="card">
       <h3>Create or Join a Room</h3>
-      <p class="muted">Public rooms can be joined by clicking a user's name in the right sidebar. Private rooms require the room code.</p>
+      <p class="muted">Public rooms can be joined from the sidebar. Private rooms require the room code.</p>
+
       <div class="row">
         <label><input type="checkbox" id="privateRoom"> Private room 🔒</label>
         <button onclick="createRoom()" class="primary">Create Room</button>
@@ -38,10 +362,11 @@
         <button onclick="joinRoom()">Join Room</button>
         <button onclick="leaveRoom()">Leave Room</button>
       </div>
+
       <p>Current room: <b id="roomLabel">None</b> <span id="roomPrivacy"></span></p>
     </div>
 
-    <div class="card" id="roomPanel">
+    <div class="card hidden" id="roomPanel">
       <h2>Room</h2>
       <div id="roomHelp" class="notice">Create or join a room first.</div>
       <div id="roomPeople" class="muted"></div>
@@ -62,15 +387,9 @@
           <p id="startHint" class="muted"></p>
         </div>
       </div>
-
-      <div class="card">
-        <h3>Room Chat</h3>
-        <div class="chatBox" id="chat"></div>
-        <div class="row"><input id="chatText" placeholder="message" style="flex:1"><button onclick="sendChat()">Send</button></div>
-      </div>
     </div>
 
-    <div id="gameArea" class="card">
+    <div id="gameArea" class="card hidden">
       <h2>Game Area</h2>
       <p id="gameHint" class="muted">The started game appears here for seated players.</p>
       <iframe id="gameFrame" sandbox="allow-scripts"></iframe>
@@ -78,9 +397,25 @@
   </div>
 
   <div class="side">
-    <h3>Logged In Users</h3>
-    <p class="muted">Click a user in a public room to join them. Private rooms show a lock and require the code.</p>
-    <div id="presence"></div>
+    <div class="sideCard">
+      <div class="sidebarTitle">
+        <h3>Logged In Users</h3>
+      </div>
+      <p class="muted">Click a user in a public room to join them.</p>
+      <div id="presence"></div>
+    </div>
+
+    <div class="sideCard hidden" id="roomChatPanel">
+      <div class="sidebarTitle">
+        <h3>Room Chat</h3>
+        <span id="chatRoomLabel" class="pill"></span>
+      </div>
+      <div class="chatBox" id="chat"></div>
+      <div class="chatInput">
+        <input id="chatText" placeholder="message">
+        <button onclick="sendChat()" class="primary">Send</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -113,19 +448,33 @@ async function loadGames(){
 
 function connect(){
   if(socket&&socket.readyState===1)return;
+
   socket=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);
+
   socket.onopen=()=>socket.send(JSON.stringify({type:'hello',username:me}));
+
   socket.onmessage=e=>{
     let m=JSON.parse(e.data);
+
     if(m.type==='presence')drawPresence(m.users||[],m.rooms||[]);
+
     if(m.type==='roomJoined'||m.type==='roomUpdate'){
-      room=m.room; currentRoom=room.id; drawRoom();
+      room=m.room;
+      currentRoom=room.id;
+      drawRoom();
       if(m.scroll)scrollToArea(m.scroll);
     }
+
     if(m.type==='chat')drawChat(m.chat);
+
     if(m.type==='roomClosed'){
-      alert('Room closed'); room=null; currentRoom=null; loadedGameKey=''; drawRoom();
+      alert('Room closed');
+      room=null;
+      currentRoom=null;
+      loadedGameKey='';
+      drawRoom();
     }
+
     if(m.type==='gameMove'){
       let f=document.getElementById('gameFrame');
       if(f&&f.contentWindow){
@@ -135,43 +484,128 @@ function connect(){
         }, '*');
       }
     }
+
     if(m.type==='error')alert(m.message||m.error||'Error');
   };
 }
 
 async function register(){
-  let r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user.value,password:pass.value})});
-  let d=await r.json(); if(d.error)return alert(d.error); setLogin(d);
+  let r=await fetch('/api/register',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:user.value,password:pass.value})
+  });
+
+  let d=await r.json();
+  if(d.error)return alert(d.error);
+  setLogin(d);
 }
+
 async function login(){
-  let r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user.value,password:pass.value})});
-  let d=await r.json(); if(d.error)return alert(d.error); setLogin(d);
+  let r=await fetch('/api/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:user.value,password:pass.value})
+  });
+
+  let d=await r.json();
+  if(d.error)return alert(d.error);
+  setLogin(d);
 }
+
 function setLogin(d){
-  me=d.user.username; admin=!!d.admin;
-  localStorage.setItem('gf_user',me); localStorage.setItem('gf_admin',admin);
-  drawAuth(); connect();
+  me=d.user.username;
+  admin=!!d.admin;
+
+  localStorage.setItem('gf_user',me);
+  localStorage.setItem('gf_admin',admin);
+
+  drawAuth();
+  connect();
+
   setTimeout(()=>socket&&socket.send(JSON.stringify({type:'hello',username:me})),200);
 }
+
 function logout(){
-  me=''; admin=false; localStorage.removeItem('gf_user'); localStorage.removeItem('gf_admin');
-  drawAuth(); if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
+  me='';
+  admin=false;
+
+  localStorage.removeItem('gf_user');
+  localStorage.removeItem('gf_admin');
+
+  drawAuth();
+
+  if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
 }
 
-function send(obj){connect(); if(socket.readyState===1)socket.send(JSON.stringify(obj)); else setTimeout(()=>socket.send(JSON.stringify(obj)),200);}
-function createRoom(){send({type:'createRoom',private:privateRoom.checked});}
-function joinRoom(code){let c=(code||roomCode.value||'').trim().toUpperCase(); if(!c)return alert('Enter a room code.'); send({type:'joinRoom',roomId:c});}
-function leaveRoom(){send({type:'leaveRoom'}); room=null; currentRoom=null; loadedGameKey=''; drawRoom();}
-function selectGame(id){if(!room)return alert('Create or join a room first.'); send({type:'selectGame',gameId:id});}
-function sit(i){send({type:'sit',seat:i});}
-function stand(){send({type:'stand'});}
-function startGame(){send({type:'startGame'});}
-function passOwner(to){send({type:'passOwner',to});}
-function closeRoom(){if(confirm('Close this room for everyone?'))send({type:'closeRoom'});}
-function sendChat(){let t=chatText.value.trim(); if(t){send({type:'chat',text:t}); chatText.value='';}}
+function send(obj){
+  connect();
+
+  if(socket.readyState===1){
+    socket.send(JSON.stringify(obj));
+  }else{
+    setTimeout(()=>socket.send(JSON.stringify(obj)),200);
+  }
+}
+
+function createRoom(){
+  send({type:'createRoom',private:privateRoom.checked});
+}
+
+function joinRoom(code){
+  let c=(code||roomCode.value||'').trim().toUpperCase();
+
+  if(!c)return alert('Enter a room code.');
+
+  send({type:'joinRoom',roomId:c});
+}
+
+function leaveRoom(){
+  send({type:'leaveRoom'});
+  room=null;
+  currentRoom=null;
+  loadedGameKey='';
+  drawRoom();
+}
+
+function selectGame(id){
+  if(!room)return alert('Create or join a room first.');
+  send({type:'selectGame',gameId:id});
+}
+
+function sit(i){
+  send({type:'sit',seat:i});
+}
+
+function stand(){
+  send({type:'stand'});
+}
+
+function startGame(){
+  send({type:'startGame'});
+}
+
+function passOwner(to){
+  send({type:'passOwner',to});
+}
+
+function closeRoom(){
+  if(confirm('Close this room for everyone?'))send({type:'closeRoom'});
+}
+
+function sendChat(){
+  let t=chatText.value.trim();
+
+  if(t){
+    send({type:'chat',text:t});
+    chatText.value='';
+  }
+}
 
 function drawGames(){
-  let g=document.getElementById('gameList'); g.innerHTML='';
+  let g=document.getElementById('gameList');
+  g.innerHTML='';
+
   games.forEach(x=>{
     let b=document.createElement('button');
     b.className='gameBtn '+(room&&room.selectedGame&&room.selectedGame.id===x.id?'selected':'');
@@ -182,37 +616,72 @@ function drawGames(){
 }
 
 function drawRoom(){
-  roomPanel.classList.toggle('hidden', !room);
-  gameArea.classList.toggle('hidden', !room);
+  roomPanel.classList.toggle('hidden',!room);
+  gameArea.classList.toggle('hidden',!room);
+  roomChatPanel.classList.toggle('hidden',!room);
+
   roomLabel.innerText=room?room.id:'None';
-  roomPrivacy.innerHTML=room?(room.private?'<span class="pill locked">Private 🔒</span>':'<span class="pill public">Public</span>'):'';
+
+  roomPrivacy.innerHTML=room
+    ? (room.private?'<span class="pill locked">Private 🔒</span>':'<span class="pill public">Public</span>')
+    : '';
+
+  chatRoomLabel.innerText=room?room.id:'';
+
   roomHelp.innerHTML=room
     ? (room.private?'Private room: share the code <b>'+room.id+'</b> to invite people.':'Public room: people can click your name in the sidebar to join.')
     : 'Create or join a room first.';
+
   drawGames();
-  roomPeople.innerHTML=room?'<b>People in room:</b> '+room.players.map(escapeHtml).join(', '):'';
+
+  roomPeople.innerHTML=room
+    ? '<b>People in room:</b> '+room.players.map(escapeHtml).join(', ')
+    : '';
 
   ownerControls.innerHTML='';
+
   if(room&&room.owner===me){
-    ownerControls.innerHTML='<div class="card"><p class="owner">You are the room owner.</p><button class="danger" onclick="closeRoom()">Close Room</button><br><span class="muted">Pass ownership:</span> '+room.players.map(p=>p!==me?'<button onclick="passOwner(\''+escapeAttr(p)+'\')">'+escapeHtml(p)+'</button>':'').join(' ')+'</div>';
+    ownerControls.innerHTML=
+      '<div class="card">'+
+        '<p class="owner">You are the room owner.</p>'+
+        '<button class="danger" onclick="closeRoom()">Close Room</button><br>'+
+        '<span class="muted">Pass ownership:</span> '+
+        room.players.map(p=>p!==me?'<button onclick="passOwner(\''+escapeAttr(p)+'\')">'+escapeHtml(p)+'</button>':'').join(' ')+
+      '</div>';
   }else if(room){
     ownerControls.innerHTML='<p class="muted">Room owner: <b>'+escapeHtml(room.owner||'')+'</b></p>';
   }
 
-  let s=document.getElementById('seats'); s.innerHTML='';
+  let s=document.getElementById('seats');
+  s.innerHTML='';
+
   if(room&&room.selectedGame){
     room.seats.forEach((seat,i)=>{
       let d=document.createElement('div');
       d.className='seat '+(seat?'filled':'empty');
-      d.innerHTML='<b>Seat '+(i+1)+'</b><br>'+(seat?escapeHtml(seat.name):'Open')+'<br><button onclick="sit('+i+')">'+(seat?'Switch Here':'Sit Here')+'</button>';
+      d.innerHTML=
+        '<b>Seat '+(i+1)+'</b><br>'+
+        (seat?escapeHtml(seat.name):'Open')+
+        '<br><button onclick="sit('+i+')">'+(seat?'Switch Here':'Sit Here')+'</button>';
+
       s.appendChild(d);
     });
+
     let seatedCount=room.seats.filter(Boolean).length;
+
     startBtn.style.display=room.owner===me?'inline-block':'none';
-    startHint.innerText=room.owner===me?'Start when the table is ready. Seated players will enter the game.':'Only the room owner can start the game.';
-    if(room.selectedGame) startHint.innerText+=' Selected: '+room.selectedGame.name+' ('+seatedCount+'/'+room.seats.length+' seated).';
+
+    startHint.innerText=room.owner===me
+      ? 'Start when the table is ready. Seated players will enter the game.'
+      : 'Only the room owner can start the game.';
+
+    if(room.selectedGame){
+      startHint.innerText+=' Selected: '+room.selectedGame.name+' ('+seatedCount+'/'+room.seats.length+' seated).';
+    }
   }else{
-    startBtn.style.display='none'; startHint.innerText=''; s.innerHTML='<i>Select a game to create seats.</i>';
+    startBtn.style.display='none';
+    startHint.innerText='';
+    s.innerHTML='<i>Select a game to create seats.</i>';
   }
 
   drawChat(room?room.chat:[]);
@@ -228,13 +697,19 @@ async function maybeLoadGame(){
 
   let seated=room.seats.filter(Boolean);
   let mySeated=seated.some(x=>x.name===me);
+
   gameHint.innerText=mySeated?'You are seated. Play below.':'You are watching this table.';
 
   let key=room.id+'|'+room.selectedGame.file+'|'+room.started+'|'+room.seats.map(x=>x?x.name:'').join(',');
+
   if(loadedGameKey===key)return;
+
   loadedGameKey=key;
 
-  let players=room.seats.map((x,i)=>x?{seat:i,name:x.name}:null).filter(Boolean);
+  let players=room.seats
+    .map((x,i)=>x?{seat:i,name:x.name}:null)
+    .filter(Boolean);
+
   let mySeatIndex=room.seats.findIndex(x=>x&&x.name===me);
 
   let html=await (await fetch('/games/'+room.selectedGame.file+'?v='+Date.now())).text();
@@ -250,8 +725,11 @@ async function maybeLoadGame(){
     '});'+
     '<\/script>';
 
-  if(html.includes('<head>')) html=html.replace('<head>','<head>'+inject);
-  else html=inject+html;
+  if(html.includes('<head>')){
+    html=html.replace('<head>','<head>'+inject);
+  }else{
+    html=inject+html;
+  }
 
   gameFrame.onload=function(){
     if(gameFrame.contentWindow){
@@ -267,17 +745,30 @@ async function maybeLoadGame(){
   scrollToArea('game');
 }
 
-function drawChat(items){chat.innerHTML=(items||[]).map(x=>'<div><b>'+escapeHtml(x.user)+':</b> '+escapeHtml(x.text)+'</div>').join(''); chat.scrollTop=chat.scrollHeight;}
+function drawChat(items){
+  chat.innerHTML=(items||[])
+    .map(x=>'<div><b>'+escapeHtml(x.user)+':</b> '+escapeHtml(x.text)+'</div>')
+    .join('');
+
+  chat.scrollTop=chat.scrollHeight;
+}
+
 function drawPresence(users,rooms){
-  let p=document.getElementById('presence'); p.innerHTML='';
-  if(!users.length){p.innerHTML='<p class="muted">No logged-in users yet.</p>';return;}
+  let p=document.getElementById('presence');
+  p.innerHTML='';
+
+  if(!users.length){
+    p.innerHTML='<p class="muted">No logged-in users yet.</p>';
+    return;
+  }
+
   users.forEach(u=>{
     let d=document.createElement('div');
     let canJoin=u.roomId&&!u.privateRoom;
 
     let matchingRoom=(rooms||[]).find(r=>r.id===u.roomId);
     let selectedGameName =
-      matchingRoom && matchingRoom.selectedGame
+      matchingRoom&&matchingRoom.selectedGame
         ? matchingRoom.selectedGame.name
         : '';
 
@@ -298,9 +789,27 @@ function drawPresence(users,rooms){
     p.appendChild(d);
   });
 }
-function scrollToArea(a){setTimeout(()=>document.getElementById(a==='game'?'gameArea':'tableArea').scrollIntoView({behavior:'smooth',block:'start'}),150);}
-function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function escapeAttr(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'');}
+
+function scrollToArea(a){
+  setTimeout(()=>{
+    document.getElementById(a==='game'?'gameArea':'tableArea')
+      .scrollIntoView({behavior:'smooth',block:'start'});
+  },150);
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+
+function escapeAttr(s){
+  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'');
+}
 
 window.addEventListener('message',e=>{
   if(e.data&&e.data.type==='move'&&socket){
