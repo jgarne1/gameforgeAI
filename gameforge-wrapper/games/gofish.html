@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Go Fish (vs CPU)</title>
+<style>
+body { font-family: Arial; text-align: center; }
+
+.area { margin: 10px; }
+
+.card {
+display: inline-block;
+padding: 10px;
+margin: 5px;
+border: 1px solid black;
+cursor: pointer;
+background: white;
+}
+
+.back {
+background: #444;
+color: white;
+}
+
+#pool .card {
+background: #888;
+color: white;
+}
+
+</style>
+</head>
+<body>
+
+<h2>Go Fish (vs CPU)</h2>
+<div id="status">Your turn: Click a card to ask</div>
+
+<div class="area">
+  <h3>CPU Hand</h3>
+  <div id="cpu"></div>
+</div>
+
+<div class="area">
+  <h3>Card Pool</h3>
+  <div id="pool"></div>
+</div>
+
+<div class="area">
+  <h3>Your Hand</h3>
+  <div id="hand"></div>
+</div>
+
+<div class="area">
+  <h3>Pairs</h3>
+  <div id="books"></div>
+</div>
+
+<script>
+const suits = ["♠","♥","♦","♣"];
+const ranks = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+let pool = [];
+let playerHand = [];
+let cpuHand = [];
+let playerBooks = [];
+let cpuBooks = [];
+let gameOver = false;
+let locked = false;
+
+function init(){
+  let deck = [];
+
+  suits.forEach(s=>{
+    ranks.forEach(r=>{
+      deck.push(r);
+    });
+  });
+
+  shuffle(deck);
+
+  playerHand = deck.splice(0,7);
+  cpuHand = deck.splice(0,7);
+  pool = deck;
+
+  checkPairs(playerHand, playerBooks);
+  checkPairs(cpuHand, cpuBooks);
+
+  draw();
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+}
+
+function draw(){
+  const handDiv = document.getElementById("hand");
+  const cpuDiv = document.getElementById("cpu");
+  const poolDiv = document.getElementById("pool");
+  const booksDiv = document.getElementById("books");
+
+  handDiv.innerHTML="";
+  playerHand.forEach(r=>{
+    const card = document.createElement("div");
+    card.className="card";
+    card.innerText=r;
+    card.onclick=()=>playerAsk(r);
+    handDiv.appendChild(card);
+  });
+
+  cpuDiv.innerHTML="";
+  for(let i=0;i<cpuHand.length;i++){
+    const card = document.createElement("div");
+    card.className="card back";
+    card.innerText="?";
+    cpuDiv.appendChild(card);
+  }
+
+  poolDiv.innerHTML="";
+  for(let i=0;i<pool.length;i++){
+    const card = document.createElement("div");
+    card.className="card";
+    card.innerText="Draw";
+    card.onclick=()=>drawFromPool();
+    poolDiv.appendChild(card);
+  }
+
+  booksDiv.innerText =
+    "You: "+playerBooks.join(", ") +
+    " | CPU: "+cpuBooks.length+" pairs";
+}
+
+async function playerAsk(rank){
+  if (gameOver || locked) return;
+  locked = true;
+
+  setStatus("You ask for " + rank);
+  await wait(800);
+
+  let taken = cpuHand.filter(r=>r===rank);
+
+  if (taken.length>0){
+    cpuHand = cpuHand.filter(r=>r!==rank);
+    playerHand = playerHand.concat(taken);
+    setStatus("CPU gives you " + taken.length + " " + rank);
+  } else {
+    setStatus("Go Fish! Pick a card from the pool.");
+    locked = false;
+    return;
+  }
+
+  checkPairs(playerHand, playerBooks);
+  draw();
+
+  await wait(1000);
+  await cpuTurn();
+  locked = false;
+}
+
+function drawFromPool(){
+  if (locked || gameOver) return;
+
+  if (pool.length>0){
+    let card = pool.pop();
+    playerHand.push(card);
+    setStatus("You drew " + card);
+    checkPairs(playerHand, playerBooks);
+    draw();
+    cpuTurn();
+  }
+}
+
+async function cpuTurn(){
+  if (gameOver) return;
+
+  locked = true;
+
+  let rank = cpuHand[Math.floor(Math.random()*cpuHand.length)];
+  setStatus("CPU asks for " + rank);
+  await wait(1200);
+
+  let taken = playerHand.filter(r=>r===rank);
+
+  if (taken.length>0){
+    playerHand = playerHand.filter(r=>r!==rank);
+    cpuHand = cpuHand.concat(taken);
+    setStatus("You give CPU your " + rank);
+  } else {
+    setStatus("CPU goes fishing...");
+    await wait(800);
+
+    if (pool.length>0){
+      cpuHand.push(pool.pop());
+    }
+  }
+
+  checkPairs(cpuHand, cpuBooks);
+  draw();
+
+  await wait(800);
+  setStatus("Your turn");
+  locked = false;
+}
+
+function checkPairs(hand, books){
+  let counts = {};
+  hand.forEach(r=>{
+    counts[r]=(counts[r]||0)+1;
+  });
+
+  for(let r in counts){
+    while(counts[r] >= 2){
+      books.push(r);
+      counts[r] -= 2;
+
+      hand.splice(hand.indexOf(r),1);
+      hand.splice(hand.indexOf(r),1);
+    }
+  }
+
+  if (playerBooks.length + cpuBooks.length >= 26){
+    endGame();
+  }
+}
+
+function setStatus(text){
+  document.getElementById("status").innerText = text;
+}
+
+function endGame(){
+  gameOver = true;
+  let result = playerBooks.length > cpuBooks.length ? "You win!" : "CPU wins!";
+  setStatus(result);
+}
+
+function wait(ms){
+  return new Promise(res=>setTimeout(res, ms));
+}
+
+// multiplayer hooks
+window.sendMove = function(data){
+  parent.postMessage({type:"move",data},"*");
+};
+
+window.onMove = function(data){};
+
+init();
+</script>
+
+</body>
+</html>
