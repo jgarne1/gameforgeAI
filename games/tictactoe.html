@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><title>Tic Tac Toe</title><style>body{font-family:Arial;text-align:center}.board{display:grid;grid-template-columns:repeat(3,100px);gap:6px;justify-content:center}.cell{width:100px;height:100px;font-size:44px;border:2px solid #222;display:flex;align-items:center;justify-content:center;cursor:pointer}button{margin:10px;padding:8px}</style></head><body>
+<h2>Tic Tac Toe</h2><div id="status">X turn</div><button onclick="newGame(true)">New Game</button><div class="board" id="board"></div>
+<script>
+let b=Array(9).fill(''), turn='X', over=false;
+function draw(){board.innerHTML=''; b.forEach((v,i)=>{let c=document.createElement('div');c.className='cell';c.innerText=v;c.onclick=()=>move(i,true);board.appendChild(c);});}
+function move(i,sendIt){if(over||b[i])return;b[i]=turn;if(win(turn)){status.innerText=turn+' wins';over=true;window.parent.postMessage({type:'gameResult',winnerSeat:turn==='X'?'p1':'p2'},'*');}else if(!b.includes('')){status.innerText='Tie';over=true;window.parent.postMessage({type:'gameResult',winnerSeat:'tie'},'*');}else{turn=turn==='X'?'O':'X';status.innerText=turn+' turn';}draw();if(sendIt)window.sendMove({type:'move',i});}
+function win(p){return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(x=>x.every(i=>b[i]===p));}
+function newGame(sendIt){b=Array(9).fill('');turn='X';over=false;status.innerText='X turn';draw();if(sendIt)window.sendMove({type:'new'});}
+window.sendMove=data=>parent.postMessage({type:'move',data},'*');
+window.onMove=data=>{if(data.type==='move')move(data.i,false); if(data.type==='new')newGame(false);};
+draw();
+</script></body></html>
