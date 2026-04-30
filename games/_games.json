@@ -1,6 +1,7 @@
 {
   "games": [
     {"id":"tictactoe","name":"Tic Tac Toe","file":"tictactoe.html","seats":2,"description":"Classic 2-player grid game."},
+    {"id":"connect4","name":"Connect 4","file":"connect4.html","seats":2,"description":"Classic 2-player disc-dropping strategy game."},
     {"id":"gofish","name":"Go Fish","file":"gofish.html","seats":4,"description":"Simple card game with a visible pond."},
     {"id":"yahtzee","name":"Yahtzee","file":"yahtzee.html","seats":4,"description":"Dice game with score sheets."}
   ]
