@@ -1,1 +1,190 @@
-<!DOCTYPE html><html><head><title>Yahtzee</title><style>body{font-family:Arial;text-align:center}.die{display:inline-block;font-size:38px;border:2px solid #111;padding:12px;margin:6px;border-radius:8px}.held{background:#ffeaa7}button{padding:8px;margin:5px}td,th{border:1px solid #999;padding:5px}table{margin:auto;border-collapse:collapse}</style></head><body><h2>Yahtzee</h2><div id="status">Roll</div><button onclick="newGame(true)">New Game</button><button onclick="roll(true)">Roll</button><div id="dice"></div><p>Rolls left: <span id="left"></span></p><table><tbody id="sheet"></tbody></table><script>const cats=['Ones','Twos','Threes','Fours','Fives','Sixes','Chance'];let st;function fresh(){return{dice:[1,1,1,1,1],held:[0,0,0,0,0],left:3,turn:'p1',scores:{p1:{},p2:{}},log:'Player 1 turn'}}function newGame(send){st=fresh();draw();if(send)sendMove({type:'state',st});}function draw(){dice.innerHTML=st.dice.map((v,i)=>`<span class="die ${st.held[i]?'held':''}" onclick="hold(${i},true)">${'⚀⚁⚂⚃⚄⚅'[v-1]}</span>`).join('');left.innerText=st.left;status.innerText=st.log;sheet.innerHTML='<tr><th>Cat</th><th>P1</th><th>P2</th></tr>'+cats.map(c=>`<tr><td>${c}</td><td onclick="score('${c}',true)">${st.scores.p1[c]??''}</td><td>${st.scores.p2[c]??''}</td></tr>`).join('');}function roll(send){if(st.left<=0)return;st.dice=st.dice.map((v,i)=>st.held[i]?v:1+Math.floor(Math.random()*6));st.left--;draw();if(send)sendMove({type:'state',st});}function hold(i,send){st.held[i]=!st.held[i];draw();if(send)sendMove({type:'state',st});}function score(c,send){if(st.scores.p1[c]!=null)return;st.scores.p1[c]=calc(c);st.log='Scored '+st.scores.p1[c];st.left=3;st.held=[0,0,0,0,0];draw();if(send)sendMove({type:'state',st});}function calc(c){let n=cats.indexOf(c)+1;if(c==='Chance')return st.dice.reduce((a,b)=>a+b,0);return st.dice.filter(x=>x===n).length*n;}window.sendMove=d=>parent.postMessage({type:'move',data:d},'*');window.onMove=d=>{if(d.type==='state'){st=d.st;draw();}};newGame(false);</script></body></html>
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Yahtzee (Up to 4 Players)</title>
+<style>
+body{font-family:Arial;text-align:center;background:#f4efe6;margin:0}
+#game{display:grid;grid-template-columns:1fr 420px;gap:12px;padding:12px;max-width:1200px;margin:auto}
+.panel{background:#fff;border:2px solid #333;border-radius:10px;padding:10px}
+#status{font-size:20px;font-weight:bold;margin:10px}
+#diceArea{height:160px;border:2px dashed #aaa;border-radius:12px;background:#e8f4e8;display:flex;justify-content:center;align-items:center;gap:10px}
+.die{width:60px;height:60px;border:2px solid #111;border-radius:10px;background:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.held{background:#ffeaa7}
+.activeCol{background:#fff3b0}
+button{margin:5px;padding:8px 12px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #999;padding:5px}
+.scoreChoice{background:#dff0ff;cursor:pointer}
+</style>
+</head>
+<body>
+
+<h2>Yahtzee</h2>
+<div id="status">Select your seat</div>
+
+<div id="game">
+<div class="panel">
+
+<div>
+<button onclick="setSeat(0)">Seat 1</button>
+<button onclick="setSeat(1)">Seat 2</button>
+<button onclick="setSeat(2)">Seat 3</button>
+<button onclick="setSeat(3)">Seat 4</button>
+</div>
+
+<p>You: <b id="me">None</b></p>
+<p>Turn: <b id="turn"></b></p>
+
+<div id="diceArea"></div>
+
+<button onclick="roll()">🎲 Roll</button> <button onclick="newGame()">New Game</button>
+
+<p>Rolls left: <span id="rolls">3</span></p>
+
+</div>
+
+<div class="panel">
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th id="h0"></th>
+<th id="h1"></th>
+<th id="h2"></th>
+<th id="h3"></th>
+</tr>
+</thead>
+<tbody id="sheet"></tbody>
+</table>
+</div>
+</div>
+
+<script>
+const cats=["Ones","Twos","Threes","Fours","Fives","Sixes","Chance"];
+let players=["Seat 1","Seat 2","Seat 3","Seat 4"];
+if(window.GAME_PLAYERS){
+  window.GAME_PLAYERS.forEach(p=>{
+    players[p.seat]=p.name;
+  });
+}
+
+let scores=[{},{},{},{}];
+let dice=[1,1,1,1,1];
+let held=[false,false,false,false,false];
+let rolls=3;
+let turn=0;
+let me=null;
+let gameOver=false;
+
+function setSeat(n){
+  me=n;
+  document.getElementById("me").innerText=players[n];
+  draw();
+}
+
+function draw(){
+  document.getElementById("turn").innerText=players[turn]+"'s turn";
+  document.getElementById("rolls").innerText=rolls;
+
+  for(let i=0;i<4;i++){
+    document.getElementById("h"+i).innerText=players[i];
+    document.getElementById("h"+i).className=(i===turn)?"activeCol":"";
+  }
+
+  let d=document.getElementById("diceArea");
+  d.innerHTML="";
+  dice.forEach((v,i)=>{
+    let el=document.createElement("div");
+    el.className="die"+(held[i]?" held":"");
+    el.innerText=["","⚀","⚁","⚂","⚃","⚄","⚅"][v];
+    el.onclick=()=>toggle(i);
+    d.appendChild(el);
+  });
+
+  let sheet=document.getElementById("sheet");
+  sheet.innerHTML="";
+  cats.forEach(c=>{
+    let tr=document.createElement("tr");
+    let name=document.createElement("td");
+    name.innerText=c;
+    tr.appendChild(name);
+
+    for(let p=0;p<4;p++){
+      let td=document.createElement("td");
+      if(scores[p][c]!=null){
+        td.innerText=scores[p][c];
+      } else if(p===turn && p===me && rolls<3){
+        td.innerText=score(c);
+        td.className="scoreChoice";
+        td.onclick=()=>choose(c);
+      }
+      tr.appendChild(td);
+    }
+    sheet.appendChild(tr);
+  });
+}
+
+function toggle(i){
+  if(turn!==me||rolls===3)return;
+  held[i]=!held[i];
+  draw();
+}
+
+function roll(){
+  if(turn!==me||rolls<=0)return;
+  for(let i=0;i<5;i++){
+    if(!held[i])dice[i]=rand();
+  }
+  rolls--;
+  draw();
+  sendMove({type:"roll",dice,held,rolls});
+}
+
+function choose(c){
+  scores[turn][c]=score(c);
+  nextTurn();
+  sendMove({type:"score",c,val:scores[turn][c]});
+}
+
+function nextTurn(){
+  turn=(turn+1)%4;
+  rolls=3;
+  held=[false,false,false,false,false];
+  draw();
+}
+
+function score(c){
+  if(c==="Chance")return dice.reduce((a,b)=>a+b,0);
+  let n=cats.indexOf(c)+1;
+  return dice.filter(x=>x===n).length*n;
+}
+
+function rand(){return Math.floor(Math.random()*6)+1;}
+
+function newGame(){
+  scores=[{},{},{},{}];
+  turn=0;
+  rolls=3;
+  dice=[1,1,1,1,1];
+  held=[false,false,false,false,false];
+  draw();
+  sendMove({type:"new"});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:"move",data},"*");
+};
+
+window.onMove=function(d){
+  if(d.type==="roll"){dice=d.dice;held=d.held;rolls=d.rolls;}
+  if(d.type==="score"){scores[turn][d.c]=d.val;nextTurn();}
+  if(d.type==="new"){newGame();}
+  draw();
+};
+
+draw();
+</script>
+
+</body>
+</html>
