@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dots and Boxes</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--line:#334155;--gold:#facc15;--muted:#cbd5e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#334155,#0f172a);color:white;text-align:center;overflow:hidden}
+.wrap{height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
+.top,.status,.game,.bottom{background:rgba(30,41,59,.95);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.25)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:9px 12px}
+h2{margin:0}
+button{padding:8px 12px;border-radius:10px;border:1px solid #94a3b8;background:#f8fafc;color:#111;font-weight:bold;cursor:pointer}
+button.gold{background:var(--gold);border-color:var(--gold)}
+.status{padding:8px}
+.statusMain{font-size:18px;font-weight:bold}
+.muted{font-size:12px;color:var(--muted)}
+.game{display:flex;align-items:center;justify-content:center;overflow:hidden}
+.board{position:relative;width:560px;height:430px;background:#f8fafc;border-radius:18px;border:4px solid #cbd5e1}
+.dot{position:absolute;width:14px;height:14px;border-radius:50%;background:#111827;transform:translate(-50%,-50%);z-index:5}
+.edge{position:absolute;background:#cbd5e1;border-radius:999px;cursor:pointer;z-index:3;transition:.12s}
+.edge:hover{background:#facc15}
+.edge.taken{cursor:not-allowed}
+.edge.h{height:10px;transform:translateY(-50%)}
+.edge.v{width:10px;transform:translateX(-50%)}
+.box{position:absolute;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:white;opacity:.9;z-index:1}
+.players{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px}
+.player{min-width:130px;border-radius:13px;padding:7px 10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+.player.turn{outline:3px solid var(--gold)}
+.log{height:48px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:6px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Dots & Boxes</h2>
+    <button class="gold" onclick="newGame(true)">New Game</button>
+  </div>
+
+  <div class="status">
+    <div id="statusMain" class="statusMain">Loading players...</div>
+    <div id="statusHelp" class="muted">Draw lines. Complete a box to score and go again.</div>
+  </div>
+
+  <div class="game">
+    <div id="board" class="board"></div>
+  </div>
+
+  <div class="bottom">
+    <div id="playersPanel" class="players"></div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+const GAME_META={id:'dots',name:'Dots & Boxes',minPlayers:2,maxPlayers:4,seats:4};
+
+const ROWS=5;
+const COLS=6;
+const COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b'];
+
+let players=[];
+let mySeat=null;
+let state=null;
+
+function el(id){return document.getElementById(id);}
+function setStatus(a,b){el('statusMain').innerText=a;el('statusHelp').innerText=b||'';}
+
+window.onerror=function(msg){setStatus('Game error: '+msg,'Check console for details.');};
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(Array.isArray(setupPlayers)&&setupPlayers.length){
+    players=setupPlayers.slice(0,4).map((p,i)=>({
+      seat:p.seat,
+      name:p.name||('Seat '+(p.seat+1)),
+      color:COLORS[i],
+      initial:(p.name||('S'+(p.seat+1))).trim().charAt(0).toUpperCase()
+    }));
+  }
+
+  mySeat=setupSeat;
+
+  if(players.length<2){
+    setStatus('Waiting for players...','Dots & Boxes needs 2–4 seated players.');
+    drawEmpty();
+    return;
+  }
+
+  if(!state)state=fresh();
+  draw();
+}
+
+function fresh(){
+  return {
+    h:{},
+    v:{},
+    boxes:{},
+    turn:players[0].seat,
+    gameOver:false,
+    log:['New game started.']
+  };
+}
+
+function draw(){
+  if(!state||players.length<2){
+    drawEmpty();
+    return;
+  }
+
+  drawBoard();
+  drawPlayers();
+  drawLog();
+
+  if(state.gameOver){
+    let winner=getWinner();
+    setStatus('Game Over — Winner: '+winner,'Start a new game to play again.');
+  }else{
+    setStatus('Current Turn: '+name(state.turn),state.turn===mySeat?'Your move. Draw a line.':'Waiting for '+name(state.turn)+'.');
+  }
+}
+
+function drawEmpty(){
+  el('board').innerHTML='';
+  el('playersPanel').innerHTML='';
+  el('log').innerHTML='';
+}
+
+function drawBoard(){
+  let b=el('board');
+  b.innerHTML='';
+
+  let marginX=55,marginY=45;
+  let gapX=(560-marginX*2)/(COLS-1);
+  let gapY=(430-marginY*2)/(ROWS-1);
+
+  for(let r=0;r<ROWS-1;r++){
+    for(let c=0;c<COLS-1;c++){
+      let owner=state.boxes[boxKey(r,c)];
+      if(owner!==undefined){
+        let p=playerBySeat(owner);
+        let box=document.createElement('div');
+        box.className='box';
+        box.style.left=(marginX+c*gapX+7)+'px';
+        box.style.top=(marginY+r*gapY+7)+'px';
+        box.style.width=(gapX-14)+'px';
+        box.style.height=(gapY-14)+'px';
+        box.style.background=p?p.color:'#64748b';
+        box.innerText=p?p.initial:'?';
+        b.appendChild(box);
+      }
+    }
+  }
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS-1;c++){
+      let k=hKey(r,c);
+      let e=document.createElement('div');
+      e.className='edge h '+(state.h[k]!==undefined?'taken':'');
+      e.style.left=(marginX+c*gapX+7)+'px';
+      e.style.top=(marginY+r*gapY)+'px';
+      e.style.width=(gapX-14)+'px';
+      if(state.h[k]!==undefined)e.style.background=colorOf(state.h[k]);
+      e.onclick=()=>takeLine('h',r,c);
+      b.appendChild(e);
+    }
+  }
+
+  for(let r=0;r<ROWS-1;r++){
+    for(let c=0;c<COLS;c++){
+      let k=vKey(r,c);
+      let e=document.createElement('div');
+      e.className='edge v '+(state.v[k]!==undefined?'taken':'');
+      e.style.left=(marginX+c*gapX)+'px';
+      e.style.top=(marginY+r*gapY+7)+'px';
+      e.style.height=(gapY-14)+'px';
+      if(state.v[k]!==undefined)e.style.background=colorOf(state.v[k]);
+      e.onclick=()=>takeLine('v',r,c);
+      b.appendChild(e);
+    }
+  }
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      let d=document.createElement('div');
+      d.className='dot';
+      d.style.left=(marginX+c*gapX)+'px';
+      d.style.top=(marginY+r*gapY)+'px';
+      b.appendChild(d);
+    }
+  }
+}
+
+function takeLine(type,r,c){
+  if(state.gameOver||state.turn!==mySeat)return;
+
+  let store=type==='h'?state.h:state.v;
+  let key=type==='h'?hKey(r,c):vKey(r,c);
+
+  if(store[key]!==undefined)return;
+
+  store[key]=mySeat;
+
+  let made=claimBoxes(type,r,c,mySeat);
+
+  if(made>0){
+    add(name(mySeat)+' completed '+made+' box'+(made>1?'es':'')+' and goes again.');
+  }else{
+    nextTurn();
+  }
+
+  if(Object.keys(state.boxes).length===(ROWS-1)*(COLS-1)){
+    state.gameOver=true;
+    add('Game over.');
+  }
+
+  draw();
+  sync();
+}
+
+function claimBoxes(type,r,c,seat){
+  let made=0;
+  let candidates=[];
+
+  if(type==='h'){
+    candidates.push([r-1,c]);
+    candidates.push([r,c]);
+  }else{
+    candidates.push([r,c-1]);
+    candidates.push([r,c]);
+  }
+
+  candidates.forEach(x=>{
+    let br=x[0],bc=x[1];
+    if(br<0||br>=ROWS-1||bc<0||bc>=COLS-1)return;
+
+    let bk=boxKey(br,bc);
+    if(state.boxes[bk]!==undefined)return;
+
+    if(
+      state.h[hKey(br,bc)]!==undefined &&
+      state.h[hKey(br+1,bc)]!==undefined &&
+      state.v[vKey(br,bc)]!==undefined &&
+      state.v[vKey(br,bc+1)]!==undefined
+    ){
+      state.boxes[bk]=seat;
+      made++;
+    }
+  });
+
+  return made;
+}
+
+function drawPlayers(){
+  let html='';
+  players.forEach(p=>{
+    html+='<div class="player '+(state.turn===p.seat&&!state.gameOver?'turn':'')+'">'+
+      '<b style="color:'+p.color+'">'+escapeHtml(p.name)+'</b><br>'+
+      '<span class="muted">Score: '+score(p.seat)+(p.seat===mySeat?' · You':'')+'</span>'+
+    '</div>';
+  });
+  el('playersPanel').innerHTML=html;
+}
+
+function drawLog(){
+  el('log').innerHTML=state.log.slice(-4).map(x=>'• '+escapeHtml(x)).join('<br>');
+  el('log').scrollTop=el('log').scrollHeight;
+}
+
+function score(seat){
+  return Object.values(state.boxes).filter(x=>x===seat).length;
+}
+
+function getWinner(){
+  let best=players[0];
+  players.forEach(p=>{if(score(p.seat)>score(best.seat))best=p;});
+  return best.name+' with '+score(best.seat)+' boxes';
+}
+
+function nextTurn(){
+  let i=players.findIndex(p=>p.seat===state.turn);
+  state.turn=players[(i+1)%players.length].seat;
+}
+
+function newGame(sendIt){
+  if(players.length<2)return;
+  state=fresh();
+  draw();
+  if(sendIt)sync();
+}
+
+function sync(){window.sendMove({type:'state',state});}
+window.sendMove=function(data){parent.postMessage({type:'move',data:data},'*');};
+
+window.onMove=function(data){
+  if(!data)return;
+  if(data.type==='gameSetup'){receiveSetup(data.players,data.mySeat);return;}
+  if(data.type==='state'){state=data.state;draw();}
+};
+
+window.addEventListener('message',function(event){
+  let data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function hKey(r,c){return r+','+c;}
+function vKey(r,c){return r+','+c;}
+function boxKey(r,c){return r+','+c;}
+function playerBySeat(seat){return players.find(p=>p.seat===seat);}
+function colorOf(seat){let p=playerBySeat(seat);return p?p.color:'#64748b';}
+function name(seat){let p=playerBySeat(seat);return p?p.name:'Seat '+(Number(seat)+1);}
+function add(t){state.log.push(t);if(state.log.length>50)state.log.shift();}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+drawEmpty();
+receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+
+setTimeout(function(){
+  receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+},250);
+</script>
+</body>
+</html>
