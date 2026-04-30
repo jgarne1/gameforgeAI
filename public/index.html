@@ -283,7 +283,9 @@ button:disabled{
 
 iframe{
   width:100%;
-  height:650px;
+  height:82vh;
+  min-height:650px;
+  max-height:900px;
   border:3px solid #1f2937;
   border-radius:16px;
   background:#fff;
@@ -345,7 +347,7 @@ iframe{
       <div class="row hidden" id="loggedInControls">
         <span id="loggedInLabel" class="pill"></span>
         <button onclick="logout()">Logout</button>
-        <a href="/admin" target="_blank">Admin</a>
+        <a href="/admin" target="_blank" id="adminLink" class="hidden">Admin</a>
       </div>
 
       <p id="authStatus" class="muted"></p>
@@ -434,10 +436,18 @@ function drawAuth(){
     loggedInControls.classList.remove('hidden');
     loggedInLabel.innerText='Logged in as '+me;
     authStatus.innerText='';
+
+    if(admin){
+      adminLink.classList.remove('hidden');
+    }else{
+      adminLink.classList.add('hidden');
+    }
   }else{
     loginControls.classList.remove('hidden');
     loggedInControls.classList.add('hidden');
     loggedInLabel.innerText='';
+    authStatus.innerText='';
+    adminLink.classList.add('hidden');
   }
 }
 
