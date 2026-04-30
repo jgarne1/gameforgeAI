@@ -3,39 +3,145 @@
 <head>
 <title>Block Miner</title>
 <style>
-:root{--bg:#12351f;--panel:#1f2937;--line:#475569;--grass:#3f8f3f;--dirt:#8b5a2b;--stone:#64748b;--iron:#cbd5e1;--diamond:#38bdf8;--gold:#facc15;--red:#ef4444;--muted:#cbd5e1}
+:root{
+  --bg:#0f172a;
+  --panel:#1e293b;
+  --line:#475569;
+  --gold:#facc15;
+  --muted:#cbd5e1;
+  --red:#ef4444;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#12351f,#0f172a);color:white;text-align:center;overflow:hidden}
-.wrap{height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
-.top,.status,.game,.bottom{background:rgba(15,23,42,.92);border:2px solid rgba(255,255,255,.15);border-radius:16px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
-.top{display:flex;justify-content:space-between;align-items:center;padding:9px 12px}
-h2{margin:0;font-size:24px;text-shadow:2px 2px #000}
-button{padding:8px 12px;border-radius:8px;border:2px solid #111;background:#e5e7eb;color:#111;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #64748b}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(135deg,#14532d,#0f172a);
+  color:white;
+  text-align:center;
+  overflow:hidden;
+}
+.wrap{
+  height:650px;
+  padding:10px;
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:8px;
+}
+.top,.status,.game,.bottom{
+  background:rgba(15,23,42,.93);
+  border:2px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  box-shadow:0 10px 24px rgba(0,0,0,.3);
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:9px 12px;
+}
+h2{
+  margin:0;
+  font-size:24px;
+  text-shadow:2px 2px #000;
+}
+button{
+  padding:8px 12px;
+  border-radius:9px;
+  border:2px solid #111;
+  background:#e5e7eb;
+  color:#111;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 4px 0 #64748b;
+}
 button.gold{background:var(--gold)}
 button:disabled{opacity:.45;cursor:not-allowed}
 .status{padding:8px}
 .statusMain{font-size:18px;font-weight:bold}
 .muted{font-size:12px;color:var(--muted)}
-.game{display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px}
-.board{display:grid;grid-template-columns:repeat(12,38px);grid-template-rows:repeat(10,38px);gap:3px;background:#111827;border:5px solid #5b3418;border-radius:12px;padding:8px}
-.tile{width:38px;height:38px;border-radius:4px;border:2px solid rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:15px;cursor:pointer;user-select:none;box-shadow:inset 3px 3px rgba(255,255,255,.18), inset -3px -3px rgba(0,0,0,.22)}
-.tile.hidden{background:linear-gradient(135deg,#4ade80,#166534)}
-.tile.hidden:hover{outline:3px solid var(--gold)}
-.tile.revealed{background:#8b5a2b;color:white}
+.game{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  padding:8px;
+}
+.board{
+  display:grid;
+  grid-template-columns:repeat(12,38px);
+  grid-template-rows:repeat(10,38px);
+  gap:3px;
+  background:#111827;
+  border:5px solid #5b3418;
+  border-radius:12px;
+  padding:8px;
+}
+.tile{
+  width:38px;
+  height:38px;
+  border-radius:4px;
+  border:2px solid rgba(0,0,0,.42);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:14px;
+  cursor:pointer;
+  user-select:none;
+  box-shadow:inset 3px 3px rgba(255,255,255,.18), inset -3px -3px rgba(0,0,0,.28);
+}
+.tile:hover{outline:3px solid var(--gold)}
+.tile.hidden.dirt{background:linear-gradient(135deg,#8b5a2b,#4b2e13)}
+.tile.hidden.stone{background:linear-gradient(135deg,#94a3b8,#475569)}
+.tile.hidden.coal{background:linear-gradient(135deg,#475569,#111827)}
+.tile.hidden.iron{background:linear-gradient(135deg,#e5e7eb,#94a3b8)}
+.tile.hidden.gold{background:linear-gradient(135deg,#fde68a,#d97706)}
+.tile.hidden.diamond{background:linear-gradient(135deg,#67e8f9,#0891b2)}
+.tile.revealed{filter:brightness(1.12)}
+.tile.dirt{background:#8b5a2b}
 .tile.stone{background:#64748b}
+.tile.coal{background:#1f2937}
 .tile.iron{background:#cbd5e1;color:#111}
-.tile.diamond{background:#38bdf8;color:#082f49}
 .tile.gold{background:#facc15;color:#111}
+.tile.diamond{background:#38bdf8;color:#082f49}
 .tile.tnt{background:#dc2626;color:white}
 .tile.chest{background:#92400e;color:#facc15}
-.tile.flag{background:#166534;color:#facc15}
-.tile.locked{filter:brightness(.65)}
-.players{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px}
-.player{min-width:145px;border-radius:12px;padding:7px 10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+.tile.blocked{opacity:.55}
+.players{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  padding:8px;
+}
+.player{
+  min-width:145px;
+  border-radius:12px;
+  padding:7px 10px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+}
 .player.turn{outline:3px solid var(--gold)}
-.log{height:50px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:6px;font-size:12px}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
+.log{
+  height:52px;
+  overflow:auto;
+  text-align:left;
+  background:#fffbea;
+  color:#1f2937;
+  border-radius:10px;
+  padding:6px;
+  font-size:12px;
+}
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  font-size:12px;
+}
 .tool{font-weight:bold;color:#facc15}
+.legend{font-size:12px;color:#d1d5db}
 </style>
 </head>
 <body>
@@ -44,13 +150,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
     <h2>Block Miner</h2>
     <div>
       <span id="meLabel" class="badge"></span>
-      <button class="gold" onclick="newGame(true)">New Game</button>
+      <button class="gold" onclick="newGame(true)">New World</button>
     </div>
   </div>
 
   <div class="status">
     <div id="statusMain" class="statusMain">Loading players...</div>
-    <div id="statusHelp" class="muted">Mine blocks, avoid TNT, find chests, upgrade your pickaxe.</div>
+    <div id="statusHelp" class="muted">Mine blocks, avoid hidden TNT, find chests, upgrade your pickaxe.</div>
+    <div class="legend">Brown=Dirt · Gray=Stone · Black=Coal · White=Iron · Gold=Gold · Cyan=Diamond</div>
   </div>
 
   <div class="game">
@@ -68,8 +175,8 @@ const GAME_META={id:'blockminer',name:'Block Miner',minPlayers:1,maxPlayers:4,se
 
 const ROWS=10;
 const COLS=12;
-const TNT_COUNT=16;
-const CHEST_COUNT=7;
+const TNT_COUNT=14;
+const CHEST_COUNT=8;
 
 const TOOLS=[
   {id:'wood',name:'Wood Pickaxe',level:1},
@@ -80,9 +187,11 @@ const TOOLS=[
 
 const BLOCKS=[
   {type:'dirt',label:'Dirt',level:1,points:1,icon:''},
-  {type:'stone',label:'Stone',level:2,points:2,icon:'S'},
-  {type:'iron',label:'Iron Ore',level:3,points:4,icon:'Fe'},
-  {type:'diamond',label:'Diamond Ore',level:4,points:8,icon:'D'}
+  {type:'stone',label:'Stone',level:1,points:2,icon:'S'},
+  {type:'coal',label:'Coal',level:1,points:3,icon:'C'},
+  {type:'iron',label:'Iron Ore',level:2,points:5,icon:'Fe'},
+  {type:'gold',label:'Gold Ore',level:3,points:7,icon:'Au'},
+  {type:'diamond',label:'Diamond Ore',level:4,points:10,icon:'D'}
 ];
 
 let players=[];
@@ -139,7 +248,7 @@ function fresh(){
     alive:alive,
     gameOver:false,
     winner:null,
-    log:['New mining world generated. Find chests to upgrade your pickaxe.']
+    log:['New world generated. Chests upgrade your pickaxe. TNT is hidden.']
   };
 }
 
@@ -149,19 +258,11 @@ function createGrid(){
   for(let r=0;r<ROWS;r++){
     grid[r]=[];
     for(let c=0;c<COLS;c++){
-      let roll=Math.random();
-      let block='dirt';
-
-      if(roll>.88)block='diamond';
-      else if(roll>.74)block='iron';
-      else if(roll>.42)block='stone';
-
       grid[r][c]={
         revealed:false,
-        flagged:false,
         tnt:false,
         chest:false,
-        block:block,
+        block:randomBlockByDepth(r),
         owner:null,
         number:0
       };
@@ -173,6 +274,18 @@ function createGrid(){
   computeNumbers(grid);
 
   return grid;
+}
+
+function randomBlockByDepth(row){
+  let depth=row/(ROWS-1);
+  let roll=Math.random();
+
+  if(depth>.72 && roll>.78)return 'diamond';
+  if(depth>.55 && roll>.68)return 'gold';
+  if(depth>.38 && roll>.58)return 'iron';
+  if(roll>.72)return 'coal';
+  if(roll>.38)return 'stone';
+  return 'dirt';
 }
 
 function placeRandom(grid,kind,count){
@@ -229,11 +342,11 @@ function draw(){
   el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
 
   if(state.gameOver){
-    setStatus('Game Over — Winner: '+name(state.winner),'Start a new game to mine again.');
+    setStatus('Game Over — Winner: '+name(state.winner),'Start a new world to play again.');
   }else{
     setStatus(
       'Current Turn: '+name(state.turn),
-      state.turn===mySeat?'Mine a block. Right-click / long-press behavior may vary, so flags are visual only.':'Waiting for '+name(state.turn)+'.'
+      state.turn===mySeat?'Mine one block. Better pickaxes break better ores.':'Waiting for '+name(state.turn)+'.'
     );
   }
 }
@@ -264,24 +377,27 @@ function drawBoard(){
 }
 
 function tileClass(cell){
-  if(!cell.revealed)return cell.flagged?'flag hidden':'hidden';
+  if(!cell.revealed){
+    return 'hidden '+cell.block;
+  }
 
-  if(cell.tnt)return 'tnt';
-  if(cell.chest)return 'chest';
+  if(cell.tnt)return 'tnt revealed';
+  if(cell.chest)return 'chest revealed';
 
-  return cell.block;
+  return cell.block+' revealed';
 }
 
 function tileText(cell){
-  if(!cell.revealed)return cell.flagged?'⚑':'';
+  if(!cell.revealed){
+    return '';
+  }
 
   if(cell.tnt)return 'TNT';
   if(cell.chest)return 'CHEST';
 
   if(cell.number>0)return String(cell.number);
 
-  let block=blockInfo(cell.block);
-  return block.icon;
+  return blockInfo(cell.block).icon;
 }
 
 function mine(r,c){
@@ -295,25 +411,26 @@ function mine(r,c){
   let toolLevel=state.tools[mySeat]||1;
 
   if(!cell.tnt&&!cell.chest&&toolLevel<block.level){
-    add(name(mySeat)+' needs a better pickaxe for '+block.label+'.');
+    add(name(mySeat)+' needs '+toolNeeded(block.level)+' to mine '+block.label+'.');
     draw();
     sync();
     return;
   }
 
-  reveal(r,c,mySeat);
+  cell.revealed=true;
+  cell.owner=mySeat;
 
   if(cell.tnt){
-    add(name(mySeat)+' hit TNT and is out!');
+    add(name(mySeat)+' struck hidden TNT and is out!');
     state.alive[mySeat]=false;
-    revealAllTnt();
+    cell.revealed=true;
   }else if(cell.chest){
     upgradeTool(mySeat);
-    state.scores[mySeat]+=3;
+    state.scores[mySeat]+=4;
     add(name(mySeat)+' found a chest and upgraded to '+toolName(state.tools[mySeat])+'!');
   }else{
     state.scores[mySeat]+=block.points;
-    add(name(mySeat)+' mined '+block.label+' for '+block.points+' point'+(block.points===1?'':'s')+'.');
+    add(name(mySeat)+' mined '+block.label+' for '+block.points+' points.');
   }
 
   checkGameOver();
@@ -324,31 +441,6 @@ function mine(r,c){
 
   draw();
   sync();
-}
-
-function reveal(r,c,seat){
-  let cell=state.grid[r][c];
-  if(cell.revealed)return;
-
-  cell.revealed=true;
-  cell.owner=seat;
-
-  if(!cell.tnt&&!cell.chest&&cell.number===0&&cell.block==='dirt'){
-    neighbors(r,c).forEach(function(p){
-      let n=state.grid[p.r][p.c];
-      if(!n.revealed&&!n.tnt&&!n.chest&&n.block==='dirt'){
-        reveal(p.r,p.c,seat);
-      }
-    });
-  }
-}
-
-function revealAllTnt(){
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      if(state.grid[r][c].tnt)state.grid[r][c].revealed=true;
-    }
-  }
 }
 
 function upgradeTool(seat){
@@ -480,6 +572,10 @@ function blockInfo(type){
 function toolName(level){
   let t=TOOLS.find(function(x){return x.level===level;})||TOOLS[0];
   return t.name;
+}
+
+function toolNeeded(level){
+  return toolName(level);
 }
 
 function name(seat){
