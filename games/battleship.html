@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Battleship</title>
+<style>
+:root{--bg:#071827;--panel:#0f2a3d;--line:#31556e;--blue:#38bdf8;--hit:#ef4444;--miss:#e5e7eb;--ship:#64748b;--gold:#facc15;--green:#22c55e}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#123b55,#071827);color:white;text-align:center;overflow:hidden}
+.wrap{height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
+.top,.status,.controls,.log{background:rgba(15,42,61,.92);border:1px solid var(--line);border-radius:16px;padding:9px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.top{display:flex;justify-content:space-between;align-items:center}
+h2{margin:0}
+button{padding:8px 11px;border-radius:10px;border:1px solid #94a3b8;background:#f8fafc;color:#111;font-weight:bold;cursor:pointer}
+button.primary{background:var(--blue);border-color:var(--blue)}
+button.gold{background:var(--gold);border-color:var(--gold)}
+button.good{background:var(--green);border-color:var(--green)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:0}
+.boardPanel{background:rgba(15,42,61,.8);border:1px solid var(--line);border-radius:18px;padding:10px;min-height:0}
+.boardTitle{font-weight:bold;margin-bottom:5px}
+.grid{display:grid;grid-template-columns:repeat(10,30px);grid-template-rows:repeat(10,30px);gap:3px;justify-content:center}
+.cell{width:30px;height:30px;border-radius:7px;background:#0b5f82;border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:15px}
+.cell:hover{outline:2px solid var(--gold)}
+.cell.ship{background:var(--ship)}
+.cell.hit{background:var(--hit)}
+.cell.miss{background:rgba(229,231,235,.9);color:#111}
+.cell.sunk{background:#7f1d1d}
+.cell.disabled{cursor:not-allowed;opacity:.75}
+.statusMain{font-size:18px;font-weight:bold}
+.muted{font-size:12px;color:#cbd5e1}
+.controls{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}
+.log{height:62px;overflow:auto;text-align:left;font-size:13px;background:#fffbea;color:#1f2937}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(56,189,248,.18);border:1px solid rgba(56,189,248,.35);font-size:12px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(10,24px);grid-template-rows:repeat(10,24px)}.cell{width:24px;height:24px}.boards{gap:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Battleship</h2>
+    <div>
+      <span id="meLabel" class="badge"></span>
+      <button class="gold" onclick="newGame(true)">New Game</button>
+    </div>
+  </div>
+
+  <div class="status">
+    <div id="statusMain" class="statusMain">Loading players...</div>
+    <div id="statusHelp" class="muted">Sink all enemy ships.</div>
+  </div>
+
+  <div class="boards">
+    <div class="boardPanel">
+      <div class="boardTitle">Your Fleet</div>
+      <div id="myBoard" class="grid"></div>
+    </div>
+
+    <div class="boardPanel">
+      <div class="boardTitle">Enemy Waters</div>
+      <div id="enemyBoard" class="grid"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="controls">
+      <span id="fleetStatus" class="badge"></span>
+      <button class="primary" onclick="autoPlaceAndSync()">Auto Place Ships</button>
+    </div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+const GAME_META={id:'battleship',name:'Battleship',minPlayers:2,maxPlayers:2,seats:2};
+
+const SIZE=10;
+const SHIPS=[
+  {name:'Carrier',size:5},
+  {name:'Battleship',size:4},
+  {name:'Cruiser',size:3},
+  {name:'Submarine',size:3},
+  {name:'Destroyer',size:2}
+];
+
+let players=[];
+let mySeat=null;
+let state=null;
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(Array.isArray(setupPlayers)&&setupPlayers.length){
+    players=setupPlayers.slice(0,2).map(p=>({seat:p.seat,name:p.name||('Seat '+(p.seat+1))}));
+  }
+
+  mySeat=setupSeat;
+
+  if(players.length<2){
+    statusMain.innerText='Waiting for 2 players...';
+    statusHelp.innerText='Both seats must be filled before starting Battleship.';
+    return;
+  }
+
+  if(!state)state=fresh();
+
+  ensurePlayerState();
+  draw();
+}
+
+function fresh(){
+  let boards={};
+  let shots={};
+  let ready={};
+
+  players.forEach(p=>{
+    boards[p.seat]=emptyBoard();
+    shots[p.seat]=[];
+    ready[p.seat]=false;
+  });
+
+  let s={
+    boards,
+    shots,
+    ready,
+    turn:players[0].seat,
+    phase:'setup',
+    winner:null,
+    log:['New game started. Place your fleet.']
+  };
+
+  return s;
+}
+
+function emptyBoard(){
+  return Array.from({length:SIZE},()=>Array(SIZE).fill(null));
+}
+
+function ensurePlayerState(){
+  players.forEach(p=>{
+    if(!state.boards[p.seat])state.boards[p.seat]=emptyBoard();
+    if(!state.shots[p.seat])state.shots[p.seat]=[];
+    if(state.ready[p.seat]===undefined)state.ready[p.seat]=false;
+  });
+}
+
+function autoPlaceAndSync(){
+  if(mySeat===null||mySeat===undefined||!state||state.winner!==null)return;
+
+  state.boards[mySeat]=placeFleet();
+  state.ready[mySeat]=true;
+
+  if(players.every(p=>state.ready[p.seat])){
+    state.phase='battle';
+    add('Both fleets are ready. Battle begins!');
+  }else{
+    add(name(mySeat)+' placed their fleet.');
+  }
+
+  draw();
+  sync();
+}
+
+function placeFleet(){
+  let board=emptyBoard();
+
+  SHIPS.forEach(ship=>{
+    let placed=false;
+
+    while(!placed){
+      let horizontal=Math.random()<.5;
+      let r=Math.floor(Math.random()*SIZE);
+      let c=Math.floor(Math.random()*SIZE);
+
+      if(canPlace(board,r,c,ship.size,horizontal)){
+        for(let i=0;i<ship.size;i++){
+          let rr=r+(horizontal?0:i);
+          let cc=c+(horizontal?i:0);
+          board[rr][cc]={ship:ship.name,size:ship.size};
+        }
+        placed=true;
+      }
+    }
+  });
+
+  return board;
+}
+
+function canPlace(board,r,c,size,horizontal){
+  for(let i=0;i<size;i++){
+    let rr=r+(horizontal?0:i);
+    let cc=c+(horizontal?i:0);
+
+    if(rr<0||rr>=SIZE||cc<0||cc>=SIZE)return false;
+    if(board[rr][cc])return false;
+  }
+
+  return true;
+}
+
+function draw(){
+  if(!state||players.length<2)return;
+
+  let enemy=opponentSeat();
+
+  meLabel.innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
+
+  if(state.winner!==null){
+    statusMain.innerText=name(state.winner)+' wins!';
+    statusHelp.innerText='Start a new game to play again.';
+  }else if(state.phase==='setup'){
+    statusMain.innerText='Fleet Setup';
+    statusHelp.innerText=state.ready[mySeat]?'Waiting for opponent to place ships.':'Click Auto Place Ships to begin.';
+  }else{
+    statusMain.innerText='Current Turn: '+name(state.turn);
+    statusHelp.innerText=state.turn===mySeat?'Fire on the enemy grid.':'Waiting for '+name(state.turn)+'.';
+  }
+
+  fleetStatus.innerText=players.map(p=>name(p.seat)+': '+(state.ready[p.seat]?'Ready':'Placing')).join(' | ');
+
+  drawMyBoard();
+  drawEnemyBoard(enemy);
+  drawLog();
+}
+
+function drawMyBoard(){
+  myBoard.innerHTML='';
+
+  let board=state.boards[mySeat]||emptyBoard();
+  let enemyShots=state.shots[opponentSeat()]||[];
+
+  for(let r=0;r<SIZE;r++){
+    for(let c=0;c<SIZE;c++){
+      let cell=document.createElement('div');
+      let shot=hasShot(enemyShots,r,c);
+      let hasShip=!!board[r][c];
+
+      cell.className='cell disabled '+(hasShip?'ship ':'')+(shot&&hasShip?'hit ':'')+(shot&&!hasShip?'miss ':'');
+      cell.innerText=shot&&hasShip?'✕':shot?'•':'';
+
+      myBoard.appendChild(cell);
+    }
+  }
+}
+
+function drawEnemyBoard(enemy){
+  enemyBoard.innerHTML='';
+
+  let myShots=state.shots[mySeat]||[];
+  let enemyBoardData=state.boards[enemy]||emptyBoard();
+
+  for(let r=0;r<SIZE;r++){
+    for(let c=0;c<SIZE;c++){
+      let cell=document.createElement('div');
+      let shot=hasShot(myShots,r,c);
+      let hit=shot&&enemyBoardData[r][c];
+      let miss=shot&&!enemyBoardData[r][c];
+
+      cell.className='cell '+(hit?'hit ':'')+(miss?'miss ':'')+
+        (state.phase!=='battle'||state.turn!==mySeat||state.winner!==null||shot?'disabled':'');
+
+      cell.innerText=hit?'✕':miss?'•':'';
+
+      cell.onclick=()=>fire(r,c);
+
+      enemyBoard.appendChild(cell);
+    }
+  }
+}
+
+function fire(r,c){
+  if(!state||state.phase!=='battle'||state.turn!==mySeat||state.winner!==null)return;
+
+  let shots=state.shots[mySeat];
+  if(hasShot(shots,r,c))return;
+
+  let enemy=opponentSeat();
+  let target=state.boards[enemy][r][c];
+
+  shots.push({r,c});
+
+  if(target){
+    add(name(mySeat)+' hit '+name(enemy)+'\'s '+target.ship+'!');
+  }else{
+    add(name(mySeat)+' missed.');
+  }
+
+  if(allShipsSunk(enemy)){
+    state.winner=mySeat;
+    add(name(mySeat)+' sank the final ship and wins!');
+  }else{
+    state.turn=enemy;
+  }
+
+  draw();
+  sync();
+}
+
+function allShipsSunk(seat){
+  let board=state.boards[seat];
+  let incoming=state.shots[opponentOf(seat)]||[];
+
+  for(let r=0;r<SIZE;r++){
+    for(let c=0;c<SIZE;c++){
+      if(board[r][c]&&!hasShot(incoming,r,c))return false;
+    }
+  }
+
+  return true;
+}
+
+function opponentSeat(){
+  let other=players.find(p=>p.seat!==mySeat);
+  return other?other.seat:null;
+}
+
+function opponentOf(seat){
+  let other=players.find(p=>p.seat!==seat);
+  return other?other.seat:null;
+}
+
+function hasShot(shots,r,c){
+  return shots.some(s=>s.r===r&&s.c===c);
+}
+
+function newGame(sendIt){
+  if(players.length<2)return;
+  state=fresh();
+  draw();
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    state=data.state;
+    ensurePlayerState();
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  let data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function drawLog(){
+  log.innerHTML=state.log.slice(-6).map(x=>'• '+escapeHtml(x)).join('<br>');
+  log.scrollTop=log.scrollHeight;
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>50)state.log.shift();
+}
+
+function name(seat){
+  let p=players.find(x=>x.seat===seat);
+  return p?p.name:'Seat '+(Number(seat)+1);
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+
+receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+
+setTimeout(function(){
+  if((!players||!players.length)&&window.GAME_PLAYERS){
+    receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
+  }
+},150);
+</script>
+</body>
+</html>
