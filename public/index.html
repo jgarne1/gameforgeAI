@@ -15,6 +15,7 @@
   --text:#1f2937;
   --soft:#f8fafc;
   --side:#ffffff;
+  --shadow:0 12px 34px rgba(15,23,42,.09);
 }
 
 *{box-sizing:border-box}
@@ -22,24 +23,27 @@
 body{
   font-family:Arial,Helvetica,sans-serif;
   margin:0;
-  background:linear-gradient(135deg,#eef2f7,#f8fafc);
+  background:
+    radial-gradient(circle at top left,rgba(37,99,235,.12),transparent 32%),
+    linear-gradient(135deg,#eef2f7,#f8fafc);
   color:var(--text);
 }
 
 .wrap{
   display:grid;
-  grid-template-columns:minmax(0,1fr)340px;
+  grid-template-columns:minmax(0,1fr)350px;
   min-height:100vh;
 }
 
 .main{
   padding:20px;
-  max-width:1200px;
+  max-width:1280px;
   width:100%;
 }
 
 .side{
-  background:var(--side);
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(10px);
   border-left:2px solid var(--line);
   padding:14px;
   position:sticky;
@@ -64,7 +68,8 @@ body{
 
 .logo h1{
   margin:0;
-  font-size:30px;
+  font-size:34px;
+  letter-spacing:-1px;
 }
 
 .logo span{
@@ -72,22 +77,19 @@ body{
   font-size:13px;
 }
 
-.card{
-  background:var(--card);
+.card,.sideCard{
+  background:rgba(255,255,255,.94);
   border:1px solid var(--line);
-  border-radius:18px;
+  border-radius:20px;
   padding:15px;
   margin:12px 0;
-  box-shadow:0 8px 22px rgba(15,23,42,.06);
+  box-shadow:var(--shadow);
 }
 
 .sideCard{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:12px;
+  border-radius:18px;
+  padding:13px;
   margin-bottom:12px;
-  box-shadow:0 4px 14px rgba(15,23,42,.05);
 }
 
 h1,h2,h3{
@@ -109,7 +111,7 @@ h1,h2,h3{
 button,input,select{
   padding:9px 11px;
   margin:3px;
-  border-radius:10px;
+  border-radius:11px;
   border:1px solid #b8c1cc;
   font-size:14px;
 }
@@ -122,22 +124,18 @@ button{
   cursor:pointer;
   background:#f8fafc;
   transition:.15s ease;
+  font-weight:600;
 }
 
 button:hover{
   transform:translateY(-1px);
-  box-shadow:0 3px 10px rgba(15,23,42,.08);
+  box-shadow:0 3px 10px rgba(15,23,42,.10);
 }
 
 button.primary{
-  background:var(--blue);
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
   color:white;
   border-color:var(--blue);
-  font-weight:bold;
-}
-
-button.primary:hover{
-  background:var(--blue2);
 }
 
 button.good{
@@ -173,7 +171,7 @@ button:disabled{
   text-align:left;
   margin:7px 0;
   padding:13px;
-  border-radius:13px;
+  border-radius:15px;
   background:#fff;
   border:1px solid #cbd5e1;
 }
@@ -190,7 +188,7 @@ button:disabled{
 .seat{
   display:inline-block;
   border:1px solid #94a3b8;
-  border-radius:14px;
+  border-radius:15px;
   padding:12px;
   margin:6px;
   background:#fafafa;
@@ -198,13 +196,8 @@ button:disabled{
   text-align:center;
 }
 
-.empty{
-  background:#fff;
-}
-
-.filled{
-  background:#dcfce7;
-}
+.empty{background:#fff}
+.filled{background:#dcfce7}
 
 .owner{
   font-weight:bold;
@@ -218,7 +211,7 @@ button:disabled{
   border:1px solid #d6bd6b;
   padding:8px;
   text-align:left;
-  border-radius:12px;
+  border-radius:13px;
   font-size:13px;
 }
 
@@ -236,20 +229,12 @@ button:disabled{
 .userItem{
   border-bottom:1px solid #e5e7eb;
   padding:9px;
-  border-radius:10px;
+  border-radius:11px;
 }
 
-.userItem.clickable{
-  cursor:pointer;
-}
-
-.userItem.clickable:hover{
-  background:#eef6ff;
-}
-
-.userItem.private{
-  opacity:.8;
-}
+.userItem.clickable{cursor:pointer}
+.userItem.clickable:hover{background:#eef6ff}
+.userItem.private{opacity:.8}
 
 .roomBadge{
   font-size:12px;
@@ -266,21 +251,13 @@ button:disabled{
 .notice{
   background:#ecfeff;
   border:1px solid #67e8f9;
-  border-radius:12px;
+  border-radius:13px;
   padding:10px;
 }
 
-.locked{
-  color:#b45309;
-}
-
-.public{
-  color:#047857;
-}
-
-.hidden{
-  display:none!important;
-}
+.locked{color:#b45309}
+.public{color:#047857}
+.hidden{display:none!important}
 
 iframe{
   width:100%;
@@ -288,7 +265,7 @@ iframe{
   min-height:650px;
   max-height:900px;
   border:3px solid #1f2937;
-  border-radius:16px;
+  border-radius:18px;
   background:#fff;
 }
 
@@ -311,6 +288,37 @@ iframe{
   padding:5px 8px;
   font-size:12px;
   border-radius:999px;
+}
+
+/* ===== CHAT NEW MESSAGE NOTICE ===== */
+#roomChatPanel.chatUnread{
+  animation:chatBluePulse 2.4s ease-in-out infinite;
+  border-color:#38bdf8!important;
+}
+
+#roomChatPanel.chatUnread .sidebarTitle{
+  background:linear-gradient(90deg,rgba(56,189,248,.18),rgba(37,99,235,.06));
+  border-radius:12px;
+  padding:5px 7px;
+}
+
+#chatUnreadDot{
+  display:none;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:#38bdf8;
+  box-shadow:0 0 12px #38bdf8;
+}
+
+#roomChatPanel.chatUnread #chatUnreadDot{
+  display:inline-block;
+}
+
+@keyframes chatBluePulse{
+  0%{box-shadow:0 10px 30px rgba(15,23,42,.18),0 0 0 rgba(56,189,248,0)}
+  50%{box-shadow:0 14px 38px rgba(15,23,42,.25),0 0 22px rgba(56,189,248,.55)}
+  100%{box-shadow:0 10px 30px rgba(15,23,42,.18),0 0 0 rgba(56,189,248,0)}
 }
 
 /* ===== GAME MODE ===== */
@@ -339,7 +347,7 @@ body.gameMode .side{
   right:14px;
   bottom:14px;
   top:auto;
-  width:340px;
+  width:350px;
   height:auto;
   max-height:70vh;
   background:transparent;
@@ -496,7 +504,7 @@ body.gameMode #roomChatPanel.chatCollapsed .sidebarTitle h3{
 
     <div class="sideCard hidden" id="roomChatPanel">
       <div class="sidebarTitle">
-        <h3>Room Chat</h3>
+        <h3>Room Chat <span id="chatUnreadDot"></span></h3>
         <span id="chatRoomLabel" class="pill"></span>
         <button class="chatToggle" onclick="toggleOverlayChat()">Hide</button>
       </div>
@@ -518,6 +526,7 @@ let room=null;
 let games=[];
 let loadedGameKey='';
 let overlayChatCollapsed=false;
+let lastChatCount=0;
 
 function drawAuth(){
   if(me){
@@ -564,7 +573,7 @@ function connect(){
       if(m.scroll)scrollToArea(m.scroll);
     }
 
-    if(m.type==='chat')drawChat(m.chat);
+    if(m.type==='chat')drawChat(m.chat,true);
 
     if(m.type==='roomClosed'){
       alert('Room closed');
@@ -665,6 +674,8 @@ function leaveRoom(){
   room=null;
   currentRoom=null;
   loadedGameKey='';
+  lastChatCount=0;
+  clearChatUnread();
   document.body.classList.remove('gameMode');
   drawRoom();
 }
@@ -700,6 +711,7 @@ function sendChat(){
   if(t){
     send({type:'chat',text:t});
     chatText.value='';
+    clearChatUnread();
   }
 }
 
@@ -709,6 +721,20 @@ function toggleOverlayChat(){
 
   let btn=roomChatPanel.querySelector('.chatToggle');
   if(btn)btn.innerText=overlayChatCollapsed?'Show':'Hide';
+
+  if(!overlayChatCollapsed){
+    clearChatUnread();
+  }
+}
+
+function clearChatUnread(){
+  roomChatPanel.classList.remove('chatUnread');
+}
+
+function markChatUnread(){
+  if(document.body.classList.contains('gameMode')&&overlayChatCollapsed){
+    roomChatPanel.classList.add('chatUnread');
+  }
 }
 
 function drawGames(){
@@ -793,7 +819,7 @@ function drawRoom(){
     s.innerHTML='<i>Select a game to create seats.</i>';
   }
 
-  drawChat(room?room.chat:[]);
+  drawChat(room?room.chat:[],false);
   maybeLoadGame();
 }
 
@@ -834,6 +860,7 @@ async function maybeLoadGame(){
       'var msg=event.data||{};'+
       'if(msg.type==="gameMove"&&window.onMove){window.onMove(msg.data);}'+
       'if(msg.type==="gameSetup"&&window.onMove){window.onMove(msg);}'+
+      'if(msg.type==="gameSaveData"&&window.onSaveData){window.onSaveData(msg.data);}'+
     '});'+
     '<\/script>';
 
@@ -857,12 +884,24 @@ async function maybeLoadGame(){
   scrollToArea('game');
 }
 
-function drawChat(items){
+function drawChat(items,fromSocket){
+  let oldCount=lastChatCount;
+  let newCount=(items||[]).length;
+
   chat.innerHTML=(items||[])
     .map(x=>'<div><b>'+escapeHtml(x.user)+':</b> '+escapeHtml(x.text)+'</div>')
     .join('');
 
   chat.scrollTop=chat.scrollHeight;
+
+  if(fromSocket&&newCount>oldCount){
+    let last=items[newCount-1]||{};
+    if(last.user!==me){
+      markChatUnread();
+    }
+  }
+
+  lastChatCount=newCount;
 }
 
 function drawPresence(users,rooms){
@@ -902,6 +941,38 @@ function drawPresence(users,rooms){
   });
 }
 
+function handleGameSaveLoad(msg){
+  let username=msg.username||me||'guest';
+  let key='gf_save_'+msg.gameId+'_'+username;
+  let data=null;
+
+  try{
+    data=JSON.parse(localStorage.getItem(key)||'null');
+  }catch(err){
+    data=null;
+  }
+
+  let f=document.getElementById('gameFrame');
+  if(f&&f.contentWindow){
+    f.contentWindow.postMessage({
+      type:'gameSaveData',
+      gameId:msg.gameId,
+      data:data
+    },'*');
+  }
+}
+
+function handleGameSaveStore(msg){
+  let username=msg.username||me||'guest';
+  let key='gf_save_'+msg.gameId+'_'+username;
+
+  try{
+    localStorage.setItem(key,JSON.stringify(msg.data));
+  }catch(err){
+    alert('Save failed: '+err.message);
+  }
+}
+
 function scrollToArea(a){
   setTimeout(()=>{
     document.getElementById(a==='game'?'gameArea':'tableArea')
@@ -924,8 +995,18 @@ function escapeAttr(s){
 }
 
 window.addEventListener('message',e=>{
-  if(e.data&&e.data.type==='move'&&socket){
-    send({type:'gameMove',data:e.data.data});
+  let msg=e.data||{};
+
+  if(msg.type==='move'&&socket){
+    send({type:'gameMove',data:msg.data});
+  }
+
+  if(msg.type==='gameSaveLoad'){
+    handleGameSaveLoad(msg);
+  }
+
+  if(msg.type==='gameSaveStore'){
+    handleGameSaveStore(msg);
   }
 });
 
