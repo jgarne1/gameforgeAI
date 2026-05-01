@@ -542,25 +542,24 @@ async function move(pitIndex){
 
 function buildClockwiseRing(seat){
   let opp=opponentOf(seat);
-  let p=playerBySeat(seat);
-  let isBottomPlayer=(p.side===0);
-
   let ring=[];
 
-  if(isBottomPlayer){
-    // Bottom player moves clockwise visually:
-    // bottom left -> bottom right -> own right store -> top right -> top left -> opponent left store -> bottom left.
-    for(let i=0;i<6;i++)ring.push({type:'pit',seat:seat,index:i});
-    ring.push({type:'store',seat:seat});
-    for(let i=5;i>=0;i--)ring.push({type:'pit',seat:opp,index:i});
-    ring.push({type:'store',seat:opp});
-  }else{
-    // Top player also moves clockwise visually:
-    // top right -> top left -> own left store -> bottom left -> bottom right -> opponent right store -> top right.
-    for(let i=5;i>=0;i--)ring.push({type:'pit',seat:seat,index:i});
-    ring.push({type:'store',seat:seat});
-    for(let i=0;i<6;i++)ring.push({type:'pit',seat:opp,index:i});
-    ring.push({type:'store',seat:opp});
+  /*
+    Correct clockwise path:
+    - Your pits move left-to-right toward your store.
+    - Then across the opponent row from right-to-left visually.
+    - Because the opponent row is drawn reversed, that is still index 0 to 5.
+    - Skip opponent store for normal Mancala/Kalah rules.
+  */
+
+  for(let i=0;i<6;i++){
+    ring.push({type:'pit',seat:seat,index:i});
+  }
+
+  ring.push({type:'store',seat:seat});
+
+  for(let i=0;i<6;i++){
+    ring.push({type:'pit',seat:opp,index:i});
   }
 
   return ring;
