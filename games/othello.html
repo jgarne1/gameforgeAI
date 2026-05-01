@@ -60,4 +60,452 @@ button.gold{background:var(--gold)}
       <div id="board" class="board"></div>
     </div>
 
-    <div class="side
+    <div class="sidePanel">
+      <div class="card">
+        <h3>Score</h3>
+        <div class="scoreGrid">
+          <div class="scoreBox">
+            <div class="muted" id="darkName">Dark</div>
+            <div class="bigScore" id="darkScore">2</div>
+          </div>
+          <div class="scoreBox">
+            <div class="muted" id="lightName">Light</div>
+            <div class="bigScore" id="lightScore">2</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Players</h3>
+        <div id="playersPanel"></div>
+      </div>
+
+      <div class="card">
+        <h3>Quick Rules</h3>
+        <div class="rulesMini">
+          Place on a highlighted space.<br>
+          Your move must flip at least one enemy disc.<br>
+          If you have no legal move, your turn is passed.<br>
+          Most discs at the end wins.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+var GAME_META={id:'othello',name:'Othello',minPlayers:2,maxPlayers:2,seats:2};
+
+var SIZE=8;
+var EMPTY=0;
+var DARK=1;
+var LIGHT=2;
+
+var players=[];
+var mySeat=null;
+var state=null;
+
+var dirs=[
+  [-1,-1],[-1,0],[-1,1],
+  [0,-1],        [0,1],
+  [1,-1], [1,0], [1,1]
+];
+
+function el(id){return document.getElementById(id);}
+
+window.onerror=function(msg){
+  if(el('statusMain'))el('statusMain').innerText='Game error: '+msg;
+};
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(setupPlayers&&setupPlayers.length){
+    players=[];
+    for(var i=0;i<setupPlayers.length&&i<2;i++){
+      players.push({
+        seat:Number(setupPlayers[i].seat),
+        name:setupPlayers[i].name||('Seat '+(Number(setupPlayers[i].seat)+1))
+      });
+    }
+  }
+
+  mySeat=setupSeat===null||setupSeat===undefined?null:Number(setupSeat);
+
+  if(players.length<2){
+    showWaiting();
+    return;
+  }
+
+  players.sort(function(a,b){return a.seat-b.seat;});
+
+  if(!state)state=fresh();
+
+  draw();
+}
+
+function showWaiting(){
+  el('statusMain').innerText='Waiting for 2 players...';
+  el('statusHelp').innerText='Othello needs exactly 2 seated players.';
+  el('board').innerHTML='';
+  el('playersPanel').innerHTML='';
+  el('log').innerHTML='';
+  el('meLabel').innerText='';
+}
+
+function fresh(){
+  var board=[];
+
+  for(var r=0;r<SIZE;r++){
+    board[r]=[];
+    for(var c=0;c<SIZE;c++)board[r][c]=EMPTY;
+  }
+
+  board[3][3]=LIGHT;
+  board[3][4]=DARK;
+  board[4][3]=DARK;
+  board[4][4]=LIGHT;
+
+  return {
+    board:board,
+    turn:DARK,
+    darkSeat:players[0].seat,
+    lightSeat:players[1].seat,
+    gameOver:false,
+    winner:null,
+    passCount:0,
+    lastMove:null,
+    log:['New Othello game started. Dark goes first.']
+  };
+}
+
+function draw(){
+  if(!state||players.length<2){
+    showWaiting();
+    return;
+  }
+
+  var myColor=colorForSeat(mySeat);
+  var turnSeat=seatForColor(state.turn);
+  var turnName=name(turnSeat);
+  var legal=legalMoves(state.board,state.turn);
+
+  el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+colorName(myColor)+' - '+name(mySeat);
+
+  if(state.gameOver){
+    var msg=winnerText();
+    el('statusMain').innerText='Game Over — '+msg;
+    el('statusHelp').innerText='Start a new game to play again.';
+  }else{
+    el('statusMain').innerText='Current Turn: '+turnName+' ('+colorName(state.turn)+')';
+    el('statusHelp').innerText=myColor===state.turn
+      ? 'Your move. Place on a highlighted space.'
+      : 'Waiting for '+turnName+'.';
+  }
+
+  drawBoard(legal,myColor);
+  drawScores();
+  drawPlayers();
+  drawLog();
+
+  if(!state.gameOver&&legal.length===0){
+    setTimeout(function(){autoPassIfNeeded();},250);
+  }
+}
+
+function drawBoard(legal,myColor){
+  el('board').innerHTML='';
+
+  for(var r=0;r<SIZE;r++){
+    for(var c=0;c<SIZE;c++){
+      var cell=document.createElement('div');
+      var isLegal=containsMove(legal,r,c);
+      var isLast=state.lastMove&&state.lastMove.r===r&&state.lastMove.c===c;
+      var canClick=!state.gameOver&&myColor===state.turn&&isLegal;
+
+      cell.className='cell '+(isLegal&&!state.gameOver?'legal ':'')+(isLast?'last ':'')+(canClick?'':'disabled ');
+      cell.onclick=(function(rr,cc){return function(){playMove(rr,cc);};})(r,c);
+
+      if(state.board[r][c]!==EMPTY){
+        var disc=document.createElement('div');
+        disc.className='disc '+(state.board[r][c]===DARK?'dark':'light');
+        cell.appendChild(disc);
+      }
+
+      el('board').appendChild(cell);
+    }
+  }
+}
+
+function drawScores(){
+  var counts=countDiscs();
+
+  el('darkName').innerText=name(state.darkSeat)+' - Dark';
+  el('lightName').innerText=name(state.lightSeat)+' - Light';
+  el('darkScore').innerText=counts.dark;
+  el('lightScore').innerText=counts.light;
+}
+
+function drawPlayers(){
+  var html='';
+  var turnSeat=seatForColor(state.turn);
+
+  html+='<div class="player '+(turnSeat===state.darkSeat&&!state.gameOver?'turn':'')+'"><b>'+escapeHtml(name(state.darkSeat))+'</b><br><span class="muted">Dark discs'+(state.darkSeat===mySeat?' · You':'')+'</span></div>';
+  html+='<div class="player '+(turnSeat===state.lightSeat&&!state.gameOver?'turn':'')+'"><b>'+escapeHtml(name(state.lightSeat))+'</b><br><span class="muted">Light discs'+(state.lightSeat===mySeat?' · You':'')+'</span></div>';
+
+  el('playersPanel').innerHTML=html;
+}
+
+function drawLog(){
+  var html='';
+  var start=Math.max(0,state.log.length-8);
+
+  for(var i=start;i<state.log.length;i++){
+    html+='• '+escapeHtml(state.log[i])+'<br>';
+  }
+
+  el('log').innerHTML=html;
+  el('log').scrollTop=el('log').scrollHeight;
+}
+
+function playMove(r,c){
+  if(state.gameOver)return;
+
+  var myColor=colorForSeat(mySeat);
+  if(myColor!==state.turn)return;
+
+  var flips=getFlips(state.board,r,c,state.turn);
+  if(flips.length===0)return;
+
+  state.board[r][c]=state.turn;
+
+  for(var i=0;i<flips.length;i++){
+    state.board[flips[i].r][flips[i].c]=state.turn;
+  }
+
+  state.lastMove={r:r,c:c};
+  state.passCount=0;
+
+  add(name(mySeat)+' placed '+colorName(state.turn)+' at '+coord(r,c)+' and flipped '+flips.length+' disc(s).');
+
+  state.turn=opposite(state.turn);
+
+  finishOrContinue();
+
+  draw();
+  sync();
+}
+
+function autoPassIfNeeded(){
+  if(state.gameOver)return;
+
+  var legal=legalMoves(state.board,state.turn);
+  if(legal.length>0)return;
+
+  var turnSeat=seatForColor(state.turn);
+  add(name(turnSeat)+' has no legal move and passes.');
+
+  state.passCount++;
+  state.turn=opposite(state.turn);
+
+  finishOrContinue();
+
+  draw();
+  sync();
+}
+
+function finishOrContinue(){
+  var darkLegal=legalMoves(state.board,DARK).length;
+  var lightLegal=legalMoves(state.board,LIGHT).length;
+  var counts=countDiscs();
+
+  if(darkLegal===0&&lightLegal===0 || counts.empty===0 || state.passCount>=2){
+    state.gameOver=true;
+
+    if(counts.dark>counts.light)state.winner=state.darkSeat;
+    else if(counts.light>counts.dark)state.winner=state.lightSeat;
+    else state.winner='tie';
+
+    add('Game over. '+winnerText()+'.');
+  }
+}
+
+function legalMoves(board,color){
+  var out=[];
+
+  for(var r=0;r<SIZE;r++){
+    for(var c=0;c<SIZE;c++){
+      if(board[r][c]===EMPTY&&getFlips(board,r,c,color).length>0){
+        out.push({r:r,c:c});
+      }
+    }
+  }
+
+  return out;
+}
+
+function getFlips(board,r,c,color){
+  if(r<0||r>=SIZE||c<0||c>=SIZE)return [];
+  if(board[r][c]!==EMPTY)return [];
+
+  var enemy=opposite(color);
+  var flips=[];
+
+  for(var d=0;d<dirs.length;d++){
+    var dr=dirs[d][0];
+    var dc=dirs[d][1];
+    var rr=r+dr;
+    var cc=c+dc;
+    var line=[];
+
+    while(rr>=0&&rr<SIZE&&cc>=0&&cc<SIZE&&board[rr][cc]===enemy){
+      line.push({r:rr,c:cc});
+      rr+=dr;
+      cc+=dc;
+    }
+
+    if(line.length&&rr>=0&&rr<SIZE&&cc>=0&&cc<SIZE&&board[rr][cc]===color){
+      flips=flips.concat(line);
+    }
+  }
+
+  return flips;
+}
+
+function countDiscs(){
+  var dark=0;
+  var light=0;
+  var empty=0;
+
+  for(var r=0;r<SIZE;r++){
+    for(var c=0;c<SIZE;c++){
+      if(state.board[r][c]===DARK)dark++;
+      else if(state.board[r][c]===LIGHT)light++;
+      else empty++;
+    }
+  }
+
+  return {dark:dark,light:light,empty:empty};
+}
+
+function colorForSeat(seat){
+  if(seat===state.darkSeat)return DARK;
+  if(seat===state.lightSeat)return LIGHT;
+  return EMPTY;
+}
+
+function seatForColor(color){
+  return color===DARK?state.darkSeat:state.lightSeat;
+}
+
+function opposite(color){
+  return color===DARK?LIGHT:DARK;
+}
+
+function colorName(color){
+  if(color===DARK)return 'Dark';
+  if(color===LIGHT)return 'Light';
+  return 'Spectator';
+}
+
+function containsMove(moves,r,c){
+  for(var i=0;i<moves.length;i++){
+    if(moves[i].r===r&&moves[i].c===c)return true;
+  }
+  return false;
+}
+
+function winnerText(){
+  var counts=countDiscs();
+
+  if(state.winner==='tie'){
+    return 'Tie game at '+counts.dark+'-'+counts.light;
+  }
+
+  return name(state.winner)+' wins '+counts.dark+'-'+counts.light;
+}
+
+function coord(r,c){
+  return String.fromCharCode(65+c)+(r+1);
+}
+
+function newGame(sendIt){
+  if(players.length<2){
+    showWaiting();
+    return;
+  }
+
+  state=fresh();
+  draw();
+
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state:state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    state=data.state;
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  var data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function name(seat){
+  for(var i=0;i<players.length;i++){
+    if(players[i].seat===seat)return players[i].name;
+  }
+  return 'Seat '+(Number(seat)+1);
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>80)state.log.shift();
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function safeBoot(){
+  try{
+    showWaiting();
+    receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+    setTimeout(function(){
+      receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+    },350);
+  }catch(e){
+    if(el('statusMain'))el('statusMain').innerText='Game error: '+e.message;
+  }
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',safeBoot);
+}else{
+  safeBoot();
+}
+</script>
+</body>
+</html>
