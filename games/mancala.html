@@ -8,9 +8,6 @@
   --wood2:#b86b32;
   --wood3:#4b240f;
   --gold:#facc15;
-  --blue:#38bdf8;
-  --green:#22c55e;
-  --stone:#f8fafc;
   --muted:#e5e7eb;
 }
 *{box-sizing:border-box}
@@ -53,7 +50,6 @@ button{
   cursor:pointer;
 }
 button.gold{background:var(--gold)}
-button:disabled{opacity:.45;cursor:not-allowed}
 .status{padding:9px}
 .statusMain{font-size:20px;font-weight:bold}
 .muted{font-size:12px;color:var(--muted)}
@@ -102,13 +98,13 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .storeLabel{
   position:absolute;
   left:50%;
+  top:-28px;
   transform:translateX(-50%);
   font-weight:bold;
   font-size:13px;
   color:#fff7ed;
   text-shadow:1px 2px #000;
 }
-.store.left .storeLabel,.store.right .storeLabel{top:-28px}
 .storeCount{
   position:absolute;
   left:50%;
@@ -182,6 +178,24 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .stone.s1{background:radial-gradient(circle at 30% 30%,#fff,#bae6fd 55%,#0284c7)}
 .stone.s2{background:radial-gradient(circle at 30% 30%,#fff,#fde68a 55%,#d97706)}
 .stone.s3{background:radial-gradient(circle at 30% 30%,#fff,#fecaca 55%,#dc2626)}
+
+.moveDot{
+  position:absolute;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff,#facc15 55%,#d97706);
+  z-index:80;
+  pointer-events:none;
+  box-shadow:0 0 14px rgba(250,204,21,.95);
+  animation:dropPop .45s ease forwards;
+}
+@keyframes dropPop{
+  0%{opacity:0;transform:scale(.3)}
+  30%{opacity:1;transform:scale(1.25)}
+  100%{opacity:0;transform:scale(.75)}
+}
+
 .playerBar{
   display:flex;
   justify-content:center;
@@ -226,7 +240,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   padding:20px 34px;
   font-size:32px;
   font-weight:900;
-  z-index:50;
+  z-index:90;
   pointer-events:none;
   opacity:0;
   box-shadow:0 18px 40px rgba(0,0,0,.45);
@@ -261,11 +275,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
   <div class="status">
     <div id="statusMain" class="statusMain">Loading players...</div>
-    <div id="statusHelp" class="muted">Pick a pit on your side. Last stone in your store gives another turn.</div>
+    <div id="statusHelp" class="muted">Sow stones clockwise around the board. Landing in your store gives another turn.</div>
   </div>
 
   <div class="game">
-    <div class="board">
+    <div class="board" id="board">
       <div id="turnFlash" class="turnFlash">YOUR TURN</div>
 
       <div class="store left" id="storeTop">
@@ -299,6 +313,17 @@ let players=[];
 let mySeat=null;
 let state=null;
 let lastSeenTurn=null;
+let animating=false;
+
+/*
+State model:
+- side 0 = bottom/right store player
+- side 1 = top/left store player
+- pits[seat][0..5] always means that player's six pits from LEFT to RIGHT on their own side.
+- Visual:
+  top row displays opponent pits reversed, so the physical clockwise loop is:
+  bottom left -> bottom right -> bottom store -> top right -> top left -> top store -> bottom left.
+*/
 
 function el(id){return document.getElementById(id);}
 
@@ -362,8 +387,8 @@ function draw(){
   let bottomSeat=mySeat;
 
   if(mySeat===null||mySeat===undefined){
-    topSeat=players[0].seat;
-    bottomSeat=players[1].seat;
+    topSeat=players[1].seat;
+    bottomSeat=players[0].seat;
   }
 
   el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
@@ -412,15 +437,15 @@ function drawRow(id,seat,reverse){
 
   order.forEach(function(pitIndex){
     let pit=document.createElement('div');
-    let canMove=state.turn===mySeat&&seat===mySeat&&!state.gameOver&&pits[pitIndex]>0;
+    let canMove=!animating&&state.turn===mySeat&&seat===mySeat&&!state.gameOver&&pits[pitIndex]>0;
 
+    pit.id='pit_'+seat+'_'+pitIndex;
     pit.className='pit '+(canMove?'active':'disabled');
     pit.onclick=function(){move(pitIndex);};
 
     pit.innerHTML='<div class="pitCount">'+pits[pitIndex]+'</div><div class="pitLabel">Pit '+(pitIndex+1)+'</div>';
 
     addStones(pit,pits[pitIndex]);
-
     row.appendChild(pit);
   });
 }
@@ -441,26 +466,34 @@ function addStones(pit,count){
   }
 }
 
-function move(pitIndex){
-  if(!state||state.gameOver||state.turn!==mySeat)return;
+async function move(pitIndex){
+  if(!state||state.gameOver||state.turn!==mySeat||animating)return;
 
-  let myPits=state.pits[mySeat];
-  let stones=myPits[pitIndex];
+  let movingSeat=mySeat;
+  let movingPits=state.pits[movingSeat];
+  let stones=movingPits[pitIndex];
 
   if(!stones)return;
 
-  myPits[pitIndex]=0;
+  animating=true;
 
-  let ring=buildRing(mySeat);
+  let ring=buildClockwiseRing(movingSeat);
   let pos=ring.findIndex(function(x){
-    return x.type==='pit'&&x.seat===mySeat&&x.index===pitIndex;
+    return x.type==='pit'&&x.seat===movingSeat&&x.index===pitIndex;
   });
 
+  movingPits[pitIndex]=0;
+  draw();
+
   let last=null;
+  let trail=[];
 
   while(stones>0){
     pos=(pos+1)%ring.length;
     let spot=ring[pos];
+
+    trail.push(spot);
+    await showMoveDot(spot);
 
     if(spot.type==='store'){
       state.stores[spot.seat]++;
@@ -470,49 +503,105 @@ function move(pitIndex){
 
     last=spot;
     stones--;
+    draw();
+    await sleep(80);
   }
 
   let extraTurn=false;
 
-  if(last&&last.type==='store'&&last.seat===mySeat){
+  if(last&&last.type==='store'&&last.seat===movingSeat){
     extraTurn=true;
-    add(name(mySeat)+' landed in their store and gets another turn.');
+    add(name(movingSeat)+' landed in their store and gets another turn.');
   }
 
-  if(last&&last.type==='pit'&&last.seat===mySeat&&state.pits[mySeat][last.index]===1){
-    let opp=opponentSeat();
+  if(last&&last.type==='pit'&&last.seat===movingSeat&&state.pits[movingSeat][last.index]===1){
+    let opp=opponentOf(movingSeat);
     let opposite=5-last.index;
     let captured=state.pits[opp][opposite];
 
     if(captured>0){
       state.pits[opp][opposite]=0;
-      state.pits[mySeat][last.index]=0;
-      state.stores[mySeat]+=captured+1;
-      add(name(mySeat)+' captured '+captured+' stones!');
+      state.pits[movingSeat][last.index]=0;
+      state.stores[movingSeat]+=captured+1;
+      add(name(movingSeat)+' captured '+captured+' stones!');
     }
   }
 
-  state.lastMove={seat:mySeat,pit:pitIndex};
+  state.lastMove={seat:movingSeat,pit:pitIndex,trail:trail};
 
   if(checkGameOver()){
     finishGame();
   }else if(!extraTurn){
-    state.turn=opponentSeat();
+    state.turn=opponentOf(movingSeat);
   }
 
+  animating=false;
   draw();
   sync();
 }
 
-function buildRing(seat){
-  let opp=players.find(function(p){return p.seat!==seat;}).seat;
+function buildClockwiseRing(seat){
+  let opp=opponentOf(seat);
+  let p=playerBySeat(seat);
+  let isBottomPlayer=(p.side===0);
+
   let ring=[];
 
-  for(let i=0;i<6;i++)ring.push({type:'pit',seat:seat,index:i});
-  ring.push({type:'store',seat:seat});
-  for(let i=5;i>=0;i--)ring.push({type:'pit',seat:opp,index:i});
+  if(isBottomPlayer){
+    // Bottom player moves clockwise visually:
+    // bottom left -> bottom right -> own right store -> top right -> top left -> opponent left store -> bottom left.
+    for(let i=0;i<6;i++)ring.push({type:'pit',seat:seat,index:i});
+    ring.push({type:'store',seat:seat});
+    for(let i=5;i>=0;i--)ring.push({type:'pit',seat:opp,index:i});
+    ring.push({type:'store',seat:opp});
+  }else{
+    // Top player also moves clockwise visually:
+    // top right -> top left -> own left store -> bottom left -> bottom right -> opponent right store -> top right.
+    for(let i=5;i>=0;i--)ring.push({type:'pit',seat:seat,index:i});
+    ring.push({type:'store',seat:seat});
+    for(let i=0;i<6;i++)ring.push({type:'pit',seat:opp,index:i});
+    ring.push({type:'store',seat:opp});
+  }
 
   return ring;
+}
+
+function showMoveDot(spot){
+  return new Promise(function(resolve){
+    let target=getSpotElement(spot);
+    let board=el('board');
+
+    if(!target){
+      resolve();
+      return;
+    }
+
+    let b=board.getBoundingClientRect();
+    let t=target.getBoundingClientRect();
+
+    let dot=document.createElement('div');
+    dot.className='moveDot';
+    dot.style.left=(t.left-b.left+t.width/2-11)+'px';
+    dot.style.top=(t.top-b.top+t.height/2-11)+'px';
+
+    board.appendChild(dot);
+
+    setTimeout(function(){
+      dot.remove();
+      resolve();
+    },180);
+  });
+}
+
+function getSpotElement(spot){
+  if(spot.type==='store'){
+    let visualSeatBottom=mySeat;
+    if(mySeat===null||mySeat===undefined)visualSeatBottom=players[0].seat;
+
+    return spot.seat===visualSeatBottom?el('storeBottom'):el('storeTop');
+  }
+
+  return el('pit_'+spot.seat+'_'+spot.index);
 }
 
 function checkGameOver(){
@@ -567,12 +656,20 @@ function showTurnFlash(){
 }
 
 function opponentSeat(){
-  let p=players.find(function(x){return x.seat!==mySeat;});
+  return opponentOf(mySeat);
+}
+
+function opponentOf(seat){
+  let p=players.find(function(x){return x.seat!==seat;});
   return p?p.seat:null;
 }
 
+function playerBySeat(seat){
+  return players.find(function(x){return x.seat===seat;});
+}
+
 function name(seat){
-  let p=players.find(function(x){return x.seat===seat;});
+  let p=playerBySeat(seat);
   return p?p.name:'Seat '+(Number(seat)+1);
 }
 
@@ -585,6 +682,7 @@ function newGame(sendIt){
   if(players.length<2)return;
   state=fresh();
   lastSeenTurn=null;
+  animating=false;
   draw();
   if(sendIt)sync();
 }
@@ -607,6 +705,7 @@ window.onMove=function(data){
 
   if(data.type==='state'){
     state=data.state;
+    animating=false;
     draw();
   }
 };
@@ -616,6 +715,12 @@ window.addEventListener('message',function(event){
   if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
   if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
 });
+
+function sleep(ms){
+  return new Promise(function(resolve){
+    setTimeout(resolve,ms);
+  });
+}
 
 function escapeHtml(s){
   return String(s||'').replace(/[&<>"']/g,function(c){
