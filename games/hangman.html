@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hangman Duel</title>
+<style>
+:root{--bg:#111827;--panel:#1f2937;--line:#374151;--gold:#facc15;--blue:#38bdf8;--red:#ef4444;--green:#22c55e;--muted:#cbd5e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#374151,#111827);color:white;text-align:center;overflow:hidden}
+.wrap{height:100vh;min-height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
+.top,.status,.game,.bottom{background:rgba(31,41,55,.94);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.25)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:9px 12px}
+h2{margin:0}
+button,input{padding:9px 11px;border-radius:10px;border:1px solid #94a3b8;font-size:14px}
+button{cursor:pointer;font-weight:bold;background:#f8fafc;color:#111}
+button.gold{background:var(--gold);border-color:var(--gold)}
+button.primary{background:var(--blue);border-color:var(--blue)}
+button.good{background:var(--green);border-color:var(--green);color:#052e16}
+button.danger{background:var(--red);border-color:var(--red);color:white}
+button:disabled{opacity:.45;cursor:not-allowed}
+.status{padding:8px}
+.statusMain{font-size:19px;font-weight:bold}
+.muted{font-size:12px;color:var(--muted)}
+.game{display:grid;grid-template-columns:360px 1fr;gap:12px;padding:12px;min-height:0}
+.stage{background:linear-gradient(135deg,#f8fafc,#cbd5e1);border-radius:18px;position:relative;min-height:390px;color:#111;overflow:hidden}
+.gallows{position:absolute;left:50px;top:35px;width:220px;height:310px}
+.gallows div{position:absolute;background:#111827;border-radius:4px}
+.base{left:0;bottom:0;width:190px;height:8px}
+.pole{left:40px;top:0;width:8px;height:305px}
+.beam{left:40px;top:0;width:145px;height:8px}
+.rope{left:180px;top:0;width:5px;height:42px}
+.bodyPart{position:absolute;display:none;background:none!important;border:6px solid #111827}
+.head{left:150px;top:40px;width:60px;height:60px;border-radius:50%}
+.torso{left:178px;top:100px;width:6px;height:85px;background:#111827!important;border:0}
+.armL{left:136px;top:118px;width:55px;height:6px;transform:rotate(-28deg);background:#111827!important;border:0}
+.armR{left:178px;top:118px;width:55px;height:6px;transform:rotate(28deg);background:#111827!important;border:0}
+.legL{left:139px;top:196px;width:58px;height:6px;transform:rotate(-45deg);background:#111827!important;border:0}
+.legR{left:176px;top:196px;width:58px;height:6px;transform:rotate(45deg);background:#111827!important;border:0}
+.show{display:block}
+.bigResult{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-weight:900;font-size:26px;color:#111827}
+.play{display:flex;flex-direction:column;gap:10px;min-height:0}
+.card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:10px}
+.word{font-size:38px;letter-spacing:8px;font-weight:900;min-height:54px;word-break:break-word}
+.alpha{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.alpha button{width:40px;height:38px;padding:0}
+.inputRow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.inputRow input{min-width:280px}
+.clueBox{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.players{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.player{min-width:190px;border-radius:13px;padding:8px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+.player.turn{outline:3px solid var(--gold)}
+.log{height:62px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:7px;font-size:13px}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
+.secret{font-size:18px;color:#fde68a;font-weight:bold}
+@media(max-width:850px){.game{grid-template-columns:1fr}.stage{min-height:260px}.gallows{transform:scale(.75);transform-origin:top left}.word{font-size:26px;letter-spacing:5px}.alpha button{width:34px;height:34px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Hangman Duel</h2>
+    <div>
+      <span id="meLabel" class="badge"></span>
+      <button class="gold" onclick="newMatch(true)">New Match</button>
+    </div>
+  </div>
+
+  <div class="status">
+    <div id="statusMain" class="statusMain">Loading players...</div>
+    <div id="statusHelp" class="muted">Word giver creates the word. Guesser tries to solve it. First to 5 wins.</div>
+  </div>
+
+  <div class="game">
+    <div class="stage">
+      <div class="gallows">
+        <div class="base"></div>
+        <div class="pole"></div>
+        <div class="beam"></div>
+        <div class="rope"></div>
+        <div id="part0" class="bodyPart head"></div>
+        <div id="part1" class="bodyPart torso"></div>
+        <div id="part2" class="bodyPart armL"></div>
+        <div id="part3" class="bodyPart armR"></div>
+        <div id="part4" class="bodyPart legL"></div>
+        <div id="part5" class="bodyPart legR"></div>
+      </div>
+      <div id="bigResult" class="bigResult"></div>
+    </div>
+
+    <div class="play">
+      <div class="card">
+        <div id="roleLine" class="badge"></div>
+        <div id="wordDisplay" class="word">_ _ _ _ _</div>
+        <div id="secretWord" class="secret"></div>
+        <div class="muted" id="guessInfo"></div>
+      </div>
+
+      <div class="card" id="setupPanel">
+        <h3>Choose Secret Word</h3>
+        <div class="inputRow">
+          <input id="wordInput" placeholder="Type a word or phrase">
+          <button class="primary" onclick="submitWord()">Start Round</button>
+        </div>
+        <p class="muted">Letters and spaces are allowed. The guesser cannot see this.</p>
+      </div>
+
+      <div class="card" id="guessPanel">
+        <div class="alpha" id="alphabet"></div>
+        <div class="inputRow">
+          <input id="solveInput" placeholder="Solve the full word or phrase">
+          <button class="good" onclick="solveWord()">Solve</button>
+        </div>
+      </div>
+
+      <div class="card" id="cluePanel">
+        <h3>Clues</h3>
+        <div id="clueStatus" class="muted"></div>
+        <div class="clueBox" id="clueButtons"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div id="playersPanel" class="players"></div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+var GAME_META={id:'hangman',name:'Hangman Duel',minPlayers:2,maxPlayers:2,seats:2};
+
+var players=[];
+var mySeat=null;
+var state=null;
+var MAX_WRONG=6;
+var WIN_SCORE=5;
+var letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+function el(id){return document.getElementById(id);}
+
+window.onerror=function(msg){
+  if(el('statusMain'))el('statusMain').innerText='Game error: '+msg;
+};
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(setupPlayers&&setupPlayers.length){
+    players=[];
+    for(var i=0;i<setupPlayers.length&&i<2;i++){
+      players.push({seat:setupPlayers[i].seat,name:setupPlayers[i].name||('Seat '+(setupPlayers[i].seat+1))});
+    }
+  }
+
+  mySeat=setupSeat;
+
+  if(players.length<2){
+    showWaiting();
+    return;
+  }
+
+  if(!state)state=fresh();
+
+  draw();
+}
+
+function showWaiting(){
+  el('statusMain').innerText='Waiting for 2 players...';
+  el('statusHelp').innerText='Hangman Duel needs exactly 2 seated players.';
+  el('meLabel').innerText='';
+  el('wordDisplay').innerText='_ _ _ _ _';
+  el('secretWord').innerText='';
+  el('guessInfo').innerText='';
+  el('setupPanel').style.display='none';
+  el('guessPanel').style.display='none';
+  el('cluePanel').style.display='none';
+  el('playersPanel').innerHTML='';
+  el('log').innerHTML='';
+  drawHangman(0);
+}
+
+function fresh(){
+  var scores={};
+  scores[players[0].seat]=0;
+  scores[players[1].seat]=0;
+
+  return {
+    scores:scores,
+    round:1,
+    giver:players[0].seat,
+    guesser:players[1].seat,
+    phase:'word',
+    word:'',
+    guessed:{},
+    wrong:0,
+    clueRequested:false,
+    clueUsed:false,
+    removedLetters:{},
+    roundOver:false,
+    matchWinner:null,
+    log:['New Hangman Duel match started.']
+  };
+}
+
+function draw(){
+  if(!state||players.length<2){
+    showWaiting();
+    return;
+  }
+
+  el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
+
+  drawHangman(state.wrong);
+  drawWord();
+  drawPanels();
+  drawPlayers();
+  drawLog();
+
+  if(state.matchWinner!==null){
+    el('statusMain').innerText=name(state.matchWinner)+' wins the match!';
+    el('statusHelp').innerText='Start a new match to play again.';
+  }else if(state.phase==='word'){
+    el('statusMain').innerText='Round '+state.round+': '+name(state.giver)+' is choosing a word.';
+    el('statusHelp').innerText=state.giver===mySeat?'Type a secret word for the guesser.':'Waiting for the word giver.';
+  }else if(state.phase==='guess'){
+    el('statusMain').innerText='Round '+state.round+': '+name(state.guesser)+' is guessing.';
+    el('statusHelp').innerText=state.guesser===mySeat?'Guess letters, solve, or request a clue.':name(state.guesser)+' is guessing your word.';
+  }else{
+    el('statusMain').innerText='Round Over';
+    el('statusHelp').innerText='Preparing next round.';
+  }
+}
+
+function drawHangman(wrong){
+  for(var i=0;i<MAX_WRONG;i++){
+    el('part'+i).className=el('part'+i).className.replace(' show','');
+    if(i<wrong)el('part'+i).className+=' show';
+  }
+
+  if(state&&state.matchWinner!==null){
+    el('bigResult').innerText='MATCH WINNER';
+  }else if(state&&state.roundOver){
+    el('bigResult').innerText='ROUND OVER';
+  }else{
+    el('bigResult').innerText=wrong+'/'+MAX_WRONG+' wrong';
+  }
+}
+
+function drawWord(){
+  var out='';
+  var word=state.word||'';
+
+  if(!word){
+    el('wordDisplay').innerText='_ _ _ _ _';
+  }else{
+    for(var i=0;i<word.length;i++){
+      var ch=word.charAt(i);
+      var upper=ch.toUpperCase();
+
+      if(ch===' '){
+        out+='   ';
+      }else if(!isLetter(upper)){
+        out+=ch+' ';
+      }else if(state.guessed[upper]){
+        out+=upper+' ';
+      }else{
+        out+='_ ';
+      }
+    }
+
+    el('wordDisplay').innerText=out;
+  }
+
+  if(state.giver===mySeat&&state.word){
+    el('secretWord').innerText='Secret word: '+state.word.toUpperCase();
+  }else{
+    el('secretWord').innerText='';
+  }
+
+  el('guessInfo').innerText='Wrong guesses: '+state.wrong+'/'+MAX_WRONG+' · Guessed: '+guessedList();
+}
+
+function drawPanels(){
+  var isGiver=state.giver===mySeat;
+  var isGuesser=state.guesser===mySeat;
+
+  el('setupPanel').style.display=(state.phase==='word'&&isGiver&&state.matchWinner===null)?'block':'none';
+  el('guessPanel').style.display=(state.phase==='guess'&&isGuesser&&state.matchWinner===null)?'block':'none';
+  el('cluePanel').style.display=(state.phase==='guess'&&state.matchWinner===null)?'block':'none';
+
+  drawAlphabet();
+  drawClues();
+
+  el('roleLine').innerText=
+    mySeat===state.giver?'You are the Word Giver':
+    mySeat===state.guesser?'You are the Guesser':
+    'Watching';
+}
+
+function drawAlphabet(){
+  var html='';
+
+  for(var i=0;i<letters.length;i++){
+    var l=letters[i];
+    var disabled=state.guessed[l]||state.removedLetters[l]||state.phase!=='guess'||state.guesser!==mySeat||state.matchWinner!==null;
+    html+='<button onclick="guessLetter(\''+l+'\')" '+(disabled?'disabled':'')+'>'+l+'</button>';
+  }
+
+  el('alphabet').innerHTML=html;
+}
+
+function drawClues(){
+  var text='';
+  var html='';
+
+  if(state.clueUsed){
+    text='A clue has already been used this round.';
+  }else if(state.clueRequested){
+    if(state.giver===mySeat){
+      text=name(state.guesser)+' requested a clue. Choose one.';
+      html=
+        '<button class="good" onclick="giveClue(\'letter\')">Give Random Letter</button>'+
+        '<button class="primary" onclick="giveClue(\'remove\')">Remove Bad Letter</button>'+
+        '<button class="danger" onclick="giveClue(\'dice\')">Dice Duel</button>';
+    }else{
+      text='Clue requested. Waiting for '+name(state.giver)+' to choose clue type.';
+    }
+  }else{
+    if(state.guesser===mySeat){
+      text='You may request one clue this round.';
+      html='<button class="gold" onclick="requestClue()">Request Clue</button>';
+    }else if(state.giver===mySeat){
+      text='The guesser has not requested a clue.';
+    }else{
+      text='No clue requested.';
+    }
+  }
+
+  el('clueStatus').innerText=text;
+  el('clueButtons').innerHTML=html;
+}
+
+function submitWord(){
+  if(state.phase!=='word'||state.giver!==mySeat)return;
+
+  var raw=el('wordInput').value||'';
+  var cleaned=raw.replace(/[^a-zA-Z ]/g,'').replace(/\s+/g,' ').trim();
+
+  if(cleaned.length<2){
+    alert('Enter a word or phrase with at least 2 letters.');
+    return;
+  }
+
+  state.word=cleaned.toUpperCase();
+  state.guessed={};
+  state.removedLetters={};
+  state.wrong=0;
+  state.clueRequested=false;
+  state.clueUsed=false;
+  state.roundOver=false;
+  state.phase='guess';
+
+  add(name(state.giver)+' chose a word. '+name(state.guesser)+' is guessing.');
+  el('wordInput').value='';
+
+  draw();
+  sync();
+}
+
+function guessLetter(l){
+  if(state.phase!=='guess'||state.guesser!==mySeat||state.guessed[l]||state.removedLetters[l])return;
+
+  state.guessed[l]=true;
+
+  if(state.word.indexOf(l)>=0){
+    add(name(mySeat)+' guessed '+l+' correctly.');
+  }else{
+    state.wrong++;
+    add(name(mySeat)+' guessed '+l+' incorrectly.');
+  }
+
+  checkRound();
+  draw();
+  sync();
+}
+
+function solveWord(){
+  if(state.phase!=='guess'||state.guesser!==mySeat)return;
+
+  var guess=(el('solveInput').value||'').replace(/[^a-zA-Z ]/g,'').replace(/\s+/g,' ').trim().toUpperCase();
+  if(!guess)return;
+
+  if(guess===state.word){
+    add(name(mySeat)+' solved the word!');
+    finishRound(state.guesser);
+  }else{
+    state.wrong++;
+    add(name(mySeat)+' tried to solve and was wrong.');
+    checkRound();
+  }
+
+  el('solveInput').value='';
+  draw();
+  sync();
+}
+
+function requestClue(){
+  if(state.phase!=='guess'||state.guesser!==mySeat||state.clueUsed||state.clueRequested)return;
+
+  state.clueRequested=true;
+  add(name(mySeat)+' requested a clue.');
+  draw();
+  sync();
+}
+
+function giveClue(type){
+  if(state.phase!=='guess'||state.giver!==mySeat||!state.clueRequested||state.clueUsed)return;
+
+  state.clueUsed=true;
+  state.clueRequested=false;
+
+  if(type==='letter'){
+    var options=[];
+    for(var i=0;i<state.word.length;i++){
+      var ch=state.word.charAt(i);
+      if(isLetter(ch)&&!state.guessed[ch])options.push(ch);
+    }
+
+    if(options.length){
+      var pick=options[Math.floor(Math.random()*options.length)];
+      add(name(state.giver)+' clue: The word contains the letter '+pick+'. It is still guessable.');
+    }else{
+      add(name(state.giver)+' clue: No hidden letters remain.');
+    }
+  }
+
+  if(type==='remove'){
+    var bad=[];
+    for(var j=0;j<letters.length;j++){
+      var l=letters[j];
+      if(state.word.indexOf(l)<0&&!state.guessed[l]&&!state.removedLetters[l])bad.push(l);
+    }
+
+    if(bad.length){
+      var remove=bad[Math.floor(Math.random()*bad.length)];
+      state.removedLetters[remove]=true;
+      add(name(state.giver)+' removed the bad letter '+remove+'.');
+    }else{
+      add(name(state.giver)+' clue: No bad letters are left to remove.');
+    }
+  }
+
+  if(type==='dice'){
+    var giverRoll=1+Math.floor(Math.random()*6);
+    var guesserRoll=1+Math.floor(Math.random()*6);
+
+    if(giverRoll>guesserRoll){
+      state.wrong++;
+      add('Dice duel: '+name(state.giver)+' rolled '+giverRoll+', '+name(state.guesser)+' rolled '+guesserRoll+'. Guesser loses a chance.');
+    }else if(guesserRoll>giverRoll){
+      add('Dice duel: '+name(state.guesser)+' rolled '+guesserRoll+', '+name(state.giver)+' rolled '+giverRoll+'. Guesser is safe.');
+    }else{
+      add('Dice duel tied at '+giverRoll+'. No penalty.');
+    }
+  }
+
+  checkRound();
+  draw();
+  sync();
+}
+
+function checkRound(){
+  if(state.roundOver)return;
+
+  var solved=true;
+
+  for(var i=0;i<state.word.length;i++){
+    var ch=state.word.charAt(i);
+    if(isLetter(ch)&&!state.guessed[ch])solved=false;
+  }
+
+  if(solved){
+    finishRound(state.guesser);
+    return;
+  }
+
+  if(state.wrong>=MAX_WRONG){
+    add('Hangman complete. The word was '+state.word+'.');
+    finishRound(state.giver);
+  }
+}
+
+function finishRound(pointSeat){
+  if(state.roundOver)return;
+
+  state.scores[pointSeat]=(state.scores[pointSeat]||0)+1;
+  state.roundOver=true;
+
+  add(name(pointSeat)+' wins the round and gets 1 point.');
+
+  if(state.scores[pointSeat]>=WIN_SCORE){
+    state.matchWinner=pointSeat;
+    state.phase='done';
+    return;
+  }
+
+  state.phase='between';
+
+  setTimeout(function(){
+    if(!state||state.matchWinner!==null)return;
+
+    var oldGiver=state.giver;
+    state.giver=state.guesser;
+    state.guesser=oldGiver;
+    state.round++;
+    state.phase='word';
+    state.word='';
+    state.guessed={};
+    state.wrong=0;
+    state.clueRequested=false;
+    state.clueUsed=false;
+    state.removedLetters={};
+    state.roundOver=false;
+
+    add('Roles swapped. '+name(state.giver)+' is now the word giver.');
+    draw();
+    sync();
+  },1800);
+}
+
+function drawPlayers(){
+  var html='';
+
+  for(var i=0;i<players.length;i++){
+    var p=players[i];
+    var role=p.seat===state.giver?'Word Giver':'Guesser';
+
+    html+='<div class="player '+((p.seat===state.guesser&&state.phase==='guess')?'turn':'')+'">'+
+      '<b>'+escapeHtml(p.name)+'</b><br>'+
+      '<span class="muted">'+role+' · Score: '+(state.scores[p.seat]||0)+'/'+WIN_SCORE+(p.seat===mySeat?' · You':'')+'</span>'+
+    '</div>';
+  }
+
+  el('playersPanel').innerHTML=html;
+}
+
+function drawLog(){
+  var html='';
+  var start=Math.max(0,state.log.length-6);
+  for(var i=start;i<state.log.length;i++){
+    html+='• '+escapeHtml(state.log[i])+'<br>';
+  }
+  el('log').innerHTML=html;
+  el('log').scrollTop=el('log').scrollHeight;
+}
+
+function newMatch(sendIt){
+  if(players.length<2){
+    showWaiting();
+    return;
+  }
+
+  state=fresh();
+  draw();
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state:state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    state=data.state;
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  var data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function guessedList(){
+  var out=[];
+  for(var i=0;i<letters.length;i++){
+    if(state.guessed[letters[i]])out.push(letters[i]);
+  }
+  return out.length?out.join(', '):'none';
+}
+
+function isLetter(ch){
+  return /^[A-Z]$/.test(ch);
+}
+
+function name(seat){
+  for(var i=0;i<players.length;i++){
+    if(players[i].seat===seat)return players[i].name;
+  }
+  return 'Seat '+(Number(seat)+1);
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>80)state.log.shift();
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function safeBoot(){
+  try{
+    showWaiting();
+    receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+    setTimeout(function(){
+      receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+    },400);
+  }catch(e){
+    if(el('statusMain'))el('statusMain').innerText='Game error: '+e.message;
+  }
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',safeBoot);
+}else{
+  safeBoot();
+}
+</script>
+</body>
+</html>
