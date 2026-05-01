@@ -12,5 +12,6 @@
   {"id":"hangman","name":"Hangman","file":"hangman.html","minPlayers":2,"maxPlayers":2,"seats":2},
   {"id":"trouble","name":"Trouble","file":"trouble.html","minPlayers":2,"maxPlayers":4,"seats":4},
   {"id":"shadowtrace","name":"ShadowTrace","file":"shadowtrace.html","minPlayers":2,"maxPlayers":2,"seats":2},
+  {"id":"doomlike","name":"Dungeon Blaster","file":"doomlike.html","minPlayers":1,"maxPlayers":1,"seats":1},
   {"id":"battleship2","name":"Battleship 2.0","file":"battleship2.html","minPlayers":2,"maxPlayers":2,"seats":2}
 ]
