@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pet World</title>
+<style>
+:root{
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --line:#d8dee8;
+  --blue:#2563eb;
+  --green:#16a34a;
+  --red:#dc2626;
+  --muted:#64748b;
+}
+
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#eef2f7,#f8fafc);
+}
+
+.wrap{
+  display:grid;
+  grid-template-columns:300px 1fr;
+  height:100vh;
+}
+
+.sidebar{
+  background:#fff;
+  border-right:2px solid var(--line);
+  padding:15px;
+}
+
+.main{
+  padding:20px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 6px 18px rgba(0,0,0,.05);
+}
+
+h2{margin-top:0}
+
+button{
+  padding:10px;
+  margin:5px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button.primary{background:var(--blue);color:#fff}
+button.good{background:var(--green);color:#fff}
+button.danger{background:var(--red);color:#fff}
+
+.petDisplay{
+  height:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:80px;
+}
+
+.bar{
+  height:10px;
+  background:#ddd;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.fill{
+  height:100%;
+  background:var(--blue);
+}
+
+.invItem{
+  display:flex;
+  justify-content:space-between;
+  margin:5px 0;
+}
+
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>🐾 Pet</h2>
+
+  <div class="card">
+    <b id="petName">Loading...</b><br>
+    Stage: <span id="stage"></span>
+
+    <div>❤️ Happiness</div>
+    <div class="bar"><div id="happyBar" class="fill"></div></div>
+
+    <div>🍗 Hunger</div>
+    <div class="bar"><div id="hungerBar" class="fill"></div></div>
+
+    <div>⚡ Energy</div>
+    <div class="bar"><div id="energyBar" class="fill"></div></div>
+  </div>
+
+  <div class="card">
+    <h3>Inventory</h3>
+    <div id="inventory"></div>
+  </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="card">
+    <div class="petDisplay" id="petDisplay">🥚</div>
+  </div>
+
+  <div class="card" id="eggControls">
+    <h3>Care Egg</h3>
+    <button onclick="care('warm')">🔥 Warm</button>
+    <button onclick="care('cold')">❄️ Cold</button>
+    <button onclick="care('wet')">💧 Wet</button>
+    <button onclick="care('dry')">🌵 Dry</button>
+  </div>
+
+  <div class="card" id="petControls" style="display:none;">
+    <h3>Actions</h3>
+    <button onclick="feed()" class="good">🍗 Feed</button>
+    <button onclick="play()">🎾 Play</button>
+    <button onclick="train()">⚔️ Train</button>
+  </div>
+
+  <div class="card">
+    <h3>Shop</h3>
+    <button onclick="buy('food')">Buy Food ($10)</button>
+    <button onclick="buy('toy')">Buy Toy ($15)</button>
+  </div>
+
+</div>
+</div>
+
+<script>
+
+let pet=null;
+
+async function loadPet(){
+  let res=await fetch('/api/pet',{headers:{user:localStorage.getItem('gf_user')}});
+  pet=await res.json();
+  draw();
+}
+
+async function savePet(){
+  await fetch('/api/pet',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      user:localStorage.getItem('gf_user')
+    },
+    body:JSON.stringify(pet)
+  });
+}
+
+function draw(){
+  petName.innerText=pet.name;
+  stage.innerText=pet.stage;
+
+  happyBar.style.width=pet.happiness+'%';
+  hungerBar.style.width=pet.hunger+'%';
+  energyBar.style.width=pet.energy+'%';
+
+  inventory.innerHTML=
+    'Food: '+pet.inventory.food+'<br>'+
+    'Toys: '+pet.inventory.toy;
+
+  if(pet.stage==='egg'){
+    petDisplay.innerText='🥚';
+    eggControls.style.display='block';
+    petControls.style.display='none';
+  }else{
+    petDisplay.innerText='🐉';
+    eggControls.style.display='none';
+    petControls.style.display='block';
+  }
+}
+
+async function care(type){
+  pet.eggCare[type]++;
+  let total=Object.values(pet.eggCare).reduce((a,b)=>a+b,0);
+
+  if(total>=15){
+    hatch();
+  }
+
+  await savePet();
+  draw();
+}
+
+function hatch(){
+  let e=pet.eggCare;
+
+  if(e.warm>e.cold){
+    pet.type='fire';
+  }else{
+    pet.type='water';
+  }
+
+  pet.stage='baby';
+}
+
+async function feed(){
+  if(pet.inventory.food<=0)return alert('No food');
+
+  pet.inventory.food--;
+  pet.hunger=Math.min(100,pet.hunger+20);
+
+  await savePet();
+  draw();
+}
+
+async function play(){
+  pet.happiness=Math.min(100,pet.happiness+10);
+  pet.energy-=10;
+
+  await savePet();
+  draw();
+}
+
+async function train(){
+  pet.energy-=20;
+  alert('Your pet is getting stronger!');
+
+  await savePet();
+  draw();
+}
+
+async function buy(item){
+  if(pet.money<10)return alert('Not enough money');
+
+  pet.money-=10;
+  pet.inventory[item]++;
+
+  await savePet();
+  draw();
+}
+
+loadPet();
+
+</script>
+</body>
+</html>
