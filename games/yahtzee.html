@@ -3,105 +3,383 @@
 <head>
 <title>Yahtzee</title>
 <style>
-body{font-family:Arial;text-align:center;background:#f4efe6;margin:0;color:#222}
-#game{display:grid;grid-template-columns:1fr 460px;gap:12px;padding:12px;max-width:1250px;margin:auto}
-.panel{background:#fff;border:2px solid #333;border-radius:10px;padding:10px}
-#status{font-size:20px;font-weight:bold;margin:10px;min-height:28px}
-#diceArea{height:160px;border:2px dashed #aaa;border-radius:12px;background:#e8f4e8;display:flex;justify-content:center;align-items:center;gap:10px}
-.die{width:60px;height:60px;border:2px solid #111;border-radius:10px;background:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:3px 4px 0 #999}
-.held{background:#ffeaa7;transform:translateY(-8px)}
+:root{
+  --bg:#1f2937;
+  --panel:#ffffff;
+  --felt:#25634b;
+  --line:#d1d5db;
+  --gold:#facc15;
+  --blue:#2563eb;
+  --green:#16a34a;
+  --red:#dc2626;
+  --muted:#64748b;
+  --text:#1f2937;
+}
+*{box-sizing:border-box}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  text-align:center;
+  background:radial-gradient(circle at top,#334155,#111827);
+  margin:0;
+  color:var(--text);
+  overflow:hidden;
+}
+.wrap{
+  height:100vh;
+  min-height:650px;
+  padding:12px;
+  display:grid;
+  grid-template-rows:auto auto 1fr;
+  gap:10px;
+}
+.top,.status,.mainPanel{
+  background:rgba(255,255,255,.95);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 10px 26px rgba(0,0,0,.25);
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+}
+h2,h3{margin:0}
+.status{
+  padding:9px;
+}
+#status{
+  font-size:20px;
+  font-weight:bold;
+}
+.small{
+  font-size:12px;
+  color:var(--muted);
+}
+.mainPanel{
+  display:grid;
+  grid-template-columns:minmax(460px,1fr) minmax(480px,620px);
+  gap:12px;
+  padding:12px;
+  min-height:0;
+}
+.tablePanel,.scorePanel{
+  border-radius:18px;
+  padding:12px;
+  min-height:0;
+}
+.tablePanel{
+  background:radial-gradient(circle,var(--felt),#123b2c);
+  color:white;
+  border:4px solid #5b3418;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:12px;
+}
+.scorePanel{
+  background:#fff;
+  border:2px solid #334155;
+  overflow:auto;
+}
+.playerStrip{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.playerCard{
+  min-width:150px;
+  padding:8px 10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.24);
+}
+.playerCard.turn{
+  outline:4px solid var(--gold);
+}
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(37,99,235,.12);
+  border:1px solid rgba(37,99,235,.25);
+  font-size:12px;
+  font-weight:bold;
+}
+.tableCenter{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+}
+#diceArea{
+  min-height:170px;
+  width:min(760px,96%);
+  border:3px dashed rgba(255,255,255,.38);
+  border-radius:22px;
+  background:rgba(255,255,255,.12);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  padding:18px;
+}
+.die{
+  width:86px;
+  height:86px;
+  border:3px solid #111827;
+  border-radius:18px;
+  background:linear-gradient(135deg,#fff,#e5e7eb);
+  box-shadow:5px 7px 0 rgba(0,0,0,.35);
+  cursor:pointer;
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  padding:12px;
+  transition:.15s ease;
+}
+.die:hover{
+  transform:translateY(-3px);
+}
+.held{
+  background:linear-gradient(135deg,#fef3c7,#facc15);
+  transform:translateY(-10px);
+  box-shadow:5px 13px 0 rgba(0,0,0,.32);
+}
+.pip{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#111827;
+  align-self:center;
+  justify-self:center;
+  opacity:0;
+}
+.die.v1 .p5{opacity:1}
+.die.v2 .p1,.die.v2 .p9{opacity:1}
+.die.v3 .p1,.die.v3 .p5,.die.v3 .p9{opacity:1}
+.die.v4 .p1,.die.v4 .p3,.die.v4 .p7,.die.v4 .p9{opacity:1}
+.die.v5 .p1,.die.v5 .p3,.die.v5 .p5,.die.v5 .p7,.die.v5 .p9{opacity:1}
+.die.v6 .p1,.die.v6 .p3,.die.v6 .p4,.die.v6 .p6,.die.v6 .p7,.die.v6 .p9{opacity:1}
 .roll{animation:roll .6s ease}
-@keyframes roll{0%{transform:translateY(-100px) rotate(0)}70%{transform:translateY(10px) rotate(280deg)}100%{transform:translateY(0) rotate(360deg)}}
-button{margin:5px;padding:8px 12px;cursor:pointer;border-radius:8px}
-button:disabled{opacity:.5;cursor:not-allowed}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{border:1px solid #999;padding:5px}
-.activeCol{background:#fff3b0}
-.scoreChoice{background:#dff0ff;cursor:pointer;font-weight:bold}
-.used{background:#ddd;color:#666}
-.preview{color:#777}
-.small{font-size:13px;color:#555}
+@keyframes roll{
+  0%{transform:translateY(-90px) rotate(0)}
+  70%{transform:translateY(12px) rotate(280deg)}
+  100%{transform:translateY(0) rotate(360deg)}
+}
+.held.roll{
+  animation:heldRoll .6s ease;
+}
+@keyframes heldRoll{
+  0%,100%{transform:translateY(-10px)}
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+button{
+  margin:4px;
+  padding:10px 14px;
+  cursor:pointer;
+  border-radius:12px;
+  border:1px solid #94a3b8;
+  font-weight:bold;
+  background:#f8fafc;
+}
+button.primary{
+  background:var(--blue);
+  color:white;
+  border-color:var(--blue);
+}
+button.gold{
+  background:var(--gold);
+  border-color:var(--gold);
+}
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.rollsBadge{
+  font-size:20px;
+  font-weight:bold;
+  color:#fde68a;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+th,td{
+  border:1px solid #cbd5e1;
+  padding:7px;
+}
+th{
+  background:#f1f5f9;
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+tfoot th{
+  bottom:0;
+}
+.activeCol{
+  background:#fff3b0!important;
+}
+.scoreChoice{
+  background:#dff0ff;
+  cursor:pointer;
+  font-weight:bold;
+}
+.scoreChoice:hover{
+  background:#bfdbfe;
+}
+.used{
+  background:#e5e7eb;
+  color:#475569;
+}
+.preview{
+  color:#64748b;
+  background:#f8fafc;
+}
+.category{
+  text-align:left;
+  font-weight:bold;
+}
+@media(max-width:950px){
+  .mainPanel{
+    grid-template-columns:1fr;
+  }
+  #diceArea{
+    min-height:135px;
+    gap:8px;
+  }
+  .die{
+    width:58px;
+    height:58px;
+    border-radius:12px;
+    padding:8px;
+  }
+  .pip{
+    width:9px;
+    height:9px;
+  }
+}
 </style>
 </head>
 <body>
-<h2>Yahtzee</h2>
-<div id="status">Loading players...</div>
-
-<div id="game">
-  <div class="panel">
-    <h3>Dice Table</h3>
-    <p>You are: <b id="meLabel">Spectator</b></p>
-    <p>Current Turn: <b id="turnLabel"></b></p>
-    <div id="diceArea"></div>
-    <button id="rollBtn" onclick="rollDice()">🎲 Roll Cup</button>
-    <button onclick="newGame(true)">New Game</button>
-    <p>Rolls left: <span id="rollsLeft">3</span></p>
-    <p class="small">Only the current player can roll, hold dice, and choose a score. Everyone else watches live.</p>
+<div class="wrap">
+  <div class="top">
+    <h2>Yahtzee</h2>
+    <div>
+      <span id="meLabel" class="badge">Spectator</span>
+      <button onclick="newGame(true)" class="gold">New Game</button>
+    </div>
   </div>
 
-  <div class="panel">
-    <h3>Score Sheet</h3>
-    <table>
-      <thead><tr id="headRow"><th>Category</th></tr></thead>
-      <tbody id="sheet"></tbody>
-      <tfoot><tr id="totalRow"><th>Total</th></tr></tfoot>
-    </table>
+  <div class="status">
+    <div id="status">Loading players...</div>
+    <div class="small">Roll up to 3 times, hold dice, then choose a score category.</div>
+  </div>
+
+  <div class="mainPanel">
+    <div class="tablePanel">
+      <div>
+        <h3>Dice Table</h3>
+        <div class="small">Current Turn: <b id="turnLabel"></b></div>
+      </div>
+
+      <div class="tableCenter">
+        <div id="diceArea"></div>
+
+        <div class="controls">
+          <button id="rollBtn" class="primary" onclick="rollDice()">Roll Cup</button>
+          <span class="rollsBadge">Rolls left: <span id="rollsLeft">3</span></span>
+        </div>
+
+        <div class="small">Only the current player can roll, hold dice, and choose a score. Everyone else watches live.</div>
+      </div>
+
+      <div id="playersPanel" class="playerStrip"></div>
+    </div>
+
+    <div class="scorePanel">
+      <h3>Score Sheet</h3>
+      <table>
+        <thead><tr id="headRow"><th>Category</th></tr></thead>
+        <tbody id="sheet"></tbody>
+        <tfoot><tr id="totalRow"><th>Total</th></tr></tfoot>
+      </table>
+    </div>
   </div>
 </div>
 
 <script>
-const GAME_META={id:'yahtzee',name:'Yahtzee',minPlayers:1,maxPlayers:4,seats:4};
+var GAME_META={id:'yahtzee',name:'Yahtzee',minPlayers:1,maxPlayers:4,seats:4};
 
-const cats=[
+var cats=[
   'Ones','Twos','Threes','Fours','Fives','Sixes',
   'Three Kind','Four Kind','Full House','Small Straight','Large Straight','Yahtzee','Chance'
 ];
 
-let players = [{seat:0,name:'Player 1'}];
-let mySeat = null;
-let state = null;
-let setupReceived = false;
+var players=[{seat:0,name:'Player 1'}];
+var mySeat=null;
+var state=null;
+var setupReceived=false;
+
+function el(id){return document.getElementById(id);}
+
+window.onerror=function(msg){
+  if(el('status'))el('status').innerText='Game error: '+msg;
+};
 
 function initPlayers(){
-  if(window.GAME_PLAYERS && window.GAME_PLAYERS.length){
-    receiveSetup(window.GAME_PLAYERS, window.GAME_MY_SEAT);
+  if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
+    receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
   }else{
-    state = freshState();
+    state=freshState();
     draw();
   }
 }
 
 function receiveSetup(newPlayers,newSeat){
-  setupReceived = true;
+  setupReceived=true;
 
-  if(newPlayers && newPlayers.length){
-    players = newPlayers.map(p=>({
-      seat:Number(p.seat),
-      name:p.name || ('Seat '+(Number(p.seat)+1))
-    }));
+  if(newPlayers&&newPlayers.length){
+    players=[];
+    for(var i=0;i<newPlayers.length;i++){
+      players.push({
+        seat:Number(newPlayers[i].seat),
+        name:newPlayers[i].name||('Seat '+(Number(newPlayers[i].seat)+1))
+      });
+    }
   }
 
-  players.sort((a,b)=>a.seat-b.seat);
+  players.sort(function(a,b){return a.seat-b.seat;});
 
-  if(newSeat !== undefined && newSeat !== null){
-    mySeat = Number(newSeat);
-    if(!players.some(p=>p.seat===mySeat)) mySeat = null;
+  if(newSeat!==undefined&&newSeat!==null){
+    mySeat=Number(newSeat);
+    if(!playerExists(mySeat))mySeat=null;
   }
 
-  if(!state || !players.some(p=>p.seat===state.turn)){
-    state = freshState();
+  if(!state||!playerExists(state.turn)){
+    state=freshState();
   }else{
-    players.forEach(p=>{
-      if(!state.scores[p.seat]) state.scores[p.seat]={};
-    });
+    for(var p=0;p<players.length;p++){
+      if(!state.scores[players[p].seat])state.scores[players[p].seat]={};
+    }
   }
 
   draw();
 }
 
 function freshState(){
-  let scores={};
-  players.forEach(p=>scores[p.seat]={});
+  var scores={};
+  for(var i=0;i<players.length;i++)scores[players[i].seat]={};
+
   return {
     dice:[1,1,1,1,1],
     held:[false,false,false,false,false],
@@ -114,68 +392,95 @@ function freshState(){
 }
 
 function draw(){
-  if(!state) return;
+  if(!state)return;
 
-  let myName = mySeat===null ? 'Spectator' : nameOf(mySeat);
-  let turnName = nameOf(state.turn);
-  let myTurn = mySeat===state.turn && !state.gameOver;
+  var myName=mySeat===null?'Spectator':nameOf(mySeat);
+  var turnName=nameOf(state.turn);
+  var myTurn=mySeat===state.turn&&!state.gameOver;
 
-  meLabel.innerText = myName;
-  turnLabel.innerText = turnName + "'s turn";
-  rollsLeft.innerText = state.rolls;
+  el('meLabel').innerText=myName;
+  el('turnLabel').innerText=turnName+"'s turn";
+  el('rollsLeft').innerText=state.rolls;
 
   if(state.gameOver){
-    status.innerText = state.message || 'Game over.';
+    el('status').innerText=state.message||'Game over.';
   }else if(myTurn){
-    status.innerText = 'Your turn. Roll, hold dice, then choose a score.';
+    el('status').innerText='Your turn. Roll, hold dice, then choose a score.';
   }else{
-    status.innerText = turnName + "'s turn. Watching live.";
+    el('status').innerText=turnName+"'s turn. Watching live.";
   }
 
-  rollBtn.disabled = !myTurn || state.rolls<=0;
+  el('rollBtn').disabled=!myTurn||state.rolls<=0;
 
-  diceArea.innerHTML='';
-  state.dice.forEach((v,i)=>{
-    let d=document.createElement('div');
-    d.className='die'+(state.held[i]?' held':'');
-    d.innerText=['','⚀','⚁','⚂','⚃','⚄','⚅'][v];
-    d.onclick=()=>toggleHold(i);
-    diceArea.appendChild(d);
-  });
-
+  drawDice();
+  drawPlayers();
   drawSheet();
 }
 
+function drawDice(){
+  el('diceArea').innerHTML='';
+
+  for(var i=0;i<state.dice.length;i++){
+    var d=document.createElement('div');
+    d.className='die v'+state.dice[i]+(state.held[i]?' held':'');
+    d.onclick=(function(idx){return function(){toggleHold(idx);};})(i);
+
+    for(var p=1;p<=9;p++){
+      var pip=document.createElement('span');
+      pip.className='pip p'+p;
+      d.appendChild(pip);
+    }
+
+    el('diceArea').appendChild(d);
+  }
+}
+
+function drawPlayers(){
+  var html='';
+
+  for(var i=0;i<players.length;i++){
+    var p=players[i];
+    html+='<div class="playerCard '+(p.seat===state.turn&&!state.gameOver?'turn':'')+'">'+
+      '<b>'+escapeHtml(p.name)+'</b><br>'+
+      '<span class="small">Score: '+totalScore(p.seat)+(p.seat===mySeat?' · You':'')+'</span>'+
+    '</div>';
+  }
+
+  el('playersPanel').innerHTML=html;
+}
+
 function drawSheet(){
-  headRow.innerHTML='<th>Category</th>';
+  el('headRow').innerHTML='<th>Category</th>';
 
-  players.forEach(p=>{
-    let th=document.createElement('th');
-    th.innerText=p.name;
-    th.className=p.seat===state.turn?'activeCol':'';
-    headRow.appendChild(th);
-  });
+  for(var i=0;i<players.length;i++){
+    var th=document.createElement('th');
+    th.innerText=players[i].name;
+    th.className=players[i].seat===state.turn?'activeCol':'';
+    el('headRow').appendChild(th);
+  }
 
-  sheet.innerHTML='';
+  el('sheet').innerHTML='';
 
-  cats.forEach(cat=>{
-    let tr=document.createElement('tr');
-    let name=document.createElement('td');
+  for(var c=0;c<cats.length;c++){
+    var cat=cats[c];
+    var tr=document.createElement('tr');
+    var name=document.createElement('td');
     name.innerText=cat;
+    name.className='category';
     tr.appendChild(name);
 
-    players.forEach(p=>{
-      let td=document.createElement('td');
-      let sc=state.scores[p.seat] || {};
+    for(var p=0;p<players.length;p++){
+      var td=document.createElement('td');
+      var sc=state.scores[players[p].seat]||{};
 
       if(sc[cat]!==undefined){
         td.innerText=sc[cat];
         td.className='used';
-      }else if(p.seat===state.turn && state.rolls<3){
+      }else if(players[p].seat===state.turn&&state.rolls<3){
         td.innerText=score(cat,state.dice);
-        if(mySeat===state.turn && !state.gameOver){
+        if(mySeat===state.turn&&!state.gameOver){
           td.className='scoreChoice';
-          td.onclick=()=>chooseScore(cat);
+          td.onclick=(function(x){return function(){chooseScore(x);};})(cat);
         }else{
           td.className='preview';
         }
@@ -184,30 +489,30 @@ function drawSheet(){
       }
 
       tr.appendChild(td);
-    });
+    }
 
-    sheet.appendChild(tr);
-  });
+    el('sheet').appendChild(tr);
+  }
 
-  totalRow.innerHTML='<th>Total</th>';
+  el('totalRow').innerHTML='<th>Total</th>';
 
-  players.forEach(p=>{
-    let th=document.createElement('th');
-    th.innerText=totalScore(p.seat);
-    th.className=p.seat===state.turn?'activeCol':'';
-    totalRow.appendChild(th);
-  });
+  for(var t=0;t<players.length;t++){
+    var total=document.createElement('th');
+    total.innerText=totalScore(players[t].seat);
+    total.className=players[t].seat===state.turn?'activeCol':'';
+    el('totalRow').appendChild(total);
+  }
 }
 
 function rollDice(){
-  if(state.gameOver || mySeat!==state.turn || state.rolls<=0) return;
+  if(state.gameOver||mySeat!==state.turn||state.rolls<=0)return;
 
-  for(let i=0;i<5;i++){
-    if(!state.held[i]) state.dice[i]=rand();
+  for(var i=0;i<5;i++){
+    if(!state.held[i])state.dice[i]=rand();
   }
 
   state.rolls--;
-  state.message = nameOf(mySeat)+' rolled.';
+  state.message=nameOf(mySeat)+' rolled.';
 
   draw();
   animateDice();
@@ -215,23 +520,23 @@ function rollDice(){
 }
 
 function toggleHold(i){
-  if(state.gameOver || mySeat!==state.turn || state.rolls===3) return;
+  if(state.gameOver||mySeat!==state.turn||state.rolls===3)return;
 
   state.held[i]=!state.held[i];
-  state.message = state.held[i] ? nameOf(mySeat)+' held a die.' : nameOf(mySeat)+' released a die.';
+  state.message=state.held[i]?nameOf(mySeat)+' held a die.':nameOf(mySeat)+' released a die.';
 
   draw();
   sync();
 }
 
 function chooseScore(cat){
-  if(state.gameOver || mySeat!==state.turn || state.rolls===3) return;
+  if(state.gameOver||mySeat!==state.turn||state.rolls===3)return;
 
-  if(!state.scores[state.turn]) state.scores[state.turn]={};
+  if(!state.scores[state.turn])state.scores[state.turn]={};
 
-  let val=score(cat,state.dice);
+  var val=score(cat,state.dice);
   state.scores[state.turn][cat]=val;
-  state.message = nameOf(state.turn)+' scored '+val+' in '+cat+'.';
+  state.message=nameOf(state.turn)+' scored '+val+' in '+cat+'.';
 
   if(isGameOver()){
     finishGame();
@@ -244,47 +549,60 @@ function chooseScore(cat){
 }
 
 function nextTurn(){
-  let idx=players.findIndex(p=>p.seat===state.turn);
-  if(idx<0) idx=0;
+  var idx=-1;
+  for(var i=0;i<players.length;i++){
+    if(players[i].seat===state.turn)idx=i;
+  }
+  if(idx<0)idx=0;
 
-  let next=players[(idx+1)%players.length];
+  var next=players[(idx+1)%players.length];
 
   state.turn=next.seat;
   state.rolls=3;
   state.held=[false,false,false,false,false];
   state.dice=[1,1,1,1,1];
-  state.message += ' '+nameOf(state.turn)+' is next.';
+  state.message+=' '+nameOf(state.turn)+' is next.';
 }
 
 function isGameOver(){
-  return players.every(p=>cats.every(c=>(state.scores[p.seat]||{})[c]!==undefined));
+  for(var p=0;p<players.length;p++){
+    for(var c=0;c<cats.length;c++){
+      if((state.scores[players[p].seat]||{})[cats[c]]===undefined)return false;
+    }
+  }
+  return true;
 }
 
 function finishGame(){
   state.gameOver=true;
 
-  let best=-1;
-  let winners=[];
+  var best=-1;
+  var winners=[];
 
-  players.forEach(p=>{
-    let t=totalScore(p.seat);
+  for(var i=0;i<players.length;i++){
+    var t=totalScore(players[i].seat);
+
     if(t>best){
       best=t;
-      winners=[p.seat];
+      winners=[players[i].seat];
     }else if(t===best){
-      winners.push(p.seat);
+      winners.push(players[i].seat);
     }
-  });
+  }
 
-  state.message = winners.length===1
+  state.message=winners.length===1
     ? 'Game over. '+nameOf(winners[0])+' wins with '+best+' points!'
     : 'Game over. Tie game at '+best+' points!';
 }
 
 function score(cat,d){
-  let counts={};
-  d.forEach(x=>counts[x]=(counts[x]||0)+1);
-  let sum=d.reduce((a,b)=>a+b,0);
+  var counts={};
+  var sum=0;
+
+  for(var i=0;i<d.length;i++){
+    counts[d[i]]=(counts[d[i]]||0)+1;
+    sum+=d[i];
+  }
 
   if(cat==='Ones')return count(d,1)*1;
   if(cat==='Twos')return count(d,2)*2;
@@ -292,33 +610,65 @@ function score(cat,d){
   if(cat==='Fours')return count(d,4)*4;
   if(cat==='Fives')return count(d,5)*5;
   if(cat==='Sixes')return count(d,6)*6;
-  if(cat==='Three Kind')return Object.values(counts).some(x=>x>=3)?sum:0;
-  if(cat==='Four Kind')return Object.values(counts).some(x=>x>=4)?sum:0;
-  if(cat==='Full House')return Object.values(counts).includes(3)&&Object.values(counts).includes(2)?25:0;
+  if(cat==='Three Kind')return hasCount(counts,3)?sum:0;
+  if(cat==='Four Kind')return hasCount(counts,4)?sum:0;
+  if(cat==='Full House')return hasExact(counts,3)&&hasExact(counts,2)?25:0;
   if(cat==='Small Straight')return smallStraight(d)?30:0;
   if(cat==='Large Straight')return largeStraight(d)?40:0;
-  if(cat==='Yahtzee')return Object.values(counts).some(x=>x===5)?50:0;
+  if(cat==='Yahtzee')return hasExact(counts,5)?50:0;
   if(cat==='Chance')return sum;
 
   return 0;
 }
 
 function count(d,n){
-  return d.filter(x=>x===n).length;
+  var total=0;
+  for(var i=0;i<d.length;i++)if(d[i]===n)total++;
+  return total;
+}
+
+function hasCount(counts,n){
+  for(var k in counts)if(counts[k]>=n)return true;
+  return false;
+}
+
+function hasExact(counts,n){
+  for(var k in counts)if(counts[k]===n)return true;
+  return false;
 }
 
 function smallStraight(d){
-  let s=[...new Set(d)].sort().join('');
-  return s.includes('1234')||s.includes('2345')||s.includes('3456');
+  var s=uniqueSortedString(d);
+  return s.indexOf('1234')>=0||s.indexOf('2345')>=0||s.indexOf('3456')>=0;
 }
 
 function largeStraight(d){
-  let s=[...new Set(d)].sort().join('');
+  var s=uniqueSortedString(d);
   return s==='12345'||s==='23456';
 }
 
+function uniqueSortedString(d){
+  var seen={};
+  var arr=[];
+
+  for(var i=0;i<d.length;i++){
+    if(!seen[d[i]]){
+      seen[d[i]]=true;
+      arr.push(d[i]);
+    }
+  }
+
+  arr.sort();
+  return arr.join('');
+}
+
 function totalScore(seat){
-  return Object.values(state.scores[seat]||{}).reduce((a,b)=>a+b,0);
+  var sc=state.scores[seat]||{};
+  var total=0;
+
+  for(var k in sc)total+=sc[k];
+
+  return total;
 }
 
 function rand(){
@@ -326,35 +676,48 @@ function rand(){
 }
 
 function nameOf(seat){
-  let p=players.find(x=>x.seat===seat);
-  return p ? p.name : 'Seat '+(seat+1);
+  for(var i=0;i<players.length;i++){
+    if(players[i].seat===seat)return players[i].name;
+  }
+  return 'Seat '+(seat+1);
+}
+
+function playerExists(seat){
+  for(var i=0;i<players.length;i++){
+    if(players[i].seat===seat)return true;
+  }
+  return false;
 }
 
 function animateDice(){
-  document.querySelectorAll('.die').forEach((d,i)=>{
+  var dice=document.querySelectorAll('.die');
+
+  for(var i=0;i<dice.length;i++){
     if(!state.held[i]){
-      d.classList.remove('roll');
-      void d.offsetWidth;
-      d.classList.add('roll');
+      dice[i].classList.remove('roll');
+      void dice[i].offsetWidth;
+      dice[i].classList.add('roll');
     }
-  });
+  }
 }
 
 function newGame(sendIt){
   state=freshState();
   draw();
-  if(sendIt) sync();
+  if(sendIt)sync();
 }
 
 function sync(){
-  window.sendMove({type:'state',state});
+  window.sendMove({type:'state',state:state});
 }
 
 window.sendMove=function(data){
-  parent.postMessage({type:'move',data},'*');
+  parent.postMessage({type:'move',data:data},'*');
 };
 
 window.onMove=function(data){
+  if(!data)return;
+
   if(data.type==='state'){
     state=data.state;
     draw();
@@ -366,20 +729,49 @@ window.onMove=function(data){
 };
 
 window.addEventListener('message',function(event){
-  let data=event.data || {};
+  var data=event.data||{};
 
   if(data.type==='gameSetup'){
     receiveSetup(data.players,data.mySeat);
   }
+
+  if(data.type==='gameMove'&&window.onMove){
+    window.onMove(data.data);
+  }
 });
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
 
 parent.postMessage({type:'gameReady'},'*');
 
-setTimeout(function(){
-  if(!setupReceived){
-    initPlayers();
+function safeBoot(){
+  try{
+    if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
+      receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
+    }else{
+      state=freshState();
+      draw();
+    }
+
+    setTimeout(function(){
+      if(!setupReceived&&window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
+        receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
+      }
+    },250);
+  }catch(e){
+    if(el('status'))el('status').innerText='Game error: '+e.message;
   }
-},100);
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',safeBoot);
+}else{
+  safeBoot();
+}
 </script>
 </body>
 </html>
