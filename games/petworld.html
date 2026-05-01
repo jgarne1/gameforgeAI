@@ -4,255 +4,969 @@
 <title>Pet World</title>
 <style>
 :root{
-  --bg:#eef2f7;
-  --card:#ffffff;
-  --line:#d8dee8;
+  --ink:#172033;
+  --muted:#667085;
+  --line:rgba(255,255,255,.28);
+  --glass:rgba(255,255,255,.72);
+  --glass2:rgba(255,255,255,.48);
   --blue:#2563eb;
+  --blue2:#1d4ed8;
   --green:#16a34a;
+  --gold:#facc15;
   --red:#dc2626;
-  --muted:#64748b;
+  --purple:#7c3aed;
 }
+
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#eef2f7,#f8fafc);
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 18% 16%,rgba(56,189,248,.35),transparent 28%),
+    radial-gradient(circle at 86% 18%,rgba(250,204,21,.35),transparent 24%),
+    radial-gradient(circle at 45% 90%,rgba(34,197,94,.22),transparent 30%),
+    linear-gradient(135deg,#dbeafe,#f8fafc 52%,#ecfccb);
+}
+
+button,input{
+  font-family:inherit;
 }
 
 .wrap{
-  display:grid;
-  grid-template-columns:300px 1fr;
   height:100vh;
+  min-height:650px;
+  padding:14px;
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:14px;
 }
 
-.sidebar{
-  background:#fff;
-  border-right:2px solid var(--line);
-  padding:15px;
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:14px 18px;
+  box-shadow:0 20px 50px rgba(15,23,42,.12);
+}
+
+.brand h1{
+  margin:0;
+  font-size:30px;
+  letter-spacing:-1px;
+}
+
+.brand span{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.topStats{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(148,163,184,.35);
+  font-size:12px;
+  font-weight:900;
+  color:#334155;
 }
 
 .main{
-  padding:20px;
+  min-height:0;
+  display:grid;
+  grid-template-columns:330px minmax(0,1fr)360px;
+  gap:14px;
 }
 
-.card{
-  background:#fff;
+.panel{
+  min-height:0;
+  overflow:auto;
+  background:var(--glass);
+  backdrop-filter:blur(18px);
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:28px;
   padding:15px;
-  margin-bottom:15px;
-  box-shadow:0 6px 18px rgba(0,0,0,.05);
+  box-shadow:0 20px 55px rgba(15,23,42,.13);
 }
 
-h2{margin-top:0}
-
-button{
-  padding:10px;
-  margin:5px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  cursor:pointer;
-  font-weight:bold;
+.panel h2,.panel h3{
+  margin:0 0 10px;
 }
 
-button.primary{background:var(--blue);color:#fff}
-button.good{background:var(--green);color:#fff}
-button.danger{background:var(--red);color:#fff}
+.muted{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.35;
+}
 
-.petDisplay{
-  height:200px;
+.stage{
+  position:relative;
+  min-height:0;
+  overflow:hidden;
+  border-radius:34px;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(255,255,255,.92),rgba(255,255,255,.25) 29%,transparent 51%),
+    linear-gradient(180deg,#93c5fd 0%,#bfdbfe 42%,#86efac 100%);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 0 60px rgba(255,255,255,.5),0 24px 70px rgba(15,23,42,.18);
+  display:grid;
+  grid-template-rows:1fr auto auto;
+}
+
+.clouds{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.65;
+  background:
+    radial-gradient(ellipse at 16% 18%,rgba(255,255,255,.9),transparent 7%),
+    radial-gradient(ellipse at 26% 20%,rgba(255,255,255,.75),transparent 8%),
+    radial-gradient(ellipse at 78% 16%,rgba(255,255,255,.88),transparent 8%),
+    radial-gradient(ellipse at 68% 18%,rgba(255,255,255,.68),transparent 7%);
+}
+
+.sparkles{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 36%,rgba(255,255,255,.9),transparent 1.3%),
+    radial-gradient(circle at 72% 33%,rgba(255,255,255,.85),transparent 1%),
+    radial-gradient(circle at 62% 62%,rgba(255,255,255,.8),transparent 1.2%),
+    radial-gradient(circle at 34% 70%,rgba(255,255,255,.8),transparent 1%);
+  animation:twinkle 2.8s ease-in-out infinite;
+}
+
+@keyframes twinkle{
+  0%,100%{opacity:.25}
+  50%{opacity:.85}
+}
+
+.petZone{
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:80px;
+  min-height:360px;
+  padding:24px;
 }
 
-.bar{
-  height:10px;
-  background:#ddd;
+.ground{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:130px;
+  background:
+    radial-gradient(ellipse at center,rgba(21,128,61,.42),transparent 58%),
+    linear-gradient(180deg,rgba(34,197,94,.18),rgba(22,101,52,.72));
+}
+
+.aura{
+  position:absolute;
+  width:360px;
+  height:360px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.88),rgba(255,255,255,.18) 45%,transparent 70%);
+  filter:blur(2px);
+  animation:auraPulse 4s ease-in-out infinite;
+}
+
+@keyframes auraPulse{
+  0%,100%{transform:scale(.94);opacity:.75}
+  50%{transform:scale(1.06);opacity:1}
+}
+
+.petOrb{
+  position:relative;
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.42);
+  box-shadow:0 0 80px rgba(255,255,255,.85), inset 0 0 50px rgba(255,255,255,.62);
+  animation:floaty 3.3s ease-in-out infinite;
+}
+
+@keyframes floaty{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-14px)}
+}
+
+.petEmoji{
+  font-size:124px;
+  filter:drop-shadow(0 18px 18px rgba(15,23,42,.23));
+  animation:breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes breathe{
+  0%,100%{transform:scale(1) rotate(-1deg)}
+  50%{transform:scale(1.08) rotate(1deg)}
+}
+
+.petEmoji.pulse{
+  animation:pop .45s ease;
+}
+
+@keyframes pop{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.28)}
+  100%{transform:scale(1)}
+}
+
+.speech{
+  position:relative;
+  margin:0 auto 12px;
+  max-width:650px;
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(148,163,184,.35);
+  border-radius:22px;
+  padding:13px 16px;
+  text-align:center;
+  font-weight:900;
+  color:#334155;
+  box-shadow:0 12px 25px rgba(15,23,42,.09);
+}
+
+.nameBar{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  padding:14px;
+  background:rgba(255,255,255,.48);
+  border-top:1px solid rgba(255,255,255,.52);
+}
+
+input{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid #cbd5e1;
+  background:#fff;
+  font-size:14px;
+}
+
+button{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid #cbd5e1;
+  background:#fff;
+  cursor:pointer;
+  font-weight:900;
+  transition:.15s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(15,23,42,.12);
+}
+
+button.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;border-color:var(--blue)}
+button.good{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;border-color:#16a34a}
+button.gold{background:linear-gradient(135deg,#facc15,#f59e0b);color:#111827;border-color:#facc15}
+button.purple{background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;border-color:#7c3aed}
+button.danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:white;border-color:#dc2626}
+button:disabled{opacity:.45;cursor:not-allowed}
+
+.statLine{
+  margin:10px 0;
+}
+
+.statTop{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  color:#475569;
+  font-size:12px;
+  margin-bottom:4px;
+}
+
+.statBar{
+  height:12px;
   border-radius:999px;
+  background:#e5e7eb;
   overflow:hidden;
 }
 
-.fill{
+.statFill{
   height:100%;
-  background:var(--blue);
+  width:50%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22c55e,#86efac);
 }
 
-.invItem{
+.statFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
+.statFill.low{background:linear-gradient(90deg,#ef4444,#f97316)}
+
+.eggTraitGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:8px;
+}
+
+.traitBox{
+  padding:10px;
+  background:rgba(255,255,255,.7);
+  border:1px solid rgba(148,163,184,.28);
+  border-radius:16px;
+}
+
+.traitBox b{
   display:flex;
   justify-content:space-between;
-  margin:5px 0;
+  font-size:12px;
 }
 
+.progress{
+  height:12px;
+  border-radius:999px;
+  background:#e5e7eb;
+  overflow:hidden;
+  margin:8px 0;
+}
+
+.progressFill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);
+}
+
+.tabs{
+  display:flex;
+  gap:7px;
+  margin-bottom:12px;
+}
+
+.tabs button{
+  flex:1;
+  padding:9px 6px;
+  font-size:12px;
+}
+
+.tabs button.active{
+  background:#dbeafe;
+  border-color:#60a5fa;
+  color:#1d4ed8;
+}
+
+.hidden{display:none!important}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.actionTile{
+  padding:12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(148,163,184,.32);
+  text-align:left;
+}
+
+.actionTile strong{
+  display:block;
+  font-size:14px;
+}
+
+.actionTile span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.28;
+}
+
+.item{
+  border:1px solid rgba(148,163,184,.28);
+  background:rgba(255,255,255,.76);
+  border-radius:18px;
+  padding:11px;
+  margin:8px 0;
+}
+
+.itemTop{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+}
+
+.itemName{
+  font-weight:900;
+}
+
+.itemDesc{
+  font-size:12px;
+  color:var(--muted);
+  margin:5px 0 9px;
+  line-height:1.3;
+}
+
+.coin{
+  font-weight:900;
+  color:#92400e;
+}
+
+.moves{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.movePill{
+  padding:7px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  color:#3730a3;
+  font-size:12px;
+  font-weight:900;
+}
+
+.log{
+  height:130px;
+  overflow:auto;
+  background:#fffbea;
+  border:1px solid #d6bd6b;
+  border-radius:17px;
+  padding:9px;
+  font-size:13px;
+  color:#1f2937;
+  line-height:1.35;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  background:#111827;
+  color:#fff;
+  border-radius:999px;
+  padding:11px 16px;
+  font-weight:900;
+  box-shadow:0 15px 40px rgba(15,23,42,.35);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s ease;
+  z-index:99;
+}
+
+.toast.show{
+  opacity:1;
+  bottom:32px;
+}
+
+@media(max-width:1050px){
+  body{overflow:auto}
+  .wrap{height:auto}
+  .main{grid-template-columns:1fr}
+  .stage{min-height:620px}
+  .petZone{min-height:360px}
+}
 </style>
 </head>
 
 <body>
 <div class="wrap">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <h2>🐾 Pet</h2>
-
-  <div class="card">
-    <b id="petName">Loading...</b><br>
-    Stage: <span id="stage"></span>
-
-    <div>❤️ Happiness</div>
-    <div class="bar"><div id="happyBar" class="fill"></div></div>
-
-    <div>🍗 Hunger</div>
-    <div class="bar"><div id="hungerBar" class="fill"></div></div>
-
-    <div>⚡ Energy</div>
-    <div class="bar"><div id="energyBar" class="fill"></div></div>
+  <div class="top">
+    <div class="brand">
+      <h1>Pet World</h1>
+      <span>Raise your account pet, hatch eggs, collect items, and prepare for battles.</span>
+    </div>
+    <div class="topStats">
+      <span id="userBadge" class="badge">👤 Loading</span>
+      <span id="coinBadge" class="badge">🪙 0</span>
+      <span id="stageBadge" class="badge">🥚 Egg</span>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>Inventory</h3>
-    <div id="inventory"></div>
-  </div>
+  <div class="main">
+    <div class="panel">
+      <h2>Profile</h2>
+      <p id="profileSub" class="muted">Loading pet profile...</p>
 
+      <div id="statsBox"></div>
+
+      <h3 style="margin-top:16px">Moves</h3>
+      <div id="movesBox" class="moves"></div>
+
+      <h3 style="margin-top:16px">Activity</h3>
+      <div id="log" class="log"></div>
+    </div>
+
+    <div class="stage">
+      <div class="clouds"></div>
+      <div class="sparkles"></div>
+
+      <div class="petZone">
+        <div class="ground"></div>
+        <div class="aura"></div>
+        <div class="petOrb">
+          <div id="petEmoji" class="petEmoji">🥚</div>
+        </div>
+      </div>
+
+      <div id="speech" class="speech">Loading your companion...</div>
+
+      <div class="nameBar">
+        <input id="renameInput" placeholder="Pet name">
+        <button onclick="renamePet()" class="primary">Rename</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs">
+        <button id="careTab" onclick="setTab('care')" class="active">Care</button>
+        <button id="itemsTab" onclick="setTab('items')">Items</button>
+        <button id="shopTab" onclick="setTab('shop')">Shop</button>
+      </div>
+
+      <div id="carePanel"></div>
+      <div id="itemsPanel" class="hidden"></div>
+      <div id="shopPanel" class="hidden"></div>
+    </div>
+  </div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
-
-  <div class="card">
-    <div class="petDisplay" id="petDisplay">🥚</div>
-  </div>
-
-  <div class="card" id="eggControls">
-    <h3>Care Egg</h3>
-    <button onclick="care('warm')">🔥 Warm</button>
-    <button onclick="care('cold')">❄️ Cold</button>
-    <button onclick="care('wet')">💧 Wet</button>
-    <button onclick="care('dry')">🌵 Dry</button>
-  </div>
-
-  <div class="card" id="petControls" style="display:none;">
-    <h3>Actions</h3>
-    <button onclick="feed()" class="good">🍗 Feed</button>
-    <button onclick="play()">🎾 Play</button>
-    <button onclick="train()">⚔️ Train</button>
-  </div>
-
-  <div class="card">
-    <h3>Shop</h3>
-    <button onclick="buy('food')">Buy Food ($10)</button>
-    <button onclick="buy('toy')">Buy Toy ($15)</button>
-  </div>
-
-</div>
-</div>
+<div id="toast" class="toast"></div>
 
 <script>
+var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
-let pet=null;
+var username='guest';
+var profile=null;
+var shop={};
+var moves={};
+var currentTab='care';
+var logs=[];
 
-async function loadPet(){
-  let res=await fetch('/api/pet',{headers:{user:localStorage.getItem('gf_user')}});
-  pet=await res.json();
-  draw();
+function el(id){return document.getElementById(id);}
+
+function getPlayerName(){
+  if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
+    var s=window.GAME_MY_SEAT;
+    for(var i=0;i<window.GAME_PLAYERS.length;i++){
+      if(window.GAME_PLAYERS[i].seat===s)return window.GAME_PLAYERS[i].name||'guest';
+    }
+    return window.GAME_PLAYERS[0].name||'guest';
+  }
+
+  try{
+    return localStorage.getItem('gf_user')||'guest';
+  }catch(e){
+    return 'guest';
+  }
 }
 
-async function savePet(){
-  await fetch('/api/pet',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      user:localStorage.getItem('gf_user')
-    },
-    body:JSON.stringify(pet)
-  });
+function boot(){
+  username=getPlayerName();
+  el('userBadge').innerText='👤 '+username;
+  loadProfile();
+}
+
+async function loadProfile(){
+  try{
+    var res=await fetch('/api/pet/profile?user='+encodeURIComponent(username));
+    var data=await res.json();
+
+    if(data.error){
+      speak('Could not load pet: '+data.error);
+      addLog('Load failed: '+data.error);
+      return;
+    }
+
+    profile=data.profile;
+    shop=data.shop||{};
+    moves=data.moves||{};
+
+    addLog('Loaded pet profile.');
+    draw();
+  }catch(err){
+    speak('Server error loading pet profile.');
+    addLog('Error: '+err.message);
+  }
+}
+
+function activePet(){
+  if(!profile)return null;
+  return profile.pets[profile.activePetId];
 }
 
 function draw(){
-  petName.innerText=pet.name;
-  stage.innerText=pet.stage;
+  var pet=activePet();
+  if(!pet)return;
 
-  happyBar.style.width=pet.happiness+'%';
-  hungerBar.style.width=pet.hunger+'%';
-  energyBar.style.width=pet.energy+'%';
+  var emoji=pet.emoji||'🥚';
+  var stage=pet.stage||'egg';
 
-  inventory.innerHTML=
-    'Food: '+pet.inventory.food+'<br>'+
-    'Toys: '+pet.inventory.toy;
+  el('petEmoji').innerText=emoji;
+  el('coinBadge').innerText='🪙 '+Number(profile.money||0);
+  el('stageBadge').innerText=(stage==='egg'?'🥚 ':'🐾 ')+stage;
+  el('renameInput').value=pet.name||'';
+  el('profileSub').innerHTML='<b>'+escapeHtml(pet.name||'Mystery Egg')+'</b><br>'+escapeHtml(stage==='egg'?'Mystery egg':((pet.type||'pet')+' type · Level '+Number((pet.stats&&pet.stats.level)||1)));
+
+  if(stage==='egg'){
+    speak('Your egg reacts to every care choice. Warm, cold, wet, dry, light, and dark will shape what hatches.');
+  }else{
+    speak((pet.name||'Your pet')+' is ready to grow. Feed, play, train, and prepare for battles.');
+  }
+
+  drawStats();
+  drawMoves();
+  drawCare();
+  drawItems();
+  drawShop();
+  drawLog();
+}
+
+function drawStats(){
+  var pet=activePet();
+  var html='';
 
   if(pet.stage==='egg'){
-    petDisplay.innerText='🥚';
-    eggControls.style.display='block';
-    petControls.style.display='none';
+    var traits=pet.eggTraits||{};
+    var total=traitTotal(traits);
+    var pct=Math.min(100,Math.floor(total/18*100));
+
+    html+='<h3>Hatch Progress</h3>';
+    html+='<div class="progress"><div class="progressFill" style="width:'+pct+'%"></div></div>';
+    html+='<p class="muted">'+total+' / 18 care points</p>';
+
+    html+='<div class="eggTraitGrid">';
+    html+=traitBox('Warm',traits.warm);
+    html+=traitBox('Cold',traits.cold);
+    html+=traitBox('Wet',traits.wet);
+    html+=traitBox('Dry',traits.dry);
+    html+=traitBox('Light',traits.light);
+    html+=traitBox('Dark',traits.dark);
+    html+='</div>';
   }else{
-    petDisplay.innerText='🐉';
-    eggControls.style.display='none';
-    petControls.style.display='block';
-  }
-}
-
-async function care(type){
-  pet.eggCare[type]++;
-  let total=Object.values(pet.eggCare).reduce((a,b)=>a+b,0);
-
-  if(total>=15){
-    hatch();
+    html+=statBar('HP',pet.stats.hp,pet.stats.maxHp);
+    html+=statBar('Hunger',pet.needs.hunger,100);
+    html+=statBar('Happiness',pet.needs.happiness,100);
+    html+=statBar('Energy',pet.needs.energy,100);
+    html+=statBar('Cleanliness',pet.needs.cleanliness,100);
+    html+=statBar('Attack',pet.stats.attack,20);
+    html+=statBar('Defense',pet.stats.defense,20);
+    html+=statBar('Speed',pet.stats.speed,20);
+    html+=statBar('XP',pet.stats.xp,pet.stats.level*20);
   }
 
-  await savePet();
-  draw();
+  el('statsBox').innerHTML=html;
 }
 
-function hatch(){
-  let e=pet.eggCare;
+function traitBox(name,val){
+  val=Number(val||0);
+  return '<div class="traitBox"><b><span>'+name+'</span><span>'+val+'</span></b><div class="progress" style="height:8px"><div class="progressFill" style="width:'+Math.min(100,val*8)+'%"></div></div></div>';
+}
 
-  if(e.warm>e.cold){
-    pet.type='fire';
+function statBar(name,val,max){
+  val=Number(val||0);
+  max=Number(max||100);
+  var pct=Math.max(0,Math.min(100,Math.floor((val/max)*100)));
+  var cls=pct<30?'low':pct<60?'mid':'';
+
+  return ''+
+    '<div class="statLine">'+
+      '<div class="statTop"><span>'+escapeHtml(name)+'</span><b>'+val+'/'+max+'</b></div>'+
+      '<div class="statBar"><div class="statFill '+cls+'" style="width:'+pct+'%"></div></div>'+
+    '</div>';
+}
+
+function drawMoves(){
+  var pet=activePet();
+  var html='';
+
+  (pet.moves||[]).forEach(function(id){
+    var move=moves[id]||{name:id,type:'normal'};
+    html+='<span class="movePill">'+escapeHtml(move.name)+' · '+escapeHtml(move.type)+'</span>';
+  });
+
+  if(!html)html='<span class="muted">No moves learned yet.</span>';
+
+  el('movesBox').innerHTML=html;
+}
+
+function drawCare(){
+  var pet=activePet();
+  var html='';
+
+  if(pet.stage==='egg'){
+    html+='<h2>Egg Care</h2>';
+    html+='<p class="muted">Choose deliberately. The highest traits influence what creature hatches.</p>';
+    html+='<div class="grid2">';
+    html+=careTile('🔥 Warm It','warm','Encourages fiery, bold pets.');
+    html+=careTile('❄️ Cool It','cold','Encourages calm, icy pets.');
+    html+=careTile('💧 Mist It','wet','Encourages water and nature pets.');
+    html+=careTile('🌵 Dry It','dry','Encourages earth and shadow pets.');
+    html+=careTile('☀️ Give Light','light','Encourages bright, brave pets.');
+    html+=careTile('🌙 Shade It','dark','Encourages mysterious pets.');
+    html+='</div>';
   }else{
-    pet.type='water';
+    html+='<h2>Care Actions</h2>';
+    html+='<p class="muted">Play earns coins and XP. Items restore needs.</p>';
+    html+='<div class="grid2">';
+    html+='<button class="actionTile primary" onclick="playPet()"><strong>🎾 Play</strong><span>+coins, +XP, +happiness, costs energy.</span></button>';
+    html+='<button class="actionTile good" onclick="useItem(\'berry\')"><strong>🍓 Feed Berry</strong><span>Restores hunger.</span></button>';
+    html+='<button class="actionTile" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Restores cleanliness.</span></button>';
+    html+='<button class="actionTile purple" onclick="useItem(\'nap_blanket\')"><strong>💤 Nap</strong><span>Restores energy.</span></button>';
+    html+='</div>';
   }
 
-  pet.stage='baby';
+  el('carePanel').innerHTML=html;
 }
 
-async function feed(){
-  if(pet.inventory.food<=0)return alert('No food');
-
-  pet.inventory.food--;
-  pet.hunger=Math.min(100,pet.hunger+20);
-
-  await savePet();
-  draw();
+function careTile(title,action,desc){
+  return '<button class="actionTile" onclick="careEgg(\''+action+'\')"><strong>'+title+'</strong><span>'+desc+'</span></button>';
 }
 
-async function play(){
-  pet.happiness=Math.min(100,pet.happiness+10);
-  pet.energy-=10;
+function drawItems(){
+  var inv=profile.inventory||{};
+  var keys=Object.keys(inv).filter(function(k){return inv[k]>0;});
+  var html='<h2>Inventory</h2>';
 
-  await savePet();
-  draw();
+  if(!keys.length){
+    html+='<p class="muted">No items yet. Visit the shop to buy supplies.</p>';
+  }
+
+  keys.forEach(function(id){
+    var item=shop[id]||{name:id,description:'Item'};
+    html+='<div class="item">';
+    html+='<div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><span class="badge">x'+inv[id]+'</span></div>';
+    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div>';
+    html+='<button class="primary" onclick="useItem(\''+id+'\')">Use Item</button>';
+    html+='</div>';
+  });
+
+  el('itemsPanel').innerHTML=html;
 }
 
-async function train(){
-  pet.energy-=20;
-  alert('Your pet is getting stronger!');
+function drawShop(){
+  var html='<h2>Shop</h2><p class="muted">Buy food, care tools, and comfort items.</p>';
 
-  await savePet();
-  draw();
+  Object.keys(shop).forEach(function(id){
+    var item=shop[id];
+
+    html+='<div class="item">';
+    html+='<div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><div class="coin">'+Number(item.price||0)+' coins</div></div>';
+    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div>';
+    html+='<button class="gold" onclick="buyItem(\''+id+'\')">Buy</button>';
+    html+='</div>';
+  });
+
+  el('shopPanel').innerHTML=html;
 }
 
-async function buy(item){
-  if(pet.money<10)return alert('Not enough money');
-
-  pet.money-=10;
-  pet.inventory[item]++;
-
-  await savePet();
-  draw();
+function drawLog(){
+  var html='';
+  logs.slice(-10).forEach(function(x){
+    html+='• '+escapeHtml(x)+'<br>';
+  });
+  el('log').innerHTML=html;
+  el('log').scrollTop=el('log').scrollHeight;
 }
 
-loadPet();
+function setTab(tab){
+  currentTab=tab;
 
+  careTab.classList.toggle('active',tab==='care');
+  itemsTab.classList.toggle('active',tab==='items');
+  shopTab.classList.toggle('active',tab==='shop');
+
+  carePanel.classList.toggle('hidden',tab!=='care');
+  itemsPanel.classList.toggle('hidden',tab!=='items');
+  shopPanel.classList.toggle('hidden',tab!=='shop');
+}
+
+async function careEgg(action){
+  try{
+    var res=await fetch('/api/pet/care-egg',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:username,action:action})
+    });
+
+    var data=await res.json();
+    if(data.error)return notify(data.error);
+
+    profile=data.profile;
+    addLog(data.message||'You cared for the egg.');
+    notify(data.message||'Egg cared for.');
+
+    if(data.hatched){
+      pulsePet();
+      addLog('A new pet has hatched!');
+    }
+
+    draw();
+  }catch(err){
+    notify('Care failed: '+err.message);
+  }
+}
+
+async function useItem(itemId){
+  try{
+    var res=await fetch('/api/pet/use-item',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:username,itemId:itemId})
+    });
+
+    var data=await res.json();
+    if(data.error)return notify(data.error);
+
+    profile=data.profile;
+    addLog('Used '+itemName(itemId)+'.');
+    notify('Used '+itemName(itemId)+'.');
+    pulsePet();
+    draw();
+  }catch(err){
+    notify('Use item failed: '+err.message);
+  }
+}
+
+async function buyItem(itemId){
+  try{
+    var res=await fetch('/api/pet/buy',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:username,itemId:itemId})
+    });
+
+    var data=await res.json();
+    if(data.error)return notify(data.error);
+
+    profile=data.profile;
+    addLog('Bought '+itemName(itemId)+'.');
+    notify('Bought '+itemName(itemId)+'.');
+    draw();
+  }catch(err){
+    notify('Buy failed: '+err.message);
+  }
+}
+
+async function playPet(){
+  try{
+    var res=await fetch('/api/pet/play',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:username})
+    });
+
+    var data=await res.json();
+    if(data.error)return notify(data.error);
+
+    profile=data.profile;
+    addLog('You played together. +coins, +XP, +happiness.');
+    notify('Play complete! +5 coins.');
+    pulsePet();
+    draw();
+  }catch(err){
+    notify('Play failed: '+err.message);
+  }
+}
+
+async function renamePet(){
+  var name=el('renameInput').value.trim();
+  if(!name)return notify('Enter a pet name.');
+
+  try{
+    var res=await fetch('/api/pet/rename',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:username,name:name})
+    });
+
+    var data=await res.json();
+    if(data.error)return notify(data.error);
+
+    profile=data.profile;
+    addLog('Renamed pet to '+name+'.');
+    notify('Renamed!');
+    draw();
+  }catch(err){
+    notify('Rename failed: '+err.message);
+  }
+}
+
+function itemName(id){
+  return shop[id]?shop[id].name:id;
+}
+
+function traitTotal(t){
+  return Number(t.warm||0)+Number(t.cold||0)+Number(t.wet||0)+Number(t.dry||0)+Number(t.light||0)+Number(t.dark||0);
+}
+
+function speak(text){
+  el('speech').innerText=text;
+}
+
+function addLog(text){
+  logs.push(text);
+  if(logs.length>80)logs.shift();
+  drawLog();
+}
+
+function pulsePet(){
+  var p=el('petEmoji');
+  p.classList.remove('pulse');
+  void p.offsetWidth;
+  p.classList.add('pulse');
+}
+
+function notify(text){
+  var t=el('toast');
+  t.innerText=text;
+  t.classList.add('show');
+  setTimeout(function(){
+    t.classList.remove('show');
+  },2200);
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+window.addEventListener('message',function(event){
+  var msg=event.data||{};
+  if(msg.type==='gameSetup'){
+    username=getPlayerName();
+    el('userBadge').innerText='👤 '+username;
+    loadProfile();
+  }
+});
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',boot);
+}else{
+  boot();
+}
 </script>
 </body>
 </html>
