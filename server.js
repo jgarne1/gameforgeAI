@@ -286,6 +286,7 @@ function hatchPet(pet){
 
 function requireUser(req,res){
   let username=String(req.query.user||req.body.username||'').trim();
+
   if(!username){
     res.status(400).json({error:'Missing user'});
     return null;
@@ -368,6 +369,7 @@ app.get('/api/pet/profile',(req,res)=>{
   if(!username)return;
 
   let profile=getPetProfile(username);
+
   res.json({
     ok:true,
     profile,
@@ -532,10 +534,13 @@ app.post('/api/pet/new-egg',(req,res)=>{
 
   let profile=getPetProfile(username);
   let pid=petId();
+  let newProfile=defaultPetProfile(username);
+  let newPet=newProfile.pets[Object.keys(newProfile.pets)[0]];
 
-  profile.pets[pid]=defaultPetProfile(username).pets[Object.keys(defaultPetProfile(username).pets)[0]];
-  profile.pets[pid].id=pid;
-  profile.pets[pid].owner=username;
+  newPet.id=pid;
+  newPet.owner=username;
+
+  profile.pets[pid]=newPet;
   profile.activePetId=pid;
 
   savePetProfile(username,profile);
@@ -609,6 +614,7 @@ wss.on('connection',ws=>{
 
     if(m.type==='createRoom'){
       let rid=id();
+
       rooms[rid]={
         id:rid,
         owner:ws.username||'Guest',
@@ -683,6 +689,7 @@ wss.on('connection',ws=>{
       if(seat<0||seat>=r.seats.length)return;
 
       let name=ws.username||'Guest';
+
       r.seats=r.seats.map(s=>s&&s.name===name?null:s);
 
       if(!r.seats[seat])r.seats[seat]={name};
@@ -727,13 +734,16 @@ wss.on('connection',ws=>{
 
       if(r&&(r.owner===(ws.username||'Guest')||admins().includes(ws.username))){
         r.closed=true;
+
         broadcastRoom(r.id,{type:'roomClosed'});
+
         clients.forEach(c=>{
           if(c.roomId===r.id){
             c.roomId='';
             c.location='Home';
           }
         });
+
         pushPresence();
       }
     }
@@ -781,140 +791,5 @@ wss.on('connection',ws=>{
     pushPresence();
   });
 });
-const petFile = path.join(DATA, 'pets.json');
 
-function pets(){
-  return readJSON(petFile, {});
-}
-
-function savePets(p){
-  writeJSON(petFile, p);
-}
-
-function getOrCreateProfile(username){
-  let p = pets();
-
-  if(!p[username]){
-    p[username] = {
-      money: 100,
-      inventory: {},
-      activePetId: "pet1",
-      pets:{
-        pet1:{
-          id:"pet1",
-          name:"Egg",
-          stage:"egg",
-          emoji:"🥚",
-          eggTraits:{warm:0,cold:0,wet:0,dry:0,light:0,dark:0},
-          needs:{hunger:50,happiness:50,energy:50,cleanliness:50},
-          moves:[]
-        }
-      }
-    };
-    savePets(p);
-  }
-
-  return p[username];
-}
-
-/* ===== PROFILE ===== */
-app.get('/api/pet/profile',(req,res)=>{
-  let user=req.query.user;
-  if(!user)return res.json({error:'missing user'});
-
-  let profile=getOrCreateProfile(user);
-
-  res.json({
-    ok:true,
-    profile,
-    shop:{
-      berry:{name:'Berry',price:10,description:'Restore hunger'},
-      toy:{name:'Toy',price:15,description:'Increase happiness'}
-    },
-    moves:{
-      tackle:{name:'Tackle',type:'normal'},
-      splash:{name:'Splash',type:'water'}
-    }
-  });
-});
-
-/* ===== CARE EGG ===== */
-app.post('/api/pet/care-egg',(req,res)=>{
-  let {username,action}=req.body;
-  let p=pets();
-
-  let profile=getOrCreateProfile(username);
-  let pet=profile.pets[profile.activePetId];
-
-  if(pet.stage!=='egg') return res.json({error:'Not an egg'});
-
-  pet.eggTraits[action]=(pet.eggTraits[action]||0)+1;
-
-  let total=Object.values(pet.eggTraits).reduce((a,b)=>a+b,0);
-
-  if(total>=18){
-    pet.stage='baby';
-    pet.emoji='🐣';
-    pet.name='Newborn';
-  }
-
-  savePets(p);
-
-  res.json({ok:true,profile,message:'Egg cared for'});
-});
-
-/* ===== PLAY ===== */
-app.post('/api/pet/play',(req,res)=>{
-  let {username}=req.body;
-  let p=pets();
-
-  let profile=getOrCreateProfile(username);
-  let pet=profile.pets[profile.activePetId];
-
-  pet.needs.happiness=Math.min(100,pet.needs.happiness+10);
-
-  savePets(p);
-
-  res.json({ok:true,profile});
-});
-
-/* ===== USE ITEM ===== */
-app.post('/api/pet/use-item',(req,res)=>{
-  let {username,itemId}=req.body;
-  let p=pets();
-
-  let profile=getOrCreateProfile(username);
-  let pet=profile.pets[profile.activePetId];
-
-  if(!profile.inventory[itemId]) return res.json({error:'No item'});
-
-  profile.inventory[itemId]--;
-
-  if(itemId==='berry'){
-    pet.needs.hunger=Math.min(100,pet.needs.hunger+15);
-  }
-
-  savePets(p);
-
-  res.json({ok:true,profile});
-});
-
-/* ===== BUY ===== */
-app.post('/api/pet/buy',(req,res)=>{
-  let {username,itemId}=req.body;
-  let p=pets();
-
-  let profile=getOrCreateProfile(username);
-
-  let prices={berry:10,toy:15};
-
-  if(profile.money<prices[itemId]) return res.json({error:'Not enough money'});
-
-  profile.money-=prices[itemId];
-  profile.inventory[itemId]=(profile.inventory[itemId]||0)+1;
-
-  savePets(p);
-
-  res.json({ok:true,profile});
-});
 server.listen(PORT,()=>console.log('GameForge running on '+PORT));
