@@ -8,5 +8,6 @@
   {"id":"chess","name":"Chess","file":"chess.html","minPlayers":2,"maxPlayers":2,"seats":2},
   {"id":"squares","name":"James square game","file":"squares.html","minPlayers":2,"maxPlayers":4,"seats":4},
   {"id":"miner","name":"Miner","file":"miner.html","minPlayers":2,"maxPlayers":4,"seats":4},
+  {"id":"mancala","name":"Mancala","file":"mancala.html","minPlayers":2,"maxPlayers":2,"seats":2},
   {"id":"trouble","name":"Trouble","file":"trouble.html","minPlayers":2,"maxPlayers":4,"seats":4}
 ]
