@@ -290,6 +290,100 @@ iframe{
   border-radius:999px;
 }
 
+/* ===== PET PANEL ===== */
+.petHero{
+  display:grid;
+  grid-template-columns:60px 1fr;
+  gap:10px;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.petAvatar{
+  width:60px;
+  height:60px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#eef2ff,#fef3c7);
+  border:1px solid #cbd5e1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  box-shadow:inset 0 0 18px rgba(255,255,255,.8);
+}
+
+.petName{
+  font-weight:900;
+  font-size:17px;
+}
+
+.petSub{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.35;
+}
+
+.petCoins{
+  margin-top:4px;
+  font-weight:900;
+  color:#92400e;
+}
+
+.statLine{
+  margin:8px 0;
+}
+
+.statTop{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:#475569;
+  margin-bottom:3px;
+}
+
+.statBar{
+  height:9px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.statFill{
+  height:100%;
+  width:50%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22c55e,#4ade80);
+}
+
+.eggTraits{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  font-size:12px;
+  color:#475569;
+  margin:8px 0;
+}
+
+.petActions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.petActions button{
+  flex:1;
+  min-width:76px;
+  padding:8px;
+  font-size:12px;
+}
+
+.petHint{
+  font-size:12px;
+  color:#64748b;
+  margin-top:8px;
+  line-height:1.35;
+}
+
 /* ===== CHAT NEW MESSAGE NOTICE ===== */
 #roomChatPanel.chatUnread{
   animation:chatBluePulse 2.4s ease-in-out infinite;
@@ -426,7 +520,7 @@ body.gameMode #roomChatPanel.chatCollapsed .sidebarTitle h3{
     <div class="header">
       <div class="logo">
         <h1>GameForge AI</h1>
-        <span>Rooms, tables, chat, and multiplayer browser games.</span>
+        <span>Rooms, tables, chat, pets, and multiplayer browser games.</span>
       </div>
     </div>
 
@@ -494,6 +588,23 @@ body.gameMode #roomChatPanel.chatCollapsed .sidebarTitle h3{
   </div>
 
   <div class="side">
+    <div class="sideCard hidden" id="petPanel">
+      <div class="sidebarTitle">
+        <h3>My Pet</h3>
+        <span id="petStage" class="pill"></span>
+      </div>
+
+      <div id="petInfo"></div>
+
+      <div class="petActions">
+        <button onclick="petUseItem('berry')" class="good">Feed</button>
+        <button onclick="petPlay()" class="primary">Play</button>
+        <button onclick="petCareEggRandom()" id="eggCareBtn">Care Egg</button>
+      </div>
+
+      <div class="petHint" id="petHint"></div>
+    </div>
+
     <div class="sideCard" id="presencePanel">
       <div class="sidebarTitle">
         <h3>Logged In Users</h3>
@@ -527,6 +638,8 @@ let games=[];
 let loadedGameKey='';
 let overlayChatCollapsed=false;
 let lastChatCount=0;
+let petProfile=null;
+let petShop={};
 
 function drawAuth(){
   if(me){
@@ -552,6 +665,175 @@ function drawAuth(){
 async function loadGames(){
   games=await (await fetch('/api/games')).json();
   drawGames();
+}
+
+async function loadPet(){
+  if(!me){
+    petProfile=null;
+    drawPet();
+    return;
+  }
+
+  try{
+    let res=await fetch('/api/pet/profile?user='+encodeURIComponent(me));
+    let data=await res.json();
+
+    if(!data.ok){
+      petProfile=null;
+      drawPet();
+      return;
+    }
+
+    petProfile=data.profile;
+    petShop=data.shop||{};
+    drawPet();
+  }catch(err){
+    petProfile=null;
+    drawPet();
+  }
+}
+
+function drawPet(){
+  if(!petProfile||!me){
+    petPanel.classList.add('hidden');
+    return;
+  }
+
+  let pet=petProfile.pets[petProfile.activePetId];
+
+  if(!pet){
+    petPanel.classList.add('hidden');
+    return;
+  }
+
+  petPanel.classList.remove('hidden');
+
+  let emoji=pet.emoji||'🥚';
+  let stage=pet.stage||'egg';
+
+  petStage.innerText=stage;
+
+  let html='';
+  html+='<div class="petHero">';
+  html+='<div class="petAvatar">'+escapeHtml(emoji)+'</div>';
+  html+='<div>';
+  html+='<div class="petName">'+escapeHtml(pet.name||'Mystery Egg')+'</div>';
+
+  if(stage==='egg'){
+    html+='<div class="petSub">Mystery egg · shape it with care</div>';
+  }else{
+    html+='<div class="petSub">'+escapeHtml(pet.type||'pet')+' type · Level '+Number((pet.stats&&pet.stats.level)||1)+'</div>';
+  }
+
+  html+='<div class="petCoins">Coins: '+Number(petProfile.money||0)+'</div>';
+  html+='</div>';
+  html+='</div>';
+
+  if(stage==='egg'){
+    let traits=pet.eggTraits||{};
+    html+='<div class="eggTraits">';
+    html+='<div>Warm: <b>'+Number(traits.warm||0)+'</b></div>';
+    html+='<div>Cold: <b>'+Number(traits.cold||0)+'</b></div>';
+    html+='<div>Wet: <b>'+Number(traits.wet||0)+'</b></div>';
+    html+='<div>Dry: <b>'+Number(traits.dry||0)+'</b></div>';
+    html+='<div>Light: <b>'+Number(traits.light||0)+'</b></div>';
+    html+='<div>Dark: <b>'+Number(traits.dark||0)+'</b></div>';
+    html+='</div>';
+
+    eggCareBtn.style.display='inline-block';
+    petHint.innerText='Care actions influence what hatches. At 18 total care points, the egg hatches.';
+  }else{
+    let needs=pet.needs||{};
+    html+=statBar('Hunger',needs.hunger);
+    html+=statBar('Happy',needs.happiness);
+    html+=statBar('Energy',needs.energy);
+    html+=statBar('Clean',needs.cleanliness);
+
+    eggCareBtn.style.display='none';
+    petHint.innerText='Feed and play to raise your pet. Shop and battles come next.';
+  }
+
+  petInfo.innerHTML=html;
+}
+
+function statBar(name,val){
+  val=Number(val||0);
+  val=Math.max(0,Math.min(100,val));
+
+  return ''+
+    '<div class="statLine">'+
+      '<div class="statTop"><span>'+escapeHtml(name)+'</span><b>'+val+'</b></div>'+
+      '<div class="statBar"><div class="statFill" style="width:'+val+'%"></div></div>'+
+    '</div>';
+}
+
+async function petCareEggRandom(){
+  if(!petProfile)return;
+
+  let actions=['warm','cold','wet','dry','light','dark'];
+  let pick=actions[Math.floor(Math.random()*actions.length)];
+
+  try{
+    let res=await fetch('/api/pet/care-egg',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:me,action:pick})
+    });
+
+    let data=await res.json();
+    if(data.error)return alert(data.error);
+
+    petProfile=data.profile;
+    drawPet();
+
+    if(data.message)alert(data.message);
+  }catch(err){
+    alert('Pet care failed: '+err.message);
+  }
+}
+
+async function petUseItem(itemId){
+  if(!petProfile)return;
+
+  try{
+    let res=await fetch('/api/pet/use-item',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:me,itemId:itemId})
+    });
+
+    let data=await res.json();
+
+    if(data.error){
+      if(itemId==='berry')return alert('No berries left. Shop feature is next.');
+      return alert(data.error);
+    }
+
+    petProfile=data.profile;
+    drawPet();
+  }catch(err){
+    alert('Use item failed: '+err.message);
+  }
+}
+
+async function petPlay(){
+  if(!petProfile)return;
+
+  try{
+    let res=await fetch('/api/pet/play',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:me})
+    });
+
+    let data=await res.json();
+    if(data.error)return alert(data.error);
+
+    petProfile=data.profile;
+    drawPet();
+  }catch(err){
+    alert('Play failed: '+err.message);
+  }
 }
 
 function connect(){
@@ -631,6 +913,7 @@ function setLogin(d){
 
   drawAuth();
   connect();
+  loadPet();
 
   setTimeout(()=>socket&&socket.send(JSON.stringify({type:'hello',username:me})),200);
 }
@@ -638,11 +921,13 @@ function setLogin(d){
 function logout(){
   me='';
   admin=false;
+  petProfile=null;
 
   localStorage.removeItem('gf_user');
   localStorage.removeItem('gf_admin');
 
   drawAuth();
+  drawPet();
 
   if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
 }
@@ -768,6 +1053,7 @@ function drawRoom(){
     : 'Create or join a room first.';
 
   drawGames();
+  drawPet();
 
   roomPeople.innerHTML=room
     ? '<b>People in room:</b> '+room.players.map(escapeHtml).join(', ')
@@ -1011,7 +1297,14 @@ window.addEventListener('message',e=>{
 });
 
 drawAuth();
-if(me)connect();
+
+if(me){
+  connect();
+  loadPet();
+}else{
+  drawPet();
+}
+
 loadGames();
 drawRoom();
 </script>
