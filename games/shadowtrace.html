@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Shadow Trace</title>
+<style>
+:root{--bg:#0f172a;--panel:#111827;--card:#1f2937;--line:#374151;--gold:#facc15;--blue:#38bdf8;--red:#ef4444;--green:#22c55e;--purple:#a78bfa;--muted:#cbd5e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#1e293b,#020617);color:white;text-align:center;overflow:hidden}
+.wrap{height:100vh;min-height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
+.top,.status,.game,.bottom{background:rgba(15,23,42,.94);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.28)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
+h2,h3{margin:0}
+button{padding:9px 12px;border-radius:11px;border:1px solid #94a3b8;background:#f8fafc;color:#111;font-weight:bold;cursor:pointer}
+button.gold{background:var(--gold)}
+button.primary{background:var(--blue)}
+button.good{background:var(--green)}
+button.danger{background:var(--red);color:white}
+button.power{background:var(--purple)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.status{padding:8px}
+.statusMain{font-size:19px;font-weight:bold}
+.muted{font-size:12px;color:var(--muted)}
+.game{display:grid;grid-template-columns:minmax(420px,1fr)380px;gap:12px;padding:12px;min-height:0}
+.boardPanel,.actionPanel{background:rgba(31,41,55,.82);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;min-height:0}
+.grid{display:grid;grid-template-columns:repeat(6,72px);grid-template-rows:repeat(6,72px);gap:6px;justify-content:center;margin:10px auto}
+.cell{position:relative;width:72px;height:72px;border-radius:14px;background:#111827;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:bold;cursor:pointer;overflow:hidden}
+.cell:hover{outline:3px solid var(--gold)}
+.cell.edge{background:#172554}
+.cell.escape{background:#14532d}
+.cell.scan{box-shadow:inset 0 0 0 4px rgba(56,189,248,.85)}
+.cell.lastGuess{outline:4px solid var(--red)}
+.cell.spyHere{background:#581c87;box-shadow:inset 0 0 0 4px var(--gold)}
+.cell.disabled{cursor:not-allowed;opacity:.8}
+.coord{position:absolute;left:6px;top:5px;font-size:11px;color:#94a3b8}
+.icon{font-size:28px;z-index:2}
+.actionPanel{display:flex;flex-direction:column;gap:10px}
+.card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px}
+.role{font-size:22px;font-weight:900;color:var(--gold)}
+.moveGrid{display:grid;grid-template-columns:repeat(3,70px);gap:6px;justify-content:center;align-items:center}
+.moveGrid button{height:48px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.selected{outline:3px solid white}
+.players{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px}
+.player{min-width:180px;border-radius:13px;padding:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+.player.turn{outline:3px solid var(--gold)}
+.log{height:70px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:8px;font-size:13px}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
+.bigNotice{font-size:28px;font-weight:900;color:var(--gold)}
+@media(max-width:900px){.game{grid-template-columns:1fr}.grid{grid-template-columns:repeat(6,48px);grid-template-rows:repeat(6,48px)}.cell{width:48px;height:48px;border-radius:10px}.icon{font-size:20px}.actionPanel{max-height:320px;overflow:auto}}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Shadow Trace</h2>
+    <div>
+      <span id="meLabel" class="badge"></span>
+      <button class="gold" onclick="newGame(true)">New Game</button>
+    </div>
+  </div>
+
+  <div class="status">
+    <div id="statusMain" class="statusMain">Loading players...</div>
+    <div id="statusHelp" class="muted">Spy moves secretly. Guard scans, tracks, and guesses.</div>
+  </div>
+
+  <div class="game">
+    <div class="boardPanel">
+      <h3 id="boardTitle">Board</h3>
+      <div id="grid" class="grid"></div>
+      <div class="muted" id="boardHint"></div>
+    </div>
+
+    <div class="actionPanel">
+      <div class="card">
+        <div id="roleLine" class="role">Role</div>
+        <div id="roundInfo" class="muted"></div>
+      </div>
+
+      <div class="card" id="spyPanel">
+        <h3>Spy Move</h3>
+        <p class="muted">Move one tile or stay still. Reach any green escape tile.</p>
+        <div class="moveGrid">
+          <span></span><button onclick="spyMove(-1,0)">Up</button><span></span>
+          <button onclick="spyMove(0,-1)">Left</button><button onclick="spyMove(0,0)">Stay</button><button onclick="spyMove(0,1)">Right</button>
+          <span></span><button onclick="spyMove(1,0)">Down</button><span></span>
+        </div>
+      </div>
+
+      <div class="card" id="guardPanel">
+        <h3>Guard Actions</h3>
+        <p class="muted">Choose an action, then click the board.</p>
+        <div class="actions">
+          <button id="scanBtn" class="primary" onclick="setAction('scan')">Scan 3x3</button>
+          <button id="guessBtn" class="danger" onclick="setAction('guess')">Capture Guess</button>
+          <button id="trackBtn" class="power" onclick="setAction('track')">Track</button>
+        </div>
+        <p id="actionHelp" class="muted"></p>
+      </div>
+
+      <div class="card" id="resultPanel">
+        <div id="lastResult" class="bigNotice"></div>
+        <div id="resourceInfo" class="muted"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div id="playersPanel" class="players"></div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+var GAME_META={id:'shadowtrace',name:'Shadow Trace',minPlayers:2,maxPlayers:2,seats:2};
+
+var SIZE=6;
+var MAX_TURNS=12;
+var players=[];
+var mySeat=null;
+var state=null;
+var selectedAction='scan';
+
+function el(id){return document.getElementById(id);}
+
+window.onerror=function(msg){
+  if(el('statusMain'))el('statusMain').innerText='Game error: '+msg;
+};
+
+function receiveSetup(setupPlayers,setupSeat){
+  if(setupPlayers&&setupPlayers.length){
+    players=[];
+    for(var i=0;i<setupPlayers.length&&i<2;i++){
+      players.push({seat:setupPlayers[i].seat,name:setupPlayers[i].name||('Seat '+(setupPlayers[i].seat+1))});
+    }
+  }
+
+  mySeat=setupSeat;
+
+  if(players.length<2){
+    showWaiting();
+    return;
+  }
+
+  if(!state)state=fresh();
+
+  draw();
+}
+
+function showWaiting(){
+  el('statusMain').innerText='Waiting for 2 players...';
+  el('statusHelp').innerText='Shadow Trace needs exactly 2 seated players.';
+  el('grid').innerHTML='';
+  el('playersPanel').innerHTML='';
+  el('log').innerHTML='';
+  el('spyPanel').style.display='none';
+  el('guardPanel').style.display='none';
+}
+
+function fresh(){
+  var spy=players[0].seat;
+  var guard=players[1].seat;
+
+  var start=randomInnerCell();
+  var exits=[
+    {r:0,c:0},{r:0,c:SIZE-1},{r:SIZE-1,c:0},{r:SIZE-1,c:SIZE-1}
+  ];
+
+  return {
+    spy:spy,
+    guard:guard,
+    spyPos:start,
+    prevSpyPos:{r:start.r,c:start.c},
+    exits:exits,
+    phase:'spyMove',
+    turn:spy,
+    round:1,
+    scansLeft:5,
+    tracksLeft:3,
+    guesses:[],
+    scans:[],
+    lastResult:'Spy is moving...',
+    lastMoveType:'start',
+    gameOver:false,
+    winner:null,
+    log:['New mission started. '+name(spy)+' is the Spy. '+name(guard)+' is the Guard.']
+  };
+}
+
+function randomInnerCell(){
+  return {
+    r:1+Math.floor(Math.random()*(SIZE-2)),
+    c:1+Math.floor(Math.random()*(SIZE-2))
+  };
+}
+
+function draw(){
+  if(!state||players.length<2){
+    showWaiting();
+    return;
+  }
+
+  var role=mySeat===state.spy?'Spy':mySeat===state.guard?'Guard':'Spectator';
+  el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
+  el('roleLine').innerText=role;
+  el('roundInfo').innerText='Round '+state.round+' of '+MAX_TURNS;
+
+  if(state.gameOver){
+    el('statusMain').innerText='Game Over — '+name(state.winner)+' wins!';
+    el('statusHelp').innerText=state.winner===state.spy?'The Spy escaped.':'The Guard caught the Spy.';
+  }else if(state.phase==='spyMove'){
+    el('statusMain').innerText='Spy Phase';
+    el('statusHelp').innerText=mySeat===state.spy?'Move secretly.':'Waiting for the Spy to move.';
+  }else{
+    el('statusMain').innerText='Guard Phase';
+    el('statusHelp').innerText=mySeat===state.guard?'Choose scan, track, or capture guess.':'Waiting for the Guard.';
+  }
+
+  el('spyPanel').style.display=(mySeat===state.spy&&!state.gameOver)?'block':'none';
+  el('guardPanel').style.display=(mySeat===state.guard&&!state.gameOver)?'block':'none';
+
+  drawBoard();
+  drawActions();
+  drawPlayers();
+  drawLog();
+
+  el('lastResult').innerText=state.lastResult||'';
+  el('resourceInfo').innerText='Scans left: '+state.scansLeft+' · Tracks left: '+state.tracksLeft+' · Turn limit: '+state.round+'/'+MAX_TURNS;
+}
+
+function drawBoard(){
+  el('grid').innerHTML='';
+
+  var isSpy=mySeat===state.spy;
+  var isGuard=mySeat===state.guard;
+
+  el('boardTitle').innerText=isSpy?'Your Escape Map':isGuard?'Guard Search Grid':'Mission Board';
+  el('boardHint').innerText=isSpy?'You can see your position. The guard cannot.':'Click cells only when it is your guard action.';
+
+  for(var r=0;r<SIZE;r++){
+    for(var c=0;c<SIZE;c++){
+      var cell=document.createElement('div');
+      var isEscape=isExit(r,c);
+      var isLastGuess=lastGuessAt(r,c);
+      var isScan=lastScanIncludes(r,c);
+      var spyHere=state.spyPos.r===r&&state.spyPos.c===c&&isSpy;
+
+      cell.className='cell '+
+        (isEscape?'escape ':'')+
+        (isScan&&!isSpy?'scan ':'')+
+        (isLastGuess?'lastGuess ':'')+
+        (spyHere?'spyHere ':'')+
+        ((isGuard&&state.phase==='guardAction'&&!state.gameOver)?'':'disabled ');
+
+      cell.innerHTML='<span class="coord">'+coord(r,c)+'</span><span class="icon">'+(spyHere?'🕵':'')+'</span>';
+      cell.onclick=(function(rr,cc){return function(){boardClick(rr,cc);};})(r,c);
+
+      el('grid').appendChild(cell);
+    }
+  }
+}
+
+function drawActions(){
+  el('scanBtn').className='primary '+(selectedAction==='scan'?'selected':'');
+  el('guessBtn').className='danger '+(selectedAction==='guess'?'selected':'');
+  el('trackBtn').className='power '+(selectedAction==='track'?'selected':'');
+
+  el('scanBtn').disabled=state.phase!=='guardAction'||mySeat!==state.guard||state.scansLeft<=0;
+  el('trackBtn').disabled=state.phase!=='guardAction'||mySeat!==state.guard||state.tracksLeft<=0;
+  el('guessBtn').disabled=state.phase!=='guardAction'||mySeat!==state.guard;
+
+  if(selectedAction==='scan')el('actionHelp').innerText='Scan checks a 3x3 area around the clicked tile.';
+  if(selectedAction==='guess')el('actionHelp').innerText='Capture guess wins if exact, but wrong guesses help the Spy.';
+  if(selectedAction==='track')el('actionHelp').innerText='Track reveals if the Spy moved horizontally, vertically, or stayed still.';
+}
+
+function drawPlayers(){
+  var html='';
+  for(var i=0;i<players.length;i++){
+    var p=players[i];
+    var role=p.seat===state.spy?'Spy':'Guard';
+    html+='<div class="player '+(state.turn===p.seat&&!state.gameOver?'turn':'')+'">'+
+      '<b>'+escapeHtml(p.name)+'</b><br>'+
+      '<span class="muted">'+role+(p.seat===mySeat?' · You':'')+'</span>'+
+    '</div>';
+  }
+  el('playersPanel').innerHTML=html;
+}
+
+function drawLog(){
+  var html='';
+  var start=Math.max(0,state.log.length-7);
+  for(var i=start;i<state.log.length;i++)html+='• '+escapeHtml(state.log[i])+'<br>';
+  el('log').innerHTML=html;
+  el('log').scrollTop=el('log').scrollHeight;
+}
+
+function spyMove(dr,dc){
+  if(!state||state.gameOver||mySeat!==state.spy||state.phase!=='spyMove')return;
+
+  var nr=state.spyPos.r+dr;
+  var nc=state.spyPos.c+dc;
+
+  if(nr<0||nr>=SIZE||nc<0||nc>=SIZE)return;
+
+  state.prevSpyPos={r:state.spyPos.r,c:state.spyPos.c};
+  state.spyPos={r:nr,c:nc};
+
+  if(dr===0&&dc===0)state.lastMoveType='stayed still';
+  else if(dr!==0)state.lastMoveType='moved vertically';
+  else state.lastMoveType='moved horizontally';
+
+  add(name(state.spy)+' made a hidden move.');
+
+  if(isExit(nr,nc)){
+    state.gameOver=true;
+    state.winner=state.spy;
+    state.lastResult='SPY ESCAPED';
+    add(name(state.spy)+' reached an escape tile and escaped!');
+  }else{
+    state.phase='guardAction';
+    state.turn=state.guard;
+    state.lastResult='Spy moved. Guard action ready.';
+  }
+
+  draw();
+  sync();
+}
+
+function boardClick(r,c){
+  if(!state||state.gameOver||mySeat!==state.guard||state.phase!=='guardAction')return;
+
+  if(selectedAction==='scan')scan(r,c);
+  else if(selectedAction==='guess')guess(r,c);
+  else if(selectedAction==='track')track();
+}
+
+function scan(r,c){
+  if(state.scansLeft<=0)return;
+
+  state.scansLeft--;
+  var found=Math.abs(state.spyPos.r-r)<=1&&Math.abs(state.spyPos.c-c)<=1;
+
+  state.scans.push({r:r,c:c,found:found,round:state.round});
+  state.lastResult=found?'SCAN HIT':'SCAN CLEAR';
+
+  add(name(state.guard)+' scanned '+coord(r,c)+': '+(found?'Spy detected nearby.':'No trace.'));
+
+  endGuardTurn();
+}
+
+function guess(r,c){
+  state.guesses.push({r:r,c:c,round:state.round});
+
+  if(state.spyPos.r===r&&state.spyPos.c===c){
+    state.gameOver=true;
+    state.winner=state.guard;
+    state.lastResult='CAPTURED';
+    add(name(state.guard)+' guessed '+coord(r,c)+' and caught the Spy!');
+  }else{
+    state.lastResult='WRONG GUESS';
+    add(name(state.guard)+' guessed '+coord(r,c)+' but the Spy was not there.');
+    endGuardTurn();
+  }
+
+  draw();
+  sync();
+}
+
+function track(){
+  if(state.tracksLeft<=0)return;
+
+  state.tracksLeft--;
+  state.lastResult='TRACK: '+state.lastMoveType.toUpperCase();
+  add(name(state.guard)+' used Track: Spy '+state.lastMoveType+'.');
+
+  endGuardTurn();
+}
+
+function endGuardTurn(){
+  if(state.gameOver)return;
+
+  if(state.round>=MAX_TURNS){
+    state.gameOver=true;
+    state.winner=state.spy;
+    state.lastResult='SPY VANISHED';
+    add(name(state.spy)+' survived the mission timer and escaped!');
+  }else{
+    state.round++;
+    state.phase='spyMove';
+    state.turn=state.spy;
+  }
+
+  draw();
+  sync();
+}
+
+function setAction(a){
+  selectedAction=a;
+  draw();
+}
+
+function isExit(r,c){
+  for(var i=0;i<state.exits.length;i++){
+    if(state.exits[i].r===r&&state.exits[i].c===c)return true;
+  }
+  return false;
+}
+
+function lastGuessAt(r,c){
+  if(!state.guesses.length)return false;
+  var g=state.guesses[state.guesses.length-1];
+  return g.r===r&&g.c===c;
+}
+
+function lastScanIncludes(r,c){
+  if(!state.scans.length)return false;
+  var s=state.scans[state.scans.length-1];
+  return Math.abs(s.r-r)<=1&&Math.abs(s.c-c)<=1;
+}
+
+function coord(r,c){
+  return String.fromCharCode(65+c)+(r+1);
+}
+
+function newGame(sendIt){
+  if(players.length<2){
+    showWaiting();
+    return;
+  }
+
+  state=fresh();
+  selectedAction='scan';
+  draw();
+
+  if(sendIt)sync();
+}
+
+function sync(){
+  window.sendMove({type:'state',state:state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='state'){
+    state=data.state;
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  var data=event.data||{};
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
+  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
+});
+
+function name(seat){
+  for(var i=0;i<players.length;i++){
+    if(players[i].seat===seat)return players[i].name;
+  }
+  return 'Seat '+(Number(seat)+1);
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>80)state.log.shift();
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function safeBoot(){
+  try{
+    showWaiting();
+    receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+    setTimeout(function(){
+      receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+    },350);
+  }catch(e){
+    if(el('statusMain'))el('statusMain').innerText='Game error: '+e.message;
+  }
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',safeBoot);
+}else{
+  safeBoot();
+}
+</script>
+</body>
+</html>
