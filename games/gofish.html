@@ -62,7 +62,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
   <div class="table">
     <div id="playersLayer"></div>
-
     <div class="center">
       <div class="status" id="status">Loading players...</div>
       <div class="meta" id="helpText">Ask another player for a rank from your hand.</div>
@@ -84,28 +83,29 @@ button:disabled{opacity:.45;cursor:not-allowed}
 </div>
 
 <script>
-const GAME_META={id:'gofish',name:'Go Fish',minPlayers:2,maxPlayers:4,seats:4};
-const suits=['S','H','D','C'];
-const suitDisplay={S:'♠',H:'♥',D:'♦',C:'♣'};
-const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'};
+var GAME_META={id:'gofish',name:'Go Fish',minPlayers:2,maxPlayers:4,seats:4};
+var suits=['S','H','D','C'];
+var suitDisplay={S:'♠',H:'♥',D:'♦',C:'♣'};
+var ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
-let players=[];
-let mySeat=null;
-let state=null;
-let selectedRank='';
-let logFadeTimer=null;
+var players=[];
+var mySeat=null;
+var state=null;
+var selectedRank='';
+var logFadeTimer=null;
 
 function el(id){return document.getElementById(id);}
 
 window.onerror=function(msg){
-  el('status').innerText='Game error: '+msg;
+  if(el('status'))el('status').innerText='Game error: '+msg;
 };
 
 function receiveSetup(setupPlayers,setupSeat){
-  if(Array.isArray(setupPlayers)&&setupPlayers.length){
-    players=setupPlayers.slice(0,4).map(function(p){
-      return {seat:p.seat,name:p.name||('Seat '+(p.seat+1))};
-    });
+  if(setupPlayers&&setupPlayers.length){
+    players=[];
+    for(var i=0;i<setupPlayers.length&&i<4;i++){
+      players.push({seat:setupPlayers[i].seat,name:setupPlayers[i].name||('Seat '+(setupPlayers[i].seat+1))});
+    }
   }
 
   mySeat=setupSeat;
@@ -121,7 +121,7 @@ function receiveSetup(setupPlayers,setupSeat){
     ensureStateSeats();
   }
 
-  let hand=state.hands[mySeat]||[];
+  var hand=state.hands[mySeat]||[];
   if(!selectedRank&&hand.length)selectedRank=hand[0].r;
 
   draw();
@@ -141,24 +141,24 @@ function showWaiting(){
 }
 
 function fresh(){
-  let deck=[];
-  suits.forEach(function(s){
-    ranks.forEach(function(r){
-      deck.push({r:r,s:s});
-    });
-  });
+  var deck=[];
+  for(var s=0;s<suits.length;s++){
+    for(var r=0;r<ranks.length;r++){
+      deck.push({r:ranks[r],s:suits[s]});
+    }
+  }
   shuffle(deck);
 
-  let hands={};
-  let books={};
-  let dealCount=players.length<=2?7:5;
+  var hands={};
+  var books={};
+  var dealCount=players.length<=2?7:5;
 
-  players.forEach(function(p){
-    hands[p.seat]=deck.splice(0,dealCount);
-    books[p.seat]=[];
-  });
+  for(var i=0;i<players.length;i++){
+    hands[players[i].seat]=deck.splice(0,dealCount);
+    books[players[i].seat]=[];
+  }
 
-  let s={
+  var st={
     deck:deck,
     hands:hands,
     books:books,
@@ -169,18 +169,17 @@ function fresh(){
     log:['New game started.']
   };
 
-  players.forEach(function(p){checkBooks(s,p.seat,false);});
-  return s;
+  for(var j=0;j<players.length;j++)checkBooks(st,players[j].seat,false);
+  return st;
 }
 
 function ensureStateSeats(){
   if(!state.hands)state.hands={};
   if(!state.books)state.books={};
-
-  players.forEach(function(p){
-    if(!state.hands[p.seat])state.hands[p.seat]=[];
-    if(!state.books[p.seat])state.books[p.seat]=[];
-  });
+  for(var i=0;i<players.length;i++){
+    if(!state.hands[players[i].seat])state.hands[players[i].seat]=[];
+    if(!state.books[players[i].seat])state.books[players[i].seat]=[];
+  }
 }
 
 function draw(){
@@ -189,9 +188,9 @@ function draw(){
     return;
   }
 
-  let current=name(state.turn);
-  let isMyTurn=state.turn===mySeat&&!state.gameOver;
-  let mustFish=state.pendingFish&&state.pendingFish.seat===mySeat;
+  var current=name(state.turn);
+  var isMyTurn=state.turn===mySeat&&!state.gameOver;
+  var mustFish=state.pendingFish&&state.pendingFish.seat===mySeat;
 
   el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
   el('status').innerText=state.gameOver?'Game Over — Winner: '+name(state.winner):'Current Turn: '+current;
@@ -213,69 +212,85 @@ function draw(){
 function drawPlayers(){
   el('playersLayer').innerHTML='';
 
-  let ordered=[mySeat].concat(players.map(function(p){return p.seat;}).filter(function(s){return s!==mySeat;}));
-  if(mySeat===null||mySeat===undefined)ordered=players.map(function(p){return p.seat;});
+  var ordered=[];
+  if(mySeat!==null&&mySeat!==undefined){
+    ordered.push(mySeat);
+    for(var a=0;a<players.length;a++){
+      if(players[a].seat!==mySeat)ordered.push(players[a].seat);
+    }
+  }else{
+    for(var b=0;b<players.length;b++)ordered.push(players[b].seat);
+  }
 
-  ordered.forEach(function(seat,idx){
-    let p=players.find(function(x){return x.seat===seat;});
-    if(!p)return;
+  for(var i=0;i<ordered.length;i++){
+    var seat=ordered[i];
+    var p=findPlayer(seat);
+    if(!p)continue;
 
-    let box=document.createElement('div');
-    box.className='player p'+idx+(state.turn===seat?' turn':'');
+    var box=document.createElement('div');
+    box.className='player p'+i+(state.turn===seat?' turn':'');
 
-    let hand=state.hands[seat]||[];
-    let books=state.books[seat]||[];
+    var hand=state.hands[seat]||[];
+    var books=state.books[seat]||[];
 
-    let html='<div class="name">'+escapeHtml(p.name)+'</div>';
+    var html='<div class="name">'+escapeHtml(p.name)+'</div>';
     html+='<div class="meta">'+hand.length+' cards · '+books.length+' books</div>';
     html+='<div class="books">'+(books.length?'Books: '+books.join(', '):'No books yet')+'</div>';
 
     if(seat===mySeat){
       html+='<div class="handArea">';
-      hand.slice().sort(cardSort).forEach(function(c){
-        html+='<span onclick="selectRank(\''+c.r+'\')" class="card '+(isRed(c.s)?'red ':'')+(selectedRank===c.r?'selected':'')+'">'+c.r+suitDisplay[c.s]+'</span>';
-      });
+      var sorted=hand.slice().sort(cardSort);
+      for(var c=0;c<sorted.length;c++){
+        html+='<span onclick="selectRank(\''+sorted[c].r+'\')" class="card '+(isRed(sorted[c].s)?'red ':'')+(selectedRank===sorted[c].r?'selected':'')+'">'+sorted[c].r+suitDisplay[sorted[c].s]+'</span>';
+      }
       html+='</div>';
     }else{
       html+='<div>';
-      hand.forEach(function(){html+='<span class="card small back">?</span>';});
+      for(var k=0;k<hand.length;k++)html+='<span class="card small back">?</span>';
       html+='</div>';
     }
 
     box.innerHTML=html;
     el('playersLayer').appendChild(box);
-  });
+  }
 }
 
 function drawControls(isMyTurn,mustFish){
   el('targetSelect').innerHTML='';
   el('rankSelect').innerHTML='';
 
-  players
-    .filter(function(p){return p.seat!==mySeat&&(state.hands[p.seat]||[]).length>0;})
-    .forEach(function(p){
-      let o=document.createElement('option');
+  for(var i=0;i<players.length;i++){
+    var p=players[i];
+    if(p.seat!==mySeat&&(state.hands[p.seat]||[]).length>0){
+      var o=document.createElement('option');
       o.value=p.seat;
       o.textContent=p.name;
       el('targetSelect').appendChild(o);
-    });
-
-  let myRanks=[...new Set((state.hands[mySeat]||[]).map(function(c){return c.r;}))]
-    .sort(function(a,b){return ranks.indexOf(a)-ranks.indexOf(b);});
-
-  if(selectedRank&&!myRanks.includes(selectedRank)){
-    selectedRank=myRanks[0]||'';
+    }
   }
 
-  myRanks.forEach(function(r){
-    let o=document.createElement('option');
-    o.value=r;
-    o.textContent=r;
-    if(r===selectedRank)o.selected=true;
-    el('rankSelect').appendChild(o);
-  });
+  var myRanks=[];
+  var seen={};
+  var hand=state.hands[mySeat]||[];
+  for(var h=0;h<hand.length;h++){
+    if(!seen[hand[h].r]){
+      seen[hand[h].r]=true;
+      myRanks.push(hand[h].r);
+    }
+  }
+  myRanks.sort(function(a,b){return ranks.indexOf(a)-ranks.indexOf(b);});
 
-  let disabled=!isMyTurn||mustFish||!myRanks.length||!el('targetSelect').options.length;
+  if(selectedRank&&myRanks.indexOf(selectedRank)<0)selectedRank=myRanks[0]||'';
+
+  for(var r=0;r<myRanks.length;r++){
+    var opt=document.createElement('option');
+    opt.value=myRanks[r];
+    opt.textContent=myRanks[r];
+    if(myRanks[r]===selectedRank)opt.selected=true;
+    el('rankSelect').appendChild(opt);
+  }
+
+  var disabled=!isMyTurn||mustFish||!myRanks.length||!el('targetSelect').options.length;
   el('askBtn').disabled=disabled;
   el('targetSelect').disabled=disabled;
   el('rankSelect').disabled=disabled;
@@ -284,55 +299,59 @@ function drawControls(isMyTurn,mustFish){
 
 function drawPond(canFish){
   el('pond').innerHTML='';
+  var shown=Math.min(16,state.deck.length);
 
-  let shown=Math.min(16,state.deck.length);
-
-  for(let i=0;i<shown;i++){
-    let c=document.createElement('span');
+  for(var i=0;i<shown;i++){
+    var c=document.createElement('span');
     c.className='card pool '+(canFish?'':'disabled');
     c.innerText='?';
     c.onclick=function(){if(canFish)fish();};
     el('pond').appendChild(c);
   }
 
-  if(!shown){
-    el('pond').innerHTML='<span class="meta">Pond is empty</span>';
-  }
-
+  if(!shown)el('pond').innerHTML='<span class="meta">Pond is empty</span>';
   el('deckCount').innerText=state.deck.length+' cards left in pond';
 }
 
 function drawLog(){
   el('log').classList.remove('fadeLog');
-  el('log').innerHTML=state.log.slice(-8).map(function(x){return '• '+escapeHtml(x);}).join('<br>');
+  var html='';
+  var start=Math.max(0,state.log.length-8);
+  for(var i=start;i<state.log.length;i++)html+='• '+escapeHtml(state.log[i])+'<br>';
+  el('log').innerHTML=html;
   el('log').scrollTop=el('log').scrollHeight;
 
   clearTimeout(logFadeTimer);
-  logFadeTimer=setTimeout(function(){
-    el('log').classList.add('fadeLog');
-  },2000);
+  logFadeTimer=setTimeout(function(){el('log').classList.add('fadeLog');},2000);
 }
 
 function selectRank(rank){
   selectedRank=rank;
-  if(el('rankSelect'))el('rankSelect').value=rank;
+  el('rankSelect').value=rank;
   draw();
 }
 
 function ask(){
   if(state.gameOver||state.turn!==mySeat||state.pendingFish)return;
 
-  let target=Number(el('targetSelect').value);
-  let rank=selectedRank||el('rankSelect').value;
-
-  if(!rank||Number.isNaN(target))return;
+  var target=Number(el('targetSelect').value);
+  var rank=selectedRank||el('rankSelect').value;
+  if(!rank||isNaN(target))return;
 
   add(name(mySeat)+' asks '+name(target)+' for '+rank+'s.');
 
-  let matches=(state.hands[target]||[]).filter(function(c){return c.r===rank;});
+  var matches=[];
+  var targetHand=state.hands[target]||[];
+  for(var i=0;i<targetHand.length;i++){
+    if(targetHand[i].r===rank)matches.push(targetHand[i]);
+  }
 
   if(matches.length){
-    state.hands[target]=state.hands[target].filter(function(c){return c.r!==rank;});
+    var newTargetHand=[];
+    for(var j=0;j<targetHand.length;j++){
+      if(targetHand[j].r!==rank)newTargetHand.push(targetHand[j]);
+    }
+    state.hands[target]=newTargetHand;
     state.hands[mySeat]=state.hands[mySeat].concat(matches);
     add(name(target)+' gives '+matches.length+' card(s). '+name(mySeat)+' goes again.');
     checkBooks(state,mySeat,true);
@@ -351,16 +370,14 @@ function ask(){
 function fish(){
   if(state.gameOver||!state.pendingFish||state.pendingFish.seat!==mySeat)return;
 
-  let askedRank=state.pendingFish.rank;
+  var askedRank=state.pendingFish.rank;
   state.pendingFish=null;
 
   if(state.deck.length){
-    let idx=Math.floor(Math.random()*state.deck.length);
-    let drawn=state.deck.splice(idx,1)[0];
-
+    var idx=Math.floor(Math.random()*state.deck.length);
+    var drawn=state.deck.splice(idx,1)[0];
     state.hands[mySeat].push(drawn);
     selectedRank=drawn.r;
-
     add(name(mySeat)+' fishes from the pond.');
 
     if(drawn.r===askedRank){
@@ -384,17 +401,18 @@ function fish(){
 
 function refillIfEmpty(seat){
   if((state.hands[seat]||[]).length===0&&state.deck.length){
-    let count=Math.min(5,state.deck.length);
+    var count=Math.min(5,state.deck.length);
     state.hands[seat]=state.deck.splice(0,count);
     add(name(seat)+' draws a new hand.');
   }
 }
 
 function nextTurn(){
-  let i=players.findIndex(function(p){return p.seat===state.turn;});
+  var i=-1;
+  for(var a=0;a<players.length;a++)if(players[a].seat===state.turn)i=a;
 
-  for(let step=1;step<=players.length;step++){
-    let next=players[(i+step)%players.length];
+  for(var step=1;step<=players.length;step++){
+    var next=players[(i+step)%players.length];
     if(next&&((state.hands[next.seat]||[]).length>0||state.deck.length>0)){
       state.turn=next.seat;
       return;
@@ -402,43 +420,52 @@ function nextTurn(){
   }
 }
 
-function checkBooks(s,seat,announce){
-  let hand=s.hands[seat]||[];
-  let counts={};
+function checkBooks(st,seat,announce){
+  var hand=st.hands[seat]||[];
+  var counts={};
 
-  hand.forEach(function(c){counts[c.r]=(counts[c.r]||0)+1;});
+  for(var i=0;i<hand.length;i++)counts[hand[i].r]=(counts[hand[i].r]||0)+1;
 
-  ranks.forEach(function(r){
-    while(counts[r]>=2){
-      let removed=0;
+  for(var r=0;r<ranks.length;r++){
+    var rank=ranks[r];
+    while(counts[rank]>=2){
+      var removed=0;
+      var newHand=[];
 
-      s.hands[seat]=s.hands[seat].filter(function(c){
-        if(c.r===r&&removed<2){
+      for(var j=0;j<st.hands[seat].length;j++){
+        var card=st.hands[seat][j];
+        if(card.r===rank&&removed<2){
           removed++;
-          return false;
+        }else{
+          newHand.push(card);
         }
-        return true;
-      });
+      }
 
-      s.books[seat].push(r);
-      counts[r]-=2;
+      st.hands[seat]=newHand;
+      st.books[seat].push(rank);
+      counts[rank]-=2;
 
-      if(announce)add(name(seat)+' made a book of '+r+'s.');
+      if(announce)add(name(seat)+' made a book of '+rank+'s.');
     }
-  });
+  }
 }
 
 function checkGameOver(){
-  let totalBooks=players.reduce(function(n,p){return n+(state.books[p.seat]||[]).length;},0);
-  let cardsLeft=state.deck.length+players.reduce(function(n,p){return n+(state.hands[p.seat]||[]).length;},0);
+  var totalBooks=0;
+  var cardsLeft=state.deck.length;
+
+  for(var i=0;i<players.length;i++){
+    totalBooks+=(state.books[players[i].seat]||[]).length;
+    cardsLeft+=(state.hands[players[i].seat]||[]).length;
+  }
 
   if(totalBooks>=26||cardsLeft===0){
     state.gameOver=true;
+    var best=players[0].seat;
 
-    let best=players[0].seat;
-    players.forEach(function(p){
-      if((state.books[p.seat]||[]).length>(state.books[best]||[]).length)best=p.seat;
-    });
+    for(var j=0;j<players.length;j++){
+      if((state.books[players[j].seat]||[]).length>(state.books[best]||[]).length)best=players[j].seat;
+    }
 
     state.winner=best;
     add('Game over. Winner: '+name(best)+'.');
@@ -452,10 +479,8 @@ function newGame(sendIt){
   }
 
   state=fresh();
-
-  let hand=state.hands[mySeat]||[];
+  var hand=state.hands[mySeat]||[];
   selectedRank=hand.length?hand[0].r:'';
-
   draw();
   if(sendIt)sync();
 }
@@ -480,23 +505,28 @@ window.onMove=function(data){
     state=data.state;
     ensureStateSeats();
 
-    let hand=state.hands[mySeat]||[];
-    if(selectedRank&&!hand.some(function(c){return c.r===selectedRank;})){
-      selectedRank=hand.length?hand[0].r:'';
-    }
+    var hand=state.hands[mySeat]||[];
+    var ok=false;
+    for(var i=0;i<hand.length;i++)if(hand[i].r===selectedRank)ok=true;
+    if(selectedRank&&!ok)selectedRank=hand.length?hand[0].r:'';
 
     draw();
   }
 };
 
 window.addEventListener('message',function(event){
-  let data=event.data||{};
+  var data=event.data||{};
   if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
   if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
 });
 
+function findPlayer(seat){
+  for(var i=0;i<players.length;i++)if(players[i].seat===seat)return players[i];
+  return null;
+}
+
 function name(seat){
-  let p=players.find(function(x){return x.seat===seat;});
+  var p=findPlayer(seat);
   return p?p.name:'Seat '+(Number(seat)+1);
 }
 
@@ -506,10 +536,10 @@ function add(t){
 }
 
 function shuffle(a){
-  for(let pass=0;pass<3;pass++){
-    for(let i=a.length-1;i>0;i--){
-      let j=Math.floor(Math.random()*(i+1));
-      let temp=a[i];
+  for(var pass=0;pass<3;pass++){
+    for(var i=a.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var temp=a[i];
       a[i]=a[j];
       a[j]=temp;
     }
@@ -520,9 +550,7 @@ function cardSort(a,b){
   return ranks.indexOf(a.r)-ranks.indexOf(b.r)||suits.indexOf(a.s)-suits.indexOf(b.s);
 }
 
-function isRed(s){
-  return s==='H'||s==='D';
-}
+function isRed(s){return s==='H'||s==='D';}
 
 function escapeHtml(s){
   return String(s||'').replace(/[&<>"']/g,function(c){
@@ -530,20 +558,23 @@ function escapeHtml(s){
   });
 }
 
-function init(){
-  showWaiting();
-  receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
-
-  setTimeout(function(){
-    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
-
-    if(el('status').innerText==='Loading players...'){
-      showWaiting();
-    }
-  },350);
+function safeBoot(){
+  try{
+    showWaiting();
+    receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+    setTimeout(function(){
+      receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+    },500);
+  }catch(e){
+    if(el('status'))el('status').innerText='Game error: '+e.message;
+  }
 }
 
-init();
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',safeBoot);
+}else{
+  safeBoot();
+}
 </script>
 </body>
 </html>
