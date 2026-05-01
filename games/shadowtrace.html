@@ -3,50 +3,239 @@
 <head>
 <title>Shadow Trace</title>
 <style>
-:root{--bg:#0f172a;--panel:#111827;--card:#1f2937;--line:#374151;--gold:#facc15;--blue:#38bdf8;--red:#ef4444;--green:#22c55e;--purple:#a78bfa;--muted:#cbd5e1}
+:root{
+  --bg:#020617;
+  --panel:#0f172a;
+  --card:#1f2937;
+  --line:#334155;
+  --gold:#facc15;
+  --blue:#38bdf8;
+  --red:#ef4444;
+  --green:#22c55e;
+  --purple:#a78bfa;
+  --orange:#fb923c;
+  --muted:#cbd5e1;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#1e293b,#020617);color:white;text-align:center;overflow:hidden}
-.wrap{height:100vh;min-height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
-.top,.status,.game,.bottom{background:rgba(15,23,42,.94);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.28)}
-.top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:radial-gradient(circle at top,#1e293b,#020617);
+  color:white;
+  text-align:center;
+  overflow:hidden;
+}
+.wrap{
+  height:100vh;
+  min-height:650px;
+  padding:10px;
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:8px;
+}
+.top,.status,.game,.bottom{
+  background:rgba(15,23,42,.94);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,.28);
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+}
 h2,h3{margin:0}
-button{padding:9px 12px;border-radius:11px;border:1px solid #94a3b8;background:#f8fafc;color:#111;font-weight:bold;cursor:pointer}
+button{
+  padding:9px 12px;
+  border-radius:11px;
+  border:1px solid #94a3b8;
+  background:#f8fafc;
+  color:#111;
+  font-weight:bold;
+  cursor:pointer;
+}
 button.gold{background:var(--gold)}
 button.primary{background:var(--blue)}
 button.good{background:var(--green)}
 button.danger{background:var(--red);color:white}
 button.power{background:var(--purple)}
+button.orange{background:var(--orange)}
 button:disabled{opacity:.45;cursor:not-allowed}
 .status{padding:8px}
-.statusMain{font-size:19px;font-weight:bold}
+.statusMain{font-size:20px;font-weight:bold}
 .muted{font-size:12px;color:var(--muted)}
-.game{display:grid;grid-template-columns:minmax(420px,1fr)380px;gap:12px;padding:12px;min-height:0}
-.boardPanel,.actionPanel{background:rgba(31,41,55,.82);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;min-height:0}
-.grid{display:grid;grid-template-columns:repeat(6,72px);grid-template-rows:repeat(6,72px);gap:6px;justify-content:center;margin:10px auto}
-.cell{position:relative;width:72px;height:72px;border-radius:14px;background:#111827;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:bold;cursor:pointer;overflow:hidden}
+.game{
+  display:grid;
+  grid-template-columns:minmax(620px,1fr)410px;
+  gap:12px;
+  padding:12px;
+  min-height:0;
+}
+.boardPanel,.actionPanel{
+  background:rgba(31,41,55,.82);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:18px;
+  padding:12px;
+  min-height:0;
+}
+.boardTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(9,56px);
+  grid-template-rows:repeat(9,56px);
+  gap:5px;
+  justify-content:center;
+  margin:8px auto;
+}
+.cell{
+  position:relative;
+  width:56px;
+  height:56px;
+  border-radius:12px;
+  background:#111827;
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  cursor:pointer;
+  overflow:hidden;
+}
 .cell:hover{outline:3px solid var(--gold)}
 .cell.edge{background:#172554}
-.cell.escape{background:#14532d}
-.cell.scan{box-shadow:inset 0 0 0 4px rgba(56,189,248,.85)}
-.cell.lastGuess{outline:4px solid var(--red)}
+.cell.exit{background:#1e3a8a}
+.cell.lockedExit{background:#7f1d1d}
+.cell.intel{background:#14532d}
+.cell.guard{background:#7c2d12;box-shadow:inset 0 0 0 4px rgba(251,146,60,.8)}
 .cell.spyHere{background:#581c87;box-shadow:inset 0 0 0 4px var(--gold)}
-.cell.disabled{cursor:not-allowed;opacity:.8}
-.coord{position:absolute;left:6px;top:5px;font-size:11px;color:#94a3b8}
-.icon{font-size:28px;z-index:2}
-.actionPanel{display:flex;flex-direction:column;gap:10px}
-.card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px}
-.role{font-size:22px;font-weight:900;color:var(--gold)}
-.moveGrid{display:grid;grid-template-columns:repeat(3,70px);gap:6px;justify-content:center;align-items:center}
+.cell.scan{box-shadow:inset 0 0 0 4px rgba(56,189,248,.85)}
+.cell.sweep{box-shadow:inset 0 0 0 4px rgba(167,139,250,.85)}
+.cell.lastGuess{outline:4px solid var(--red)}
+.cell.noise{box-shadow:inset 0 0 0 4px rgba(250,204,21,.8)}
+.cell.disabled{cursor:not-allowed;opacity:.84}
+.coord{
+  position:absolute;
+  left:5px;
+  top:4px;
+  font-size:10px;
+  color:#94a3b8;
+}
+.icon{font-size:24px;z-index:2}
+.actionPanel{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow:auto;
+}
+.card{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  padding:10px;
+}
+.role{
+  font-size:23px;
+  font-weight:900;
+  color:var(--gold);
+}
+.moveGrid{
+  display:grid;
+  grid-template-columns:repeat(3,74px);
+  gap:6px;
+  justify-content:center;
+  align-items:center;
+}
 .moveGrid button{height:48px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
 .selected{outline:3px solid white}
-.players{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px}
-.player{min-width:180px;border-radius:13px;padding:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+.players{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  padding:8px;
+}
+.player{
+  min-width:190px;
+  border-radius:13px;
+  padding:8px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+}
 .player.turn{outline:3px solid var(--gold)}
-.log{height:70px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:8px;font-size:13px}
-.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
-.bigNotice{font-size:28px;font-weight:900;color:var(--gold)}
-@media(max-width:900px){.game{grid-template-columns:1fr}.grid{grid-template-columns:repeat(6,48px);grid-template-rows:repeat(6,48px)}.cell{width:48px;height:48px;border-radius:10px}.icon{font-size:20px}.actionPanel{max-height:320px;overflow:auto}}
+.log{
+  height:74px;
+  overflow:auto;
+  text-align:left;
+  background:#fffbea;
+  color:#1f2937;
+  border-radius:10px;
+  padding:8px;
+  font-size:13px;
+}
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  font-size:12px;
+}
+.bigNotice{
+  font-size:25px;
+  font-weight:900;
+  color:var(--gold);
+}
+.resourceGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  text-align:left;
+}
+.resource{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  padding:6px;
+  font-size:12px;
+}
+.powerNote{
+  color:#fde68a;
+  font-size:12px;
+}
+.legend{
+  display:flex;
+  justify-content:center;
+  gap:7px;
+  flex-wrap:wrap;
+  font-size:11px;
+  color:#cbd5e1;
+}
+.legend span{
+  background:rgba(255,255,255,.08);
+  border-radius:999px;
+  padding:4px 7px;
+}
+@media(max-width:950px){
+  .game{grid-template-columns:1fr}
+  .grid{grid-template-columns:repeat(9,36px);grid-template-rows:repeat(9,36px);gap:3px}
+  .cell{width:36px;height:36px;border-radius:8px}
+  .icon{font-size:16px}
+  .actionPanel{max-height:340px}
+  .moveGrid{grid-template-columns:repeat(3,64px)}
+}
 </style>
 </head>
 
@@ -62,13 +251,23 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
   <div class="status">
     <div id="statusMain" class="statusMain">Loading players...</div>
-    <div id="statusHelp" class="muted">Spy moves secretly. Guard scans, tracks, and guesses.</div>
+    <div id="statusHelp" class="muted">Spy collects intel and escapes. Guard hunts the Spy.</div>
   </div>
 
   <div class="game">
     <div class="boardPanel">
-      <h3 id="boardTitle">Board</h3>
+      <div class="boardTop">
+        <h3 id="boardTitle">Mission Board</h3>
+        <span id="boardMode" class="badge"></span>
+      </div>
       <div id="grid" class="grid"></div>
+      <div class="legend">
+        <span>🕵 Spy only visible to Spy</span>
+        <span>🛡 Guard patrol</span>
+        <span>📁 Intel</span>
+        <span>🚪 Exit</span>
+        <span>🔒 Locked exit</span>
+      </div>
       <div class="muted" id="boardHint"></div>
     </div>
 
@@ -79,29 +278,37 @@ button:disabled{opacity:.45;cursor:not-allowed}
       </div>
 
       <div class="card" id="spyPanel">
-        <h3>Spy Move</h3>
-        <p class="muted">Move one tile or stay still. Reach any green escape tile.</p>
+        <h3>Spy Actions</h3>
+        <p class="muted">Collect 2 intel files, then reach an unlocked exit.</p>
         <div class="moveGrid">
-          <span></span><button onclick="spyMove(-1,0)">Up</button><span></span>
-          <button onclick="spyMove(0,-1)">Left</button><button onclick="spyMove(0,0)">Stay</button><button onclick="spyMove(0,1)">Right</button>
-          <span></span><button onclick="spyMove(1,0)">Down</button><span></span>
+          <span></span><button onclick="spyMove(-1,0,'normal')">Up</button><span></span>
+          <button onclick="spyMove(0,-1,'normal')">Left</button><button onclick="spyMove(0,0,'normal')">Stay</button><button onclick="spyMove(0,1,'normal')">Right</button>
+          <span></span><button onclick="spyMove(1,0,'normal')">Down</button><span></span>
         </div>
+        <div class="actions" style="margin-top:8px">
+          <button class="power" onclick="selectSpyPower('sneak')">Sneak</button>
+          <button class="power" onclick="selectSpyPower('decoy')">Decoy</button>
+          <button class="power" onclick="selectSpyPower('sprint')">Sprint</button>
+        </div>
+        <div id="spyPowerHelp" class="powerNote"></div>
       </div>
 
       <div class="card" id="guardPanel">
         <h3>Guard Actions</h3>
-        <p class="muted">Choose an action, then click the board.</p>
+        <p class="muted">Choose a tool, then click the board if needed.</p>
         <div class="actions">
-          <button id="scanBtn" class="primary" onclick="setAction('scan')">Scan 3x3</button>
-          <button id="guessBtn" class="danger" onclick="setAction('guess')">Capture Guess</button>
-          <button id="trackBtn" class="power" onclick="setAction('track')">Track</button>
+          <button id="scanBtn" class="primary" onclick="setGuardAction('scan')">Scan 3x3</button>
+          <button id="sweepBtn" class="power" onclick="setGuardAction('sweep')">Sweep</button>
+          <button id="guessBtn" class="danger" onclick="setGuardAction('guess')">Capture</button>
+          <button id="lockBtn" class="orange" onclick="setGuardAction('lock')">Lock Exit</button>
         </div>
         <p id="actionHelp" class="muted"></p>
       </div>
 
-      <div class="card" id="resultPanel">
+      <div class="card">
+        <h3>Mission Status</h3>
         <div id="lastResult" class="bigNotice"></div>
-        <div id="resourceInfo" class="muted"></div>
+        <div id="resourceInfo" class="resourceGrid"></div>
       </div>
     </div>
   </div>
@@ -115,12 +322,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <script>
 var GAME_META={id:'shadowtrace',name:'Shadow Trace',minPlayers:2,maxPlayers:2,seats:2};
 
-var SIZE=6;
-var MAX_TURNS=12;
+var SIZE=9;
+var MAX_TURNS=22;
+var INTEL_REQUIRED=2;
+
 var players=[];
 var mySeat=null;
 var state=null;
-var selectedAction='scan';
+var selectedGuardAction='scan';
+var selectedSpyPower='normal';
 
 function el(id){return document.getElementById(id);}
 
@@ -132,7 +342,10 @@ function receiveSetup(setupPlayers,setupSeat){
   if(setupPlayers&&setupPlayers.length){
     players=[];
     for(var i=0;i<setupPlayers.length&&i<2;i++){
-      players.push({seat:setupPlayers[i].seat,name:setupPlayers[i].name||('Seat '+(setupPlayers[i].seat+1))});
+      players.push({
+        seat:setupPlayers[i].seat,
+        name:setupPlayers[i].name||('Seat '+(Number(setupPlayers[i].seat)+1))
+      });
     }
   }
 
@@ -143,7 +356,11 @@ function receiveSetup(setupPlayers,setupSeat){
     return;
   }
 
-  if(!state)state=fresh();
+  if(!state){
+    state=fresh();
+  }else{
+    ensureState();
+  }
 
   draw();
 }
@@ -156,43 +373,57 @@ function showWaiting(){
   el('log').innerHTML='';
   el('spyPanel').style.display='none';
   el('guardPanel').style.display='none';
+  el('meLabel').innerText='';
+  el('lastResult').innerText='';
+  el('resourceInfo').innerHTML='';
 }
 
 function fresh(){
   var spy=players[0].seat;
   var guard=players[1].seat;
 
-  var start=randomInnerCell();
-  var exits=[
-    {r:0,c:0},{r:0,c:SIZE-1},{r:SIZE-1,c:0},{r:SIZE-1,c:SIZE-1}
-  ];
-
   return {
     spy:spy,
     guard:guard,
-    spyPos:start,
-    prevSpyPos:{r:start.r,c:start.c},
-    exits:exits,
+    spyPos:{r:4,c:4},
+    prevSpyPos:{r:4,c:4},
+    guardPos:{r:0,c:4},
+    intel:[
+      {r:2,c:2,collected:false},
+      {r:2,c:6,collected:false},
+      {r:6,c:2,collected:false},
+      {r:6,c:6,collected:false}
+    ],
+    exits:[
+      {r:0,c:0,locked:false},
+      {r:0,c:8,locked:false},
+      {r:8,c:0,locked:false},
+      {r:8,c:8,locked:false}
+    ],
+    collected:0,
     phase:'spyMove',
     turn:spy,
     round:1,
-    scansLeft:5,
-    tracksLeft:3,
-    guesses:[],
-    scans:[],
-    lastResult:'Spy is moving...',
-    lastMoveType:'start',
+    scansLeft:6,
+    sweepsLeft:4,
+    locksLeft:2,
+    spyPowers:{sneak:2,decoy:2,sprint:1},
+    lastNoise:null,
+    lastScan:null,
+    lastSweep:null,
+    lastGuess:null,
+    lastResult:'Mission started.',
     gameOver:false,
     winner:null,
-    log:['New mission started. '+name(spy)+' is the Spy. '+name(guard)+' is the Guard.']
+    log:['Mission started. '+name(spy)+' is the Spy. '+name(guard)+' is the Guard.']
   };
 }
 
-function randomInnerCell(){
-  return {
-    r:1+Math.floor(Math.random()*(SIZE-2)),
-    c:1+Math.floor(Math.random()*(SIZE-2))
-  };
+function ensureState(){
+  if(!state.spyPowers)state.spyPowers={sneak:2,decoy:2,sprint:1};
+  if(!state.exits)state.exits=[{r:0,c:0,locked:false},{r:0,c:8,locked:false},{r:8,c:0,locked:false},{r:8,c:8,locked:false}];
+  if(!state.intel)state.intel=[];
+  if(state.collected===undefined)state.collected=0;
 }
 
 function draw(){
@@ -204,29 +435,27 @@ function draw(){
   var role=mySeat===state.spy?'Spy':mySeat===state.guard?'Guard':'Spectator';
   el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
   el('roleLine').innerText=role;
-  el('roundInfo').innerText='Round '+state.round+' of '+MAX_TURNS;
+  el('roundInfo').innerText='Round '+state.round+' of '+MAX_TURNS+' · Intel '+state.collected+'/'+INTEL_REQUIRED;
 
   if(state.gameOver){
     el('statusMain').innerText='Game Over — '+name(state.winner)+' wins!';
-    el('statusHelp').innerText=state.winner===state.spy?'The Spy escaped.':'The Guard caught the Spy.';
+    el('statusHelp').innerText=state.winner===state.spy?'The Spy escaped.':'The Guard captured the Spy.';
   }else if(state.phase==='spyMove'){
     el('statusMain').innerText='Spy Phase';
-    el('statusHelp').innerText=mySeat===state.spy?'Move secretly.':'Waiting for the Spy to move.';
+    el('statusHelp').innerText=mySeat===state.spy?'Move secretly, collect intel, and avoid the guard.':'Waiting for the Spy to move.';
   }else{
     el('statusMain').innerText='Guard Phase';
-    el('statusHelp').innerText=mySeat===state.guard?'Choose scan, track, or capture guess.':'Waiting for the Guard.';
+    el('statusHelp').innerText=mySeat===state.guard?'Use tools, then the patrol moves.':'Waiting for the Guard.';
   }
 
-  el('spyPanel').style.display=(mySeat===state.spy&&!state.gameOver)?'block':'none';
-  el('guardPanel').style.display=(mySeat===state.guard&&!state.gameOver)?'block':'none';
+  el('spyPanel').style.display=(mySeat===state.spy&&!state.gameOver&&state.phase==='spyMove')?'block':'none';
+  el('guardPanel').style.display=(mySeat===state.guard&&!state.gameOver&&state.phase==='guardAction')?'block':'none';
 
   drawBoard();
   drawActions();
   drawPlayers();
   drawLog();
-
-  el('lastResult').innerText=state.lastResult||'';
-  el('resourceInfo').innerText='Scans left: '+state.scansLeft+' · Tracks left: '+state.tracksLeft+' · Turn limit: '+state.round+'/'+MAX_TURNS;
+  drawResources();
 }
 
 function drawBoard(){
@@ -235,25 +464,44 @@ function drawBoard(){
   var isSpy=mySeat===state.spy;
   var isGuard=mySeat===state.guard;
 
-  el('boardTitle').innerText=isSpy?'Your Escape Map':isGuard?'Guard Search Grid':'Mission Board';
-  el('boardHint').innerText=isSpy?'You can see your position. The guard cannot.':'Click cells only when it is your guard action.';
+  el('boardTitle').innerText=isSpy?'Spy Escape Map':isGuard?'Guard Search Grid':'Mission Board';
+  el('boardMode').innerText=state.phase==='spyMove'?'Spy Phase':'Guard Phase';
+  el('boardHint').innerText=isSpy?'Your position is private. The guard only sees clues.':'Use scan and sweep results to narrow the Spy location.';
 
   for(var r=0;r<SIZE;r++){
     for(var c=0;c<SIZE;c++){
       var cell=document.createElement('div');
-      var isEscape=isExit(r,c);
-      var isLastGuess=lastGuessAt(r,c);
-      var isScan=lastScanIncludes(r,c);
+
+      var isExitCell=getExit(r,c);
+      var isIntelCell=getIntel(r,c);
+      var isGuardCell=state.guardPos.r===r&&state.guardPos.c===c;
       var spyHere=state.spyPos.r===r&&state.spyPos.c===c&&isSpy;
+      var scanCell=state.lastScan&&Math.abs(state.lastScan.r-r)<=1&&Math.abs(state.lastScan.c-c)<=1;
+      var sweepCell=state.lastSweep&&(state.lastSweep.row===r||state.lastSweep.col===c);
+      var guessCell=state.lastGuess&&state.lastGuess.r===r&&state.lastGuess.c===c;
+      var noiseCell=state.lastNoise&&state.lastNoise.r===r&&state.lastNoise.c===c;
 
       cell.className='cell '+
-        (isEscape?'escape ':'')+
-        (isScan&&!isSpy?'scan ':'')+
-        (isLastGuess?'lastGuess ':'')+
+        (r===0||c===0||r===SIZE-1||c===SIZE-1?'edge ':'')+
+        (isExitCell?'exit ':'')+
+        (isExitCell&&isExitCell.locked?'lockedExit ':'')+
+        (isIntelCell&&!isIntelCell.collected?'intel ':'')+
+        (isGuardCell?'guard ':'')+
         (spyHere?'spyHere ':'')+
-        ((isGuard&&state.phase==='guardAction'&&!state.gameOver)?'':'disabled ');
+        (scanCell&&!isSpy?'scan ':'')+
+        (sweepCell&&!isSpy?'sweep ':'')+
+        (guessCell?'lastGuess ':'')+
+        (noiseCell&&!isSpy?'noise ':'')+
+        ((isGuard&&state.phase==='guardAction'||isSpy&&state.phase==='spyMove')?'':'disabled ');
 
-      cell.innerHTML='<span class="coord">'+coord(r,c)+'</span><span class="icon">'+(spyHere?'🕵':'')+'</span>';
+      var icon='';
+      if(spyHere)icon='🕵';
+      else if(isGuardCell)icon='🛡';
+      else if(isIntelCell&&!isIntelCell.collected)icon='📁';
+      else if(isExitCell&&isExitCell.locked)icon='🔒';
+      else if(isExitCell)icon='🚪';
+
+      cell.innerHTML='<span class="coord">'+coord(r,c)+'</span><span class="icon">'+icon+'</span>';
       cell.onclick=(function(rr,cc){return function(){boardClick(rr,cc);};})(r,c);
 
       el('grid').appendChild(cell);
@@ -262,21 +510,45 @@ function drawBoard(){
 }
 
 function drawActions(){
-  el('scanBtn').className='primary '+(selectedAction==='scan'?'selected':'');
-  el('guessBtn').className='danger '+(selectedAction==='guess'?'selected':'');
-  el('trackBtn').className='power '+(selectedAction==='track'?'selected':'');
+  el('scanBtn').className='primary '+(selectedGuardAction==='scan'?'selected':'');
+  el('sweepBtn').className='power '+(selectedGuardAction==='sweep'?'selected':'');
+  el('guessBtn').className='danger '+(selectedGuardAction==='guess'?'selected':'');
+  el('lockBtn').className='orange '+(selectedGuardAction==='lock'?'selected':'');
 
-  el('scanBtn').disabled=state.phase!=='guardAction'||mySeat!==state.guard||state.scansLeft<=0;
-  el('trackBtn').disabled=state.phase!=='guardAction'||mySeat!==state.guard||state.tracksLeft<=0;
-  el('guessBtn').disabled=state.phase!=='guardAction'||mySeat!==state.guard;
+  var guardReady=state.phase==='guardAction'&&mySeat===state.guard&&!state.gameOver;
+  el('scanBtn').disabled=!guardReady||state.scansLeft<=0;
+  el('sweepBtn').disabled=!guardReady||state.sweepsLeft<=0;
+  el('guessBtn').disabled=!guardReady;
+  el('lockBtn').disabled=!guardReady||state.locksLeft<=0;
 
-  if(selectedAction==='scan')el('actionHelp').innerText='Scan checks a 3x3 area around the clicked tile.';
-  if(selectedAction==='guess')el('actionHelp').innerText='Capture guess wins if exact, but wrong guesses help the Spy.';
-  if(selectedAction==='track')el('actionHelp').innerText='Track reveals if the Spy moved horizontally, vertically, or stayed still.';
+  if(selectedGuardAction==='scan')el('actionHelp').innerText='Scan checks a 3x3 area around the clicked tile.';
+  if(selectedGuardAction==='sweep')el('actionHelp').innerText='Sweep checks whether the Spy is in the clicked row or column.';
+  if(selectedGuardAction==='guess')el('actionHelp').innerText='Capture guess wins if exact. Wrong guesses cost your action.';
+  if(selectedGuardAction==='lock')el('actionHelp').innerText='Lock one exit for the rest of the game. Click an exit.';
+
+  var p=state.spyPowers||{sneak:0,decoy:0,sprint:0};
+  var help='Selected: '+selectedSpyPower+'. ';
+  help+='Sneak '+p.sneak+' · Decoy '+p.decoy+' · Sprint '+p.sprint;
+  el('spyPowerHelp').innerText=help;
+}
+
+function drawResources(){
+  el('lastResult').innerText=state.lastResult||'';
+
+  var html='';
+  html+='<div class="resource"><b>Spy Intel</b><br>'+state.collected+'/'+INTEL_REQUIRED+'</div>';
+  html+='<div class="resource"><b>Round</b><br>'+state.round+'/'+MAX_TURNS+'</div>';
+  html+='<div class="resource"><b>Guard Scans</b><br>'+state.scansLeft+'</div>';
+  html+='<div class="resource"><b>Guard Sweeps</b><br>'+state.sweepsLeft+'</div>';
+  html+='<div class="resource"><b>Exit Locks</b><br>'+state.locksLeft+'</div>';
+  html+='<div class="resource"><b>Spy Powers</b><br>Sneak '+state.spyPowers.sneak+', Decoy '+state.spyPowers.decoy+', Sprint '+state.spyPowers.sprint+'</div>';
+
+  el('resourceInfo').innerHTML=html;
 }
 
 function drawPlayers(){
   var html='';
+
   for(var i=0;i<players.length;i++){
     var p=players[i];
     var role=p.seat===state.spy?'Spy':'Guard';
@@ -285,64 +557,188 @@ function drawPlayers(){
       '<span class="muted">'+role+(p.seat===mySeat?' · You':'')+'</span>'+
     '</div>';
   }
+
   el('playersPanel').innerHTML=html;
 }
 
 function drawLog(){
   var html='';
-  var start=Math.max(0,state.log.length-7);
-  for(var i=start;i<state.log.length;i++)html+='• '+escapeHtml(state.log[i])+'<br>';
+  var start=Math.max(0,state.log.length-8);
+
+  for(var i=start;i<state.log.length;i++){
+    html+='• '+escapeHtml(state.log[i])+'<br>';
+  }
+
   el('log').innerHTML=html;
   el('log').scrollTop=el('log').scrollHeight;
 }
 
-function spyMove(dr,dc){
+function selectSpyPower(power){
+  if(power==='sneak'&&state.spyPowers.sneak<=0)return;
+  if(power==='decoy'&&state.spyPowers.decoy<=0)return;
+  if(power==='sprint'&&state.spyPowers.sprint<=0)return;
+
+  selectedSpyPower=power;
+  drawActions();
+}
+
+function spyMove(dr,dc,kind){
   if(!state||state.gameOver||mySeat!==state.spy||state.phase!=='spyMove')return;
 
-  var nr=state.spyPos.r+dr;
-  var nc=state.spyPos.c+dc;
+  kind=selectedSpyPower||'normal';
+
+  if(kind==='sneak'&&state.spyPowers.sneak<=0)kind='normal';
+  if(kind==='decoy'&&state.spyPowers.decoy<=0)kind='normal';
+  if(kind==='sprint'&&state.spyPowers.sprint<=0)kind='normal';
+
+  var distance=kind==='sprint'?2:1;
+  var nr=state.spyPos.r+(dr*distance);
+  var nc=state.spyPos.c+(dc*distance);
+
+  if(dr===0&&dc===0){
+    nr=state.spyPos.r;
+    nc=state.spyPos.c;
+  }
 
   if(nr<0||nr>=SIZE||nc<0||nc>=SIZE)return;
 
   state.prevSpyPos={r:state.spyPos.r,c:state.spyPos.c};
   state.spyPos={r:nr,c:nc};
 
-  if(dr===0&&dc===0)state.lastMoveType='stayed still';
-  else if(dr!==0)state.lastMoveType='moved vertically';
-  else state.lastMoveType='moved horizontally';
+  var noiseType=kind;
 
-  add(name(state.spy)+' made a hidden move.');
-
-  if(isExit(nr,nc)){
-    state.gameOver=true;
-    state.winner=state.spy;
-    state.lastResult='SPY ESCAPED';
-    add(name(state.spy)+' reached an escape tile and escaped!');
+  if(kind==='sneak'){
+    state.spyPowers.sneak--;
+    state.lastNoise=null;
+    add(name(state.spy)+' moved silently.');
+  }else if(kind==='decoy'){
+    state.spyPowers.decoy--;
+    makeDecoyNoise();
+    add(name(state.spy)+' created a decoy noise.');
+  }else if(kind==='sprint'){
+    state.spyPowers.sprint--;
+    makeNoise(true);
+    add(name(state.spy)+' sprinted. The noise was louder.');
   }else{
+    makeNoise(false);
+    add(name(state.spy)+' made a hidden move.');
+  }
+
+  selectedSpyPower='normal';
+
+  collectIntel();
+  checkSpyCaughtByPatrol();
+
+  if(!state.gameOver)checkSpyEscape();
+
+  if(!state.gameOver){
     state.phase='guardAction';
     state.turn=state.guard;
-    state.lastResult='Spy moved. Guard action ready.';
+    if(!state.lastResult||state.lastResult==='Mission started.')state.lastResult='Spy moved. Guard action ready.';
   }
 
   draw();
   sync();
 }
 
-function boardClick(r,c){
-  if(!state||state.gameOver||mySeat!==state.guard||state.phase!=='guardAction')return;
+function makeNoise(strong){
+  var gr=state.guardPos.r;
+  var gc=state.guardPos.c;
+  var sr=state.spyPos.r;
+  var sc=state.spyPos.c;
 
-  if(selectedAction==='scan')scan(r,c);
-  else if(selectedAction==='guess')guess(r,c);
-  else if(selectedAction==='track')track();
+  var nr=sr;
+  var nc=sc;
+
+  if(strong){
+    nr=Math.max(0,Math.min(SIZE-1,sr+(sr>gr?1:sr<gr?-1:0)));
+    nc=Math.max(0,Math.min(SIZE-1,sc+(sc>gc?1:sc<gc?-1:0)));
+  }
+
+  state.lastNoise={r:nr,c:nc};
+  state.lastResult='Noise near '+directionFromGuard(sr,sc)+(strong?' — loud movement.':'');
 }
 
-function scan(r,c){
+function makeDecoyNoise(){
+  var options=[
+    {r:Math.max(0,state.spyPos.r-2),c:state.spyPos.c},
+    {r:Math.min(SIZE-1,state.spyPos.r+2),c:state.spyPos.c},
+    {r:state.spyPos.r,c:Math.max(0,state.spyPos.c-2)},
+    {r:state.spyPos.r,c:Math.min(SIZE-1,state.spyPos.c+2)}
+  ];
+  var pick=options[Math.floor(Math.random()*options.length)];
+  state.lastNoise={r:pick.r,c:pick.c};
+  state.lastResult='Noise detected near '+coord(pick.r,pick.c)+'.';
+}
+
+function directionFromGuard(r,c){
+  var dr=r-state.guardPos.r;
+  var dc=c-state.guardPos.c;
+
+  if(Math.abs(dr)>Math.abs(dc)){
+    return dr<0?'north':'south';
+  }else if(Math.abs(dc)>0){
+    return dc<0?'west':'east';
+  }
+
+  return 'the guard';
+}
+
+function collectIntel(){
+  for(var i=0;i<state.intel.length;i++){
+    var item=state.intel[i];
+    if(!item.collected&&item.r===state.spyPos.r&&item.c===state.spyPos.c){
+      item.collected=true;
+      state.collected++;
+      add(name(state.spy)+' collected intel '+state.collected+'/'+INTEL_REQUIRED+'.');
+      state.lastResult='Intel collected!';
+    }
+  }
+}
+
+function checkSpyEscape(){
+  var exit=getExit(state.spyPos.r,state.spyPos.c);
+  if(exit&&state.collected>=INTEL_REQUIRED&&!exit.locked){
+    state.gameOver=true;
+    state.winner=state.spy;
+    state.lastResult='SPY ESCAPED';
+    add(name(state.spy)+' escaped with the intel!');
+  }else if(exit&&state.collected<INTEL_REQUIRED){
+    state.lastResult='Exit reached, but more intel is needed.';
+    add(name(state.spy)+' reached an exit but needs more intel.');
+  }else if(exit&&exit.locked){
+    state.lastResult='Exit locked.';
+    add(name(state.spy)+' reached a locked exit.');
+  }
+}
+
+function checkSpyCaughtByPatrol(){
+  var dist=Math.abs(state.spyPos.r-state.guardPos.r)+Math.abs(state.spyPos.c-state.guardPos.c);
+  if(dist===0){
+    state.gameOver=true;
+    state.winner=state.guard;
+    state.lastResult='SPY WALKED INTO THE GUARD';
+    add(name(state.guard)+' caught the Spy at the patrol position!');
+  }
+}
+
+function boardClick(r,c){
+  if(!state||state.gameOver)return;
+
+  if(mySeat===state.guard&&state.phase==='guardAction'){
+    if(selectedGuardAction==='scan')doScan(r,c);
+    else if(selectedGuardAction==='sweep')doSweep(r,c);
+    else if(selectedGuardAction==='guess')doGuess(r,c);
+    else if(selectedGuardAction==='lock')doLock(r,c);
+  }
+}
+
+function doScan(r,c){
   if(state.scansLeft<=0)return;
 
   state.scansLeft--;
   var found=Math.abs(state.spyPos.r-r)<=1&&Math.abs(state.spyPos.c-c)<=1;
-
-  state.scans.push({r:r,c:c,found:found,round:state.round});
+  state.lastScan={r:r,c:c,found:found};
   state.lastResult=found?'SCAN HIT':'SCAN CLEAR';
 
   add(name(state.guard)+' scanned '+coord(r,c)+': '+(found?'Spy detected nearby.':'No trace.'));
@@ -350,30 +746,58 @@ function scan(r,c){
   endGuardTurn();
 }
 
-function guess(r,c){
-  state.guesses.push({r:r,c:c,round:state.round});
+function doSweep(r,c){
+  if(state.sweepsLeft<=0)return;
+
+  state.sweepsLeft--;
+  var rowHit=state.spyPos.r===r;
+  var colHit=state.spyPos.c===c;
+
+  state.lastSweep={row:r,col:c,rowHit:rowHit,colHit:colHit};
+  state.lastResult='Sweep: '+(rowHit?'same row ':'')+(colHit?'same column':'')+(rowHit||colHit?'':'no match');
+
+  add(name(state.guard)+' swept row '+(r+1)+' and column '+String.fromCharCode(65+c)+': '+state.lastResult+'.');
+
+  endGuardTurn();
+}
+
+function doGuess(r,c){
+  state.lastGuess={r:r,c:c};
 
   if(state.spyPos.r===r&&state.spyPos.c===c){
     state.gameOver=true;
     state.winner=state.guard;
     state.lastResult='CAPTURED';
-    add(name(state.guard)+' guessed '+coord(r,c)+' and caught the Spy!');
+    add(name(state.guard)+' guessed '+coord(r,c)+' and captured the Spy!');
+    draw();
+    sync();
   }else{
-    state.lastResult='WRONG GUESS';
+    state.lastResult='WRONG CAPTURE';
     add(name(state.guard)+' guessed '+coord(r,c)+' but the Spy was not there.');
     endGuardTurn();
   }
-
-  draw();
-  sync();
 }
 
-function track(){
-  if(state.tracksLeft<=0)return;
+function doLock(r,c){
+  if(state.locksLeft<=0)return;
 
-  state.tracksLeft--;
-  state.lastResult='TRACK: '+state.lastMoveType.toUpperCase();
-  add(name(state.guard)+' used Track: Spy '+state.lastMoveType+'.');
+  var exit=getExit(r,c);
+  if(!exit){
+    state.lastResult='Choose an exit to lock.';
+    draw();
+    return;
+  }
+
+  if(exit.locked){
+    state.lastResult='That exit is already locked.';
+    draw();
+    return;
+  }
+
+  state.locksLeft--;
+  exit.locked=true;
+  state.lastResult='Exit '+coord(r,c)+' locked.';
+  add(name(state.guard)+' locked exit '+coord(r,c)+'.');
 
   endGuardTurn();
 }
@@ -381,43 +805,77 @@ function track(){
 function endGuardTurn(){
   if(state.gameOver)return;
 
-  if(state.round>=MAX_TURNS){
-    state.gameOver=true;
-    state.winner=state.spy;
-    state.lastResult='SPY VANISHED';
-    add(name(state.spy)+' survived the mission timer and escaped!');
-  }else{
-    state.round++;
-    state.phase='spyMove';
-    state.turn=state.spy;
+  moveGuardPatrol();
+  checkSpyCaughtByPatrol();
+
+  if(!state.gameOver){
+    if(state.round>=MAX_TURNS){
+      state.gameOver=true;
+      state.winner=state.guard;
+      state.lastResult='MISSION TIMER EXPIRED';
+      add(name(state.guard)+' wins. The Spy ran out of time.');
+    }else{
+      state.round++;
+      state.phase='spyMove';
+      state.turn=state.spy;
+    }
   }
 
   draw();
   sync();
 }
 
-function setAction(a){
-  selectedAction=a;
-  draw();
-}
+function moveGuardPatrol(){
+  var gr=state.guardPos.r;
+  var gc=state.guardPos.c;
+  var sr=state.spyPos.r;
+  var sc=state.spyPos.c;
 
-function isExit(r,c){
-  for(var i=0;i<state.exits.length;i++){
-    if(state.exits[i].r===r&&state.exits[i].c===c)return true;
+  var options=[];
+
+  if(gr>0)options.push({r:gr-1,c:gc});
+  if(gr<SIZE-1)options.push({r:gr+1,c:gc});
+  if(gc>0)options.push({r:gr,c:gc-1});
+  if(gc<SIZE-1)options.push({r:gr,c:gc+1});
+  options.push({r:gr,c:gc});
+
+  var best=options[0];
+  var bestScore=999;
+
+  for(var i=0;i<options.length;i++){
+    var score=Math.abs(options[i].r-sr)+Math.abs(options[i].c-sc);
+
+    if(state.lastNoise){
+      score+=Math.abs(options[i].r-state.lastNoise.r)+Math.abs(options[i].c-state.lastNoise.c);
+    }
+
+    if(score<bestScore){
+      bestScore=score;
+      best=options[i];
+    }
   }
-  return false;
+
+  state.guardPos={r:best.r,c:best.c};
+  add('Guard patrol moved to '+coord(best.r,best.c)+'.');
 }
 
-function lastGuessAt(r,c){
-  if(!state.guesses.length)return false;
-  var g=state.guesses[state.guesses.length-1];
-  return g.r===r&&g.c===c;
+function setGuardAction(a){
+  selectedGuardAction=a;
+  drawActions();
 }
 
-function lastScanIncludes(r,c){
-  if(!state.scans.length)return false;
-  var s=state.scans[state.scans.length-1];
-  return Math.abs(s.r-r)<=1&&Math.abs(s.c-c)<=1;
+function getExit(r,c){
+  for(var i=0;i<state.exits.length;i++){
+    if(state.exits[i].r===r&&state.exits[i].c===c)return state.exits[i];
+  }
+  return null;
+}
+
+function getIntel(r,c){
+  for(var i=0;i<state.intel.length;i++){
+    if(state.intel[i].r===r&&state.intel[i].c===c)return state.intel[i];
+  }
+  return null;
 }
 
 function coord(r,c){
@@ -431,7 +889,8 @@ function newGame(sendIt){
   }
 
   state=fresh();
-  selectedAction='scan';
+  selectedGuardAction='scan';
+  selectedSpyPower='normal';
   draw();
 
   if(sendIt)sync();
@@ -455,6 +914,7 @@ window.onMove=function(data){
 
   if(data.type==='state'){
     state=data.state;
+    ensureState();
     draw();
   }
 };
@@ -472,15 +932,15 @@ function name(seat){
   return 'Seat '+(Number(seat)+1);
 }
 
-function add(t){
-  state.log.push(t);
-  if(state.log.length>80)state.log.shift();
-}
-
 function escapeHtml(s){
   return String(s||'').replace(/[&<>"']/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
+}
+
+function add(t){
+  state.log.push(t);
+  if(state.log.length>100)state.log.shift();
 }
 
 function safeBoot(){
