@@ -5,16 +5,18 @@
 <style>
 :root{
   --ink:#172033;
-  --muted:#667085;
-  --line:rgba(255,255,255,.28);
-  --glass:rgba(255,255,255,.72);
-  --glass2:rgba(255,255,255,.48);
+  --muted:#64748b;
+  --line:rgba(255,255,255,.34);
+  --glass:rgba(255,255,255,.76);
+  --glass2:rgba(255,255,255,.50);
   --blue:#2563eb;
   --blue2:#1d4ed8;
   --green:#16a34a;
   --gold:#facc15;
   --red:#dc2626;
   --purple:#7c3aed;
+  --pink:#ec4899;
+  --sky:#38bdf8;
 }
 
 *{box-sizing:border-box}
@@ -25,10 +27,10 @@ body{
   color:var(--ink);
   overflow:hidden;
   background:
-    radial-gradient(circle at 18% 16%,rgba(56,189,248,.35),transparent 28%),
-    radial-gradient(circle at 86% 18%,rgba(250,204,21,.35),transparent 24%),
-    radial-gradient(circle at 45% 90%,rgba(34,197,94,.22),transparent 30%),
-    linear-gradient(135deg,#dbeafe,#f8fafc 52%,#ecfccb);
+    radial-gradient(circle at 16% 14%,rgba(56,189,248,.36),transparent 28%),
+    radial-gradient(circle at 84% 18%,rgba(250,204,21,.32),transparent 24%),
+    radial-gradient(circle at 50% 92%,rgba(34,197,94,.24),transparent 34%),
+    linear-gradient(135deg,#dbeafe,#f8fafc 54%,#dcfce7);
 }
 
 button,input{
@@ -91,7 +93,7 @@ button,input{
 .main{
   min-height:0;
   display:grid;
-  grid-template-columns:330px minmax(0,1fr)360px;
+  grid-template-columns:330px minmax(0,1fr)380px;
   gap:14px;
 }
 
@@ -181,13 +183,19 @@ button,input{
 
 .aura{
   position:absolute;
-  width:360px;
-  height:360px;
+  width:380px;
+  height:380px;
   border-radius:50%;
   background:radial-gradient(circle,rgba(255,255,255,.88),rgba(255,255,255,.18) 45%,transparent 70%);
   filter:blur(2px);
   animation:auraPulse 4s ease-in-out infinite;
 }
+
+.aura.fire{background:radial-gradient(circle,rgba(254,215,170,.95),rgba(251,146,60,.22) 46%,transparent 70%)}
+.aura.water{background:radial-gradient(circle,rgba(186,230,253,.95),rgba(14,165,233,.25) 46%,transparent 70%)}
+.aura.nature{background:radial-gradient(circle,rgba(187,247,208,.95),rgba(34,197,94,.25) 46%,transparent 70%)}
+.aura.shadow{background:radial-gradient(circle,rgba(221,214,254,.9),rgba(124,58,237,.25) 46%,transparent 70%)}
+.aura.earth{background:radial-gradient(circle,rgba(254,243,199,.95),rgba(120,113,108,.25) 46%,transparent 70%)}
 
 @keyframes auraPulse{
   0%,100%{transform:scale(.94);opacity:.75}
@@ -196,8 +204,8 @@ button,input{
 
 .petOrb{
   position:relative;
-  width:280px;
-  height:280px;
+  width:290px;
+  height:290px;
   border-radius:50%;
   display:flex;
   align-items:center;
@@ -216,6 +224,19 @@ button,input{
   font-size:124px;
   filter:drop-shadow(0 18px 18px rgba(15,23,42,.23));
   animation:breathe 2.4s ease-in-out infinite;
+  transform-origin:center;
+}
+
+.petEmoji.eggNearHatch{
+  animation:eggWobble 1.1s ease-in-out infinite;
+}
+
+.petEmoji.carePulse{
+  animation:carePop .62s ease;
+}
+
+.petEmoji.tapPulse{
+  animation:tapBounce .44s ease;
 }
 
 @keyframes breathe{
@@ -223,21 +244,51 @@ button,input{
   50%{transform:scale(1.08) rotate(1deg)}
 }
 
-.petEmoji.pulse{
-  animation:pop .45s ease;
+@keyframes eggWobble{
+  0%,100%{transform:rotate(0deg) scale(1.06)}
+  20%{transform:rotate(-7deg) scale(1.07)}
+  40%{transform:rotate(7deg) scale(1.08)}
+  60%{transform:rotate(-5deg) scale(1.07)}
+  80%{transform:rotate(5deg) scale(1.08)}
 }
 
-@keyframes pop{
+@keyframes carePop{
   0%{transform:scale(1)}
-  45%{transform:scale(1.28)}
+  35%{transform:scale(1.28) rotate(-4deg)}
+  70%{transform:scale(.98) rotate(3deg)}
   100%{transform:scale(1)}
+}
+
+@keyframes tapBounce{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.13) translateY(-8px)}
+  100%{transform:scale(1)}
+}
+
+.floatingFx{
+  position:absolute;
+  left:50%;
+  top:45%;
+  transform:translate(-50%,-50%);
+  font-weight:900;
+  font-size:28px;
+  pointer-events:none;
+  opacity:0;
+  animation:floatUp 1.1s ease forwards;
+  text-shadow:0 3px 10px rgba(15,23,42,.18);
+}
+
+@keyframes floatUp{
+  0%{opacity:0;transform:translate(-50%,-20%) scale(.8)}
+  15%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-160%) scale(1.22)}
 }
 
 .speech{
   position:relative;
   margin:0 auto 12px;
-  max-width:650px;
-  background:rgba(255,255,255,.86);
+  max-width:680px;
+  background:rgba(255,255,255,.88);
   border:1px solid rgba(148,163,184,.35);
   border-radius:22px;
   padding:13px 16px;
@@ -286,7 +337,8 @@ button.good{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;borde
 button.gold{background:linear-gradient(135deg,#facc15,#f59e0b);color:#111827;border-color:#facc15}
 button.purple{background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;border-color:#7c3aed}
 button.danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:white;border-color:#dc2626}
-button:disabled{opacity:.45;cursor:not-allowed}
+button.sky{background:linear-gradient(135deg,#38bdf8,#0284c7);color:white;border-color:#38bdf8}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
 .statLine{
   margin:10px 0;
@@ -313,30 +365,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
   width:50%;
   border-radius:999px;
   background:linear-gradient(90deg,#22c55e,#86efac);
+  transition:width .35s ease;
 }
 
 .statFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
 .statFill.low{background:linear-gradient(90deg,#ef4444,#f97316)}
-
-.eggTraitGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:8px;
-}
-
-.traitBox{
-  padding:10px;
-  background:rgba(255,255,255,.7);
-  border:1px solid rgba(148,163,184,.28);
-  border-radius:16px;
-}
-
-.traitBox b{
-  display:flex;
-  justify-content:space-between;
-  font-size:12px;
-}
 
 .progress{
   height:12px;
@@ -350,6 +383,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   height:100%;
   border-radius:999px;
   background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);
+  transition:width .35s ease;
 }
 
 .tabs{
@@ -381,9 +415,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .actionTile{
   padding:12px;
   border-radius:18px;
-  background:rgba(255,255,255,.72);
+  background:rgba(255,255,255,.74);
   border:1px solid rgba(148,163,184,.32);
   text-align:left;
+  min-height:92px;
 }
 
 .actionTile strong{
@@ -397,6 +432,27 @@ button:disabled{opacity:.45;cursor:not-allowed}
   color:var(--muted);
   font-size:12px;
   line-height:1.28;
+}
+
+.actionTile small{
+  display:block;
+  margin-top:7px;
+  font-size:11px;
+  color:#475569;
+  font-weight:900;
+}
+
+.promptCard{
+  border:1px solid rgba(56,189,248,.38);
+  background:rgba(224,242,254,.72);
+  border-radius:18px;
+  padding:12px;
+  margin-bottom:12px;
+}
+
+.promptCard strong{
+  display:block;
+  margin-bottom:4px;
 }
 
 .item{
@@ -446,6 +502,29 @@ button:disabled{opacity:.45;cursor:not-allowed}
   font-weight:900;
 }
 
+.timeline{
+  margin-top:12px;
+  display:grid;
+  gap:8px;
+}
+
+.timelineStep{
+  padding:9px 10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.70);
+  border:1px solid rgba(148,163,184,.25);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+  font-weight:900;
+}
+
+.timelineStep.now{
+  border-color:#38bdf8;
+  box-shadow:0 0 0 3px rgba(56,189,248,.13);
+}
+
 .log{
   height:130px;
   overflow:auto;
@@ -480,6 +559,54 @@ button:disabled{opacity:.45;cursor:not-allowed}
   bottom:32px;
 }
 
+.hatchOverlay{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle,rgba(255,255,255,.95),rgba(250,204,21,.85) 26%,rgba(37,99,235,.78) 70%);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:98;
+  color:white;
+  text-align:center;
+}
+
+.hatchOverlay.show{
+  display:flex;
+  animation:hatchFlash 2.2s ease forwards;
+}
+
+.hatchBox{
+  background:rgba(15,23,42,.72);
+  border:1px solid rgba(255,255,255,.32);
+  backdrop-filter:blur(14px);
+  border-radius:30px;
+  padding:32px;
+  box-shadow:0 30px 80px rgba(15,23,42,.35);
+}
+
+.hatchBox .big{
+  font-size:96px;
+  animation:hatchPop 1.4s ease infinite;
+}
+
+.hatchBox h1{
+  margin:10px 0 4px;
+}
+
+@keyframes hatchFlash{
+  0%{opacity:0}
+  10%{opacity:1}
+  86%{opacity:1}
+  100%{opacity:0}
+}
+
+@keyframes hatchPop{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.16)}
+}
+
 @media(max-width:1050px){
   body{overflow:auto}
   .wrap{height:auto}
@@ -495,26 +622,30 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <div class="top">
     <div class="brand">
       <h1>Pet World</h1>
-      <span>Raise your account pet, hatch eggs, collect items, and prepare for battles.</span>
+      <span>Raise your account companion through care, personality, time, training, and battles.</span>
     </div>
     <div class="topStats">
       <span id="userBadge" class="badge">👤 Loading</span>
       <span id="coinBadge" class="badge">🪙 0</span>
       <span id="stageBadge" class="badge">🥚 Egg</span>
+      <span id="moodBadge" class="badge">🙂 Calm</span>
     </div>
   </div>
 
   <div class="main">
     <div class="panel">
-      <h2>Profile</h2>
+      <h2>Companion</h2>
       <p id="profileSub" class="muted">Loading pet profile...</p>
 
       <div id="statsBox"></div>
 
+      <h3 style="margin-top:16px">Growth Path</h3>
+      <div id="timeline" class="timeline"></div>
+
       <h3 style="margin-top:16px">Moves</h3>
       <div id="movesBox" class="moves"></div>
 
-      <h3 style="margin-top:16px">Activity</h3>
+      <h3 style="margin-top:16px">Journal</h3>
       <div id="log" class="log"></div>
     </div>
 
@@ -524,10 +655,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
       <div class="petZone">
         <div class="ground"></div>
-        <div class="aura"></div>
-        <div class="petOrb">
+        <div id="aura" class="aura"></div>
+        <div class="petOrb" onclick="comfortPet()">
           <div id="petEmoji" class="petEmoji">🥚</div>
         </div>
+        <div id="floatingFx" class="floatingFx">+1</div>
       </div>
 
       <div id="speech" class="speech">Loading your companion...</div>
@@ -554,6 +686,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
 <div id="toast" class="toast"></div>
 
+<div id="hatchOverlay" class="hatchOverlay">
+  <div class="hatchBox">
+    <div id="hatchEmoji" class="big">🐣</div>
+    <h1 id="hatchTitle">Your egg hatched!</h1>
+    <p id="hatchText">A new companion has joined you.</p>
+  </div>
+</div>
+
 <script>
 var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
@@ -563,6 +703,11 @@ var shop={};
 var moves={};
 var currentTab='care';
 var logs=[];
+var localState={
+  lastComfort:0,
+  lastPromptAt:0,
+  prompt:null
+};
 
 function el(id){return document.getElementById(id);}
 
@@ -586,6 +731,7 @@ function boot(){
   username=getPlayerName();
   el('userBadge').innerText='👤 '+username;
   loadProfile();
+  setInterval(tickLocalPrompt,30000);
 }
 
 async function loadProfile(){
@@ -607,7 +753,7 @@ async function loadProfile(){
     draw();
   }catch(err){
     speak('Server error loading pet profile.');
-    addLog('Error: '+err.message);
+    addLog('Error: '+err.message+' | URL: /api/pet/profile?user='+username);
   }
 }
 
@@ -620,19 +766,35 @@ function draw(){
   var pet=activePet();
   if(!pet)return;
 
+  normalizePet(pet);
+
   var emoji=pet.emoji||'🥚';
   var stage=pet.stage||'egg';
+  var mood=getMood(pet);
 
   el('petEmoji').innerText=emoji;
   el('coinBadge').innerText='🪙 '+Number(profile.money||0);
   el('stageBadge').innerText=(stage==='egg'?'🥚 ':'🐾 ')+stage;
+  el('moodBadge').innerText=mood.icon+' '+mood.label;
   el('renameInput').value=pet.name||'';
-  el('profileSub').innerHTML='<b>'+escapeHtml(pet.name||'Mystery Egg')+'</b><br>'+escapeHtml(stage==='egg'?'Mystery egg':((pet.type||'pet')+' type · Level '+Number((pet.stats&&pet.stats.level)||1)));
 
-  if(stage==='egg'){
-    speak('Your egg reacts to every care choice. Warm, cold, wet, dry, light, and dark will shape what hatches.');
+  el('petEmoji').classList.toggle('eggNearHatch',stage==='egg'&&eggProgress(pet)>=80);
+
+  setAura(pet);
+
+  el('profileSub').innerHTML=
+    '<b>'+escapeHtml(pet.name||'Mystery Egg')+'</b><br>'+
+    escapeHtml(stage==='egg'?'Mystery egg':((pet.type||'pet')+' type · Level '+Number((pet.stats&&pet.stats.level)||1)));
+
+  if(localState.prompt){
+    speak(localState.prompt.text);
+  }else if(stage==='egg'){
+    var prog=eggProgress(pet);
+    if(prog>=80)speak('The egg trembles. Something inside is ready to meet you soon.');
+    else if(prog>=45)speak('The egg responds to your care. Its personality is beginning to form.');
+    else speak('Your egg is listening. Every care choice nudges what it may become.');
   }else{
-    speak((pet.name||'Your pet')+' is ready to grow. Feed, play, train, and prepare for battles.');
+    speak((pet.name||'Your pet')+' watches you closely. Consistent care builds a stronger bond.');
   }
 
   drawStats();
@@ -640,7 +802,52 @@ function draw(){
   drawCare();
   drawItems();
   drawShop();
+  drawTimeline();
   drawLog();
+}
+
+function normalizePet(pet){
+  if(!pet.needs)pet.needs={hunger:80,happiness:70,energy:80,cleanliness:90};
+  if(!pet.stats)pet.stats={level:1,xp:0,hp:20,maxHp:20,attack:5,defense:4,speed:5};
+  if(!pet.eggTraits)pet.eggTraits={warm:0,cold:0,wet:0,dry:0,light:0,dark:0};
+  if(!pet.moves)pet.moves=['tackle'];
+}
+
+function getMood(pet){
+  if(pet.stage==='egg'){
+    var prog=eggProgress(pet);
+    if(prog>=80)return {icon:'✨',label:'Restless'};
+    if(prog>=45)return {icon:'💫',label:'Growing'};
+    return {icon:'😌',label:'Calm'};
+  }
+
+  var n=pet.needs||{};
+  var avg=(Number(n.hunger||0)+Number(n.happiness||0)+Number(n.energy||0)+Number(n.cleanliness||0))/4;
+
+  if(avg>=82)return {icon:'😄',label:'Thriving'};
+  if(avg>=62)return {icon:'🙂',label:'Content'};
+  if(avg>=38)return {icon:'😐',label:'Needy'};
+  return {icon:'😟',label:'Struggling'};
+}
+
+function setAura(pet){
+  var a=el('aura');
+  a.className='aura';
+
+  if(pet.stage==='egg'){
+    var strongest=strongestTrait(pet.eggTraits||{});
+    if(strongest==='warm')a.classList.add('fire');
+    else if(strongest==='cold'||strongest==='wet')a.classList.add('water');
+    else if(strongest==='light')a.classList.add('nature');
+    else if(strongest==='dark')a.classList.add('shadow');
+    else if(strongest==='dry')a.classList.add('earth');
+  }else{
+    if(pet.type==='fire')a.classList.add('fire');
+    else if(pet.type==='water')a.classList.add('water');
+    else if(pet.type==='nature')a.classList.add('nature');
+    else if(pet.type==='shadow')a.classList.add('shadow');
+    else if(pet.type==='earth')a.classList.add('earth');
+  }
 }
 
 function drawStats(){
@@ -650,20 +857,18 @@ function drawStats(){
   if(pet.stage==='egg'){
     var traits=pet.eggTraits||{};
     var total=traitTotal(traits);
-    var pct=Math.min(100,Math.floor(total/18*100));
+    var pct=eggProgress(pet);
 
     html+='<h3>Hatch Progress</h3>';
     html+='<div class="progress"><div class="progressFill" style="width:'+pct+'%"></div></div>';
-    html+='<p class="muted">'+total+' / 18 care points</p>';
+    html+='<p class="muted">'+total+' / 18 care points. Egg phase should feel active and short; later growth becomes long-term.</p>';
 
-    html+='<div class="eggTraitGrid">';
-    html+=traitBox('Warm',traits.warm);
-    html+=traitBox('Cold',traits.cold);
-    html+=traitBox('Wet',traits.wet);
-    html+=traitBox('Dry',traits.dry);
-    html+=traitBox('Light',traits.light);
-    html+=traitBox('Dark',traits.dark);
-    html+='</div>';
+    html+=eggTraitLine('🔥 Warm',traits.warm);
+    html+=eggTraitLine('❄️ Cold',traits.cold);
+    html+=eggTraitLine('💧 Wet',traits.wet);
+    html+=eggTraitLine('🌵 Dry',traits.dry);
+    html+=eggTraitLine('☀️ Light',traits.light);
+    html+=eggTraitLine('🌙 Dark',traits.dark);
   }else{
     html+=statBar('HP',pet.stats.hp,pet.stats.maxHp);
     html+=statBar('Hunger',pet.needs.hunger,100);
@@ -679,9 +884,9 @@ function drawStats(){
   el('statsBox').innerHTML=html;
 }
 
-function traitBox(name,val){
+function eggTraitLine(name,val){
   val=Number(val||0);
-  return '<div class="traitBox"><b><span>'+name+'</span><span>'+val+'</span></b><div class="progress" style="height:8px"><div class="progressFill" style="width:'+Math.min(100,val*8)+'%"></div></div></div>';
+  return '<div class="statLine"><div class="statTop"><span>'+name+'</span><b>'+val+'</b></div><div class="statBar"><div class="statFill" style="width:'+Math.min(100,val*8)+'%"></div></div></div>';
 }
 
 function statBar(name,val,max){
@@ -690,11 +895,7 @@ function statBar(name,val,max){
   var pct=Math.max(0,Math.min(100,Math.floor((val/max)*100)));
   var cls=pct<30?'low':pct<60?'mid':'';
 
-  return ''+
-    '<div class="statLine">'+
-      '<div class="statTop"><span>'+escapeHtml(name)+'</span><b>'+val+'/'+max+'</b></div>'+
-      '<div class="statBar"><div class="statFill '+cls+'" style="width:'+pct+'%"></div></div>'+
-    '</div>';
+  return '<div class="statLine"><div class="statTop"><span>'+escapeHtml(name)+'</span><b>'+val+'/'+max+'</b></div><div class="statBar"><div class="statFill '+cls+'" style="width:'+pct+'%"></div></div></div>';
 }
 
 function drawMoves(){
@@ -711,37 +912,62 @@ function drawMoves(){
   el('movesBox').innerHTML=html;
 }
 
+function drawTimeline(){
+  var pet=activePet();
+  var stage=pet.stage||'egg';
+  var html='';
+
+  var steps=[
+    ['egg','Egg','Hours'],
+    ['baby','Baby','Days to weeks'],
+    ['young','Young','Weeks to months'],
+    ['teen','Teen','Months'],
+    ['adult','Adult','Year-scale goal']
+  ];
+
+  steps.forEach(function(s){
+    html+='<div class="timelineStep '+(s[0]===stage?'now':'')+'"><span>'+s[1]+'</span><span>'+s[2]+'</span></div>';
+  });
+
+  el('timeline').innerHTML=html;
+}
+
 function drawCare(){
   var pet=activePet();
   var html='';
 
   if(pet.stage==='egg'){
     html+='<h2>Egg Care</h2>';
-    html+='<p class="muted">Choose deliberately. The highest traits influence what creature hatches.</p>';
+    html+='<p class="muted">Pick care based on the personality you want. The egg phase is fast and interactive; the pet phase becomes slower and more rewarding.</p>';
+
+    if(localState.prompt){
+      html+='<div class="promptCard"><strong>'+escapeHtml(localState.prompt.title)+'</strong><span class="muted">'+escapeHtml(localState.prompt.help)+'</span></div>';
+    }
+
     html+='<div class="grid2">';
-    html+=careTile('🔥 Warm It','warm','Encourages fiery, bold pets.');
-    html+=careTile('❄️ Cool It','cold','Encourages calm, icy pets.');
-    html+=careTile('💧 Mist It','wet','Encourages water and nature pets.');
-    html+=careTile('🌵 Dry It','dry','Encourages earth and shadow pets.');
-    html+=careTile('☀️ Give Light','light','Encourages bright, brave pets.');
-    html+=careTile('🌙 Shade It','dark','Encourages mysterious pets.');
+    html+=careTile('🔥 Warm It','warm','Fire, boldness, affection.','Good when the egg shivers.');
+    html+=careTile('❄️ Cool It','cold','Water, calm, focus.','Good when the egg feels too hot.');
+    html+=careTile('💧 Mist It','wet','Water, nature, softness.','Good when the shell looks dry.');
+    html+=careTile('🌵 Dry It','dry','Earth, shadow, toughness.','Good when the shell is damp.');
+    html+=careTile('☀️ Give Light','light','Bright, brave, social.','Good when the egg seems sleepy.');
+    html+=careTile('🌙 Shade It','dark','Mysterious, fast, independent.','Good when the egg hides from light.');
     html+='</div>';
   }else{
-    html+='<h2>Care Actions</h2>';
-    html+='<p class="muted">Play earns coins and XP. Items restore needs.</p>';
+    html+='<h2>Daily Care</h2>';
+    html+='<p class="muted">Later this will be daily-limited. For now, use this to test the feel. The goal is fewer, more meaningful actions.</p>';
     html+='<div class="grid2">';
-    html+='<button class="actionTile primary" onclick="playPet()"><strong>🎾 Play</strong><span>+coins, +XP, +happiness, costs energy.</span></button>';
-    html+='<button class="actionTile good" onclick="useItem(\'berry\')"><strong>🍓 Feed Berry</strong><span>Restores hunger.</span></button>';
-    html+='<button class="actionTile" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Restores cleanliness.</span></button>';
-    html+='<button class="actionTile purple" onclick="useItem(\'nap_blanket\')"><strong>💤 Nap</strong><span>Restores energy.</span></button>';
+    html+='<button class="actionTile primary" onclick="playPet()"><strong>🎾 Play</strong><span>Bond, happiness, coins, and XP. Costs energy.</span><small>Best when energy is high.</small></button>';
+    html+='<button class="actionTile good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Restores hunger and builds trust.</span><small>Use when hunger is low.</small></button>';
+    html+='<button class="actionTile sky" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Raises cleanliness and comfort.</span><small>Prevents bad mood later.</small></button>';
+    html+='<button class="actionTile purple" onclick="useItem(\'nap_blanket\')"><strong>💤 Rest</strong><span>Restores energy for training.</span><small>Use before harder tasks.</small></button>';
     html+='</div>';
   }
 
   el('carePanel').innerHTML=html;
 }
 
-function careTile(title,action,desc){
-  return '<button class="actionTile" onclick="careEgg(\''+action+'\')"><strong>'+title+'</strong><span>'+desc+'</span></button>';
+function careTile(title,action,desc,tip){
+  return '<button class="actionTile" onclick="careEgg(\''+action+'\')"><strong>'+title+'</strong><span>'+desc+'</span><small>'+tip+'</small></button>';
 }
 
 function drawItems(){
@@ -766,7 +992,7 @@ function drawItems(){
 }
 
 function drawShop(){
-  var html='<h2>Shop</h2><p class="muted">Buy food, care tools, and comfort items.</p>';
+  var html='<h2>Shop</h2><p class="muted">Buy food, care tools, and comfort items. Later we will add rotating stock and rare items.</p>';
 
   Object.keys(shop).forEach(function(id){
     var item=shop[id];
@@ -803,6 +1029,9 @@ function setTab(tab){
 }
 
 async function careEgg(action){
+  var before=activePet();
+  var beforeStage=before?before.stage:null;
+
   try{
     var res=await fetch('/api/pet/care-egg',{
       method:'POST',
@@ -814,12 +1043,17 @@ async function careEgg(action){
     if(data.error)return notify(data.error);
 
     profile=data.profile;
-    addLog(data.message||'You cared for the egg.');
-    notify(data.message||'Egg cared for.');
+    var pet=activePet();
 
-    if(data.hatched){
-      pulsePet();
-      addLog('A new pet has hatched!');
+    var line=data.message||careMessage(action);
+    addLog(line);
+    notify(line);
+    animateCare(action);
+    localState.prompt=null;
+
+    if(data.hatched||beforeStage==='egg'&&pet.stage!=='egg'){
+      showHatch(pet);
+      addLog('A new companion hatched: '+(pet.name||'New pet')+'!');
     }
 
     draw();
@@ -842,7 +1076,7 @@ async function useItem(itemId){
     profile=data.profile;
     addLog('Used '+itemName(itemId)+'.');
     notify('Used '+itemName(itemId)+'.');
-    pulsePet();
+    animateCare('item');
     draw();
   }catch(err){
     notify('Use item failed: '+err.message);
@@ -863,6 +1097,7 @@ async function buyItem(itemId){
     profile=data.profile;
     addLog('Bought '+itemName(itemId)+'.');
     notify('Bought '+itemName(itemId)+'.');
+    floatFx('🪙');
     draw();
   }catch(err){
     notify('Buy failed: '+err.message);
@@ -881,9 +1116,10 @@ async function playPet(){
     if(data.error)return notify(data.error);
 
     profile=data.profile;
-    addLog('You played together. +coins, +XP, +happiness.');
+    addLog('You played together. Bond, coins, and XP increased.');
     notify('Play complete! +5 coins.');
-    pulsePet();
+    floatFx('+XP');
+    animateCare('play');
     draw();
   }catch(err){
     notify('Play failed: '+err.message);
@@ -905,11 +1141,61 @@ async function renamePet(){
     if(data.error)return notify(data.error);
 
     profile=data.profile;
-    addLog('Renamed pet to '+name+'.');
+    addLog('Renamed companion to '+name+'.');
     notify('Renamed!');
     draw();
   }catch(err){
     notify('Rename failed: '+err.message);
+  }
+}
+
+function comfortPet(){
+  var now=Date.now();
+
+  if(now-localState.lastComfort<3000){
+    animateTap();
+    return;
+  }
+
+  localState.lastComfort=now;
+  animateTap();
+
+  var pet=activePet();
+  if(!pet)return;
+
+  if(pet.stage==='egg'){
+    addLog('You gently comforted the egg.');
+    notify('The egg settled.');
+    speak('The egg gives a tiny wiggle. It seems reassured.');
+    floatFx('♡');
+  }else{
+    addLog('You bonded with '+(pet.name||'your pet')+'.');
+    notify('Bond moment.');
+    speak((pet.name||'Your pet')+' leans into your attention.');
+    floatFx('♡');
+  }
+}
+
+function tickLocalPrompt(){
+  var pet=activePet();
+  if(!pet||pet.stage!=='egg')return;
+
+  if(localState.prompt&&Date.now()-localState.lastPromptAt<120000)return;
+
+  var prompts=[
+    {title:'The egg feels chilly.',help:'Warm care may help.',text:'The egg shivers gently. Maybe it needs warmth.',suggest:'warm'},
+    {title:'The shell feels warm.',help:'Cooling care may help.',text:'The egg feels a little hot. Cooling it may calm it.',suggest:'cold'},
+    {title:'The shell looks dry.',help:'Misting may help.',text:'The shell has a dry shimmer. Moisture may help.',suggest:'wet'},
+    {title:'The shell looks damp.',help:'Drying may help.',text:'Tiny droplets gather on the shell. Dry care may help.',suggest:'dry'},
+    {title:'The egg seems sleepy.',help:'Light may help.',text:'The egg grows quiet. A little light might wake it.',suggest:'light'},
+    {title:'The egg hides from the glow.',help:'Shade may help.',text:'The egg dims its glow. It may want shade.',suggest:'dark'}
+  ];
+
+  if(Math.random()<.55){
+    localState.prompt=prompts[Math.floor(Math.random()*prompts.length)];
+    localState.lastPromptAt=Date.now();
+    addLog(localState.prompt.title);
+    draw();
   }
 }
 
@@ -921,6 +1207,83 @@ function traitTotal(t){
   return Number(t.warm||0)+Number(t.cold||0)+Number(t.wet||0)+Number(t.dry||0)+Number(t.light||0)+Number(t.dark||0);
 }
 
+function eggProgress(pet){
+  return Math.min(100,Math.floor(traitTotal(pet.eggTraits||{})/18*100));
+}
+
+function strongestTrait(t){
+  var best='warm';
+  var bestVal=-1;
+
+  ['warm','cold','wet','dry','light','dark'].forEach(function(k){
+    var v=Number(t[k]||0);
+    if(v>bestVal){
+      best=k;
+      bestVal=v;
+    }
+  });
+
+  return best;
+}
+
+function careMessage(action){
+  var map={
+    warm:'You warmed the egg.',
+    cold:'You cooled the egg.',
+    wet:'You misted the egg.',
+    dry:'You dried the egg.',
+    light:'You gave the egg light.',
+    dark:'You shaded the egg.'
+  };
+  return map[action]||'You cared for the egg.';
+}
+
+function animateCare(action){
+  var p=el('petEmoji');
+  p.classList.remove('carePulse');
+  void p.offsetWidth;
+  p.classList.add('carePulse');
+
+  var icons={
+    warm:'🔥',
+    cold:'❄️',
+    wet:'💧',
+    dry:'🌵',
+    light:'☀️',
+    dark:'🌙',
+    item:'✨',
+    play:'🎾'
+  };
+
+  floatFx(icons[action]||'✨');
+}
+
+function animateTap(){
+  var p=el('petEmoji');
+  p.classList.remove('tapPulse');
+  void p.offsetWidth;
+  p.classList.add('tapPulse');
+}
+
+function floatFx(text){
+  var f=el('floatingFx');
+  f.innerText=text;
+  f.classList.remove('floatingFx');
+  void f.offsetWidth;
+  f.classList.add('floatingFx');
+}
+
+function showHatch(pet){
+  hatchEmoji.innerText=pet.emoji||'🐣';
+  hatchTitle.innerText='Your egg hatched!';
+  hatchText.innerText=(pet.name||'A new companion')+' has joined you.';
+  hatchOverlay.classList.add('show');
+
+  setTimeout(function(){
+    hatchOverlay.classList.remove('show');
+  },2200);
+}
+
 function speak(text){
   el('speech').innerText=text;
 }
@@ -929,13 +1292,6 @@ function addLog(text){
   logs.push(text);
   if(logs.length>80)logs.shift();
   drawLog();
-}
-
-function pulsePet(){
-  var p=el('petEmoji');
-  p.classList.remove('pulse');
-  void p.offsetWidth;
-  p.classList.add('pulse');
 }
 
 function notify(text){
