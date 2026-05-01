@@ -13,14 +13,12 @@ button,select{padding:8px 10px;border-radius:9px;border:1px solid #aaa;cursor:po
 button.primary{background:var(--blue);color:white;border-color:var(--blue);font-weight:bold}
 button.gold{background:var(--gold);border-color:var(--gold);font-weight:bold}
 button:disabled{opacity:.45;cursor:not-allowed}
-
 .table{position:relative;background:radial-gradient(circle,var(--felt),#0e3f2a);border:4px solid #5b3418;border-radius:24px;min-height:0;overflow:hidden}
 .center{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:520px;max-width:45%}
 .status{font-size:22px;font-weight:bold;margin-bottom:8px}
 .pond{height:82px;display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;overflow:hidden}
 .pond .card.pool{margin-left:-16px}
 .pond .card.pool:first-child{margin-left:0}
-
 .card{display:inline-flex;align-items:center;justify-content:center;width:54px;height:76px;background:white;color:#111;border:1px solid #111;border-radius:9px;margin:3px;box-shadow:2px 3px 0 rgba(0,0,0,.35);font-weight:bold;cursor:pointer}
 .card.small{width:30px;height:42px;font-size:11px;margin:1px;border-radius:6px}
 .card.back{background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:white;border-color:#dbeafe}
@@ -28,14 +26,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .card.red{color:#dc2626}
 .card.disabled{opacity:.55;cursor:not-allowed}
 .card.selected{outline:4px solid var(--gold);transform:translateY(-6px)}
-
 .player{position:absolute;background:rgba(0,0,0,.30);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:8px;min-width:170px}
 .player.turn{outline:4px solid var(--gold)}
 .p0{left:50%;bottom:12px;transform:translateX(-50%);width:88%;max-width:1050px}
 .p1{left:12px;top:92px;max-width:270px}
 .p2{left:50%;top:12px;transform:translateX(-50%);min-width:260px}
 .p3{right:12px;top:92px;max-width:270px}
-
 .name{font-weight:bold;font-size:15px}
 .meta{font-size:12px;color:var(--muted)}
 .handArea{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:8px;min-height:116px;overflow:auto;max-height:180px}
@@ -43,7 +39,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .log{height:70px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:12px;padding:8px;font-size:13px;transition:opacity 1s ease}
 .fadeLog{opacity:.12}
 .books{font-size:12px;color:#fde68a;max-height:34px;overflow:auto}
-
 @media(max-width:900px){
   .center{width:300px;max-width:55%;top:43%}
   .status{font-size:16px}
@@ -92,7 +87,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 const GAME_META={id:'gofish',name:'Go Fish',minPlayers:2,maxPlayers:4,seats:4};
 const suits=['S','H','D','C'];
 const suitDisplay={S:'♠',H:'♥',D:'♦',C:'♣'};
-const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'};
 
 let players=[];
 let mySeat=null;
@@ -100,20 +95,24 @@ let state=null;
 let selectedRank='';
 let logFadeTimer=null;
 
+function el(id){return document.getElementById(id);}
+
 window.onerror=function(msg){
-  document.getElementById('status').innerText='Game error: '+msg;
+  el('status').innerText='Game error: '+msg;
 };
 
 function receiveSetup(setupPlayers,setupSeat){
   if(Array.isArray(setupPlayers)&&setupPlayers.length){
-    players=setupPlayers.slice(0,4).map(p=>({seat:p.seat,name:p.name||('Seat '+(p.seat+1))}));
+    players=setupPlayers.slice(0,4).map(function(p){
+      return {seat:p.seat,name:p.name||('Seat '+(p.seat+1))};
+    });
   }
 
   mySeat=setupSeat;
 
-  if(!players.length){
-    players=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];
-    if(mySeat===null||mySeat===undefined)mySeat=0;
+  if(players.length<2){
+    showWaiting();
+    return;
   }
 
   if(!state){
@@ -128,28 +127,41 @@ function receiveSetup(setupPlayers,setupSeat){
   draw();
 }
 
-function init(){
-  receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+function showWaiting(){
+  el('status').innerText='Waiting for players...';
+  el('helpText').innerText='Go Fish needs 2–4 seated players. Join seats, then start the game.';
+  el('playersLayer').innerHTML='';
+  el('pond').innerHTML='';
+  el('deckCount').innerText='';
+  el('targetSelect').innerHTML='';
+  el('rankSelect').innerHTML='';
+  el('askBtn').disabled=true;
+  el('fishBtn').style.display='none';
+  el('log').innerHTML='';
 }
 
 function fresh(){
   let deck=[];
-  suits.forEach(s=>ranks.forEach(r=>deck.push({r,s})));
+  suits.forEach(function(s){
+    ranks.forEach(function(r){
+      deck.push({r:r,s:s});
+    });
+  });
   shuffle(deck);
 
   let hands={};
   let books={};
   let dealCount=players.length<=2?7:5;
 
-  players.forEach(p=>{
+  players.forEach(function(p){
     hands[p.seat]=deck.splice(0,dealCount);
     books[p.seat]=[];
   });
 
   let s={
-    deck,
-    hands,
-    books,
+    deck:deck,
+    hands:hands,
+    books:books,
     turn:players[0]?players[0].seat:0,
     pendingFish:null,
     gameOver:false,
@@ -157,28 +169,34 @@ function fresh(){
     log:['New game started.']
   };
 
-  players.forEach(p=>checkBooks(s,p.seat,false));
+  players.forEach(function(p){checkBooks(s,p.seat,false);});
   return s;
 }
 
 function ensureStateSeats(){
-  players.forEach(p=>{
+  if(!state.hands)state.hands={};
+  if(!state.books)state.books={};
+
+  players.forEach(function(p){
     if(!state.hands[p.seat])state.hands[p.seat]=[];
     if(!state.books[p.seat])state.books[p.seat]=[];
   });
 }
 
 function draw(){
-  if(!state||!players.length)return;
+  if(!state||players.length<2){
+    showWaiting();
+    return;
+  }
 
   let current=name(state.turn);
   let isMyTurn=state.turn===mySeat&&!state.gameOver;
   let mustFish=state.pendingFish&&state.pendingFish.seat===mySeat;
 
-  meLabel.innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
-  status.innerText=state.gameOver?'Game Over — Winner: '+name(state.winner):'Current Turn: '+current;
+  el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+name(mySeat);
+  el('status').innerText=state.gameOver?'Game Over — Winner: '+name(state.winner):'Current Turn: '+current;
 
-  helpText.innerText=state.gameOver
+  el('helpText').innerText=state.gameOver
     ? 'Start a new game to play again.'
     : mustFish
       ? 'Go Fish! Pick a card from the pond.'
@@ -193,13 +211,13 @@ function draw(){
 }
 
 function drawPlayers(){
-  playersLayer.innerHTML='';
+  el('playersLayer').innerHTML='';
 
-  let ordered=[mySeat,...players.map(p=>p.seat).filter(s=>s!==mySeat)];
-  if(mySeat===null||mySeat===undefined)ordered=players.map(p=>p.seat);
+  let ordered=[mySeat].concat(players.map(function(p){return p.seat;}).filter(function(s){return s!==mySeat;}));
+  if(mySeat===null||mySeat===undefined)ordered=players.map(function(p){return p.seat;});
 
-  ordered.forEach((seat,idx)=>{
-    let p=players.find(x=>x.seat===seat);
+  ordered.forEach(function(seat,idx){
+    let p=players.find(function(x){return x.seat===seat;});
     if(!p)return;
 
     let box=document.createElement('div');
@@ -214,58 +232,58 @@ function drawPlayers(){
 
     if(seat===mySeat){
       html+='<div class="handArea">';
-      hand.slice().sort(cardSort).forEach(c=>{
+      hand.slice().sort(cardSort).forEach(function(c){
         html+='<span onclick="selectRank(\''+c.r+'\')" class="card '+(isRed(c.s)?'red ':'')+(selectedRank===c.r?'selected':'')+'">'+c.r+suitDisplay[c.s]+'</span>';
       });
       html+='</div>';
     }else{
       html+='<div>';
-      hand.forEach(()=>html+='<span class="card small back">?</span>');
+      hand.forEach(function(){html+='<span class="card small back">?</span>';});
       html+='</div>';
     }
 
     box.innerHTML=html;
-    playersLayer.appendChild(box);
+    el('playersLayer').appendChild(box);
   });
 }
 
 function drawControls(isMyTurn,mustFish){
-  targetSelect.innerHTML='';
-  rankSelect.innerHTML='';
+  el('targetSelect').innerHTML='';
+  el('rankSelect').innerHTML='';
 
   players
-    .filter(p=>p.seat!==mySeat&&(state.hands[p.seat]||[]).length>0)
-    .forEach(p=>{
+    .filter(function(p){return p.seat!==mySeat&&(state.hands[p.seat]||[]).length>0;})
+    .forEach(function(p){
       let o=document.createElement('option');
       o.value=p.seat;
       o.textContent=p.name;
-      targetSelect.appendChild(o);
+      el('targetSelect').appendChild(o);
     });
 
-  let myRanks=[...new Set((state.hands[mySeat]||[]).map(c=>c.r))]
-    .sort((a,b)=>ranks.indexOf(a)-ranks.indexOf(b));
+  let myRanks=[...new Set((state.hands[mySeat]||[]).map(function(c){return c.r;}))]
+    .sort(function(a,b){return ranks.indexOf(a)-ranks.indexOf(b);});
 
   if(selectedRank&&!myRanks.includes(selectedRank)){
     selectedRank=myRanks[0]||'';
   }
 
-  myRanks.forEach(r=>{
+  myRanks.forEach(function(r){
     let o=document.createElement('option');
     o.value=r;
     o.textContent=r;
     if(r===selectedRank)o.selected=true;
-    rankSelect.appendChild(o);
+    el('rankSelect').appendChild(o);
   });
 
-  askBtn.disabled=!isMyTurn||mustFish||!myRanks.length||!targetSelect.options.length;
-  targetSelect.disabled=askBtn.disabled;
-  rankSelect.disabled=askBtn.disabled;
-
-  fishBtn.style.display=mustFish?'inline-block':'none';
+  let disabled=!isMyTurn||mustFish||!myRanks.length||!el('targetSelect').options.length;
+  el('askBtn').disabled=disabled;
+  el('targetSelect').disabled=disabled;
+  el('rankSelect').disabled=disabled;
+  el('fishBtn').style.display=mustFish?'inline-block':'none';
 }
 
 function drawPond(canFish){
-  pond.innerHTML='';
+  el('pond').innerHTML='';
 
   let shown=Math.min(16,state.deck.length);
 
@@ -273,48 +291,48 @@ function drawPond(canFish){
     let c=document.createElement('span');
     c.className='card pool '+(canFish?'':'disabled');
     c.innerText='?';
-    c.onclick=()=>{if(canFish)fish();};
-    pond.appendChild(c);
+    c.onclick=function(){if(canFish)fish();};
+    el('pond').appendChild(c);
   }
 
   if(!shown){
-    pond.innerHTML='<span class="meta">Pond is empty</span>';
+    el('pond').innerHTML='<span class="meta">Pond is empty</span>';
   }
 
-  deckCount.innerText=state.deck.length+' cards left in pond';
+  el('deckCount').innerText=state.deck.length+' cards left in pond';
 }
 
 function drawLog(){
-  log.classList.remove('fadeLog');
-  log.innerHTML=state.log.slice(-8).map(x=>'• '+escapeHtml(x)).join('<br>');
-  log.scrollTop=log.scrollHeight;
+  el('log').classList.remove('fadeLog');
+  el('log').innerHTML=state.log.slice(-8).map(function(x){return '• '+escapeHtml(x);}).join('<br>');
+  el('log').scrollTop=el('log').scrollHeight;
 
   clearTimeout(logFadeTimer);
-  logFadeTimer=setTimeout(()=>{
-    log.classList.add('fadeLog');
+  logFadeTimer=setTimeout(function(){
+    el('log').classList.add('fadeLog');
   },2000);
 }
 
 function selectRank(rank){
   selectedRank=rank;
-  if(rankSelect)rankSelect.value=rank;
+  if(el('rankSelect'))el('rankSelect').value=rank;
   draw();
 }
 
 function ask(){
   if(state.gameOver||state.turn!==mySeat||state.pendingFish)return;
 
-  let target=Number(targetSelect.value);
-  let rank=selectedRank||rankSelect.value;
+  let target=Number(el('targetSelect').value);
+  let rank=selectedRank||el('rankSelect').value;
 
   if(!rank||Number.isNaN(target))return;
 
   add(name(mySeat)+' asks '+name(target)+' for '+rank+'s.');
 
-  let matches=(state.hands[target]||[]).filter(c=>c.r===rank);
+  let matches=(state.hands[target]||[]).filter(function(c){return c.r===rank;});
 
   if(matches.length){
-    state.hands[target]=state.hands[target].filter(c=>c.r!==rank);
+    state.hands[target]=state.hands[target].filter(function(c){return c.r!==rank;});
     state.hands[mySeat]=state.hands[mySeat].concat(matches);
     add(name(target)+' gives '+matches.length+' card(s). '+name(mySeat)+' goes again.');
     checkBooks(state,mySeat,true);
@@ -322,7 +340,7 @@ function ask(){
     checkBooks(state,mySeat,true);
   }else{
     add(name(target)+' says: Go Fish!');
-    state.pendingFish={seat:mySeat,rank};
+    state.pendingFish={seat:mySeat,rank:rank};
   }
 
   checkGameOver();
@@ -373,7 +391,7 @@ function refillIfEmpty(seat){
 }
 
 function nextTurn(){
-  let i=players.findIndex(p=>p.seat===state.turn);
+  let i=players.findIndex(function(p){return p.seat===state.turn;});
 
   for(let step=1;step<=players.length;step++){
     let next=players[(i+step)%players.length];
@@ -388,13 +406,13 @@ function checkBooks(s,seat,announce){
   let hand=s.hands[seat]||[];
   let counts={};
 
-  hand.forEach(c=>counts[c.r]=(counts[c.r]||0)+1);
+  hand.forEach(function(c){counts[c.r]=(counts[c.r]||0)+1;});
 
-  ranks.forEach(r=>{
+  ranks.forEach(function(r){
     while(counts[r]>=2){
       let removed=0;
 
-      s.hands[seat]=s.hands[seat].filter(c=>{
+      s.hands[seat]=s.hands[seat].filter(function(c){
         if(c.r===r&&removed<2){
           removed++;
           return false;
@@ -411,14 +429,14 @@ function checkBooks(s,seat,announce){
 }
 
 function checkGameOver(){
-  let totalBooks=players.reduce((n,p)=>n+(state.books[p.seat]||[]).length,0);
-  let cardsLeft=state.deck.length+players.reduce((n,p)=>n+(state.hands[p.seat]||[]).length,0);
+  let totalBooks=players.reduce(function(n,p){return n+(state.books[p.seat]||[]).length;},0);
+  let cardsLeft=state.deck.length+players.reduce(function(n,p){return n+(state.hands[p.seat]||[]).length;},0);
 
   if(totalBooks>=26||cardsLeft===0){
     state.gameOver=true;
 
     let best=players[0].seat;
-    players.forEach(p=>{
+    players.forEach(function(p){
       if((state.books[p.seat]||[]).length>(state.books[best]||[]).length)best=p.seat;
     });
 
@@ -428,6 +446,11 @@ function checkGameOver(){
 }
 
 function newGame(sendIt){
+  if(players.length<2){
+    showWaiting();
+    return;
+  }
+
   state=fresh();
 
   let hand=state.hands[mySeat]||[];
@@ -438,7 +461,7 @@ function newGame(sendIt){
 }
 
 function sync(){
-  window.sendMove({type:'state',state});
+  window.sendMove({type:'state',state:state});
 }
 
 window.sendMove=function(data){
@@ -458,7 +481,7 @@ window.onMove=function(data){
     ensureStateSeats();
 
     let hand=state.hands[mySeat]||[];
-    if(selectedRank&&!hand.some(c=>c.r===selectedRank)){
+    if(selectedRank&&!hand.some(function(c){return c.r===selectedRank;})){
       selectedRank=hand.length?hand[0].r:'';
     }
 
@@ -473,7 +496,7 @@ window.addEventListener('message',function(event){
 });
 
 function name(seat){
-  let p=players.find(x=>x.seat===seat);
+  let p=players.find(function(x){return x.seat===seat;});
   return p?p.name:'Seat '+(Number(seat)+1);
 }
 
@@ -486,7 +509,9 @@ function shuffle(a){
   for(let pass=0;pass<3;pass++){
     for(let i=a.length-1;i>0;i--){
       let j=Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
+      let temp=a[i];
+      a[i]=a[j];
+      a[j]=temp;
     }
   }
 }
@@ -500,16 +525,25 @@ function isRed(s){
 }
 
 function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function init(){
+  showWaiting();
+  receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+
+  setTimeout(function(){
+    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+
+    if(el('status').innerText==='Loading players...'){
+      showWaiting();
+    }
+  },350);
 }
 
 init();
-
-setTimeout(function(){
-  if((!players||!players.length)&&window.GAME_PLAYERS){
-    receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT);
-  }
-},150);
 </script>
 </body>
 </html>
