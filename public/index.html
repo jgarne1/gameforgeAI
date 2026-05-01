@@ -8,63 +8,112 @@
   --bg:#0f172a;
   --panel:#1e293b;
   --panel2:#111827;
+  --panel3:#020617;
   --line:#334155;
   --blue:#3b82f6;
+  --blue2:#2563eb;
   --accent:#38bdf8;
+  --green:#16a34a;
+  --red:#dc2626;
+  --gold:#facc15;
   --text:#e5e7eb;
   --muted:#94a3b8;
+  --cardShadow:0 18px 45px rgba(0,0,0,.25);
 }
 
-/* ===== BASE ===== */
 *{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#020617,#0f172a);
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(56,189,248,.16),transparent 34%),
+    radial-gradient(circle at bottom right,rgba(250,204,21,.08),transparent 30%),
+    linear-gradient(135deg,#020617,#0f172a);
   color:var(--text);
 }
 
-/* ===== LAYOUT ===== */
 .wrap{
   display:grid;
-  grid-template-columns:220px 1fr 340px;
+  grid-template-columns:230px minmax(0,1fr)350px;
   min-height:100vh;
 }
 
-/* ===== LEFT NAV ===== */
+/* ===== LEFT RPG NAV ===== */
 .nav{
-  background:var(--panel2);
+  background:rgba(2,6,23,.96);
   border-right:2px solid var(--line);
-  padding:12px;
+  padding:14px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:auto;
 }
 
-.nav h2{
-  margin:6px 0 12px;
-  font-size:20px;
+.navBrand{
+  padding:8px 8px 14px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:12px;
+}
+
+.navBrand h1{
+  margin:0;
+  font-size:25px;
+  letter-spacing:-1px;
+}
+
+.navBrand span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
 }
 
 .nav button{
   width:100%;
   margin:6px 0;
-  padding:10px;
-  border-radius:10px;
+  padding:11px 12px;
+  border-radius:13px;
   border:1px solid var(--line);
-  background:#020617;
+  background:rgba(15,23,42,.88);
   color:var(--text);
   cursor:pointer;
+  text-align:left;
+  font-weight:800;
+  transition:.15s ease;
 }
 
 .nav button:hover{
+  transform:translateY(-1px);
   background:#1e293b;
+  box-shadow:0 6px 16px rgba(0,0,0,.22);
 }
 
 .nav button.active{
-  background:var(--blue);
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border-color:#60a5fa;
+  color:#fff;
+}
+
+.nav button.hidden{
+  display:none;
+}
+
+.navUser{
+  margin-top:14px;
+  padding:10px;
+  background:rgba(15,23,42,.9);
+  border:1px solid var(--line);
+  border-radius:14px;
+  color:var(--muted);
+  font-size:12px;
 }
 
 /* ===== MAIN ===== */
 .main{
   padding:16px;
+  min-width:0;
 }
 
 .section{
@@ -75,163 +124,716 @@ body{
   display:block;
 }
 
-/* ===== RIGHT PANEL ===== */
-.side{
-  background:var(--panel);
-  border-left:2px solid var(--line);
-  padding:12px;
-}
-
-/* ===== CARDS ===== */
-.card{
-  background:#020617;
+.hero{
+  background:
+    radial-gradient(circle at 18% 18%,rgba(56,189,248,.18),transparent 30%),
+    linear-gradient(135deg,rgba(30,41,59,.98),rgba(15,23,42,.98));
   border:1px solid var(--line);
-  border-radius:14px;
-  padding:12px;
-  margin-bottom:12px;
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:var(--cardShadow);
 }
 
-/* ===== CHAT ===== */
+.hero h2{
+  margin:0;
+  font-size:30px;
+  letter-spacing:-1px;
+}
+
+.hero p{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.card{
+  background:rgba(2,6,23,.84);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+
+.card h3{
+  margin:0 0 9px;
+}
+
+.card h2{
+  margin:0 0 10px;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.35;
+}
+
+.row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+button,input,select{
+  padding:9px 11px;
+  margin:3px;
+  border-radius:11px;
+  border:1px solid #475569;
+  font-size:14px;
+}
+
+input,select{
+  background:#020617;
+  color:var(--text);
+}
+
+button{
+  cursor:pointer;
+  background:#0f172a;
+  color:var(--text);
+  transition:.15s ease;
+  font-weight:800;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,.22);
+}
+
+button.primary{
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  color:white;
+  border-color:#60a5fa;
+}
+
+button.good{
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  color:white;
+  border-color:#22c55e;
+}
+
+button.danger{
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  color:white;
+  border-color:#ef4444;
+}
+
+button.gold{
+  background:linear-gradient(135deg,#facc15,#f59e0b);
+  color:#111827;
+  border-color:#facc15;
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.pill,.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#1e293b;
+  border:1px solid #475569;
+  color:#cbd5e1;
+  font-size:12px;
+  font-weight:900;
+}
+
+.hidden{
+  display:none!important;
+}
+
+/* ===== ACCOUNT ===== */
+.accountBox{
+  max-width:760px;
+}
+
+#loggedInControls{
+  align-items:center;
+}
+
+/* ===== PLAY PAGE ===== */
+.playLayout{
+  display:grid;
+  grid-template-columns:360px minmax(0,1fr);
+  gap:12px;
+  align-items:start;
+}
+
+.gameBtn{
+  display:block;
+  width:100%;
+  text-align:left;
+  margin:7px 0;
+  padding:13px;
+  border-radius:15px;
+  background:#0f172a;
+  border:1px solid #475569;
+  color:var(--text);
+}
+
+.gameBtn:hover{
+  background:#1e293b;
+}
+
+.gameBtn.selected{
+  background:linear-gradient(135deg,#1d4ed8,#2563eb)!important;
+  border-color:#60a5fa!important;
+  color:white;
+}
+
+.seat{
+  display:inline-block;
+  border:1px solid #475569;
+  border-radius:15px;
+  padding:12px;
+  margin:6px;
+  background:#0f172a;
+  min-width:145px;
+  text-align:center;
+}
+
+.seat.filled{
+  background:rgba(22,163,74,.18);
+  border-color:#22c55e;
+}
+
+.seat.empty{
+  background:#0f172a;
+}
+
+.owner{
+  font-weight:bold;
+  color:#facc15;
+}
+
+.notice{
+  background:rgba(56,189,248,.10);
+  border:1px solid rgba(56,189,248,.42);
+  border-radius:13px;
+  padding:10px;
+  color:#bae6fd;
+}
+
+.locked{color:#fbbf24}
+.public{color:#86efac}
+
+/* ===== GAME AREA ===== */
+iframe{
+  width:100%;
+  height:82vh;
+  min-height:650px;
+  max-height:900px;
+  border:3px solid #020617;
+  border-radius:18px;
+  background:#fff;
+}
+
+#gameArea{
+  margin-top:12px;
+}
+
+/* ===== RIGHT SIDE ===== */
+.side{
+  background:rgba(30,41,59,.94);
+  border-left:2px solid var(--line);
+  padding:14px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:auto;
+}
+
+.sideCard{
+  background:rgba(2,6,23,.72);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:13px;
+  margin-bottom:12px;
+  box-shadow:0 8px 22px rgba(0,0,0,.16);
+}
+
+.sidebarTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.sidebarTitle h3{
+  margin:4px 0;
+}
+
+.userItem{
+  border-bottom:1px solid #334155;
+  padding:9px;
+  border-radius:11px;
+}
+
+.userItem.clickable{
+  cursor:pointer;
+}
+
+.userItem.clickable:hover{
+  background:#1e293b;
+}
+
+.roomBadge{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.45;
+}
+
 .chatBox{
-  height:220px;
+  height:260px;
   overflow:auto;
   background:#020617;
-  border:1px solid var(--line);
-  padding:6px;
+  border:1px solid #334155;
+  padding:8px;
+  text-align:left;
+  border-radius:13px;
+  font-size:13px;
 }
 
 .chatInput{
   display:flex;
   gap:6px;
-  margin-top:6px;
+  margin-top:8px;
 }
 
-/* ===== GAME ===== */
-iframe{
-  width:100%;
-  height:80vh;
-  border:2px solid #000;
-  border-radius:10px;
+.chatInput input{
+  flex:1;
+  min-width:0;
 }
 
-/* ===== SMALL ===== */
-.muted{
-  color:var(--muted);
+.chatToggle{
+  padding:5px 8px;
   font-size:12px;
+  border-radius:999px;
+}
+
+/* ===== PET PANEL ===== */
+.petMini{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.petAvatar{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#1e293b,#0f172a);
+  border:1px solid #475569;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+}
+
+.petName{
+  font-weight:900;
+  font-size:17px;
+}
+
+.petSub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.petCoins{
+  margin-top:4px;
+  font-weight:900;
+  color:#facc15;
+}
+
+.statLine{
+  margin:8px 0;
+}
+
+.statTop{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:#cbd5e1;
+  margin-bottom:3px;
+}
+
+.statBar{
+  height:9px;
+  background:#334155;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.statFill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22c55e,#4ade80);
+}
+
+.eggTraits{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  font-size:12px;
+  color:#cbd5e1;
+  margin:8px 0;
+}
+
+.petActions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+
+.petActions button{
+  flex:1;
+  min-width:76px;
+  padding:8px;
+  font-size:12px;
+}
+
+.itemCard{
+  border:1px solid #334155;
+  background:#020617;
+  border-radius:14px;
+  padding:10px;
+  margin:8px 0;
+}
+
+/* ===== CHAT NEW MESSAGE NOTICE ===== */
+#roomChatPanel.chatUnread{
+  animation:chatBluePulse 2.4s ease-in-out infinite;
+  border-color:#38bdf8!important;
+}
+
+#chatUnreadDot{
+  display:none;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:#38bdf8;
+  box-shadow:0 0 12px #38bdf8;
+}
+
+#roomChatPanel.chatUnread #chatUnreadDot{
+  display:inline-block;
+}
+
+@keyframes chatBluePulse{
+  0%{box-shadow:0 10px 30px rgba(15,23,42,.18),0 0 0 rgba(56,189,248,0)}
+  50%{box-shadow:0 14px 38px rgba(15,23,42,.25),0 0 22px rgba(56,189,248,.55)}
+  100%{box-shadow:0 10px 30px rgba(15,23,42,.18),0 0 0 rgba(56,189,248,0)}
+}
+
+/* ===== GAME MODE ===== */
+body.gameMode .wrap{
+  grid-template-columns:1fr;
+}
+
+body.gameMode .nav{
+  display:none;
+}
+
+body.gameMode .main{
+  width:100%;
+  padding:10px;
+}
+
+body.gameMode .side{
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  top:auto;
+  width:350px;
+  height:auto;
+  max-height:70vh;
+  background:transparent;
+  border:0;
+  padding:0;
+  z-index:999;
+  overflow:visible;
+  pointer-events:none;
+}
+
+body.gameMode .side .sideCard{
+  display:none;
+}
+
+body.gameMode .side #roomChatPanel{
+  display:block!important;
+  pointer-events:auto;
+  background:rgba(2,6,23,.94);
+  border:2px solid #334155;
+  box-shadow:0 18px 45px rgba(0,0,0,.45);
+}
+
+body.gameMode iframe{
+  height:92vh;
+  max-height:none;
+  border-radius:20px;
+}
+
+body.gameMode #gameArea{
+  margin-top:0;
+}
+
+body.gameMode .section:not(#play){
+  display:none!important;
+}
+
+body.gameMode #play{
+  display:block!important;
+}
+
+body.gameMode #playTop{
+  display:none;
+}
+
+body.gameMode #roomSetupCard{
+  display:none;
+}
+
+body.gameMode #gameArea h2,
+body.gameMode #gameHint{
+  display:none;
+}
+
+body.gameMode #roomChatPanel.chatCollapsed{
+  width:auto;
+  padding:8px 10px;
+}
+
+body.gameMode #roomChatPanel.chatCollapsed .chatBox,
+body.gameMode #roomChatPanel.chatCollapsed .chatInput{
+  display:none;
+}
+
+@media(max-width:1050px){
+  .wrap{
+    grid-template-columns:1fr;
+  }
+
+  .nav{
+    position:static;
+    height:auto;
+    border-right:0;
+    border-bottom:2px solid var(--line);
+  }
+
+  .side{
+    position:static;
+    height:auto;
+    border-left:0;
+    border-top:2px solid var(--line);
+  }
+
+  .playLayout,.grid2{
+    grid-template-columns:1fr;
+  }
+
+  body.gameMode .side{
+    left:10px;
+    right:10px;
+    bottom:10px;
+    width:auto;
+    max-height:55vh;
+  }
+
+  body.gameMode .chatBox{
+    height:190px;
+  }
 }
 </style>
 </head>
 
 <body>
-
 <div class="wrap">
 
-  <!-- ===== LEFT NAV ===== -->
   <div class="nav">
-    <h2>GameForge</h2>
+    <div class="navBrand">
+      <h1>GameForge</h1>
+      <span>Games, rooms, pets, inventory, and battles.</span>
+    </div>
 
-    <button onclick="showSection('home')" class="active">🏠 Home</button>
-    <button onclick="showSection('rooms')">🎲 Rooms</button>
-    <button onclick="showSection('games')">🕹 Games</button>
-    <button onclick="showSection('pet')">🐾 Pet</button>
-    <button onclick="showSection('shop')">🛒 Shop</button>
-    <button onclick="showSection('inventory')">🎒 Inventory</button>
+    <button onclick="showSection('home')" id="navHome" class="active">🏠 Home</button>
+    <button onclick="showSection('play')" id="navPlay">🎮 Play</button>
+    <button onclick="showSection('pet')" id="navPet">🐾 Pet</button>
+    <button onclick="showSection('shop')" id="navShop">🛒 Shop</button>
+    <button onclick="showSection('inventory')" id="navInventory">🎒 Inventory</button>
+    <button onclick="openAdmin()" id="navAdmin" class="hidden">🛡 Admin</button>
+
+    <div class="navUser" id="navUserBox">
+      Not logged in
+    </div>
   </div>
 
-  <!-- ===== MAIN CONTENT ===== -->
   <div class="main">
 
-    <!-- HOME -->
     <div id="home" class="section active">
+      <div class="hero">
+        <h2>Welcome to GameForge</h2>
+        <p>Your multiplayer game hub with rooms, chat, pets, items, and account progression.</p>
+      </div>
+
+      <div class="grid2">
+        <div class="card accountBox" id="auth">
+          <h3>Account</h3>
+
+          <div class="row" id="loginControls">
+            <input id="user" placeholder="username">
+            <input id="pass" type="password" placeholder="password">
+            <button onclick="register()">Create Account</button>
+            <button onclick="login()" class="primary">Login</button>
+          </div>
+
+          <div class="row hidden" id="loggedInControls">
+            <span id="loggedInLabel" class="pill"></span>
+            <button onclick="logout()">Logout</button>
+          </div>
+
+          <p id="authStatus" class="muted"></p>
+        </div>
+
+        <div class="card">
+          <h3>Your Companion</h3>
+          <div id="homePet"><p class="muted">Log in to load your pet.</p></div>
+        </div>
+      </div>
+
       <div class="card">
-        <h3>Welcome</h3>
-        <p class="muted">Your dashboard hub</p>
-        <div id="homePet"></div>
+        <h3>Start Playing</h3>
+        <p class="muted">Create a room, select a game, sit at the table, then start.</p>
+        <button class="primary" onclick="showSection('play')">Go to Play</button>
       </div>
     </div>
 
-    <!-- ROOMS -->
-    <div id="rooms" class="section">
-      <div class="card">
-        <h3>Create / Join Room</h3>
-        <input id="roomCode" placeholder="code">
-        <button onclick="createRoom()">Create</button>
-        <button onclick="joinRoom()">Join</button>
-        <button onclick="leaveRoom()">Leave</button>
-        <p>Room: <b id="roomLabel">None</b></p>
+    <div id="play" class="section">
+      <div class="hero" id="playTop">
+        <h2>Play</h2>
+        <p>Create or join a room, choose a game, sit, and launch — all in one place.</p>
       </div>
 
-      <div class="card" id="roomPanel"></div>
-    </div>
+      <div class="playLayout" id="roomSetupCard">
+        <div class="card">
+          <h3>Create or Join Room</h3>
+          <p class="muted">Public rooms can be joined from the right user panel. Private rooms require the code.</p>
 
-    <!-- GAMES -->
-    <div id="games" class="section">
-      <div class="card">
-        <h3>Games</h3>
-        <div id="gameList"></div>
+          <div class="row">
+            <label><input type="checkbox" id="privateRoom"> Private 🔒</label>
+            <button onclick="createRoom()" class="primary">Create Room</button>
+          </div>
+
+          <div class="row">
+            <input id="roomCode" placeholder="room code">
+            <button onclick="joinRoom()">Join</button>
+            <button onclick="leaveRoom()">Leave</button>
+          </div>
+
+          <p>Current room: <b id="roomLabel">None</b> <span id="roomPrivacy"></span></p>
+
+          <hr style="border-color:#334155">
+
+          <h3>Choose Game</h3>
+          <div id="gameList"></div>
+        </div>
+
+        <div class="card">
+          <h3>Room Table</h3>
+          <div id="roomHelp" class="notice">Create or join a room first.</div>
+          <div id="roomPeople" class="muted" style="margin-top:8px"></div>
+          <div id="ownerControls"></div>
+
+          <div id="tableArea">
+            <h3>Seats</h3>
+            <div id="seats"><i class="muted">Select a game to create seats.</i></div>
+            <button id="startBtn" class="good" onclick="startGame()">Start Game</button>
+            <p id="startHint" class="muted"></p>
+          </div>
+        </div>
+      </div>
+
+      <div id="gameArea" class="card hidden">
+        <h2>Game Area</h2>
+        <p id="gameHint" class="muted">The started game appears here for seated players.</p>
+        <iframe id="gameFrame" sandbox="allow-scripts"></iframe>
       </div>
     </div>
 
-    <!-- PET -->
     <div id="pet" class="section">
+      <div class="hero">
+        <h2>My Pet</h2>
+        <p>Your account companion. Care, grow, train, and prepare for battles.</p>
+      </div>
       <div class="card">
-        <h3>Your Pet</h3>
-        <div id="petPanel"></div>
+        <div id="petPanel"><p class="muted">Log in to load your pet.</p></div>
       </div>
     </div>
 
-    <!-- SHOP -->
     <div id="shop" class="section">
-      <div class="card">
-        <h3>Shop</h3>
-        <div id="shopPanel"></div>
+      <div class="hero">
+        <h2>Shop</h2>
+        <p>Buy food, care tools, and training items.</p>
       </div>
+      <div id="shopPanel" class="card"><p class="muted">Log in to load the shop.</p></div>
     </div>
 
-    <!-- INVENTORY -->
     <div id="inventory" class="section">
-      <div class="card">
-        <h3>Inventory</h3>
-        <div id="inventoryPanel"></div>
+      <div class="hero">
+        <h2>Inventory</h2>
+        <p>Your account items and pet supplies.</p>
       </div>
-    </div>
-
-    <!-- GAME AREA -->
-    <div id="gameArea" class="card" style="display:none">
-      <h3>Game</h3>
-      <iframe id="gameFrame"></iframe>
+      <div id="inventoryPanel" class="card"><p class="muted">Log in to load inventory.</p></div>
     </div>
 
   </div>
 
-  <!-- ===== RIGHT PANEL ===== -->
   <div class="side">
-
-    <div class="card">
-      <h3>Users</h3>
+    <div class="sideCard" id="presencePanel">
+      <div class="sidebarTitle">
+        <h3>Online Users</h3>
+      </div>
+      <p class="muted">Click a user in a public room to join them.</p>
       <div id="presence"></div>
     </div>
 
-    <div class="card">
-      <h3>Chat</h3>
-      <div id="chat" class="chatBox"></div>
+    <div class="sideCard hidden" id="roomChatPanel">
+      <div class="sidebarTitle">
+        <h3>Room Chat <span id="chatUnreadDot"></span></h3>
+        <span id="chatRoomLabel" class="pill"></span>
+        <button class="chatToggle" onclick="toggleOverlayChat()">Hide</button>
+      </div>
+      <div class="chatBox" id="chat"></div>
       <div class="chatInput">
-        <input id="chatText">
-        <button onclick="sendChat()">Send</button>
+        <input id="chatText" placeholder="message">
+        <button onclick="sendChat()" class="primary">Send</button>
       </div>
     </div>
-
   </div>
 
 </div>
 <script>
-let me=localStorage.getItem('gf_user')||prompt('Username?')||'Guest';
-localStorage.setItem('gf_user',me);
-
+let me=localStorage.getItem('gf_user')||'';
+let admin=localStorage.getItem('gf_admin')==='true';
 let socket=null;
+let currentRoom=null;
 let room=null;
-let gamesData=[];
+let games=[];
 let loadedGameKey='';
+let overlayChatCollapsed=false;
+let lastChatCount=0;
 let petProfile=null;
 let petShop={};
 let petMoves={};
@@ -240,17 +842,122 @@ function showSection(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
 
-  document.getElementById(id).classList.add('active');
+  let sec=document.getElementById(id);
+  if(sec)sec.classList.add('active');
 
-  let buttons=document.querySelectorAll('.nav button');
-  buttons.forEach(b=>{
-    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'")){
-      b.classList.add('active');
-    }
-  });
+  let map={
+    home:'navHome',
+    play:'navPlay',
+    pet:'navPet',
+    shop:'navShop',
+    inventory:'navInventory'
+  };
+
+  if(map[id]&&document.getElementById(map[id])){
+    document.getElementById(map[id]).classList.add('active');
+  }
 }
 
+function openAdmin(){
+  if(!admin)return;
+  window.open('/admin','_blank');
+}
+
+function drawAuth(){
+  if(me){
+    loginControls.classList.add('hidden');
+    loggedInControls.classList.remove('hidden');
+    loggedInLabel.innerText='Logged in as '+me;
+    authStatus.innerText='';
+    navUserBox.innerHTML='<b>'+escapeHtml(me)+'</b><br><span>'+(admin?'Admin':'Player')+'</span>';
+
+    if(admin){
+      navAdmin.classList.remove('hidden');
+    }else{
+      navAdmin.classList.add('hidden');
+    }
+  }else{
+    loginControls.classList.remove('hidden');
+    loggedInControls.classList.add('hidden');
+    loggedInLabel.innerText='';
+    authStatus.innerText='Log in to use pets, inventory, rooms, and multiplayer.';
+    navUserBox.innerText='Not logged in';
+    navAdmin.classList.add('hidden');
+  }
+}
+
+async function register(){
+  let username=user.value.trim();
+  let password=pass.value;
+
+  if(!username||!password)return alert('Enter username and password.');
+
+  let r=await fetch('/api/register',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:username,password:password})
+  });
+
+  let d=await r.json();
+  if(d.error)return alert(d.error);
+
+  setLogin(d);
+}
+
+async function login(){
+  let username=user.value.trim();
+  let password=pass.value;
+
+  if(!username||!password)return alert('Enter username and password.');
+
+  let r=await fetch('/api/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:username,password:password})
+  });
+
+  let d=await r.json();
+  if(d.error)return alert(d.error);
+
+  setLogin(d);
+}
+
+function setLogin(d){
+  me=d.user.username;
+  admin=!!d.admin;
+
+  localStorage.setItem('gf_user',me);
+  localStorage.setItem('gf_admin',admin);
+
+  drawAuth();
+  connect();
+  loadPet();
+
+  setTimeout(()=>socket&&socket.send(JSON.stringify({type:'hello',username:me})),200);
+}
+
+function logout(){
+  me='';
+  admin=false;
+  petProfile=null;
+  petShop={};
+  petMoves={};
+
+  localStorage.removeItem('gf_user');
+  localStorage.removeItem('gf_admin');
+
+  drawAuth();
+  drawPet();
+  drawShop();
+  drawInventory();
+
+  if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
+}
+
+/* ===== WEBSOCKET / ROOM LOGIC ===== */
+
 function connect(){
+  if(!me)return;
   if(socket&&socket.readyState===1)return;
 
   socket=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);
@@ -266,83 +973,81 @@ function connect(){
 
     if(m.type==='roomJoined'||m.type==='roomUpdate'){
       room=m.room;
+      currentRoom=room.id;
       drawRoom();
-      if(m.scroll==='game')showSection('games');
+      if(m.scroll==='table'||m.scroll==='game')showSection('play');
     }
 
-    if(m.type==='chat')drawChat(m.chat||[]);
+    if(m.type==='chat')drawChat(m.chat||[],true);
 
     if(m.type==='roomClosed'){
       alert('Room closed');
       room=null;
+      currentRoom=null;
       loadedGameKey='';
-      gameArea.style.display='none';
+      document.body.classList.remove('gameMode');
       drawRoom();
     }
 
     if(m.type==='gameMove'){
-      if(gameFrame&&gameFrame.contentWindow){
-        gameFrame.contentWindow.postMessage({
+      let f=document.getElementById('gameFrame');
+      if(f&&f.contentWindow){
+        f.contentWindow.postMessage({
           type:'gameMove',
           data:m.data
         },'*');
       }
     }
 
-    if(m.type==='error'){
-      alert(m.message||m.error||'Error');
-    }
+    if(m.type==='error')alert(m.message||m.error||'Error');
+  };
+
+  socket.onclose=function(){
+    socket=null;
   };
 }
 
 function send(obj){
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
+    return;
+  }
+
   connect();
 
-  if(socket.readyState===1){
+  if(socket&&socket.readyState===1){
     socket.send(JSON.stringify(obj));
   }else{
-    setTimeout(()=>socket.send(JSON.stringify(obj)),200);
+    setTimeout(function(){
+      if(socket)socket.send(JSON.stringify(obj));
+    },250);
   }
 }
 
 async function loadGames(){
-  gamesData=await (await fetch('/api/games')).json();
+  games=await (await fetch('/api/games')).json();
   drawGames();
 }
 
 function drawGames(){
-  gameList.innerHTML='';
+  let g=document.getElementById('gameList');
+  if(!g)return;
 
-  gamesData.forEach(g=>{
+  g.innerHTML='';
+
+  games.forEach(function(x){
     let b=document.createElement('button');
-    b.style.display='block';
-    b.style.width='100%';
-    b.style.margin='6px 0';
-    b.innerHTML='<b>'+escapeHtml(g.name)+'</b><br><span class="muted">'+g.minPlayers+'-'+g.maxPlayers+' players</span>';
-
-    if(room&&room.selectedGame&&room.selectedGame.id===g.id){
-      b.style.background='#2563eb';
-      b.style.color='white';
-    }
-
-    b.onclick=function(){
-      if(!room){
-        alert('Create or join a room first.');
-        showSection('rooms');
-        return;
-      }
-
-      send({type:'selectGame',gameId:g.id});
-      showSection('rooms');
-    };
-
-    gameList.appendChild(b);
+    b.className='gameBtn '+(room&&room.selectedGame&&room.selectedGame.id===x.id?'selected':'');
+    b.innerHTML='<b>'+escapeHtml(x.name)+'</b><br><span class="muted">'+x.minPlayers+'-'+x.maxPlayers+' players</span>';
+    b.onclick=function(){selectGame(x.id);};
+    g.appendChild(b);
   });
 }
 
 function createRoom(){
-  send({type:'createRoom',private:false});
-  showSection('rooms');
+  send({type:'createRoom',private:privateRoom.checked});
+  showSection('play');
 }
 
 function joinRoom(code){
@@ -351,90 +1056,152 @@ function joinRoom(code){
   if(!c)return alert('Enter a room code.');
 
   send({type:'joinRoom',roomId:c});
-  showSection('rooms');
+  showSection('play');
 }
 
 function leaveRoom(){
   send({type:'leaveRoom'});
   room=null;
+  currentRoom=null;
   loadedGameKey='';
-  gameArea.style.display='none';
+  lastChatCount=0;
+  clearChatUnread();
+  document.body.classList.remove('gameMode');
   drawRoom();
+}
+
+function selectGame(id){
+  if(!room){
+    alert('Create or join a room first.');
+    showSection('play');
+    return;
+  }
+
+  send({type:'selectGame',gameId:id});
 }
 
 function sit(i){
   send({type:'sit',seat:i});
 }
 
+function stand(){
+  send({type:'stand'});
+}
+
 function startGame(){
   send({type:'startGame'});
 }
 
+function passOwner(to){
+  send({type:'passOwner',to:to});
+}
+
+function closeRoom(){
+  if(confirm('Close this room for everyone?'))send({type:'closeRoom'});
+}
+
 function drawRoom(){
+  roomChatPanel.classList.toggle('hidden',!room);
+  gameArea.classList.toggle('hidden',!room);
+
   roomLabel.innerText=room?room.id:'None';
 
-  if(!room){
-    roomPanel.innerHTML='<p class="muted">Create or join a room to begin.</p>';
-    gameArea.style.display='none';
-    return;
-  }
+  roomPrivacy.innerHTML=room
+    ? (room.private?'<span class="pill locked">Private 🔒</span>':'<span class="pill public">Public</span>')
+    : '';
 
-  let html='';
-  html+='<h3>Room '+escapeHtml(room.id)+'</h3>';
-  html+='<p class="muted">Owner: <b>'+escapeHtml(room.owner||'')+'</b></p>';
-  html+='<p>Players: '+room.players.map(escapeHtml).join(', ')+'</p>';
+  chatRoomLabel.innerText=room?room.id:'';
 
-  if(room.selectedGame){
-    html+='<h3>Selected Game</h3>';
-    html+='<p><b>'+escapeHtml(room.selectedGame.name)+'</b></p>';
-    html+='<h3>Seats</h3>';
-
-    room.seats.forEach((seat,i)=>{
-      html+='<div style="display:inline-block;background:#111827;border:1px solid #334155;border-radius:12px;padding:10px;margin:5px;min-width:120px;text-align:center;">';
-      html+='<b>Seat '+(i+1)+'</b><br>';
-      html+=seat?escapeHtml(seat.name):'<span class="muted">Open</span>';
-      html+='<br><button onclick="sit('+i+')">'+(seat?'Switch Here':'Sit Here')+'</button>';
-      html+='</div>';
-    });
-
-    if(room.owner===me){
-      html+='<br><button onclick="startGame()" style="margin-top:10px;background:#16a34a;color:white;">Start Game</button>';
-    }else{
-      html+='<p class="muted">Waiting for room owner to start.</p>';
-    }
-  }else{
-    html+='<p class="muted">Choose a game from the Games tab.</p>';
-  }
-
-  roomPanel.innerHTML=html;
+  roomHelp.innerHTML=room
+    ? (room.private?'Private room: share the code <b>'+room.id+'</b> to invite people.':'Public room: people can click your name in the right panel to join.')
+    : 'Create or join a room first.';
 
   drawGames();
+
+  roomPeople.innerHTML=room
+    ? '<b>People in room:</b> '+room.players.map(escapeHtml).join(', ')
+    : '';
+
+  ownerControls.innerHTML='';
+
+  if(room&&room.owner===me){
+    ownerControls.innerHTML=
+      '<div class="card">'+
+        '<p class="owner">You are the room owner.</p>'+
+        '<button class="danger" onclick="closeRoom()">Close Room</button><br>'+
+        '<span class="muted">Pass ownership:</span> '+
+        room.players.map(function(p){
+          return p!==me?'<button onclick="passOwner(\''+escapeAttr(p)+'\')">'+escapeHtml(p)+'</button>':'';
+        }).join(' ')+
+      '</div>';
+  }else if(room){
+    ownerControls.innerHTML='<p class="muted">Room owner: <b>'+escapeHtml(room.owner||'')+'</b></p>';
+  }
+
+  seats.innerHTML='';
+
+  if(room&&room.selectedGame){
+    room.seats.forEach(function(seat,i){
+      let d=document.createElement('div');
+      d.className='seat '+(seat?'filled':'empty');
+      d.innerHTML=
+        '<b>Seat '+(i+1)+'</b><br>'+
+        (seat?escapeHtml(seat.name):'Open')+
+        '<br><button onclick="sit('+i+')">'+(seat?'Switch Here':'Sit Here')+'</button>';
+
+      seats.appendChild(d);
+    });
+
+    let seatedCount=room.seats.filter(Boolean).length;
+
+    startBtn.style.display=room.owner===me?'inline-block':'none';
+
+    startHint.innerText=room.owner===me
+      ? 'Start when the table is ready. Seated players will enter the game.'
+      : 'Only the room owner can start the game.';
+
+    startHint.innerText+=' Selected: '+room.selectedGame.name+' ('+seatedCount+'/'+room.seats.length+' seated).';
+  }else{
+    startBtn.style.display='none';
+    startHint.innerText='';
+    seats.innerHTML='<i class="muted">Select a game to create seats.</i>';
+  }
+
+  drawChat(room?room.chat:[],false);
   maybeLoadGame();
 }
 
 async function maybeLoadGame(){
   if(!(room&&room.started&&room.selectedGame)){
-    gameArea.style.display='none';
+    document.body.classList.remove('gameMode');
+    gameHint.innerText='The started game appears here for seated players.';
     gameFrame.removeAttribute('srcdoc');
     return;
   }
 
-  gameArea.style.display='block';
+  document.body.classList.add('gameMode');
+  showSection('play');
 
-  let key=room.id+'|'+room.selectedGame.file+'|'+room.started+'|'+room.seats.map(s=>s?s.name:'').join(',');
+  let seated=room.seats.filter(Boolean);
+  let mySeated=seated.some(function(x){return x.name===me;});
+
+  gameHint.innerText=mySeated?'You are seated. Play below.':'You are watching this table.';
+
+  let key=room.id+'|'+room.selectedGame.file+'|'+room.started+'|'+room.seats.map(function(x){return x?x.name:'';}).join(',');
 
   if(loadedGameKey===key)return;
+
   loadedGameKey=key;
 
   let players=room.seats
-    .map((s,i)=>s?{seat:i,name:s.name}:null)
+    .map(function(x,i){return x?{seat:i,name:x.name}:null;})
     .filter(Boolean);
 
-  let mySeatIndex=room.seats.findIndex(s=>s&&s.name===me);
+  let mySeatIndex=room.seats.findIndex(function(x){return x&&x.name===me;});
 
   let html=await (await fetch('/games/'+room.selectedGame.file+'?v='+Date.now())).text();
 
-  let inject=
+  let inject =
     '<script>'+
     'window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';'+
     'window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';'+
@@ -465,24 +1232,61 @@ async function maybeLoadGame(){
   gameFrame.srcdoc=html;
 }
 
+/* ===== CHAT / PRESENCE ===== */
+
 function sendChat(){
   let t=chatText.value.trim();
 
-  if(!t)return;
-
-  send({type:'chat',text:t});
-  chatText.value='';
+  if(t){
+    send({type:'chat',text:t});
+    chatText.value='';
+    clearChatUnread();
+  }
 }
 
-function drawChat(items){
+function toggleOverlayChat(){
+  overlayChatCollapsed=!overlayChatCollapsed;
+  roomChatPanel.classList.toggle('chatCollapsed',overlayChatCollapsed);
+
+  let btn=roomChatPanel.querySelector('.chatToggle');
+  if(btn)btn.innerText=overlayChatCollapsed?'Show':'Hide';
+
+  if(!overlayChatCollapsed){
+    clearChatUnread();
+  }
+}
+
+function clearChatUnread(){
+  roomChatPanel.classList.remove('chatUnread');
+}
+
+function markChatUnread(){
+  if(document.body.classList.contains('gameMode')&&overlayChatCollapsed){
+    roomChatPanel.classList.add('chatUnread');
+  }
+}
+
+function drawChat(items,fromSocket){
+  let oldCount=lastChatCount;
+  let newCount=(items||[]).length;
+
   chat.innerHTML=(items||[])
-    .map(x=>'<div><b>'+escapeHtml(x.user)+':</b> '+escapeHtml(x.text)+'</div>')
+    .map(function(x){return '<div><b>'+escapeHtml(x.user)+':</b> '+escapeHtml(x.text)+'</div>';})
     .join('');
 
   chat.scrollTop=chat.scrollHeight;
+
+  if(fromSocket&&newCount>oldCount){
+    let last=items[newCount-1]||{};
+    if(last.user!==me){
+      markChatUnread();
+    }
+  }
+
+  lastChatCount=newCount;
 }
 
-function drawPresence(users,rooms){
+function drawPresence(users,roomsList){
   presence.innerHTML='';
 
   if(!users.length){
@@ -490,34 +1294,50 @@ function drawPresence(users,rooms){
     return;
   }
 
-  users.forEach(u=>{
+  users.forEach(function(u){
     let d=document.createElement('div');
-    d.style.borderBottom='1px solid #334155';
-    d.style.padding='8px';
-    d.style.cursor=u.roomId&&!u.privateRoom?'pointer':'default';
+    let canJoin=u.roomId&&!u.privateRoom;
 
-    let roomInfo=u.roomId?' · Room '+escapeHtml(u.roomId):'';
+    let matchingRoom=(roomsList||[]).find(function(r){return r.id===u.roomId;});
+    let selectedGameName=matchingRoom&&matchingRoom.selectedGame?matchingRoom.selectedGame.name:'';
 
-    d.innerHTML='<b>'+escapeHtml(u.username)+'</b><br><span class="muted">'+escapeHtml(u.location||'Home')+roomInfo+'</span>';
+    d.className='userItem '+(canJoin?'clickable':'')+(u.privateRoom?' private':'');
+    d.innerHTML=
+      '<b>'+escapeHtml(u.username)+'</b><br>'+
+      '<span class="roomBadge">'+
+        escapeHtml(u.location||'Home')+
+        (u.roomId?' · '+escapeHtml(u.roomId):'')+
+        (selectedGameName?' · '+escapeHtml(selectedGameName):'')+
+        (u.privateRoom?' 🔒 private':'')+
+      '</span>'+
+      (canJoin?'<br><small>Click to join room</small>':'');
 
-    if(u.roomId&&!u.privateRoom){
-      d.onclick=function(){joinRoom(u.roomId);};
-    }
+    if(canJoin)d.onclick=function(){joinRoom(u.roomId);};
 
     presence.appendChild(d);
   });
 }
 
-/* ===== PET ===== */
+/* ===== PET / SHOP / INVENTORY ===== */
 
 async function loadPet(){
+  if(!me){
+    petProfile=null;
+    drawPet();
+    drawShop();
+    drawInventory();
+    return;
+  }
+
   try{
     let res=await fetch('/api/pet/profile?user='+encodeURIComponent(me));
     let data=await res.json();
 
     if(!data.ok){
-      homePet.innerHTML='<p class="muted">Pet unavailable.</p>';
-      petPanel.innerHTML='<p class="muted">Pet unavailable.</p>';
+      petProfile=null;
+      drawPet();
+      drawShop();
+      drawInventory();
       return;
     }
 
@@ -530,6 +1350,7 @@ async function loadPet(){
     drawInventory();
   }catch(err){
     homePet.innerHTML='<p class="muted">Could not load pet.</p>';
+    petPanel.innerHTML='<p class="muted">Could not load pet.</p>';
   }
 }
 
@@ -539,6 +1360,12 @@ function activePet(){
 }
 
 function drawPet(){
+  if(!petProfile||!me){
+    homePet.innerHTML='<p class="muted">Log in to load your pet.</p>';
+    petPanel.innerHTML='<p class="muted">Log in to load your pet.</p>';
+    return;
+  }
+
   let pet=activePet();
 
   if(!pet){
@@ -548,14 +1375,15 @@ function drawPet(){
   }
 
   let emoji=pet.emoji||'🥚';
+  let stage=pet.stage||'egg';
 
   let mini=
-    '<div style="display:flex;gap:10px;align-items:center;">'+
-      '<div style="font-size:46px;background:#1e293b;border-radius:16px;padding:10px;">'+emoji+'</div>'+
+    '<div class="petMini">'+
+      '<div class="petAvatar">'+escapeHtml(emoji)+'</div>'+
       '<div>'+
-        '<h3 style="margin:0">'+escapeHtml(pet.name||'Mystery Egg')+'</h3>'+
-        '<p class="muted">'+escapeHtml(pet.stage||'egg')+(pet.type?' · '+escapeHtml(pet.type):'')+'</p>'+
-        '<p><b>Coins:</b> '+Number(petProfile.money||0)+'</p>'+
+        '<div class="petName">'+escapeHtml(pet.name||'Mystery Egg')+'</div>'+
+        '<div class="petSub">'+escapeHtml(stage)+(pet.type?' · '+escapeHtml(pet.type):'')+'</div>'+
+        '<div class="petCoins">Coins: '+Number(petProfile.money||0)+'</div>'+
       '</div>'+
     '</div>';
 
@@ -563,14 +1391,21 @@ function drawPet(){
 
   let html=mini;
 
-  if(pet.stage==='egg'){
+  if(stage==='egg'){
     let t=pet.eggTraits||{};
     let total=Number(t.warm||0)+Number(t.cold||0)+Number(t.wet||0)+Number(t.dry||0)+Number(t.light||0)+Number(t.dark||0);
 
     html+='<div class="card"><h3>Egg Traits</h3>';
     html+='<p class="muted">'+total+'/18 care points to hatch.</p>';
-    html+='<p>Warm '+(t.warm||0)+' · Cold '+(t.cold||0)+' · Wet '+(t.wet||0)+' · Dry '+(t.dry||0)+' · Light '+(t.light||0)+' · Dark '+(t.dark||0)+'</p>';
-    html+='<button onclick="careEggRandom()">Care Egg</button>';
+    html+='<div class="eggTraits">';
+    html+='<div>Warm: <b>'+Number(t.warm||0)+'</b></div>';
+    html+='<div>Cold: <b>'+Number(t.cold||0)+'</b></div>';
+    html+='<div>Wet: <b>'+Number(t.wet||0)+'</b></div>';
+    html+='<div>Dry: <b>'+Number(t.dry||0)+'</b></div>';
+    html+='<div>Light: <b>'+Number(t.light||0)+'</b></div>';
+    html+='<div>Dark: <b>'+Number(t.dark||0)+'</b></div>';
+    html+='</div>';
+    html+='<div class="petActions"><button onclick="careEggRandom()" class="gold">Care Egg</button></div>';
     html+='</div>';
   }else{
     html+='<div class="card"><h3>Stats</h3>';
@@ -578,24 +1413,32 @@ function drawPet(){
     html+=petStat('Happy',pet.needs.happiness);
     html+=petStat('Energy',pet.needs.energy);
     html+=petStat('Clean',pet.needs.cleanliness);
-    html+='<button onclick="petUseItem(\'berry\')">Feed Berry</button>';
-    html+='<button onclick="petPlay()">Play</button>';
+    html+='<div class="petActions">';
+    html+='<button onclick="petUseItem(\'berry\')" class="good">Feed</button>';
+    html+='<button onclick="petPlay()" class="primary">Play</button>';
+    html+='</div>';
     html+='</div>';
 
     html+='<div class="card"><h3>Moves</h3>';
-    (pet.moves||[]).forEach(m=>{
+    (pet.moves||[]).forEach(function(m){
       let move=petMoves[m]||{name:m,type:'normal'};
       html+='<span class="badge">'+escapeHtml(move.name)+' · '+escapeHtml(move.type)+'</span> ';
     });
     html+='</div>';
   }
 
+  html+='<div class="card"><button class="primary" onclick="launchPetWorld()">Open Pet World</button></div>';
+
   petPanel.innerHTML=html;
 }
 
 function petStat(name,val){
   val=Number(val||0);
-  return '<p>'+name+': <b>'+val+'</b></p>';
+  return ''+
+    '<div class="statLine">'+
+      '<div class="statTop"><span>'+escapeHtml(name)+'</span><b>'+val+'</b></div>'+
+      '<div class="statBar"><div class="statFill" style="width:'+Math.max(0,Math.min(100,val))+'%"></div></div>'+
+    '</div>';
 }
 
 async function careEggRandom(){
@@ -613,6 +1456,7 @@ async function careEggRandom(){
 
   petProfile=data.profile;
   drawPet();
+  drawInventory();
 
   if(data.message)alert(data.message);
 }
@@ -644,24 +1488,30 @@ async function petPlay(){
 
   petProfile=data.profile;
   drawPet();
+  drawInventory();
 }
 
 function drawShop(){
-  if(!petShop){
+  if(!me){
+    shopPanel.innerHTML='<p class="muted">Log in to use the shop.</p>';
+    return;
+  }
+
+  if(!petShop||!Object.keys(petShop).length){
     shopPanel.innerHTML='<p class="muted">Shop unavailable.</p>';
     return;
   }
 
   let html='';
 
-  Object.keys(petShop).forEach(id=>{
+  Object.keys(petShop).forEach(function(id){
     let item=petShop[id];
 
-    html+='<div class="card">';
+    html+='<div class="itemCard">';
     html+='<h3>'+escapeHtml(item.name)+'</h3>';
     html+='<p class="muted">'+escapeHtml(item.description||'')+'</p>';
     html+='<p><b>'+Number(item.price||0)+' coins</b></p>';
-    html+='<button onclick="buyItem(\''+id+'\')">Buy</button>';
+    html+='<button class="gold" onclick="buyItem(\''+id+'\')">Buy</button>';
     html+='</div>';
   });
 
@@ -680,33 +1530,58 @@ async function buyItem(itemId){
 
   petProfile=data.profile;
   drawPet();
+  drawShop();
   drawInventory();
 }
 
 function drawInventory(){
+  if(!me){
+    inventoryPanel.innerHTML='<p class="muted">Log in to load inventory.</p>';
+    return;
+  }
+
   if(!petProfile){
-    inventoryPanel.innerHTML='<p class="muted">No inventory.</p>';
+    inventoryPanel.innerHTML='<p class="muted">Inventory unavailable.</p>';
     return;
   }
 
   let inv=petProfile.inventory||{};
   let html='';
 
-  Object.keys(inv).forEach(id=>{
+  Object.keys(inv).forEach(function(id){
     if(inv[id]<=0)return;
 
-    let item=petShop[id]||{name:id};
+    let item=petShop[id]||{name:id,description:''};
 
-    html+='<div class="card">';
+    html+='<div class="itemCard">';
     html+='<h3>'+escapeHtml(item.name)+'</h3>';
-    html+='<p>x'+inv[id]+'</p>';
-    html+='<button onclick="petUseItem(\''+id+'\')">Use</button>';
+    html+='<p class="muted">'+escapeHtml(item.description||'')+'</p>';
+    html+='<p>x'+Number(inv[id])+'</p>';
+    html+='<button class="primary" onclick="petUseItem(\''+id+'\')">Use</button>';
     html+='</div>';
   });
 
   if(!html)html='<p class="muted">Inventory is empty.</p>';
 
   inventoryPanel.innerHTML=html;
+}
+
+function launchPetWorld(){
+  if(!room){
+    showSection('play');
+    alert('Create a room, select Pet World, sit, and start. This keeps your username connected.');
+    return;
+  }
+
+  let petGame=games.find(function(g){return g.id==='petworld';});
+
+  if(!petGame){
+    alert('Pet World is not in games.json yet.');
+    return;
+  }
+
+  selectGame('petworld');
+  showSection('play');
 }
 
 /* ===== SAVE BRIDGE ===== */
@@ -722,8 +1597,9 @@ function handleGameSaveLoad(msg){
     data=null;
   }
 
-  if(gameFrame&&gameFrame.contentWindow){
-    gameFrame.contentWindow.postMessage({
+  let f=document.getElementById('gameFrame');
+  if(f&&f.contentWindow){
+    f.contentWindow.postMessage({
       type:'gameSaveData',
       gameId:msg.gameId,
       data:data
@@ -742,7 +1618,7 @@ function handleGameSaveStore(msg){
   }
 }
 
-window.addEventListener('message',e=>{
+window.addEventListener('message',function(e){
   let msg=e.data||{};
 
   if(msg.type==='move'&&socket){
@@ -761,20 +1637,35 @@ window.addEventListener('message',e=>{
 /* ===== UTILS ===== */
 
 function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g,c=>({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#39;'
-  }[c]));
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[c];
+  });
+}
+
+function escapeAttr(s){
+  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'');
 }
 
 /* ===== INIT ===== */
 
-connect();
+drawAuth();
+
+if(me){
+  connect();
+  loadPet();
+}else{
+  drawPet();
+  drawShop();
+  drawInventory();
+}
+
 loadGames();
-loadPet();
 drawRoom();
 </script>
 </body>
