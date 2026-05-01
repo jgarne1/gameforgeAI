@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pixel Quest</title>
+<style>
+:root{
+  --bg:#111827;
+  --panel:#1f2937;
+  --line:#374151;
+  --gold:#facc15;
+  --green:#22c55e;
+  --red:#ef4444;
+  --blue:#38bdf8;
+  --muted:#cbd5e1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:radial-gradient(circle at top,#374151,#111827);
+  color:white;
+  overflow:hidden;
+  text-align:center;
+}
+.wrap{
+  height:100vh;
+  min-height:650px;
+  padding:10px;
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:8px;
+}
+.top,.hud,.gamePanel,.controls{
+  background:rgba(31,41,55,.95);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+}
+h2{margin:0}
+button{
+  padding:9px 12px;
+  border-radius:11px;
+  border:1px solid #94a3b8;
+  background:#f8fafc;
+  color:#111;
+  font-weight:bold;
+  cursor:pointer;
+}
+button.gold{background:var(--gold)}
+button.green{background:var(--green)}
+button.blue{background:var(--blue)}
+.hud{
+  padding:8px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.2);
+  font-size:13px;
+  font-weight:bold;
+}
+.gamePanel{
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:0;
+  position:relative;
+}
+#screen{
+  width:min(100%,960px);
+  height:min(100%,576px);
+  background:#000;
+  border:5px solid #020617;
+  border-radius:18px;
+  image-rendering:pixelated;
+  box-shadow:0 20px 45px rgba(0,0,0,.5);
+}
+.overlay{
+  position:absolute;
+  inset:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+}
+.overlay.hidden{display:none}
+.message{
+  max-width:650px;
+  background:rgba(2,6,23,.92);
+  border:2px solid rgba(255,255,255,.18);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 18px 45px rgba(0,0,0,.5);
+}
+.message h1{
+  color:var(--gold);
+  margin:0 0 8px;
+}
+.message p{
+  color:var(--muted);
+}
+.controls{
+  padding:8px;
+}
+.pad{
+  display:grid;
+  grid-template-columns:70px 70px 70px;
+  gap:6px;
+  justify-content:center;
+}
+.pad button{height:44px}
+.actionRow{
+  margin-top:6px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.small{
+  font-size:12px;
+  color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Pixel Quest</h2>
+    <div>
+      <span id="meLabel" class="badge">Adventurer</span>
+      <button class="gold" onclick="manualSave()">Save</button>
+      <button onclick="newRun()">New</button>
+    </div>
+  </div>
+
+  <div class="hud">
+    <span class="badge">Hearts: <span id="hp">6</span>/6</span>
+    <span class="badge">Keys: <span id="keys">0</span></span>
+    <span class="badge">Gems: <span id="gems">0</span></span>
+    <span class="badge">Room: <span id="roomLabel">1,1</span></span>
+    <span class="badge">Goal: Find key, open dungeon gate</span>
+  </div>
+
+  <div class="gamePanel">
+    <canvas id="screen" width="640" height="384"></canvas>
+    <div id="overlay" class="overlay">
+      <div class="message">
+        <h1>Pixel Quest</h1>
+        <p>A retro adventure inspired by classic top-down dungeon games.</p>
+        <p>Explore rooms, defeat monsters, open chests, find the key, and unlock the dungeon gate.</p>
+        <p><b>Keyboard:</b> WASD / arrows move, Space attacks.</p>
+        <p><b>Touch:</b> use the controls below.</p>
+        <button class="gold" onclick="startGame()">Start Quest</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="pad">
+      <span></span><button onpointerdown="press('up')" onpointerup="release('up')" onpointercancel="release('up')">▲</button><span></span>
+      <button onpointerdown="press('left')" onpointerup="release('left')" onpointercancel="release('left')">◀</button>
+      <button onpointerdown="press('down')" onpointerup="release('down')" onpointercancel="release('down')">▼</button>
+      <button onpointerdown="press('right')" onpointerup="release('right')" onpointercancel="release('right')">▶</button>
+    </div>
+    <div class="actionRow">
+      <button class="blue" onclick="attack()">Sword</button>
+      <button class="green" onclick="manualSave()">Save Game</button>
+    </div>
+    <div class="small">Saves are stored by username through the main GameForge page.</div>
+  </div>
+</div>
+
+<script>
+var GAME_META={id:'pixelquest',name:'Pixel Quest',minPlayers:1,maxPlayers:1,seats:1};
+
+var canvas=document.getElementById('screen');
+var ctx=canvas.getContext('2d');
+
+var W=canvas.width;
+var H=canvas.height;
+var TILE=32;
+var COLS=20;
+var ROWS=12;
+
+var running=false;
+var lastTime=0;
+var keysDown={};
+var saveUser='guest';
+
+var player;
+var rooms;
+var currentRoom;
+var attackTimer=0;
+var hurtTimer=0;
+var messageTimer=0;
+var messageText='';
+
+function el(id){return document.getElementById(id);}
+
+function getPlayerName(){
+  if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
+    var s=window.GAME_MY_SEAT;
+    for(var i=0;i<window.GAME_PLAYERS.length;i++){
+      if(window.GAME_PLAYERS[i].seat===s)return window.GAME_PLAYERS[i].name||'player';
+    }
+    return window.GAME_PLAYERS[0].name||'player';
+  }
+  return 'guest';
+}
+
+function freshWorld(){
+  player={
+    x:2*TILE,
+    y:6*TILE,
+    w:22,
+    h:24,
+    dir:'down',
+    hp:6,
+    maxHp:6,
+    keys:0,
+    gems:0
+  };
+
+  currentRoom={x:1,y:1};
+
+  rooms={};
+
+  for(var ry=0;ry<3;ry++){
+    for(var rx=0;rx<3;rx++){
+      rooms[roomKey(rx,ry)]=makeRoom(rx,ry);
+    }
+  }
+
+  addChest(1,1,10,5,'key');
+  addChest(0,1,5,5,'gems');
+  addChest(2,1,14,6,'heart');
+  addChest(1,0,9,4,'gems');
+
+  addEnemy(1,1,13,4,'slime');
+  addEnemy(1,1,15,7,'slime');
+  addEnemy(0,1,12,6,'bat');
+  addEnemy(2,1,7,5,'bat');
+  addEnemy(1,0,6,6,'slime');
+  addEnemy(1,2,10,4,'guard');
+
+  rooms[roomKey(1,2)].gate={x:10,y:10,open:false};
+
+  showMessage('Quest started. Find the key.');
+}
+
+function makeRoom(rx,ry){
+  var tiles=[];
+
+  for(var r=0;r<ROWS;r++){
+    tiles[r]=[];
+    for(var c=0;c<COLS;c++){
+      if(r===0||c===0||r===ROWS-1||c===COLS-1)tiles[r][c]=1;
+      else tiles[r][c]=0;
+    }
+  }
+
+  if(ry>0){
+    tiles[0][9]=0;
+    tiles[0][10]=0;
+  }
+
+  if(ry<2){
+    tiles[ROWS-1][9]=0;
+    tiles[ROWS-1][10]=0;
+  }
+
+  if(rx>0){
+    tiles[5][0]=0;
+    tiles[6][0]=0;
+  }
+
+  if(rx<2){
+    tiles[5][COLS-1]=0;
+    tiles[6][COLS-1]=0;
+  }
+
+  if(rx===1&&ry===1){
+    for(var i=5;i<15;i++)tiles[3][i]=2;
+    tiles[3][9]=0;
+    tiles[3][10]=0;
+  }
+
+  if(rx===0&&ry===1){
+    for(var j=3;j<9;j++)tiles[j][8]=2;
+  }
+
+  if(rx===2&&ry===1){
+    for(var k=4;k<16;k++)tiles[7][k]=2;
+  }
+
+  if(rx===1&&ry===0){
+    for(var a=4;a<8;a++)tiles[6][a]=2;
+    for(var b=12;b<16;b++)tiles[6][b]=2;
+  }
+
+  if(rx===1&&ry===2){
+    for(var q=5;q<15;q++)tiles[8][q]=2;
+    tiles[8][10]=0;
+  }
+
+  return {
+    rx:rx,
+    ry:ry,
+    tiles:tiles,
+    chests:[],
+    enemies:[],
+    gate:null,
+    visited:false
+  };
+}
+
+function addChest(rx,ry,c,r,type){
+  rooms[roomKey(rx,ry)].chests.push({
+    x:c*TILE+6,
+    y:r*TILE+6,
+    w:22,
+    h:22,
+    type:type,
+    opened:false
+  });
+}
+
+function addEnemy(rx,ry,c,r,type){
+  var hp=type==='guard'?4:2;
+  var speed=type==='bat'?70:type==='guard'?45:35;
+
+  rooms[roomKey(rx,ry)].enemies.push({
+    x:c*TILE+6,
+    y:r*TILE+6,
+    w:22,
+    h:22,
+    type:type,
+    hp:hp,
+    alive:true,
+    speed:speed,
+    dx:Math.random()<.5?-1:1,
+    dy:Math.random()<.5?-1:1,
+    hit:0
+  });
+}
+
+function startGame(){
+  el('overlay').classList.add('hidden');
+  running=true;
+  lastTime=performance.now();
+  requestAnimationFrame(loop);
+}
+
+function newRun(){
+  freshWorld();
+  running=false;
+  el('overlay').classList.remove('hidden');
+  el('overlay').innerHTML=
+    '<div class="message"><h1>Pixel Quest</h1><p>New quest ready.</p><button class="gold" onclick="startGame()">Start Quest</button></div>';
+  render();
+  saveGame();
+}
+
+function loop(t){
+  if(!running)return;
+
+  var dt=(t-lastTime)/1000;
+  lastTime=t;
+
+  update(dt);
+  render();
+
+  requestAnimationFrame(loop);
+}
+
+function update(dt){
+  var speed=120;
+  var dx=0;
+  var dy=0;
+
+  if(keysDown.left){dx-=speed*dt;player.dir='left';}
+  if(keysDown.right){dx+=speed*dt;player.dir='right';}
+  if(keysDown.up){dy-=speed*dt;player.dir='up';}
+  if(keysDown.down){dy+=speed*dt;player.dir='down';}
+
+  movePlayer(dx,dy);
+
+  if(attackTimer>0)attackTimer-=dt;
+  if(hurtTimer>0)hurtTimer-=dt;
+  if(messageTimer>0)messageTimer-=dt;
+
+  updateEnemies(dt);
+  checkChests();
+  checkGate();
+  checkRoomTransition();
+  updateHud();
+}
+
+function movePlayer(dx,dy){
+  if(dx!==0){
+    player.x+=dx;
+    if(collidesSolid(player.x,player.y,player.w,player.h))player.x-=dx;
+  }
+
+  if(dy!==0){
+    player.y+=dy;
+    if(collidesSolid(player.x,player.y,player.w,player.h))player.y-=dy;
+  }
+}
+
+function collidesSolid(x,y,w,h){
+  var room=getRoom();
+
+  var left=Math.floor(x/TILE);
+  var right=Math.floor((x+w)/TILE);
+  var top=Math.floor(y/TILE);
+  var bottom=Math.floor((y+h)/TILE);
+
+  for(var r=top;r<=bottom;r++){
+    for(var c=left;c<=right;c++){
+      if(r<0||r>=ROWS||c<0||c>=COLS)return true;
+      if(room.tiles[r][c]===1||room.tiles[r][c]===2)return true;
+    }
+  }
+
+  if(room.gate&&!room.gate.open){
+    var gx=room.gate.x*TILE;
+    var gy=room.gate.y*TILE;
+    if(rectHit(x,y,w,h,gx,gy,TILE,TILE))return true;
+  }
+
+  return false;
+}
+
+function updateEnemies(dt){
+  var room=getRoom();
+
+  for(var i=0;i<room.enemies.length;i++){
+    var e=room.enemies[i];
+    if(!e.alive)continue;
+
+    if(e.hit>0)e.hit-=dt;
+
+    var px=player.x-e.x;
+    var py=player.y-e.y;
+    var d=Math.sqrt(px*px+py*py);
+
+    var mdx=0;
+    var mdy=0;
+
+    if(d<170){
+      mdx=(px/d)*e.speed*dt;
+      mdy=(py/d)*e.speed*dt;
+    }else{
+      mdx=e.dx*e.speed*.45*dt;
+      mdy=e.dy*e.speed*.45*dt;
+    }
+
+    e.x+=mdx;
+    if(enemyCollides(e)){
+      e.x-=mdx;
+      e.dx*=-1;
+    }
+
+    e.y+=mdy;
+    if(enemyCollides(e)){
+      e.y-=mdy;
+      e.dy*=-1;
+    }
+
+    if(rectHit(player.x,player.y,player.w,player.h,e.x,e.y,e.w,e.h)&&hurtTimer<=0){
+      player.hp--;
+      hurtTimer=1;
+      showMessage('Ouch!');
+      if(player.hp<=0)gameOver();
+    }
+  }
+}
+
+function enemyCollides(e){
+  return collidesSolid(e.x,e.y,e.w,e.h);
+}
+
+function attack(){
+  if(!running)return;
+  if(attackTimer>0)return;
+
+  attackTimer=.24;
+
+  var box=swordBox();
+  var room=getRoom();
+
+  for(var i=0;i<room.enemies.length;i++){
+    var e=room.enemies[i];
+    if(!e.alive)continue;
+
+    if(rectHit(box.x,box.y,box.w,box.h,e.x,e.y,e.w,e.h)){
+      e.hp--;
+      e.hit=.2;
+
+      if(e.hp<=0){
+        e.alive=false;
+        player.gems++;
+        showMessage('Monster defeated!');
+      }
+    }
+  }
+}
+
+function swordBox(){
+  var x=player.x;
+  var y=player.y;
+
+  if(player.dir==='up')return {x:x-4,y:y-24,w:30,h:24};
+  if(player.dir==='down')return {x:x-4,y:y+player.h,w:30,h:24};
+  if(player.dir==='left')return {x:x-24,y:y-4,w:24,h:30};
+  return {x:x+player.w,y:y-4,w:24,h:30};
+}
+
+function checkChests(){
+  var room=getRoom();
+
+  for(var i=0;i<room.chests.length;i++){
+    var ch=room.chests[i];
+    if(ch.opened)continue;
+
+    if(rectHit(player.x,player.y,player.w,player.h,ch.x,ch.y,ch.w,ch.h)){
+      ch.opened=true;
+
+      if(ch.type==='key'){
+        player.keys++;
+        showMessage('You found a key!');
+      }else if(ch.type==='heart'){
+        player.hp=Math.min(player.maxHp,player.hp+2);
+        showMessage('You found hearts!');
+      }else{
+        player.gems+=5;
+        showMessage('You found gems!');
+      }
+
+      saveGame();
+    }
+  }
+}
+
+function checkGate(){
+  var room=getRoom();
+
+  if(!room.gate||room.gate.open)return;
+
+  var gx=room.gate.x*TILE;
+  var gy=room.gate.y*TILE;
+
+  if(distance(player.x,player.y,gx,gy)<42&&player.keys>0){
+    player.keys--;
+    room.gate.open=true;
+    showMessage('Dungeon gate opened!');
+    saveGame();
+  }
+}
+
+function checkRoomTransition(){
+  if(player.x<0){
+    if(currentRoom.x>0){
+      currentRoom.x--;
+      player.x=W-player.w-4;
+      enteredRoom();
+    }else player.x=0;
+  }
+
+  if(player.x+player.w>W){
+    if(currentRoom.x<2){
+      currentRoom.x++;
+      player.x=4;
+      enteredRoom();
+    }else player.x=W-player.w;
+  }
+
+  if(player.y<0){
+    if(currentRoom.y>0){
+      currentRoom.y--;
+      player.y=H-player.h-4;
+      enteredRoom();
+    }else player.y=0;
+  }
+
+  if(player.y+player.h>H){
+    if(currentRoom.y<2){
+      currentRoom.y++;
+      player.y=4;
+      enteredRoom();
+    }else player.y=H-player.h;
+  }
+}
+
+function enteredRoom(){
+  showMessage('Entered room '+(currentRoom.x+1)+','+(currentRoom.y+1));
+  saveGame();
+}
+
+function gameOver(){
+  running=false;
+  el('overlay').classList.remove('hidden');
+  el('overlay').innerHTML=
+    '<div class="message"><h1>Game Over</h1><p>Your quest ended. Start a new run?</p><button class="gold" onclick="newRun()">New Quest</button></div>';
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+
+  drawRoom();
+  drawChests();
+  drawGate();
+  drawEnemies();
+  drawPlayer();
+  drawSword();
+  drawMessage();
+}
+
+function drawRoom(){
+  var room=getRoom();
+
+  for(var r=0;r<ROWS;r++){
+    for(var c=0;c<COLS;c++){
+      var t=room.tiles[r][c];
+
+      if(t===1)ctx.fillStyle='#3f2a14';
+      else if(t===2)ctx.fillStyle='#14532d';
+      else ctx.fillStyle='#166534';
+
+      ctx.fillRect(c*TILE,r*TILE,TILE,TILE);
+
+      ctx.strokeStyle='rgba(0,0,0,.16)';
+      ctx.strokeRect(c*TILE,r*TILE,TILE,TILE);
+    }
+  }
+
+  ctx.fillStyle='rgba(255,255,255,.06)';
+  for(var i=0;i<40;i++){
+    ctx.fillRect((i*53)%W,(i*29)%H,3,3);
+  }
+}
+
+function drawChests(){
+  var room=getRoom();
+
+  for(var i=0;i<room.chests.length;i++){
+    var ch=room.chests[i];
+
+    ctx.fillStyle=ch.opened?'#78350f':'#92400e';
+    ctx.fillRect(ch.x,ch.y,ch.w,ch.h);
+
+    ctx.fillStyle=ch.opened?'#451a03':'#facc15';
+    ctx.fillRect(ch.x+4,ch.y+8,ch.w-8,4);
+  }
+}
+
+function drawGate(){
+  var room=getRoom();
+  if(!room.gate)return;
+
+  var gx=room.gate.x*TILE;
+  var gy=room.gate.y*TILE;
+
+  ctx.fillStyle=room.gate.open?'#22c55e':'#7f1d1d';
+  ctx.fillRect(gx,gy,TILE,TILE);
+
+  ctx.fillStyle='#facc15';
+  ctx.fillRect(gx+12,gy+8,8,16);
+}
+
+function drawEnemies(){
+  var room=getRoom();
+
+  for(var i=0;i<room.enemies.length;i++){
+    var e=room.enemies[i];
+    if(!e.alive)continue;
+
+    if(e.type==='slime')ctx.fillStyle=e.hit>0?'#facc15':'#84cc16';
+    else if(e.type==='bat')ctx.fillStyle=e.hit>0?'#facc15':'#7c3aed';
+    else ctx.fillStyle=e.hit>0?'#facc15':'#dc2626';
+
+    ctx.fillRect(e.x,e.y,e.w,e.h);
+
+    ctx.fillStyle='#020617';
+    ctx.fillRect(e.x+5,e.y+7,4,4);
+    ctx.fillRect(e.x+14,e.y+7,4,4);
+  }
+}
+
+function drawPlayer(){
+  ctx.fillStyle=hurtTimer>0?'#facc15':'#38bdf8';
+  ctx.fillRect(player.x,player.y,player.w,player.h);
+
+  ctx.fillStyle='#1e3a8a';
+  if(player.dir==='up')ctx.fillRect(player.x+6,player.y,10,6);
+  if(player.dir==='down')ctx.fillRect(player.x+6,player.y+player.h-6,10,6);
+  if(player.dir==='left')ctx.fillRect(player.x,player.y+7,6,10);
+  if(player.dir==='right')ctx.fillRect(player.x+player.w-6,player.y+7,6,10);
+}
+
+function drawSword(){
+  if(attackTimer<=0)return;
+
+  var b=swordBox();
+  ctx.fillStyle='#e5e7eb';
+  ctx.fillRect(b.x,b.y,b.w,b.h);
+  ctx.strokeStyle='#facc15';
+  ctx.strokeRect(b.x,b.y,b.w,b.h);
+}
+
+function drawMessage(){
+  if(messageTimer<=0)return;
+
+  ctx.fillStyle='rgba(2,6,23,.82)';
+  ctx.fillRect(120,16,400,42);
+
+  ctx.fillStyle='#facc15';
+  ctx.font='18px Arial';
+  ctx.textAlign='center';
+  ctx.fillText(messageText,W/2,43);
+}
+
+function showMessage(t){
+  messageText=t;
+  messageTimer=2.2;
+}
+
+function updateHud(){
+  el('hp').innerText=player.hp;
+  el('keys').innerText=player.keys;
+  el('gems').innerText=player.gems;
+  el('roomLabel').innerText=(currentRoom.x+1)+','+(currentRoom.y+1);
+}
+
+function getRoom(){
+  return rooms[roomKey(currentRoom.x,currentRoom.y)];
+}
+
+function roomKey(x,y){
+  return x+','+y;
+}
+
+function rectHit(x1,y1,w1,h1,x2,y2,w2,h2){
+  return x1<x2+w2&&x1+w1>x2&&y1<y2+h2&&y1+h1>y2;
+}
+
+function distance(x1,y1,x2,y2){
+  var dx=x1-x2;
+  var dy=y1-y2;
+  return Math.sqrt(dx*dx+dy*dy);
+}
+
+function press(k){keysDown[k]=true;}
+function release(k){keysDown[k]=false;}
+
+window.addEventListener('keydown',function(e){
+  if(e.key==='ArrowUp'||e.key==='w'||e.key==='W')keysDown.up=true;
+  if(e.key==='ArrowDown'||e.key==='s'||e.key==='S')keysDown.down=true;
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')keysDown.left=true;
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')keysDown.right=true;
+  if(e.code==='Space'){
+    e.preventDefault();
+    attack();
+  }
+});
+
+window.addEventListener('keyup',function(e){
+  if(e.key==='ArrowUp'||e.key==='w'||e.key==='W')keysDown.up=false;
+  if(e.key==='ArrowDown'||e.key==='s'||e.key==='S')keysDown.down=false;
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')keysDown.left=false;
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')keysDown.right=false;
+});
+
+function saveData(){
+  return {
+    player:player,
+    currentRoom:currentRoom,
+    rooms:rooms
+  };
+}
+
+function loadData(data){
+  if(!data||!data.player||!data.rooms)return false;
+
+  player=data.player;
+  currentRoom=data.currentRoom||{x:1,y:1};
+  rooms=data.rooms;
+
+  updateHud();
+  render();
+  showMessage('Save loaded.');
+  return true;
+}
+
+function saveGame(){
+  try{
+    parent.postMessage({
+      type:'gameSaveStore',
+      gameId:'pixelquest',
+      username:saveUser,
+      data:saveData()
+    },'*');
+  }catch(e){}
+}
+
+function manualSave(){
+  saveGame();
+  showMessage('Game saved.');
+  render();
+}
+
+window.addEventListener('message',function(event){
+  var msg=event.data||{};
+
+  if(msg.type==='gameSaveData'&&msg.gameId==='pixelquest'){
+    if(!loadData(msg.data)){
+      freshWorld();
+      render();
+    }
+  }
+
+  if(msg.type==='gameSetup'){
+    saveUser=getPlayerName();
+    el('meLabel').innerText=saveUser;
+    requestSave();
+  }
+});
+
+function requestSave(){
+  try{
+    parent.postMessage({
+      type:'gameSaveLoad',
+      gameId:'pixelquest',
+      username:saveUser
+    },'*');
+  }catch(e){
+    freshWorld();
+    render();
+  }
+}
+
+function safeBoot(){
+  saveUser=getPlayerName();
+  el('meLabel').innerText=saveUser;
+
+  freshWorld();
+  render();
+  requestSave();
+
+  setTimeout(function(){
+    render();
+  },300);
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){};
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',safeBoot);
+}else{
+  safeBoot();
+}
+</script>
+</body>
+</html>
