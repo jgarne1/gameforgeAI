@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Othello</title>
+<style>
+:root{--bg:#052e1b;--panel:#064e3b;--line:#10b981;--gold:#facc15;--dark:#111827;--light:#f8fafc;--blue:#38bdf8;--muted:#cbd5e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#047857,#022c22);color:white;text-align:center;overflow:hidden}
+.wrap{height:100vh;min-height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
+.top,.status,.game,.bottom{background:rgba(6,78,59,.92);border:1px solid rgba(255,255,255,.18);border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.28)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
+h2,h3{margin:0}
+button{padding:9px 12px;border-radius:11px;border:1px solid #94a3b8;background:#f8fafc;color:#111;font-weight:bold;cursor:pointer}
+button.gold{background:var(--gold)}
+.status{padding:8px}
+.statusMain{font-size:20px;font-weight:bold}
+.muted{font-size:12px;color:var(--muted)}
+.game{display:grid;grid-template-columns:1fr 340px;gap:12px;padding:12px;min-height:0}
+.boardPanel,.sidePanel{background:rgba(2,44,34,.82);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;min-height:0}
+.board{display:grid;grid-template-columns:repeat(8,64px);grid-template-rows:repeat(8,64px);gap:5px;justify-content:center;margin:auto;background:#042f24;border:7px solid #4a2a12;border-radius:22px;padding:12px;box-shadow:inset 0 0 30px rgba(0,0,0,.4),0 18px 35px rgba(0,0,0,.35)}
+.cell{width:64px;height:64px;border-radius:10px;background:#059669;border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.cell:hover{outline:3px solid var(--gold)}
+.cell.disabled{cursor:not-allowed}
+.disc{width:48px;height:48px;border-radius:50%;box-shadow:inset -8px -8px 14px rgba(0,0,0,.28),inset 5px 5px 10px rgba(255,255,255,.18),0 4px 8px rgba(0,0,0,.35);animation:pop .22s ease}
+.disc.dark{background:#111827}
+.disc.light{background:#f8fafc}
+@keyframes pop{0%{transform:scale(.2) rotateY(90deg)}100%{transform:scale(1) rotateY(0)}}
+.legal:after{content:"";width:18px;height:18px;border-radius:50%;background:rgba(250,204,21,.75);box-shadow:0 0 12px rgba(250,204,21,.9)}
+.last{outline:4px solid var(--blue)}
+.card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px;margin-bottom:10px}
+.scoreGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scoreBox{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px}
+.bigScore{font-size:36px;font-weight:900}
+.player{padding:8px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);margin:6px 0}
+.player.turn{outline:3px solid var(--gold)}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
+.log{height:78px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:8px;font-size:13px}
+.rulesMini{text-align:left;font-size:13px;line-height:1.35;color:#e5e7eb}
+@media(max-width:900px){.game{grid-template-columns:1fr}.board{grid-template-columns:repeat(8,40px);grid-template-rows:repeat(8,40px);gap:3px;padding:8px}.cell{width:40px;height:40px;border-radius:7px}.disc{width:30px;height:30px}.sidePanel{max-height:290px;overflow:auto}}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Othello</h2>
+    <div>
+      <span id="meLabel" class="badge"></span>
+      <button class="gold" onclick="newGame(true)">New Game</button>
+    </div>
+  </div>
+
+  <div class="status">
+    <div id="statusMain" class="statusMain">Loading players...</div>
+    <div id="statusHelp" class="muted">Place a disc to trap opponent discs between your pieces.</div>
+  </div>
+
+  <div class="game">
+    <div class="boardPanel">
+      <div id="board" class="board"></div>
+    </div>
+
+    <div class="side
