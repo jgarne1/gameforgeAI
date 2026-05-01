@@ -95,16 +95,20 @@ button:disabled{opacity:.45;cursor:not-allowed}
   display:flex;
   align-items:center;
   justify-content:center;
-  pointer-events:none;
+  pointer-events:auto;
+}
+.overlay.hidden{
+  display:none;
 }
 .message{
   max-width:620px;
-  background:rgba(2,6,23,.88);
+  background:rgba(2,6,23,.92);
   border:2px solid rgba(255,255,255,.18);
   border-radius:20px;
   padding:20px;
   color:white;
   box-shadow:0 18px 45px rgba(0,0,0,.5);
+  pointer-events:auto;
 }
 .message h1{
   margin:0 0 8px;
@@ -178,15 +182,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
   <div class="controls">
     <div class="pad">
-      <span></span><button onpointerdown="press('forward')" onpointerup="release('forward')">▲</button><span></span>
-      <button onpointerdown="press('left')" onpointerup="release('left')">◀</button>
-      <button onpointerdown="press('back')" onpointerup="release('back')">▼</button>
-      <button onpointerdown="press('right')" onpointerup="release('right')">▶</button>
+      <span></span><button onpointerdown="press('forward')" onpointerup="release('forward')" onpointercancel="release('forward')">▲</button><span></span>
+      <button onpointerdown="press('left')" onpointerup="release('left')" onpointercancel="release('left')">◀</button>
+      <button onpointerdown="press('back')" onpointerup="release('back')" onpointercancel="release('back')">▼</button>
+      <button onpointerdown="press('right')" onpointerup="release('right')" onpointercancel="release('right')">▶</button>
     </div>
     <div class="actionRow">
-      <button class="blue" onpointerdown="press('turnLeft')" onpointerup="release('turnLeft')">Turn Left</button>
+      <button class="blue" onpointerdown="press('turnLeft')" onpointerup="release('turnLeft')" onpointercancel="release('turnLeft')">Turn Left</button>
       <button class="red" onclick="shoot()">Shoot</button>
-      <button class="blue" onpointerdown="press('turnRight')" onpointerup="release('turnRight')">Turn Right</button>
+      <button class="blue" onpointerdown="press('turnRight')" onpointerup="release('turnRight')" onpointercancel="release('turnRight')">Turn Right</button>
     </div>
     <div class="small">Single-file retro FPS. No external files needed.</div>
   </div>
@@ -202,7 +206,6 @@ var W=canvas.width;
 var H=canvas.height;
 var FOV=Math.PI/3;
 var DEPTH=16;
-var TILE=1;
 
 var map=[
   '############',
@@ -264,18 +267,21 @@ function resetWorld(){
 }
 
 function startGame(){
-  document.getElementById('overlay').style.display='none';
+  el('overlay').classList.add('hidden');
   running=true;
+  ended=false;
   lastTime=performance.now();
   requestAnimationFrame(loop);
 }
 
 function newGame(){
   resetWorld();
-  document.getElementById('overlay').style.display='flex';
-  document.getElementById('overlay').innerHTML=
-    '<div class="message"><h1>Dungeon Blaster</h1><p>Find the key, survive, and reach the green exit.</p><button class="gold" onclick="startGame()">Start Mission</button></div>';
   running=false;
+  ended=false;
+  keysDown={};
+  el('overlay').classList.remove('hidden');
+  el('overlay').innerHTML=
+    '<div class="message"><h1>Dungeon Blaster</h1><p>Find the key, survive, and reach the green exit.</p><p><b>Keyboard:</b> WASD move, ←/→ turn, Space shoot.</p><p><b>Touch:</b> use buttons below.</p><button class="gold" onclick="startGame()">Start Mission</button></div>';
   render();
 }
 
@@ -339,19 +345,20 @@ function updateEnemies(dt){
 
     var dx=player.x-e.x;
     var dy=player.y-e.y;
-    var dist=Math.sqrt(dx*dx+dy*dy);
+    var d=Math.sqrt(dx*dx+dy*dy);
 
-    if(dist<6&&hasLine(e.x,e.y,player.x,player.y)){
-      if(dist>0.75){
+    if(d<6&&hasLine(e.x,e.y,player.x,player.y)){
+      if(d>0.75){
         var sp=0.7*dt;
-        var nx=e.x+(dx/dist)*sp;
-        var ny=e.y+(dy/dist)*sp;
+        var nx=e.x+(dx/d)*sp;
+        var ny=e.y+(dy/d)*sp;
 
         if(!isWall(nx,e.y))e.x=nx;
         if(!isWall(e.x,ny))e.y=ny;
       }else{
         player.hp-=20*dt;
         flash=0.08;
+
         if(player.hp<=0){
           player.hp=0;
           lose();
@@ -380,8 +387,7 @@ function checkPickups(){
     var p=pickups[i];
     if(p.taken)continue;
 
-    var d=dist(player.x,player.y,p.x,p.y);
-    if(d<0.55){
+    if(dist(player.x,player.y,p.x,p.y)<0.55){
       p.taken=true;
 
       if(p.type==='key')player.keys++;
@@ -498,7 +504,6 @@ function castRay(angle){
 
     if(isWall(x,y)){
       var mx=Math.floor(x);
-      var my=Math.floor(y);
       return {dist:distRay,side:mx!==lastX?'x':'y'};
     }
 
@@ -677,8 +682,8 @@ function lose(){
 }
 
 function showOverlay(title,text){
-  document.getElementById('overlay').style.display='flex';
-  document.getElementById('overlay').innerHTML=
+  el('overlay').classList.remove('hidden');
+  el('overlay').innerHTML=
     '<div class="message"><h1>'+escapeHtml(title)+'</h1><p>'+escapeHtml(text)+'</p><button class="gold" onclick="newGame()">New Run</button></div>';
 }
 
