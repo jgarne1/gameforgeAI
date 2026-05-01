@@ -306,8 +306,8 @@ function update(dt){
   if(keysDown.turnLeft)player.a-=rotSpeed;
   if(keysDown.turnRight)player.a+=rotSpeed;
 
-  if(keysDown.left)tryMove(-Math.sin(player.a)*moveSpeed,Math.cos(player.a)*moveSpeed);
-  if(keysDown.right)tryMove(Math.sin(player.a)*moveSpeed,-Math.cos(player.a)*moveSpeed);
+  if(keysDown.left)tryMove(Math.sin(player.a)*moveSpeed,-Math.cos(player.a)*moveSpeed);
+  if(keysDown.right)tryMove(-Math.sin(player.a)*moveSpeed,Math.cos(player.a)*moveSpeed);
   if(keysDown.forward)tryMove(Math.cos(player.a)*moveSpeed,Math.sin(player.a)*moveSpeed);
   if(keysDown.back)tryMove(-Math.cos(player.a)*moveSpeed,-Math.sin(player.a)*moveSpeed);
 
