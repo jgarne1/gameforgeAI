@@ -97,4 +97,62 @@
     },
     "description": "A heavy impact that may stun."
   }
+   "dino_chomp": {
+    "name": "Dino Chomp",
+    "type": "earth",
+    "category": "physical",
+    "power": 48,
+    "accuracy": 88,
+    "crit": 10,
+    "status": {
+      "effect": "defense_down",
+      "chance": 18,
+      "amount": 2,
+      "duration": 3
+    },
+    "description": "A heavy prehistoric bite that may lower defense."
+  },
+  "tail_thump": {
+    "name": "Tail Thump",
+    "type": "normal",
+    "category": "physical",
+    "power": 36,
+    "accuracy": 95,
+    "crit": 5,
+    "status": {
+      "effect": "stun",
+      "chance": 10,
+      "duration": 1
+    },
+    "description": "A solid tail hit with a small chance to stun."
+  },
+  "wing_gust": {
+    "name": "Wing Gust",
+    "type": "fire",
+    "category": "special",
+    "power": 34,
+    "accuracy": 96,
+    "crit": 7,
+    "status": {
+      "effect": "slow",
+      "chance": 18,
+      "duration": 2
+    },
+    "description": "A heated gust that may slow the target."
+  },
+  "flame_breath": {
+    "name": "Flame Breath",
+    "type": "fire",
+    "category": "special",
+    "power": 52,
+    "accuracy": 84,
+    "crit": 9,
+    "status": {
+      "effect": "burn",
+      "chance": 30,
+      "duration": 3
+    },
+    "description": "A powerful breath attack that may burn."
+  }
+
 }
