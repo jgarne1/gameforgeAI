@@ -383,6 +383,48 @@ const PET_SPECIES={
   emberwing:{name:'Emberwing',type:'fire',emoji:'🐉',base:{hp:24,attack:7,defense:5,speed:7},moves:['tackle','ember_nip','wing_gust']}
 };
 
+
+const HATCH_TYPES=['fire','water','nature','shadow','earth'];
+
+// Hatch influence is accumulated across the egg's full care history. No single last action determines the species.
+const TRAIT_TYPE_INFLUENCE={
+  warm:{fire:4,earth:1},
+  cold:{water:3,shadow:1},
+  wet:{water:3,nature:1},
+  dry:{earth:3,shadow:1},
+  light:{nature:3,fire:1},
+  dark:{shadow:3,earth:1}
+};
+
+const SPECIES_HATCH_REGISTRY={
+  flarecub:{type:'fire',rarity:'common',weight:100},
+  emberwing:{type:'fire',rarity:'rare',weight:24},
+  frostfin:{type:'water',rarity:'common',weight:100},
+  leafbun:{type:'nature',rarity:'common',weight:100},
+  shadepup:{type:'shadow',rarity:'common',weight:100},
+  pebblet:{type:'earth',rarity:'common',weight:100},
+  chompasaur:{type:'earth',rarity:'rare',weight:24}
+};
+
+const HATCH_RARITY_BONUS={
+  common:1,
+  uncommon:.65,
+  rare:.42,
+  epic:.16,
+  legendary:.05
+};
+
+const EGG_CARE_ACTIONS={
+  warm:{traits:{warm:1},affection:1,label:'kept the egg warm'},
+  cold:{traits:{cold:1},affection:1,label:'cooled the egg'},
+  wet:{traits:{wet:1},affection:1,label:'misted the egg'},
+  dry:{traits:{dry:1},affection:1,label:'dried the egg'},
+  light:{traits:{light:1},affection:1,label:'gave the egg light'},
+  dark:{traits:{dark:1},affection:1,label:'kept the egg shaded'},
+  balance:{balanced:true,affection:1,label:"balanced the egg's energy"},
+  bond:{traits:{},affection:2,label:'bonded quietly with the egg'}
+};
+
 const SHOP_ITEMS={
   berry:{name:'Berry',price:10,description:'Restores hunger.',effect:{hunger:18},questType:'feed'},
   sparkle_treat:{name:'Sparkle Treat',price:25,description:'Boosts happiness.',effect:{happiness:18}},
@@ -481,33 +523,76 @@ function grantReward(profile,pet,reward){
   return granted;
 }
 
+function buildHatchProfile(traits){
+  traits=traits||{};
+  let typeScores={};
+  HATCH_TYPES.forEach(type=>typeScores[type]=1);
+
+  Object.keys(TRAIT_TYPE_INFLUENCE).forEach(trait=>{
+    let amount=Number(traits[trait]||0);
+    let influence=TRAIT_TYPE_INFLUENCE[trait]||{};
+    Object.keys(influence).forEach(type=>{
+      typeScores[type]=(typeScores[type]||1)+(amount*Number(influence[type]||0));
+    });
+  });
+
+  let ranked=Object.keys(typeScores)
+    .map(type=>({type,score:Number(typeScores[type]||0)}))
+    .sort((a,b)=>b.score-a.score);
+
+  let dominant=ranked[0]||{type:'fire',score:1};
+  let second=ranked[1]||{type:'water',score:1};
+  let totalTraits=Object.values(traits).reduce((sum,x)=>sum+Number(x||0),0);
+  let balanced=totalTraits>=8&&(dominant.score-second.score)<=4;
+
+  return {typeScores,ranked,dominantType:dominant.type,balanced,totalTraits};
+}
+
+function chooseHatchType(traits){
+  let profile=buildHatchProfile(traits);
+  let choices=profile.ranked.map(x=>({key:x.type,weight:Math.max(1,x.score)}));
+  return weightedPick(choices).key;
+}
+
+function chooseSpeciesForType(type,traits){
+  let profile=buildHatchProfile(traits);
+  let entries=Object.keys(SPECIES_HATCH_REGISTRY)
+    .map(id=>({id,...SPECIES_HATCH_REGISTRY[id]}))
+    .filter(x=>x.type===type);
+
+  if(profile.balanced&&Math.random()<.18){
+    entries=Object.keys(SPECIES_HATCH_REGISTRY).map(id=>({id,...SPECIES_HATCH_REGISTRY[id]}));
+  }
+
+  if(!entries.length){
+    entries=Object.keys(SPECIES_HATCH_REGISTRY).map(id=>({id,...SPECIES_HATCH_REGISTRY[id]}));
+  }
+
+  let choices=entries.map(x=>({
+    key:x.id,
+    weight:Math.max(1,Number(x.weight||10)*Number(HATCH_RARITY_BONUS[x.rarity]||1))
+  }));
+
+  return weightedPick(choices).key;
+}
+
 function hatchSpecies(traits){
-  let weights={
-    flarecub:10,
-    frostfin:10,
-    leafbun:10,
-    shadepup:10,
-    pebblet:10,
-    chompasaur:2,
-    emberwing:2
-  };
+  let type=chooseHatchType(traits||{});
+  return chooseSpeciesForType(type,traits||{});
+}
 
-  let warm=Number(traits.warm||0);
-  let cold=Number(traits.cold||0);
-  let wet=Number(traits.wet||0);
-  let dry=Number(traits.dry||0);
-  let light=Number(traits.light||0);
-  let dark=Number(traits.dark||0);
+function hatchPersonality(traits,affection){
+  traits=traits||{};
+  let weights={playful:10,lazy:10,aggressive:10,calm:10,curious:10,moody:10};
 
-  weights.flarecub+=warm*3+light;
-  weights.frostfin+=cold*3+wet*2;
-  weights.leafbun+=wet*2+light*2;
-  weights.shadepup+=dark*3+dry;
-  weights.pebblet+=dry*3+cold;
-  weights.chompasaur+=dry*3+warm*2;
-  weights.emberwing+=warm*3+light*3;
+  weights.aggressive+=Number(traits.warm||0)*1.5+Number(traits.dark||0)*.7;
+  weights.calm+=Number(traits.cold||0)*1.4+Number(traits.dry||0)*.7;
+  weights.curious+=Number(traits.wet||0)*1.1+Number(traits.light||0)*1.1;
+  weights.playful+=Number(traits.light||0)*1.2+Number(affection||0)*.15;
+  weights.lazy+=Number(traits.cold||0)*.7+Number(traits.dark||0)*.4;
+  weights.moody+=Math.abs(Number(traits.warm||0)-Number(traits.cold||0))*.35+Number(traits.dark||0)*.8;
 
-  let choices=Object.keys(weights).map(k=>({key:k,weight:Math.max(1,weights[k])}));
+  let choices=Object.keys(weights).map(key=>({key,weight:Math.max(1,weights[key])}));
   return weightedPick(choices).key;
 }
 
@@ -520,7 +605,7 @@ function hatchPet(pet){
   pet.name=species.name;
   pet.emoji=species.emoji;
   pet.type=species.type;
-  pet.personality=pet.personality||randomPersonality();
+  pet.personality=pet.personality||hatchPersonality(pet.eggTraits||{},pet.affection||0);
   pet.affection=Number(pet.affection||5);
   pet.stats.hp=species.base.hp;
   pet.stats.maxHp=species.base.hp;
@@ -1122,7 +1207,8 @@ app.get('/api/pet/profile',(req,res)=>{
     shop:SHOP_ITEMS,
     moves:moves(),
     zones:EXPLORE_ZONES,
-    daily:normalizeDaily(profile)
+    daily:normalizeDaily(profile),
+    hatchSystem:{types:HATCH_TYPES,traitInfluence:TRAIT_TYPE_INFLUENCE,speciesRegistry:SPECIES_HATCH_REGISTRY}
   });
 });
 
@@ -1194,21 +1280,23 @@ app.post('/api/pet/care-egg',(req,res)=>{
 
   if(!pet||pet.stage!=='egg')return res.json({error:'Active pet is not an egg'});
 
-  const actions={
-    warm:{trait:'warm',amount:1,label:'kept the egg warm'},
-    cold:{trait:'cold',amount:1,label:'cooled the egg'},
-    wet:{trait:'wet',amount:1,label:'misted the egg'},
-    dry:{trait:'dry',amount:1,label:'dried the egg'},
-    light:{trait:'light',amount:1,label:'gave the egg light'},
-    dark:{trait:'dark',amount:1,label:'kept the egg shaded'}
-  };
-
-  let a=actions[action];
+  let a=EGG_CARE_ACTIONS[action];
   if(!a)return res.json({error:'Unknown egg care action'});
 
-  pet.eggTraits[a.trait]=(pet.eggTraits[a.trait]||0)+a.amount;
+  if(a.balanced){
+    let traits=['warm','cold','wet','dry','light','dark'];
+    let lowest=traits
+      .map(trait=>({trait,value:Number(pet.eggTraits[trait]||0)}))
+      .sort((x,y)=>x.value-y.value)[0];
+    if(lowest)pet.eggTraits[lowest.trait]=Number(pet.eggTraits[lowest.trait]||0)+1;
+  }
+
+  Object.keys(a.traits||{}).forEach(trait=>{
+    pet.eggTraits[trait]=Number(pet.eggTraits[trait]||0)+Number(a.traits[trait]||0);
+  });
+
   pet.needs.happiness=clamp((pet.needs.happiness||70)+1,0,100);
-  pet.affection=clamp(Number(pet.affection||0)+1,0,100);
+  pet.affection=clamp(Number(pet.affection||0)+Number(a.affection||1),0,100);
   pet.lastUpdated=Date.now();
 
   trackQuest(profile,'eggCare',1);
