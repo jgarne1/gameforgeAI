@@ -264,37 +264,38 @@ button,input,select{font-family:inherit}
 @keyframes tapBounce{0%{transform:scale(1)}45%{transform:scale(1.13) translateY(-8px)}100%{transform:scale(1)}}
 
 
-/* Compact stage HUD: quick needs and single progression bar live with the pet, not as bulky dashboard cards. */
+/* Compact stage HUD: light-touch needs and progression live at the top of the pet scene so they never fight the action dock. */
 .stageVitals{
   position:absolute;
   left:50%;
-  top:calc(50% + 164px);
+  top:12px;
   transform:translateX(-50%);
   z-index:11;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
-  padding:8px 10px;
+  gap:5px;
+  padding:4px 6px;
   border-radius:999px;
-  background:rgba(15,23,42,.54);
+  background:rgba(15,23,42,.30);
   color:white;
-  border:1px solid rgba(255,255,255,.28);
-  box-shadow:0 16px 40px rgba(15,23,42,.22);
-  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 8px 20px rgba(15,23,42,.13);
+  backdrop-filter:blur(10px);
+  opacity:.82;
   pointer-events:none;
 }
 .stageVital{
-  min-width:64px;
+  min-width:45px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:5px;
-  padding:6px 9px;
+  gap:4px;
+  padding:4px 6px;
   border-radius:999px;
-  background:rgba(255,255,255,.16);
-  border:1px solid rgba(255,255,255,.18);
-  font-size:13px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:11px;
   font-weight:1000;
   letter-spacing:.1px;
 }
@@ -304,17 +305,22 @@ button,input,select{font-family:inherit}
 .stageProgressBox{
   position:absolute;
   left:50%;
-  top:calc(50% + 215px);
+  top:46px;
   transform:translateX(-50%);
   z-index:11;
-  width:min(440px,calc(100% - 36px));
-  padding:9px 11px;
-  border-radius:18px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(148,163,184,.34);
-  box-shadow:0 16px 36px rgba(15,23,42,.14);
-  backdrop-filter:blur(14px);
+  width:min(300px,calc(100% - 60px));
+  padding:5px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.42);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 8px 20px rgba(15,23,42,.10);
+  backdrop-filter:blur(10px);
+  opacity:.78;
   pointer-events:none;
+}
+.petStage:hover .stageVitals,
+.petStage:hover .stageProgressBox{
+  opacity:.96;
 }
 .stageProgressTop{
   display:flex;
@@ -322,14 +328,14 @@ button,input,select{font-family:inherit}
   justify-content:space-between;
   gap:8px;
   color:#334155;
-  font-size:12px;
+  font-size:10px;
   font-weight:1000;
-  margin-bottom:6px;
+  margin-bottom:3px;
 }
 .stageProgressTrack{
-  height:10px;
+  height:5px;
   border-radius:999px;
-  background:rgba(148,163,184,.24);
+  background:rgba(148,163,184,.20);
   overflow:hidden;
 }
 .stageProgressFill{
@@ -771,9 +777,9 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   .petOrb{width:260px;height:260px}
   .petImg{width:175px;height:175px}
   .petEmoji{font-size:112px}
-  .stageVitals{top:calc(50% + 137px);gap:5px;padding:7px}
-  .stageVital{min-width:52px;font-size:12px;padding:5px 7px}
-  .stageProgressBox{top:calc(50% + 183px)}
+  .stageVitals{top:10px;gap:4px;padding:4px 5px}
+  .stageVital{min-width:42px;font-size:10px;padding:3px 5px}
+  .stageProgressBox{top:42px;width:min(260px,calc(100% - 44px));padding:5px 6px}
   .petOverview{grid-template-columns:1fr}
 }
 </style>
