@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pet Battle Arena</title>
+<style>
+:root{
+  --bg:#07111f;
+  --card:rgba(255,255,255,.88);
+  --glass:rgba(255,255,255,.72);
+  --line:rgba(255,255,255,.35);
+  --ink:#172033;
+  --muted:#64748b;
+  --blue:#2563eb;
+  --red:#dc2626;
+  --green:#16a34a;
+  --gold:#facc15;
+  --purple:#7c3aed;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 20% 12%,rgba(56,189,248,.35),transparent 25%),
+    radial-gradient(circle at 82% 18%,rgba(248,113,113,.32),transparent 26%),
+    radial-gradient(circle at 50% 90%,rgba(34,197,94,.25),transparent 35%),
+    linear-gradient(135deg,#dbeafe,#f8fafc 48%,#fee2e2);
+}
+
+.wrap{
+  height:100vh;
+  min-height:650px;
+  padding:14px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:12px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:12px 16px;
+  box-shadow:0 20px 50px rgba(15,23,42,.14);
+}
+
+h1,h2,h3{margin:0}
+
+.muted{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.75);
+  border:1px solid rgba(148,163,184,.35);
+  font-size:12px;
+  font-weight:900;
+}
+
+.arena{
+  min-height:0;
+  display:grid;
+  grid-template-columns:1fr 320px 1fr;
+  gap:12px;
+}
+
+.side{
+  min-height:0;
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:14px;
+  box-shadow:0 20px 55px rgba(15,23,42,.13);
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:10px;
+}
+
+.center{
+  min-height:0;
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:12px;
+}
+
+.statusCard,.logCard{
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:14px;
+  box-shadow:0 20px 55px rgba(15,23,42,.13);
+}
+
+.log{
+  height:100%;
+  min-height:300px;
+  overflow:auto;
+  background:#fffbea;
+  border:1px solid #d6bd6b;
+  border-radius:18px;
+  padding:10px;
+  line-height:1.35;
+  font-size:13px;
+}
+
+.petStage{
+  position:relative;
+  overflow:hidden;
+  border-radius:26px;
+  background:
+    radial-gradient(circle at 50% 40%,rgba(255,255,255,.95),rgba(255,255,255,.28) 35%,transparent 62%),
+    linear-gradient(180deg,#bfdbfe,#dcfce7);
+  border:1px solid rgba(255,255,255,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:300px;
+}
+
+.petStage.enemy{
+  background:
+    radial-gradient(circle at 50% 40%,rgba(255,255,255,.95),rgba(255,255,255,.28) 35%,transparent 62%),
+    linear-gradient(180deg,#fecaca,#fde68a);
+}
+
+.petImg{
+  width:190px;
+  height:190px;
+  object-fit:contain;
+  filter:drop-shadow(0 20px 20px rgba(15,23,42,.25));
+  animation:idle 2.4s ease-in-out infinite;
+}
+
+.petEmoji{
+  font-size:110px;
+  filter:drop-shadow(0 20px 20px rgba(15,23,42,.25));
+  animation:idle 2.4s ease-in-out infinite;
+}
+
+.petImg.hide,.petEmoji.hide{display:none}
+
+@keyframes idle{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-10px) scale(1.04)}
+}
+
+.attackAnim{
+  animation:attack .45s ease;
+}
+
+.hitAnim{
+  animation:hit .45s ease;
+}
+
+@keyframes attack{
+  0%{transform:translateX(0) scale(1)}
+  50%{transform:translateX(26px) scale(1.12)}
+  100%{transform:translateX(0) scale(1)}
+}
+
+@keyframes hit{
+  0%{filter:brightness(1)}
+  25%{filter:brightness(2) drop-shadow(0 0 16px rgba(220,38,38,.8))}
+  50%{transform:translateX(-10px)}
+  100%{filter:brightness(1)}
+}
+
+.hpBar{
+  height:14px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#e5e7eb;
+  margin:8px 0;
+}
+
+.hpFill{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,#16a34a,#86efac);
+  border-radius:999px;
+  transition:width .35s ease;
+}
+
+.hpFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
+.hpFill.low{background:linear-gradient(90deg,#dc2626,#fb7185)}
+
+.statGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  font-size:12px;
+}
+
+.stat{
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(148,163,184,.28);
+  border-radius:14px;
+  padding:8px;
+}
+
+.controls{
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:12px;
+  box-shadow:0 20px 55px rgba(15,23,42,.13);
+}
+
+.moves{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+button{
+  border:1px solid #cbd5e1;
+  background:#fff;
+  border-radius:16px;
+  padding:11px;
+  cursor:pointer;
+  font-weight:900;
+  transition:.15s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(15,23,42,.14);
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+.moveBtn{
+  text-align:left;
+}
+
+.moveBtn strong{display:block}
+.moveBtn span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+
+.primary{background:linear-gradient(135deg,var(--blue),#1d4ed8);color:white;border-color:var(--blue)}
+.good{background:linear-gradient(135deg,var(--green),#22c55e);color:white;border-color:var(--green)}
+.gold{background:linear-gradient(135deg,var(--gold),#f59e0b);color:#111827;border-color:var(--gold)}
+.danger{background:linear-gradient(135deg,var(--red),#ef4444);color:white;border-color:var(--red)}
+
+.winner{
+  font-size:22px;
+  font-weight:900;
+  text-align:center;
+  padding:12px;
+  border-radius:18px;
+  background:rgba(250,204,21,.35);
+  border:1px solid rgba(245,158,11,.5);
+}
+
+@media(max-width:1000px){
+  body{overflow:auto}
+  .wrap{height:auto}
+  .arena{grid-template-columns:1fr}
+  .moves{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Pet Battle Arena</h1>
+      <div class="muted">Turn-based companion battles. First test version: no permanent rewards yet.</div>
+    </div>
+    <div>
+      <span id="meBadge" class="badge">Loading</span>
+      <span id="turnBadge" class="badge">Waiting</span>
+    </div>
+  </div>
+
+  <div class="arena">
+    <div class="side">
+      <div>
+        <h2 id="p0Name">Player 1</h2>
+        <div id="p0Sub" class="muted">Loading...</div>
+        <div class="hpBar"><div id="p0Hp" class="hpFill"></div></div>
+        <div id="p0HpText" class="muted"></div>
+      </div>
+
+      <div class="petStage">
+        <img id="p0Img" class="petImg hide">
+        <div id="p0Emoji" class="petEmoji">🥚</div>
+      </div>
+
+      <div id="p0Stats" class="statGrid"></div>
+    </div>
+
+    <div class="center">
+      <div class="statusCard">
+        <h2 id="statusTitle">Loading pets...</h2>
+        <p id="statusText" class="muted">Both seated players need active pets.</p>
+        <div id="winnerBox"></div>
+      </div>
+
+      <div class="logCard">
+        <h3>Battle Log</h3>
+        <div id="battleLog" class="log"></div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div>
+        <h2 id="p1Name">Player 2</h2>
+        <div id="p1Sub" class="muted">Loading...</div>
+        <div class="hpBar"><div id="p1Hp" class="hpFill"></div></div>
+        <div id="p1HpText" class="muted"></div>
+      </div>
+
+      <div class="petStage enemy">
+        <img id="p1Img" class="petImg hide">
+        <div id="p1Emoji" class="petEmoji">🥚</div>
+      </div>
+
+      <div id="p1Stats" class="statGrid"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div id="moveButtons" class="moves"></div>
+  </div>
+</div>
+
+<script>
+var GAME_META={id:'petbattle',name:'Pet Battle Arena',minPlayers:2,maxPlayers:2,seats:2};
+
+var players=[];
+var mySeat=null;
+var profiles={};
+var moveBook={};
+var state=null;
+var ready=false;
+
+function el(id){return document.getElementById(id);}
+
+function receiveSetup(setupPlayers,setupSeat){
+  players=(setupPlayers||[]).slice(0,2);
+  mySeat=setupSeat;
+
+  meBadge.innerText=mySeat===null||mySeat===undefined?'Spectator':'Seat '+(mySeat+1);
+
+  if(players.length<2){
+    setStatus('Waiting for 2 players','Pet Battle needs two seated players.');
+    drawEmpty();
+    return;
+  }
+
+  loadProfiles();
+}
+
+async function loadProfiles(){
+  try{
+    profiles={};
+    moveBook={};
+
+    for(var i=0;i<players.length;i++){
+      var name=players[i].name;
+      var res=await fetch('/api/pet/profile?user='+encodeURIComponent(name));
+      var data=await res.json();
+
+      if(data.error||!data.ok){
+        setStatus('Could not load '+name,data.error||'Pet profile unavailable.');
+        return;
+      }
+
+      profiles[i]=data.profile;
+      moveBook=data.moves||moveBook||{};
+    }
+
+    ready=true;
+
+    if(mySeat===0&&!state){
+      state=freshBattle();
+      sync();
+    }
+
+    if(state)draw();
+    else setStatus('Waiting for host','Seat 1 is preparing the battle.');
+  }catch(err){
+    setStatus('Battle load failed',err.message);
+  }
+}
+
+function activePetForSeat(seat){
+  var profile=profiles[seat];
+  if(!profile)return null;
+  return profile.pets[profile.activePetId];
+}
+
+function battlePet(seat){
+  var p=activePetForSeat(seat);
+  if(!p)return null;
+
+  return {
+    owner:players[seat].name,
+    name:p.name||'Pet',
+    stage:p.stage||'egg',
+    species:p.species||'egg',
+    type:p.type||'normal',
+    emoji:p.emoji||'🥚',
+    stats:{
+      level:Number((p.stats&&p.stats.level)||1),
+      hp:Number((p.stats&&p.stats.hp)||20),
+      maxHp:Number((p.stats&&p.stats.maxHp)||20),
+      attack:Number((p.stats&&p.stats.attack)||5),
+      defense:Number((p.stats&&p.stats.defense)||4),
+      speed:Number((p.stats&&p.stats.speed)||5)
+    },
+    moves:(p.moves&&p.moves.length?p.moves:['tackle']).slice(0,4)
+  };
+}
+
+function freshBattle(){
+  var a=battlePet(0);
+  var b=battlePet(1);
+
+  var first=a.stats.speed>=b.stats.speed?0:1;
+
+  return {
+    pets:[a,b],
+    hp:[a.stats.maxHp,b.stats.maxHp],
+    turn:first,
+    round:1,
+    winner:null,
+    log:[
+      'Battle started: '+a.name+' vs '+b.name+'.',
+      (first===0?a.name:b.name)+' moves first.'
+    ],
+    lastAction:null
+  };
+}
+
+function drawEmpty(){
+  p0Name.innerText=players[0]?players[0].name:'Seat 1';
+  p1Name.innerText=players[1]?players[1].name:'Seat 2';
+  p0Sub.innerText='No pet loaded';
+  p1Sub.innerText='No pet loaded';
+  moveButtons.innerHTML='';
+}
+
+function draw(){
+  if(!state)return;
+
+  drawPetSide(0);
+  drawPetSide(1);
+  drawLog();
+  drawMoves();
+
+  if(state.winner!==null){
+    var winnerName=players[state.winner].name;
+    setStatus('Battle Complete',winnerName+' wins the battle!');
+    winnerBox.innerHTML='<div class="winner">🏆 '+escapeHtml(winnerName)+' wins!</div>';
+    turnBadge.innerText='Finished';
+  }else{
+    winnerBox.innerHTML='';
+    var turnName=players[state.turn].name;
+    setStatus('Current Turn',turnName+' chooses a move.');
+    turnBadge.innerText='Turn: '+turnName;
+  }
+
+  if(state.lastAction){
+    pulseAction(state.lastAction.actor,state.lastAction.target);
+  }
+}
+
+function drawPetSide(seat){
+  var pet=state.pets[seat];
+  var hp=state.hp[seat];
+  var pct=Math.max(0,Math.min(100,Math.floor(hp/pet.stats.maxHp*100)));
+  var hpFill=el('p'+seat+'Hp');
+
+  el('p'+seat+'Name').innerText=players[seat].name;
+  el('p'+seat+'Sub').innerText=pet.name+' · '+pet.type+' · Lv '+pet.stats.level;
+  el('p'+seat+'HpText').innerText=hp+' / '+pet.stats.maxHp+' HP';
+
+  hpFill.style.width=pct+'%';
+  hpFill.className='hpFill '+(pct<30?'low':pct<60?'mid':'');
+
+  el('p'+seat+'Stats').innerHTML=
+    stat('Attack',pet.stats.attack)+
+    stat('Defense',pet.stats.defense)+
+    stat('Speed',pet.stats.speed)+
+    stat('Moves',pet.moves.length);
+
+  setPetVisual(seat,pet);
+}
+
+function setPetVisual(seat,pet){
+  var img=el('p'+seat+'Img');
+  var emoji=el('p'+seat+'Emoji');
+
+  emoji.innerText=pet.emoji||'🥚';
+
+  var src=petAssetPath(pet);
+
+  img.onload=function(){
+    img.classList.remove('hide');
+    emoji.classList.add('hide');
+  };
+
+  img.onerror=function(){
+    img.classList.add('hide');
+    emoji.classList.remove('hide');
+  };
+
+  if(img.src.indexOf(src)===-1){
+    img.src=src;
+  }
+}
+
+function petAssetPath(pet){
+  if(!pet||pet.stage==='egg'){
+    return '/assets/pets/egg/egg_idle.png';
+  }
+
+  var species=pet.species||'egg';
+  var stage=pet.stage||'baby';
+  var file=stage==='adult'?'adult':(stage==='young'||stage==='teen')?'young':'baby';
+
+  return '/assets/pets/'+species+'/'+file+'.png';
+}
+
+function stat(k,v){
+  return '<div class="stat"><b>'+escapeHtml(k)+'</b><br>'+escapeHtml(v)+'</div>';
+}
+
+function drawLog(){
+  battleLog.innerHTML=state.log.slice(-20).map(function(x){
+    return '• '+escapeHtml(x);
+  }).join('<br>');
+  battleLog.scrollTop=battleLog.scrollHeight;
+}
+
+function drawMoves(){
+  var html='';
+
+  if(state.winner!==null){
+    moveButtons.innerHTML='<button class="gold" onclick="newBattle()">New Battle</button>';
+    return;
+  }
+
+  if(mySeat!==state.turn){
+    moveButtons.innerHTML='<button disabled>Waiting for opponent...</button>';
+    return;
+  }
+
+  var pet=state.pets[mySeat];
+
+  pet.moves.forEach(function(id){
+    var m=moveBook[id]||{name:id,type:'normal',power:30,accuracy:95};
+    html+='<button class="moveBtn primary" onclick="useMove(\''+id+'\')">'+
+      '<strong>'+escapeHtml(m.name)+'</strong>'+
+      '<span>'+escapeHtml(m.type||'normal')+' · Power '+Number(m.power||30)+' · Acc '+Number(m.accuracy||95)+'%</span>'+
+    '</button>';
+  });
+
+  moveButtons.innerHTML=html;
+}
+
+function useMove(moveId){
+  if(!state||state.winner!==null)return;
+  if(mySeat!==state.turn)return;
+
+  var actor=mySeat;
+  var target=actor===0?1:0;
+  var attacker=state.pets[actor];
+  var defender=state.pets[target];
+  var move=moveBook[moveId]||{name:moveId,type:'normal',power:30,accuracy:95};
+
+  var roll=Math.random()*100;
+  var moveName=move.name||moveId;
+
+  if(roll>Number(move.accuracy||95)){
+    addLog(attacker.name+' used '+moveName+' but missed!');
+  }else{
+    var dmg=damage(attacker,defender,move);
+    state.hp[target]=Math.max(0,state.hp[target]-dmg);
+    addLog(attacker.name+' used '+moveName+' and dealt '+dmg+' damage.');
+
+    if(state.hp[target]<=0){
+      state.winner=actor;
+      addLog(defender.name+' fainted.');
+      addLog(players[actor].name+' wins!');
+    }
+  }
+
+  state.lastAction={actor:actor,target:target,move:moveId,time:Date.now()};
+
+  if(state.winner===null){
+    state.turn=target;
+    if(actor===1)state.round++;
+  }
+
+  draw();
+  sync();
+}
+
+function damage(attacker,defender,move){
+  var power=Number(move.power||30);
+  var atk=Number(attacker.stats.attack||5);
+  var def=Math.max(1,Number(defender.stats.defense||4));
+  var level=Number(attacker.stats.level||1);
+  var variance=0.85+(Math.random()*0.3);
+
+  var raw=((power/10)+(atk*1.8)+(level*1.5)-def)*variance;
+  var typeBonus=(move.type&&move.type===attacker.type)?1.15:1;
+
+  return Math.max(1,Math.floor(raw*typeBonus));
+}
+
+function pulseAction(actor,target){
+  var a=visiblePetEl(actor);
+  var t=visiblePetEl(target);
+
+  if(a){
+    a.classList.remove('attackAnim');
+    void a.offsetWidth;
+    a.classList.add('attackAnim');
+  }
+
+  if(t){
+    setTimeout(function(){
+      t.classList.remove('hitAnim');
+      void t.offsetWidth;
+      t.classList.add('hitAnim');
+    },180);
+  }
+}
+
+function visiblePetEl(seat){
+  var img=el('p'+seat+'Img');
+  if(img&&!img.classList.contains('hide'))return img;
+  return el('p'+seat+'Emoji');
+}
+
+function addLog(t){
+  state.log.push(t);
+  if(state.log.length>80)state.log.shift();
+}
+
+function setStatus(a,b){
+  statusTitle.innerText=a;
+  statusText.innerText=b||'';
+}
+
+function newBattle(){
+  if(mySeat!==0){
+    alert('Seat 1 starts new battles.');
+    return;
+  }
+
+  state=freshBattle();
+  draw();
+  sync();
+}
+
+function sync(){
+  window.sendMove({type:'battleState',state:state});
+}
+
+window.sendMove=function(data){
+  parent.postMessage({type:'move',data:data},'*');
+};
+
+window.onMove=function(data){
+  if(!data)return;
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+    return;
+  }
+
+  if(data.type==='battleState'){
+    state=data.state;
+    draw();
+  }
+};
+
+window.addEventListener('message',function(event){
+  var data=event.data||{};
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat);
+  }
+
+  if(data.type==='gameMove'&&window.onMove){
+    window.onMove(data.data);
+  }
+});
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+drawEmpty();
+receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+
+setTimeout(function(){
+  receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+},250);
+</script>
+</body>
+</html>
