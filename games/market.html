@@ -8,31 +8,18 @@ GameForge AI Marketplace maintainer notes for future AI chats:
 - This is a direct companion experience loaded by index.html like PetWorld, not a multiplayer room game.
 - Any action that changes coins, inventory, pets, listings, or shop settings should notify the parent with {type:'petUpdated'}.
 - Marketplace transfers must stay server-authoritative. Never move coins/items only in this client file.
+- Market Board groups listings by item and buys from the cheapest listing to avoid clutter.
 - Forum House is intentionally shown as coming soon; implement forum APIs only after marketplace basics are stable.
 -->
 <style>
 :root{
-  --sky:#dff7ff;
-  --sky2:#f8e7b0;
-  --grass:#57c77b;
-  --path:#d7b57a;
-  --wood:#8b5a2b;
-  --panel:rgba(255,255,255,.86);
-  --panel2:rgba(255,255,255,.72);
-  --ink:#1f2937;
-  --muted:#64748b;
-  --line:rgba(15,23,42,.16);
-  --blue:#2563eb;
-  --gold:#f59e0b;
-  --green:#16a34a;
-  --red:#dc2626;
-  --shadow:0 18px 45px rgba(15,23,42,.18);
+  --sky:#dff7ff;--sky2:#f8e7b0;--panel:rgba(255,255,255,.86);--ink:#1f2937;
+  --muted:#64748b;--line:rgba(15,23,42,.16);--blue:#2563eb;--gold:#f59e0b;
+  --green:#16a34a;--red:#dc2626;--shadow:0 18px 45px rgba(15,23,42,.18);
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  color:var(--ink);
+  margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);
   background:
     radial-gradient(circle at 18% 12%,rgba(255,255,255,.75),transparent 18%),
     linear-gradient(180deg,var(--sky),var(--sky2) 44%,#c9f4ca 44%,#7fd98d 100%);
@@ -40,13 +27,8 @@ body{
 }
 button,input,select{font-family:inherit}
 button{
-  border:1px solid rgba(15,23,42,.16);
-  border-radius:14px;
-  padding:10px 12px;
-  font-weight:900;
-  cursor:pointer;
-  background:white;
-  color:var(--ink);
+  border:1px solid rgba(15,23,42,.16);border-radius:14px;padding:10px 12px;
+  font-weight:900;cursor:pointer;background:white;color:var(--ink);
   box-shadow:0 6px 15px rgba(15,23,42,.10);
 }
 button:hover{transform:translateY(-1px)}
@@ -57,59 +39,30 @@ button.danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:white}
 button.ghost{background:rgba(255,255,255,.55)}
 button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 input,select{
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px;
-  background:rgba(255,255,255,.86);
-  color:var(--ink);
+  border:1px solid var(--line);border-radius:12px;padding:10px;
+  background:rgba(255,255,255,.86);color:var(--ink);
 }
 .wrap{
-  height:650px;
-  min-height:650px;
-  display:grid;
-  grid-template-rows:auto 1fr;
-  gap:10px;
-  padding:12px;
-  overflow:hidden;
+  height:650px;min-height:650px;display:grid;grid-template-rows:auto 1fr;
+  gap:10px;padding:12px;overflow:hidden;
 }
 .topBar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:12px 14px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(10px);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--line);border-radius:24px;
+  padding:12px 14px;box-shadow:var(--shadow);backdrop-filter:blur(10px);
 }
 .title h1{margin:0;font-size:24px;letter-spacing:-.8px}
 .title p{margin:3px 0 0;color:var(--muted);font-size:13px}
 .wallet{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .pill{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.72);
-  padding:7px 10px;
-  font-size:12px;
-  font-weight:900;
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.72);
+  padding:7px 10px;font-size:12px;font-weight:900;
 }
-.main{
-  min-height:0;
-  display:grid;
-  grid-template-columns:1.15fr .85fr;
-  gap:10px;
-}
-.mapPanel,.sidePanel,.modalCard{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:28px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(10px);
+.main{min-height:0;display:grid;grid-template-columns:1.15fr .85fr;gap:10px}
+.mapPanel,.sidePanel{
+  background:var(--panel);border:1px solid var(--line);border-radius:28px;
+  box-shadow:var(--shadow);backdrop-filter:blur(10px);
 }
 .mapPanel{position:relative;overflow:hidden;min-height:0}
 .mapSky{
@@ -120,49 +73,26 @@ input,select{
     linear-gradient(180deg,rgba(191,239,255,.78),rgba(253,236,179,.5) 42%,rgba(102,198,118,.54) 43%);
 }
 .path{
-  position:absolute;
-  left:50%;bottom:-120px;
-  width:520px;height:360px;
+  position:absolute;left:50%;bottom:-120px;width:520px;height:360px;
   transform:translateX(-50%);
   background:radial-gradient(ellipse at top,#e8ca91,#c89b58 70%);
-  clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);
-  opacity:.9;
+  clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);opacity:.9;
 }
 .marketMap{
-  position:relative;
-  height:100%;
-  min-height:500px;
-  padding:18px;
-  display:grid;
-  grid-template-areas:
-    "shop board"
-    "stalls forum";
-  gap:14px;
-  align-items:stretch;
+  position:relative;height:100%;min-height:500px;padding:18px;display:grid;
+  grid-template-areas:"shop board" "stalls forum";gap:14px;align-items:stretch;
 }
 .building{
-  position:relative;
-  border-radius:26px;
-  border:1px solid rgba(15,23,42,.14);
+  position:relative;border-radius:26px;border:1px solid rgba(15,23,42,.14);
   background:rgba(255,255,255,.70);
   box-shadow:0 14px 30px rgba(15,23,42,.16), inset 0 0 0 1px rgba(255,255,255,.45);
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  overflow:hidden;
-  cursor:pointer;
-  transition:.18s ease;
-  min-height:170px;
+  padding:16px;display:flex;flex-direction:column;justify-content:space-between;
+  overflow:hidden;cursor:pointer;transition:.18s ease;min-height:170px;
 }
 .building:hover{transform:translateY(-3px);box-shadow:0 20px 38px rgba(15,23,42,.20)}
 .building:before{
-  content:attr(data-icon);
-  position:absolute;
-  right:12px;bottom:5px;
-  font-size:76px;
-  opacity:.15;
-  line-height:1;
+  content:attr(data-icon);position:absolute;right:12px;bottom:5px;
+  font-size:76px;opacity:.15;line-height:1;
 }
 .building h2{margin:0;font-size:22px;letter-spacing:-.5px}
 .building p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.35;max-width:270px}
@@ -178,33 +108,38 @@ input,select{
 .panelHeader p{margin:2px 0 0;color:var(--muted);font-size:12px}
 .section{display:none}.section.active{display:block}
 .listingGrid{display:grid;grid-template-columns:1fr;gap:9px}
-.itemRow,.shopRow,.inventoryRow{
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.68);
-  border-radius:18px;
-  padding:11px;
-  display:grid;
-  grid-template-columns:48px 1fr auto;
-  gap:10px;
-  align-items:center;
+.itemRow,.shopRow{
+  border:1px solid var(--line);background:rgba(255,255,255,.68);border-radius:18px;
+  padding:11px;display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;
 }
 .itemIcon{
-  width:48px;height:48px;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#f8fafc,#dbeafe);
-  border:1px solid rgba(15,23,42,.12);
-  font-size:26px;
-  overflow:hidden;
+  width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#f8fafc,#dbeafe);border:1px solid rgba(15,23,42,.12);
+  font-size:26px;overflow:hidden;
 }
 .itemIcon img{width:42px;height:42px;object-fit:contain}
-.itemName{font-weight:900}.itemMeta{color:var(--muted);font-size:12px;margin-top:2px}
-.price{font-weight:1000;color:#b45309;white-space:nowrap}
+.itemName{font-weight:900}
+.itemMeta{color:var(--muted);font-size:12px;margin-top:2px;line-height:1.35}
+.price{font-weight:1000;color:#b45309;white-space:nowrap;margin-bottom:6px}
 .formGrid{display:grid;grid-template-columns:1fr 90px 100px;gap:8px;margin-bottom:10px}
 .shopSettings{border:1px solid var(--line);background:rgba(255,255,255,.6);border-radius:18px;padding:12px;margin-bottom:12px}
-.shopSettings .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.shopSettings input{flex:1;min-width:160px}
-.empty{color:var(--muted);background:rgba(255,255,255,.48);border:1px dashed rgba(15,23,42,.20);border-radius:18px;padding:16px;text-align:center}
-.toast{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;color:white;border-radius:999px;padding:10px 14px;box-shadow:0 12px 28px rgba(0,0,0,.22);display:none;z-index:5;font-size:13px;font-weight:900}
-.toast.show{display:block;animation:toast 2.4s ease forwards}@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}15%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,10px)}}
+.shopSettings .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.shopSettings input{flex:1;min-width:160px}
+.empty{
+  color:var(--muted);background:rgba(255,255,255,.48);border:1px dashed rgba(15,23,42,.20);
+  border-radius:18px;padding:16px;text-align:center;
+}
+.toast{
+  position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
+  background:#111827;color:white;border-radius:999px;padding:10px 14px;
+  box-shadow:0 12px 28px rgba(0,0,0,.22);display:none;z-index:5;font-size:13px;font-weight:900;
+}
+.toast.show{display:block;animation:toast 2.4s ease forwards}
+@keyframes toast{
+  0%{opacity:0;transform:translate(-50%,10px)}
+  15%,85%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,10px)}
+}
 @media(max-width:760px){
   .wrap{height:auto;min-height:650px;overflow:auto}
   .topBar{align-items:flex-start;flex-direction:column}
@@ -212,7 +147,8 @@ input,select{
   .marketMap{min-height:560px;grid-template-areas:"shop" "board" "stalls" "forum"}
   .building{min-height:125px}
   .formGrid{grid-template-columns:1fr}
-  .itemRow,.shopRow,.inventoryRow{grid-template-columns:42px 1fr}.itemRow button,.shopRow button,.inventoryRow button{grid-column:1/3}
+  .itemRow,.shopRow{grid-template-columns:42px 1fr}
+  .itemRow button,.shopRow button{grid-column:1/3}
 }
 </style>
 </head>
@@ -239,11 +175,11 @@ input,select{
           <div class="mini">NPC prices · always open</div>
         </div>
         <div class="building board" data-icon="📋" onclick="showSection('board')">
-          <div><h2>Market Board</h2><p>Browse player listings by price and quantity. This is the fastest way to trade.</p></div>
+          <div><h2>Market Board</h2><p>Grouped by item. Buy from the cheapest available listing.</p></div>
           <div class="mini" id="boardCount">0 active listings</div>
         </div>
         <div class="building stalls" data-icon="⛺" onclick="showSection('stalls')">
-          <div><h2>Player Stalls</h2><p>Visit open shops and see who is selling. Stalls add personality without slowing trading down.</p></div>
+          <div><h2>Player Stalls</h2><p>Visit open shops and see who is selling.</p></div>
           <div class="mini" id="stallCount">0 open stalls</div>
         </div>
         <div class="building forum locked" data-icon="🏛️" onclick="showToast('Forum House will open after marketplace basics are stable.')">
@@ -261,7 +197,7 @@ input,select{
       </div>
 
       <div id="section-board" class="section">
-        <div class="panelHeader"><div><h2>Market Board</h2><p>Buy player-listed items instantly.</p></div></div>
+        <div class="panelHeader"><div><h2>Market Board</h2><p>Only the cheapest listing is shown per item, with total supply and price range.</p></div></div>
         <div id="listingList" class="listingGrid"></div>
       </div>
 
@@ -274,6 +210,7 @@ input,select{
             <button class="primary" onclick="saveShopSettings()">Save</button>
           </div>
         </div>
+
         <h3>List an Item</h3>
         <div class="formGrid">
           <select id="sellItem"></select>
@@ -281,8 +218,10 @@ input,select{
           <input id="sellPrice" type="number" min="1" value="10" placeholder="Price">
         </div>
         <button class="gold" onclick="createListing()">Create Listing</button>
+
         <h3>Your Listings</h3>
         <div id="myListings" class="listingGrid"></div>
+
         <h3>Open Stalls</h3>
         <div id="shopList" class="listingGrid"></div>
       </div>
@@ -292,6 +231,7 @@ input,select{
 
 <script>
 const GAME_META={id:'market',name:'Marketplace',minPlayers:1,maxPlayers:1,seats:1};
+
 let players=[];
 let mySeat=0;
 let username='';
@@ -307,8 +247,8 @@ function itemIcon(id){return '/assets/items/'+id+'.png'}
 
 function receiveSetup(setupPlayers,setupSeat){
   players=Array.isArray(setupPlayers)?setupPlayers:[];
-  mySeat=setupSeat||0;
-  username=(players[mySeat]&&players[mySeat].name)||players[0]?.name||'guest';
+  mySeat=Number(setupSeat||0);
+  username=(players[mySeat]&&players[mySeat].name)||(players[0]&&players[0].name)||'guest';
   el('userPill').innerText=username;
   reloadAll();
 }
@@ -326,7 +266,6 @@ async function reloadAll(){
     let mine=await api('/api/market/profile?user='+encodeURIComponent(username));
     profile=mine.profile;
     items=mine.items||{};
-    listings=mine.listings||[];
     shops=mine.shops||[];
 
     let board=await api('/api/market/listings');
@@ -335,25 +274,78 @@ async function reloadAll(){
     items=board.items||items;
 
     draw();
-  }catch(err){showToast(err.message||'Marketplace failed to load.');}
+  }catch(err){
+    showToast(err.message||'Marketplace failed to load.');
+  }
+}
+
+function groupedListings(){
+  let grouped={};
+
+  listings.forEach(l=>{
+    if(!l||Number(l.quantity||0)<=0)return;
+
+    let itemId=l.itemId;
+    if(!grouped[itemId]){
+      grouped[itemId]={
+        itemId,
+        itemName:l.itemName||itemDef(itemId).name||itemId,
+        totalQuantity:0,
+        minPrice:Number(l.price||0),
+        maxPrice:Number(l.price||0),
+        listings:[]
+      };
+    }
+
+    grouped[itemId].totalQuantity+=Number(l.quantity||0);
+    grouped[itemId].minPrice=Math.min(grouped[itemId].minPrice,Number(l.price||0));
+    grouped[itemId].maxPrice=Math.max(grouped[itemId].maxPrice,Number(l.price||0));
+    grouped[itemId].listings.push(l);
+  });
+
+  return Object.values(grouped).map(g=>{
+    g.listings.sort((a,b)=>{
+      let priceDiff=Number(a.price||0)-Number(b.price||0);
+      if(priceDiff!==0)return priceDiff;
+      return Number(a.createdAt||0)-Number(b.createdAt||0);
+    });
+    g.cheapest=g.listings[0];
+    return g;
+  }).sort((a,b)=>{
+    let nameA=String(a.itemName||a.itemId).toLowerCase();
+    let nameB=String(b.itemName||b.itemId).toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
 }
 
 function draw(){
+  let groups=groupedListings();
+  let openCount=shops.filter(s=>s.shopOpen).length;
+
   el('coinPill').innerText='🪙 '+money()+' coins';
-  el('boardCount').innerText=listings.length+' active listing'+(listings.length===1?'':'s');
-  el('stallCount').innerText=shops.filter(s=>s.shopOpen).length+' open stall'+(shops.filter(s=>s.shopOpen).length===1?'':'s');
+  el('boardCount').innerText=listings.length+' listing'+(listings.length===1?'':'s')+' · '+groups.length+' item'+(groups.length===1?'':'s');
+  el('stallCount').innerText=openCount+' open stall'+(openCount===1?'':'s');
+
   drawNpc();
-  drawBoard();
+  drawBoard(groups);
   drawStalls();
   drawSellSelect();
 }
 
 function drawNpc(){
   let html='';
+
   Object.keys(items).forEach(id=>{
     let it=itemDef(id);
-    html+=rowHtml(id,it.name,it.description||'Companion supply',it.price+' coins','<button class="gold" onclick="buyNpcPlaceholder()">Store Only</button>');
+    html+=rowHtml(
+      id,
+      it.name,
+      it.description||'Companion supply',
+      it.price+' coins',
+      '<button class="gold" onclick="buyNpcPlaceholder()">Store Only</button>'
+    );
   });
+
   el('npcList').innerHTML=html||'<div class="empty">Store items unavailable.</div>';
 }
 
@@ -361,11 +353,28 @@ function buyNpcPlaceholder(){
   showToast('Use the main Shop for fixed-price purchases for now. Market buying is active on the Market Board.');
 }
 
-function drawBoard(){
-  if(!listings.length){el('listingList').innerHTML='<div class="empty">No player listings yet. Open a stall and list an item.</div>';return;}
-  el('listingList').innerHTML=listings.map(l=>{
-    let mine=l.seller===username;
-    return rowHtml(l.itemId,l.itemName||itemDef(l.itemId).name,'Seller: '+l.seller+' · Qty '+l.quantity,l.price+' coins each',mine?'<button disabled>Your Listing</button>':'<button class="good" onclick="buyListing(\''+escAttr(l.id)+'\')">Buy</button>');
+function drawBoard(groups){
+  groups=groups||groupedListings();
+
+  if(!groups.length){
+    el('listingList').innerHTML='<div class="empty">No player listings yet. Open a stall and list an item.</div>';
+    return;
+  }
+
+  el('listingList').innerHTML=groups.map(g=>{
+    let cheapest=g.cheapest;
+    let range=g.minPrice===g.maxPrice
+      ? g.minPrice+' coins'
+      : g.minPrice+'–'+g.maxPrice+' coins';
+
+    let ownedByMeOnly=g.listings.every(l=>l.seller===username);
+    let meta='For sale: '+g.totalQuantity+' · Price range: '+range+' · Cheapest seller: '+cheapest.seller;
+
+    let action=ownedByMeOnly
+      ? '<button disabled>Your Listings</button>'
+      : '<button class="good" onclick="buyCheapest(\''+escAttr(g.itemId)+'\')">Buy Cheapest</button>';
+
+    return rowHtml(g.itemId,g.itemName,meta,'From '+g.minPrice+' coins',action);
   }).join('');
 }
 
@@ -375,76 +384,203 @@ function drawStalls(){
   el('shopOpen').checked=!!m.shopOpen;
 
   let mine=listings.filter(l=>l.seller===username);
-  el('myListings').innerHTML=mine.length?mine.map(l=>rowHtml(l.itemId,l.itemName||itemDef(l.itemId).name,'Qty '+l.quantity,l.price+' coins each','<button class="danger" onclick="cancelListing(\''+escAttr(l.id)+'\')">Cancel</button>')).join(''):'<div class="empty">You have no active listings.</div>';
+
+  el('myListings').innerHTML=mine.length
+    ? mine.map(l=>rowHtml(
+        l.itemId,
+        l.itemName||itemDef(l.itemId).name,
+        'Qty '+l.quantity,
+        l.price+' coins each',
+        '<button class="danger" onclick="cancelListing(\''+escAttr(l.id)+'\')">Cancel</button>'
+      )).join('')
+    : '<div class="empty">You have no active listings.</div>';
 
   let open=shops.filter(s=>s.shopOpen||s.listingCount>0);
-  el('shopList').innerHTML=open.length?open.map(s=>{
-    let pet=s.pet?(' · '+(s.pet.emoji||'🐾')+' '+s.pet.name):'';
-    return '<div class="shopRow"><div class="itemIcon">⛺</div><div><div class="itemName">'+esc(s.shopName||s.username+"'s Stall")+'</div><div class="itemMeta">'+esc(s.username)+pet+' · '+Number(s.listingCount||0)+' listing(s)</div></div><button onclick="showSeller(\''+escAttr(s.username)+'\')">View</button></div>';
-  }).join(''):'<div class="empty">No open stalls yet.</div>';
+
+  el('shopList').innerHTML=open.length
+    ? open.map(s=>{
+        let pet=s.pet?(' · '+(s.pet.emoji||'🐾')+' '+s.pet.name):'';
+        return '<div class="shopRow">'+
+          '<div class="itemIcon">⛺</div>'+
+          '<div>'+
+            '<div class="itemName">'+esc(s.shopName||s.username+"'s Stall")+'</div>'+
+            '<div class="itemMeta">'+esc(s.username)+pet+' · '+Number(s.listingCount||0)+' listing(s)</div>'+
+          '</div>'+
+          '<button onclick="showSeller(\''+escAttr(s.username)+'\')">View</button>'+
+        '</div>';
+      }).join('')
+    : '<div class="empty">No open stalls yet.</div>';
 }
 
 function drawSellSelect(){
   let inv=(profile&&profile.inventory)||{};
-  let opts=Object.keys(inv).filter(id=>Number(inv[id]||0)>0).map(id=>'<option value="'+escAttr(id)+'">'+esc(itemDef(id).name||id)+' · x'+Number(inv[id])+'</option>');
+
+  let opts=Object.keys(inv)
+    .filter(id=>Number(inv[id]||0)>0)
+    .map(id=>'<option value="'+escAttr(id)+'">'+esc(itemDef(id).name||id)+' · x'+Number(inv[id])+'</option>');
+
   el('sellItem').innerHTML=opts.join('')||'<option value="">No sellable items</option>';
 }
 
 function showSeller(seller){
   showSection('board');
+
   let sellerListings=listings.filter(l=>l.seller===seller);
-  if(!sellerListings.length){showToast('That stall has no active listings.');return;}
-  el('listingList').innerHTML=sellerListings.map(l=>rowHtml(l.itemId,l.itemName||itemDef(l.itemId).name,'Seller: '+l.seller+' · Qty '+l.quantity,l.price+' coins each',l.seller===username?'<button disabled>Your Listing</button>':'<button class="good" onclick="buyListing(\''+escAttr(l.id)+'\')">Buy</button>')).join('');
+
+  if(!sellerListings.length){
+    showToast('That stall has no active listings.');
+    return;
+  }
+
+  el('listingList').innerHTML=sellerListings.map(l=>{
+    let action=l.seller===username
+      ? '<button disabled>Your Listing</button>'
+      : '<button class="good" onclick="buyListing(\''+escAttr(l.id)+'\')">Buy</button>';
+
+    return rowHtml(
+      l.itemId,
+      l.itemName||itemDef(l.itemId).name,
+      'Seller: '+l.seller+' · Qty '+l.quantity,
+      l.price+' coins each',
+      action
+    );
+  }).join('');
 }
 
 async function saveShopSettings(){
   try{
-    let data=await api('/api/market/shop-settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,shopName:el('shopName').value,shopOpen:el('shopOpen').checked})});
+    let data=await api('/api/market/shop-settings',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username,
+        shopName:el('shopName').value,
+        shopOpen:el('shopOpen').checked
+      })
+    });
+
     profile=data.profile;
     shops=data.shops||shops;
     notifyParent();
     draw();
     showToast('Shop settings saved.');
-  }catch(err){showToast(err.message);}
+  }catch(err){
+    showToast(err.message);
+  }
 }
 
 async function createListing(){
   try{
     let itemId=el('sellItem').value;
     if(!itemId)return showToast('No item selected.');
-    let data=await api('/api/market/list',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,itemId,quantity:el('sellQty').value,price:el('sellPrice').value})});
+
+    let data=await api('/api/market/list',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username,
+        itemId,
+        quantity:el('sellQty').value,
+        price:el('sellPrice').value
+      })
+    });
+
     profile=data.profile;
     notifyParent();
     await reloadAll();
     showToast('Listing created.');
-  }catch(err){showToast(err.message);}
+  }catch(err){
+    showToast(err.message);
+  }
 }
 
 async function cancelListing(id){
   try{
-    let data=await api('/api/market/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,listingId:id})});
+    let data=await api('/api/market/cancel',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username,listingId:id})
+    });
+
     profile=data.profile;
     notifyParent();
     await reloadAll();
     showToast('Listing canceled and item returned.');
-  }catch(err){showToast(err.message);}
+  }catch(err){
+    showToast(err.message);
+  }
+}
+
+function cheapestListingForItem(itemId){
+  return listings
+    .filter(l=>l.itemId===itemId&&l.seller!==username&&Number(l.quantity||0)>0)
+    .sort((a,b)=>{
+      let priceDiff=Number(a.price||0)-Number(b.price||0);
+      if(priceDiff!==0)return priceDiff;
+      return Number(a.createdAt||0)-Number(b.createdAt||0);
+    })[0];
+}
+
+async function buyCheapest(itemId){
+  let listing=cheapestListingForItem(itemId);
+  if(!listing){
+    showToast('No buyable listings for that item.');
+    return;
+  }
+
+  await buyListing(listing.id);
 }
 
 async function buyListing(id){
   try{
     let listing=listings.find(x=>x.id===id);
     if(!listing)return showToast('Listing not found.');
+
+    if(listing.seller===username){
+      return showToast('You cannot buy your own listing.');
+    }
+
+    if(money()<Number(listing.price)){
+      return showToast('Not enough coins.');
+    }
+
     if(!confirm('Buy 1 '+(listing.itemName||listing.itemId)+' for '+listing.price+' coins?'))return;
-    let data=await api('/api/market/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,listingId:id,quantity:1})});
-    profile=data.profile;
+
+    let data=await api('/api/market/buy',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username,
+        listingId:id,
+        quantity:1
+      })
+    });
+
+    if(data.profile)profile=data.profile;
+
     notifyParent();
     await reloadAll();
     showToast(data.message||'Purchase complete.');
-  }catch(err){showToast(err.message);}
+  }catch(err){
+    console.error(err);
+    showToast(err.message||'Purchase failed.');
+  }
 }
 
 function rowHtml(itemId,name,meta,price,action){
-  return '<div class="itemRow"><div class="itemIcon"><img src="'+itemIcon(itemId)+'" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'🎁\';"></div><div><div class="itemName">'+esc(name||itemId)+'</div><div class="itemMeta">'+esc(meta||'')+'</div></div><div><div class="price">'+esc(price||'')+'</div>'+action+'</div></div>';
+  return '<div class="itemRow">'+
+    '<div class="itemIcon">'+
+      '<img src="'+itemIcon(itemId)+'" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'🎁\';">'+
+    '</div>'+
+    '<div>'+
+      '<div class="itemName">'+esc(name||itemId)+'</div>'+
+      '<div class="itemMeta">'+esc(meta||'')+'</div>'+
+    '</div>'+
+    '<div>'+
+      '<div class="price">'+esc(price||'')+'</div>'+
+      (action||'')+
+    '</div>'+
+  '</div>';
 }
 
 function showSection(id){
@@ -452,6 +588,7 @@ function showSection(id){
   let target=el('section-'+id);
   if(target)target.classList.add('active');
 }
+
 function showToast(t){
   let box=el('toast');
   box.innerText=t;
@@ -459,20 +596,35 @@ function showToast(t){
   void box.offsetWidth;
   box.classList.add('show');
 }
+
 function notifyParent(){
   parent.postMessage({type:'petUpdated'},'*');
   parent.postMessage({type:'marketUpdated'},'*');
 }
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function escAttr(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'')}
+
+function esc(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+
+function escAttr(s){
+  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'');
+}
 
 window.onMove=function(data){
   if(data&&data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
 };
+
 window.addEventListener('message',function(event){
   let data=event.data||{};
   if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
 });
+
 receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT||0);
 </script>
 </body>
