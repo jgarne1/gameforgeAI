@@ -534,9 +534,9 @@ function hatchPet(pet){
 }
 
 function requireUser(req,res){
-  let username=String(req.query.user||req.body.username||'').trim();
+  let username=(req.body&&req.body.username)||req.query.user;
   if(!username){
-    res.status(400).json({error:'Missing user'});
+    res.status(400).json({error:'Missing username'});
     return null;
   }
 
@@ -544,6 +544,13 @@ function requireUser(req,res){
   if(!u[username]){
     res.status(404).json({error:'User not found'});
     return null;
+  }
+
+  // 🔥 CRITICAL FIX: ensure marketplace/pet profile exists
+  let p=pets();
+  if(!p[username]){
+    p[username]=defaultPetProfile(username);
+    writeJSON(PETS_FILE,p);
   }
 
   return username;
@@ -1288,7 +1295,12 @@ app.post('/api/market/buy',(req,res)=>{
 
   let all=pets();
   let buyerProfile=normalizePetProfile(all[buyer]||defaultPetProfile(buyer),buyer);
-  let sellerProfile=normalizePetProfile(all[listing.seller]||defaultPetProfile(listing.seller),listing.seller);
+ // 🔥 ensure seller exists
+if(!all[listing.seller]){
+  all[listing.seller]=defaultPetProfile(listing.seller);
+}
+
+let sellerProfile=normalizePetProfile(all[listing.seller],listing.seller);
   let total=Number(listing.price||0)*quantity;
   let tax=Math.floor(total*MARKET_LIMITS.marketTaxRate);
   let sellerReceives=total-tax;
