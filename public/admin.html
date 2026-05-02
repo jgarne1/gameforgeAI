@@ -1,89 +1,570 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GameForge Admin</title>
-  <style>
-    body{font-family:Arial,sans-serif;margin:0;background:#f3f5f8;color:#222}
-    header{background:#17233c;color:white;padding:16px 22px;display:flex;justify-content:space-between;align-items:center}
-    header a{color:white;text-decoration:none;background:#2d4778;padding:8px 12px;border-radius:8px}
-    main{padding:18px;max-width:1200px;margin:auto}
-    .card{background:white;border:1px solid #cfd6e0;border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 2px 6px rgba(0,0,0,.05)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    input{padding:9px;border:1px solid #aaa;border-radius:8px;min-width:220px}
-    button{padding:8px 12px;margin:3px;background:#234f8f;color:white;border:0;border-radius:8px;cursor:pointer}
-    button:hover{background:#183b6d}.danger{background:#a32020}.danger:hover{background:#7c1818}.muted{color:#666;font-size:13px}
-    table{border-collapse:collapse;width:100%;background:white;margin-top:8px}td,th{border:1px solid #c6ccd5;padding:8px;text-align:left}th{background:#eef2f8}
-    .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#eef2f8}.private{background:#fff0c2}.public{background:#dff3df}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:850px){.grid{grid-template-columns:1fr}}
-    #msg{font-weight:bold;margin-top:8px}
-  </style>
+<title>GameForge Admin</title>
+<style>
+:root{
+  --bg:#070b18;
+  --bg2:#0f172a;
+  --panel:#101827;
+  --panel2:#0b1120;
+  --card:#111827;
+  --line:rgba(148,163,184,.24);
+  --line2:rgba(255,255,255,.10);
+  --blue:#3b82f6;
+  --blue2:#2563eb;
+  --cyan:#38bdf8;
+  --green:#16a34a;
+  --green2:#22c55e;
+  --red:#dc2626;
+  --gold:#facc15;
+  --purple:#7c3aed;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --soft:#cbd5e1;
+  --shadow:0 24px 70px rgba(0,0,0,.38);
+  --shadow2:0 10px 28px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--text);
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 12% 8%,rgba(56,189,248,.18),transparent 26%),
+    radial-gradient(circle at 80% 16%,rgba(124,58,237,.16),transparent 28%),
+    linear-gradient(135deg,#020617,#0f172a 55%,#111827);
+}
+button,input,select{font-family:inherit}
+button,input,select{
+  border-radius:13px;
+  border:1px solid #475569;
+  padding:10px 12px;
+  font-size:14px;
+}
+input,select{background:#020617;color:var(--text)}
+button{
+  cursor:pointer;
+  background:#0f172a;
+  color:var(--text);
+  transition:.15s ease;
+  font-weight:900;
+}
+button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.24);border-color:rgba(56,189,248,.38)}
+button.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;border-color:#60a5fa}
+button.good{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;border-color:#22c55e}
+button.danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:white;border-color:#ef4444}
+button.gold{background:linear-gradient(135deg,#facc15,#f59e0b);color:#111827;border-color:#facc15}
+button.purple{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border-color:#a855f7}
+button.ghost{background:rgba(15,23,42,.5)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.wrap{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.nav{
+  background:linear-gradient(180deg,rgba(2,6,23,.98),rgba(15,23,42,.96));
+  border-right:1px solid var(--line);
+  padding:16px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:auto;
+}
+.brand{padding:10px 10px 16px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.brand h1{margin:0;font-size:27px;letter-spacing:-1.1px;line-height:1}
+.brand .mark{display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--blue2));margin-right:8px}
+.brand span{display:block;margin-top:7px;color:var(--muted);font-size:12px;line-height:1.4}
+.nav button{width:100%;margin:6px 0;text-align:left;display:flex;gap:10px;align-items:center}
+.nav button.active{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:#60a5fa;color:#fff}
+.navIcon{width:27px;height:27px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08)}
+.navUser{margin-top:16px;padding:12px;background:rgba(15,23,42,.72);border:1px solid var(--line);border-radius:18px;color:var(--muted);font-size:12px}
+.navUser b{color:white;font-size:14px}
+.main{padding:18px;min-width:0}
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 18% 14%,rgba(56,189,248,.18),transparent 28%),
+    radial-gradient(circle at 84% 16%,rgba(250,204,21,.12),transparent 24%),
+    linear-gradient(135deg,rgba(30,41,59,.98),rgba(2,6,23,.98));
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:22px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.hero h2{margin:0;font-size:34px;letter-spacing:-1.4px;line-height:1.05}
+.hero p{margin:8px 0 0;color:var(--muted);font-size:14px;max-width:820px;line-height:1.45}
+.heroActions{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.section{display:none}.section.active{display:block}
+.card{
+  background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(2,6,23,.90));
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow2);
+}
+.card.glow{box-shadow:0 16px 40px rgba(56,189,248,.12),var(--shadow2);border-color:rgba(56,189,248,.30)}
+.cardHeader{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.cardHeader h3,.card h3{margin:0}.muted{color:var(--muted);font-size:13px;line-height:1.42}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row input,.row select{min-width:140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.statCard{border:1px solid var(--line);border-radius:20px;padding:14px;background:rgba(2,6,23,.58)}
+.statCard b{display:block;font-size:28px;margin-bottom:2px}.statCard span{color:var(--muted);font-size:12px}
+.pill,.badge{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:#1e293b;border:1px solid #475569;color:#cbd5e1;font-size:12px;font-weight:900}
+.badge.good{color:#86efac;border-color:rgba(34,197,94,.55);background:rgba(22,163,74,.14)}
+.badge.warn{color:#fde68a;border-color:rgba(250,204,21,.55);background:rgba(250,204,21,.12)}
+.badge.bad{color:#fecaca;border-color:rgba(239,68,68,.55);background:rgba(239,68,68,.12)}
+.list{display:grid;gap:10px}.item{
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(2,6,23,.54);
+  border-radius:18px;
+  padding:12px;
+}
+.itemTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.itemTitle{font-weight:900}.itemMeta{color:var(--muted);font-size:12px;line-height:1.35;margin-top:3px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.actions button{padding:8px 10px;font-size:12px}
+.playerPanel{display:grid;grid-template-columns:minmax(280px,.75fr) minmax(0,1.25fr);gap:14px}
+.profileBox{border:1px solid var(--line);border-radius:20px;padding:14px;background:rgba(2,6,23,.48)}
+.profileBox h3{margin:0 0 8px}.petGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.petCard{border:1px solid rgba(148,163,184,.20);background:rgba(15,23,42,.72);border-radius:18px;padding:12px}.petCard.active{border-color:rgba(250,204,21,.65);box-shadow:0 0 20px rgba(250,204,21,.10)}
+.inventoryGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.invItem{border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.62);border-radius:15px;padding:10px}.invItem b{display:block}.invItem span{color:var(--muted);font-size:12px}
+.toolBox{border:1px solid rgba(148,163,184,.20);border-radius:18px;padding:12px;background:rgba(2,6,23,.44);margin-bottom:12px}.toolBox h4{margin:0 0 8px}
+.tableLike{display:grid;gap:8px}.empty{padding:18px;border:1px dashed rgba(148,163,184,.35);border-radius:18px;text-align:center;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1000;background:#020617;color:white;border:1px solid rgba(56,189,248,.42);box-shadow:0 20px 50px rgba(0,0,0,.35);border-radius:999px;padding:11px 16px;font-size:13px;font-weight:900;display:none}.toast.show{display:block;animation:toast 2.8s ease forwards}@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}15%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,10px)}}
+.denied{max-width:760px;margin:70px auto}.hidden{display:none!important}
+code{color:#bae6fd}
+@media(max-width:1150px){.wrap{grid-template-columns:220px minmax(0,1fr)}.grid5{grid-template-columns:repeat(2,1fr)}.playerPanel,.grid2{grid-template-columns:1fr}}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}.nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}.main{padding:12px}.hero h2{font-size:26px}.grid3,.grid5{grid-template-columns:1fr}.itemTop{flex-direction:column}.actions{justify-content:flex-start}}
+</style>
 </head>
 <body>
-<header>
-  <h1>GameForge Admin</h1>
-  <a href="/">Back to GameForge</a>
-</header>
-<main>
-  <div class="card">
-    <h2>Admin Login</h2>
-    <div class="row">
-      <input id="adminUser" placeholder="admin username">
-      <button onclick="loadAll()">Load Admin Data</button>
+<div id="app" class="wrap hidden">
+  <div class="nav">
+    <div class="brand">
+      <h1><span class="mark">🛡</span>Admin</h1>
+      <span>Game Master Console for players, rooms, pets, and marketplace control.</span>
     </div>
-    <div class="muted">Use a username listed in <code>data/admins.json</code>. Passwords are never shown here.</div>
-    <div id="msg"></div>
+    <button id="navOverview" class="active" onclick="showSection('overview')"><span class="navIcon">📊</span>Overview</button>
+    <button id="navPlayers" onclick="showSection('players')"><span class="navIcon">👤</span>Players</button>
+    <button id="navRooms" onclick="showSection('rooms')"><span class="navIcon">🎮</span>Rooms</button>
+    <button id="navMarket" onclick="showSection('market')"><span class="navIcon">🏪</span>Marketplace</button>
+    <button onclick="location.href='/'"><span class="navIcon">🏠</span>Back to GameForge</button>
+    <div class="navUser" id="navUserBox"></div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <h2>Users</h2>
-      <div class="muted">View accounts and remove test users.</div>
-      <div id="users">Load admin data to view users.</div>
+  <div class="main">
+    <div class="hero">
+      <h2>GameForge Control Tower</h2>
+      <p>Live admin tools for account repair, room moderation, economy adjustments, pet aging, and market cleanup.</p>
+      <div class="heroActions">
+        <button class="primary" onclick="refreshAll()">Refresh All</button>
+        <button class="ghost" onclick="openMainApp()">Open Main App</button>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>Open Rooms</h2>
-      <div class="muted">Join public/private rooms as admin or close rooms.</div>
-      <div id="rooms">Load admin data to view rooms.</div>
+    <div id="overview" class="section active">
+      <div class="grid5" id="statGrid"></div>
+      <div class="grid2">
+        <div class="card glow">
+          <div class="cardHeader"><h3>Online Users</h3><span class="pill" id="onlineCount">0 online</span></div>
+          <div id="onlineList" class="list"></div>
+        </div>
+        <div class="card glow">
+          <div class="cardHeader"><h3>Recent Listings</h3><button class="ghost" onclick="showSection('market')">Moderate</button></div>
+          <div id="recentListings" class="list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="players" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div><h3>Player Control</h3><p class="muted">Type the username you want to modify. Changes are server-authoritative and pushed live if the user is online.</p></div>
+        </div>
+        <div class="row">
+          <input id="targetUser" placeholder="username to manage" onkeydown="if(event.key==='Enter')loadPlayer()">
+          <button class="primary" onclick="loadPlayer()">Load Player</button>
+          <button class="ghost" onclick="copyLoggedInUser()">Use Me</button>
+        </div>
+      </div>
+
+      <div id="playerWorkArea" class="hidden playerPanel">
+        <div>
+          <div class="profileBox" id="playerSummary"></div>
+          <div class="toolBox">
+            <h4>Coins</h4>
+            <div class="row">
+              <select id="coinMode"><option value="add">Add/Subtract</option><option value="set">Set Exact</option></select>
+              <input id="coinAmount" type="number" value="100" placeholder="amount">
+              <button class="gold" onclick="adjustCoins()">Apply Coins</button>
+            </div>
+            <p class="muted">Use negative numbers with Add/Subtract to remove coins.</p>
+          </div>
+
+          <div class="toolBox">
+            <h4>Inventory</h4>
+            <div class="row">
+              <select id="itemSelect"></select>
+              <select id="itemMode"><option value="add">Add</option><option value="remove">Remove</option><option value="set">Set Exact</option></select>
+              <input id="itemQty" type="number" min="0" value="1" placeholder="qty">
+              <button class="good" onclick="adjustItem()">Apply Item</button>
+            </div>
+          </div>
+
+          <div class="toolBox">
+            <h4>Pet Age / Repair</h4>
+            <div class="row">
+              <select id="petSelect"></select>
+              <select id="petStage"><option value="">Keep Stage</option><option value="egg">Egg</option><option value="baby">Baby</option><option value="young">Young</option><option value="adult">Adult</option></select>
+              <input id="petLevel" type="number" min="1" max="100" placeholder="set level">
+              <button class="purple" onclick="agePet()">Apply Age</button>
+              <button class="good" onclick="restorePet()">Restore Needs/HP</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card"><div class="cardHeader"><h3>Pets</h3><span class="pill" id="petCountPill"></span></div><div id="petList" class="petGrid"></div></div>
+          <div class="card"><div class="cardHeader"><h3>Inventory</h3><span class="pill" id="coinPill"></span></div><div id="inventoryList" class="inventoryGrid"></div></div>
+          <div class="card"><div class="cardHeader"><h3>Player Listings</h3></div><div id="playerListings" class="list"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="rooms" class="section">
+      <div class="card glow">
+        <div class="cardHeader"><div><h3>Room Control</h3><p class="muted">Close stuck rooms or jump into active rooms.</p></div><button class="primary" onclick="loadRooms()">Refresh Rooms</button></div>
+        <div id="roomList" class="list"></div>
+      </div>
+    </div>
+
+    <div id="market" class="section">
+      <div class="card glow">
+        <div class="cardHeader"><div><h3>Marketplace Moderation</h3><p class="muted">Remove bad listings. By default, escrowed items are returned to the seller.</p></div><button class="primary" onclick="loadMarket()">Refresh Market</button></div>
+        <div class="row" style="margin-bottom:10px">
+          <input id="marketFilter" placeholder="filter seller or item" oninput="drawMarket()">
+          <label class="pill"><input id="returnEscrow" type="checkbox" checked> Return escrow</label>
+        </div>
+        <div id="marketList" class="list"></div>
+      </div>
     </div>
   </div>
-</main>
+</div>
+
+<div id="denied" class="denied card hidden">
+  <h2>Access denied</h2>
+  <p class="muted">Log into GameForge with an account listed in <code>data/admins.json</code>, then reopen this page.</p>
+  <button class="primary" onclick="location.href='/'">Go to GameForge</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
 <script>
+let adminUser=localStorage.getItem('gf_user')||'';
+let isAdmin=localStorage.getItem('gf_admin')==='true';
+let dashboard=null;
+let rooms=[];
+let marketData={listings:[],items:{},shops:[]};
+let selectedPlayer=null;
+let itemCatalog=[];
 let ws=null;
+
 const $=id=>document.getElementById(id);
-$('adminUser').value=localStorage.getItem('gfUser')||'admin';
-function admin(){return $('adminUser').value.trim();}
-function note(t,bad){$('msg').style.color=bad?'#9b1c1c':'#1c6b2a';$('msg').innerText=t||'';}
-async function getJSON(url,opts){const r=await fetch(url,opts);let j;try{j=await r.json()}catch(e){j={error:'Bad server response'}};if(!r.ok&& !j.error)j.error='Request failed';return j;}
-async function loadAll(){note('Loading...');await loadUsers();await loadRooms();connectAdminSocket();note('Admin data loaded.');}
-async function loadUsers(){
-  const data=await getJSON('/api/admin/users?user='+encodeURIComponent(admin()));
-  if(data.error){$('users').innerHTML='<b>'+data.error+'</b>';note(data.error,true);return;}
-  $('users').innerHTML='<table><tr><th>Username</th><th>Wins</th><th>Losses</th><th>Ties</th><th>Played</th><th>Favorite</th><th>Action</th></tr>'+data.map(u=>`<tr><td>${esc(u.username)}${u.admin?' ⭐':''}</td><td>${u.wins||0}</td><td>${u.losses||0}</td><td>${u.ties||0}</td><td>${u.gamesPlayed||0}</td><td>${esc(u.favoriteGame||'')}</td><td><button class="danger" onclick="deleteUser('${escAttr(u.username)}')">Delete</button></td></tr>`).join('')+'</table>';
+
+function init(){
+  if(!adminUser||!isAdmin){
+    $('denied').classList.remove('hidden');
+    return;
+  }
+
+  $('app').classList.remove('hidden');
+  $('navUserBox').innerHTML='<b>'+esc(adminUser)+'</b><br><span>Admin session active</span>';
+  refreshAll();
+  connectAdminSocket();
 }
-async function deleteUser(name){if(!confirm('Delete user '+name+'?'))return;const data=await getJSON('/api/admin/users/'+encodeURIComponent(name)+'?user='+encodeURIComponent(admin()),{method:'DELETE'});if(data.error){alert(data.error);return;}loadUsers();}
+
+function openMainApp(){window.open('/','_blank')}
+function copyLoggedInUser(){ $('targetUser').value=adminUser; loadPlayer(); }
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  let sec=$(id); if(sec)sec.classList.add('active');
+  let nav=$('nav'+id.charAt(0).toUpperCase()+id.slice(1)); if(nav)nav.classList.add('active');
+  if(id==='rooms')loadRooms();
+  if(id==='market')loadMarket();
+}
+
+async function api(url,opts){
+  let r=await fetch(url,opts);
+  let text=await r.text();
+  let data={};
+  try{data=text?JSON.parse(text):{}}catch(e){throw new Error('Server returned invalid response')}
+  if(!r.ok||data.error)throw new Error(data.error||data.message||('Request failed: '+r.status));
+  return data;
+}
+
+async function refreshAll(){
+  try{
+    dashboard=await api('/api/admin/dashboard?user='+encodeURIComponent(adminUser));
+    rooms=dashboard.rooms||[];
+    itemCatalog=dashboard.items||[];
+    drawOverview();
+    drawRooms();
+    await loadMarket(false);
+    toast('Admin data loaded.');
+  }catch(err){
+    console.error(err);
+    toast(err.message||'Admin load failed.');
+    if(String(err.message).toLowerCase().includes('forbidden')){
+      $('app').classList.add('hidden');
+      $('denied').classList.remove('hidden');
+    }
+  }
+}
+
+function drawOverview(){
+  let c=dashboard&&dashboard.counts?dashboard.counts:{};
+  $('statGrid').innerHTML=[
+    ['👥',c.users||0,'Registered users'],
+    ['🟢',c.onlineUsers||0,'Online users'],
+    ['🎮',c.openRooms||0,'Open rooms'],
+    ['🐾',c.petProfiles||0,'Pet profiles'],
+    ['🏪',c.listings||0,'Market listings']
+  ].map(x=>'<div class="statCard"><b>'+x[0]+' '+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+
+  let online=dashboard.onlineUsers||[];
+  $('onlineCount').innerText=online.length+' online';
+  $('onlineList').innerHTML=online.length?online.map(u=>cardHtml(
+    esc(u.username||'Guest'),
+    'Location: '+esc(u.location||'Home')+(u.roomId?' · Room '+esc(u.roomId):''),
+    '<button onclick="quickLoadPlayer(\''+escAttr(u.username||'')+'\')">Manage</button>'+(u.roomId?'<button onclick="joinRoom(\''+escAttr(u.roomId)+'\')">Join</button>':'')
+  )).join(''):'<div class="empty">No online users.</div>';
+
+  let recent=dashboard.recentListings||[];
+  $('recentListings').innerHTML=recent.length?recent.slice(0,8).map(listingCard).join(''):'<div class="empty">No active listings.</div>';
+}
+
 async function loadRooms(){
-  const data=await getJSON('/api/admin/rooms?user='+encodeURIComponent(admin()));
-  if(data.error){$('rooms').innerHTML='<b>'+data.error+'</b>';note(data.error,true);return;}
-  if(!data.length){$('rooms').innerHTML='<p>No open rooms.</p>';return;}
-  $('rooms').innerHTML='<table><tr><th>Room</th><th>Owner</th><th>Type</th><th>Game</th><th>People</th><th>Actions</th></tr>'+data.map(r=>`<tr><td><b>${r.id}</b></td><td>${esc(r.owner||'')}</td><td><span class="pill ${r.private?'private':'public'}">${r.private?'Private':'Public'}</span></td><td>${esc(r.selectedGame?r.selectedGame.name:'None selected')}</td><td>${(r.players||[]).map(esc).join(', ')||'none'}</td><td><button onclick="joinRoom('${r.id}')">Join</button><button class="danger" onclick="closeRoom('${r.id}')">Close</button></td></tr>`).join('')+'</table>';
+  try{
+    rooms=await api('/api/admin/rooms?user='+encodeURIComponent(adminUser));
+    drawRooms();
+  }catch(err){toast(err.message||'Room load failed.')}
 }
-function joinRoom(id){location.href='/?room='+encodeURIComponent(id);}
+
+function drawRooms(){
+  $('roomList').innerHTML=rooms.length?rooms.map(r=>{
+    let game=r.selectedGame?r.selectedGame.name:'No game selected';
+    let people=(r.players||[]).join(', ')||'none';
+    let seats=(r.seats||[]).filter(Boolean).length+'/'+((r.seats||[]).length||0);
+    return cardHtml(
+      'Room '+esc(r.id)+' <span class="badge '+(r.private?'warn':'good')+'">'+(r.private?'Private':'Public')+'</span>',
+      'Owner: '+esc(r.owner||'')+' · Game: '+esc(game)+' · Seats: '+seats+'<br>Players: '+esc(people),
+      '<button onclick="joinRoom(\''+escAttr(r.id)+'\')">Join</button><button class="danger" onclick="closeRoom(\''+escAttr(r.id)+'\')">Close</button>'
+    );
+  }).join(''):'<div class="empty">No open rooms.</div>';
+}
+
 function connectAdminSocket(){
   if(ws&&ws.readyState<=1)return;
   ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);
-  ws.onopen=()=>ws.send(JSON.stringify({type:'hello',username:admin()}));
-  ws.onmessage=e=>{let m=JSON.parse(e.data); if(m.type==='presence'||m.type==='roomUpdate'||m.type==='roomClosed') loadRooms();};
+  ws.onopen=()=>ws.send(JSON.stringify({type:'hello',username:adminUser}));
+  ws.onmessage=e=>{
+    let m=JSON.parse(e.data);
+    if(m.type==='presence'){
+      dashboard=dashboard||{counts:{}};
+      dashboard.onlineUsers=m.users||[];
+      dashboard.rooms=m.rooms||[];
+      dashboard.counts.onlineUsers=dashboard.onlineUsers.length;
+      dashboard.counts.openRooms=dashboard.rooms.length;
+      rooms=dashboard.rooms;
+      drawOverview();
+      drawRooms();
+    }
+    if(m.type==='roomUpdate'||m.type==='roomClosed')loadRooms();
+    if(m.type==='petUpdate'&&selectedPlayer&&m.profile&&m.profile.username===selectedPlayer.profile.username){
+      selectedPlayer.profile=m.profile;
+      drawPlayer();
+    }
+  };
 }
+
+function joinRoom(id){location.href='/?room='+encodeURIComponent(id)}
 function closeRoom(id){
-  if(!confirm('Close room '+id+'?'))return;
+  if(!confirm('Close room '+id+' for everyone?'))return;
   connectAdminSocket();
-  const send=()=>ws.send(JSON.stringify({type:'adminClose',roomId:id}));
-  if(ws.readyState===1)send(); else ws.onopen=()=>{ws.send(JSON.stringify({type:'hello',username:admin()}));send();};
+  let send=()=>ws.send(JSON.stringify({type:'adminClose',roomId:id}));
+  if(ws&&ws.readyState===1)send(); else setTimeout(()=>{if(ws)send()},250);
   setTimeout(loadRooms,400);
 }
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
+
+function quickLoadPlayer(name){showSection('players');$('targetUser').value=name;loadPlayer();}
+
+async function loadPlayer(){
+  let target=$('targetUser').value.trim();
+  if(!target)return toast('Type a username first.');
+  try{
+    selectedPlayer=await api('/api/admin/player?user='+encodeURIComponent(adminUser)+'&target='+encodeURIComponent(target));
+    if(selectedPlayer.items)itemCatalog=selectedPlayer.items;
+    $('playerWorkArea').classList.remove('hidden');
+    drawPlayer();
+    toast('Loaded '+target+'.');
+  }catch(err){
+    selectedPlayer=null;
+    $('playerWorkArea').classList.add('hidden');
+    toast(err.message||'Player load failed.');
+  }
+}
+
+function drawPlayer(){
+  if(!selectedPlayer)return;
+  let p=selectedPlayer.profile;
+  let u=selectedPlayer.user;
+  let active=p.pets&&p.activePetId?p.pets[p.activePetId]:null;
+  $('playerSummary').innerHTML='<h3>'+esc(u.username)+' '+(selectedPlayer.admin?'<span class="badge warn">Admin</span>':'')+'</h3>'+"<p class='muted'>Games played: "+(u.gamesPlayed||0)+' · Wins: '+(u.wins||0)+' · Losses: '+(u.losses||0)+' · Ties: '+(u.ties||0)+'</p><p><span class="pill">🪙 '+Number(p.money||0)+' coins</span> '+(active?'<span class="pill">🐾 '+esc(active.name)+'</span>':'')+'</p>';
+  $('coinPill').innerText='🪙 '+Number(p.money||0)+' coins';
+
+  drawItemSelect();
+  drawPetSelect();
+
+  let pets=p.pets||{};
+  let petIds=Object.keys(pets);
+  $('petCountPill').innerText=petIds.length+' pet(s)';
+  $('petList').innerHTML=petIds.length?petIds.map(id=>{
+    let pet=pets[id];
+    let isActive=id===p.activePetId;
+    return '<div class="petCard '+(isActive?'active':'')+'">'+
+      '<div class="itemTitle">'+esc(pet.emoji||'🐾')+' '+esc(pet.name||id)+'</div>'+ 
+      '<div class="itemMeta">Stage: '+esc(pet.stage||'')+' · Species: '+esc(pet.species||'unknown')+'<br>Level '+Number((pet.stats&&pet.stats.level)||1)+' · HP '+Number((pet.stats&&pet.stats.hp)||0)+'/'+Number((pet.stats&&pet.stats.maxHp)||0)+'<br>Personality: '+esc(pet.personality||'none')+'</div>'+ 
+      '</div>';
+  }).join(''):'<div class="empty">No pets found.</div>';
+
+  let inv=p.inventory||{};
+  let invIds=Object.keys(inv).filter(id=>Number(inv[id]||0)>0).sort();
+  $('inventoryList').innerHTML=invIds.length?invIds.map(id=>'<div class="invItem"><b>'+esc(itemName(id))+'</b><span>'+esc(id)+' · x'+Number(inv[id])+'</span></div>').join(''):'<div class="empty">No inventory items.</div>';
+
+  let listings=selectedPlayer.listings||[];
+  $('playerListings').innerHTML=listings.length?listings.map(listingCard).join(''):'<div class="empty">No active listings.</div>';
+}
+
+function drawItemSelect(){
+  $('itemSelect').innerHTML=(itemCatalog||[]).map(i=>'<option value="'+escAttr(i.id)+'">'+esc(i.name)+' ('+esc(i.id)+')</option>').join('');
+}
+
+function drawPetSelect(){
+  let p=selectedPlayer.profile;
+  let pets=p.pets||{};
+  $('petSelect').innerHTML=Object.keys(pets).map(id=>'<option value="'+escAttr(id)+'">'+esc(pets[id].name||id)+(id===p.activePetId?' · active':'')+'</option>').join('');
+}
+
+async function adjustCoins(){
+  if(!selectedPlayer)return;
+  let amount=Number($('coinAmount').value||0);
+  let mode=$('coinMode').value;
+  if(mode==='set'&&!confirm('Set '+selectedPlayer.user.username+' coins to '+amount+'?'))return;
+  try{
+    selectedPlayer=await api('/api/admin/player/coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,target:selectedPlayer.user.username,mode,amount})});
+    drawPlayer();
+    refreshAll();
+    toast('Coins updated.');
+  }catch(err){toast(err.message||'Coin update failed.')}
+}
+
+async function adjustItem(){
+  if(!selectedPlayer)return;
+  let itemId=$('itemSelect').value;
+  let mode=$('itemMode').value;
+  let quantity=Number($('itemQty').value||0);
+  if(mode==='set'&&!confirm('Set '+itemName(itemId)+' quantity to '+quantity+'?'))return;
+  try{
+    selectedPlayer=await api('/api/admin/player/item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,target:selectedPlayer.user.username,itemId,mode,quantity})});
+    drawPlayer();
+    refreshAll();
+    toast('Inventory updated.');
+  }catch(err){toast(err.message||'Item update failed.')}
+}
+
+async function agePet(){
+  if(!selectedPlayer)return;
+  let petId=$('petSelect').value;
+  let stage=$('petStage').value;
+  let level=$('petLevel').value;
+  if(!stage&&!level)return toast('Choose a stage or level first.');
+  if(!confirm('Update this pet for '+selectedPlayer.user.username+'?'))return;
+  try{
+    selectedPlayer=await api('/api/admin/player/pet-age',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,target:selectedPlayer.user.username,petId,stage,level})});
+    drawPlayer();
+    toast('Pet age updated.');
+  }catch(err){toast(err.message||'Pet update failed.')}
+}
+
+async function restorePet(){
+  if(!selectedPlayer)return;
+  let petId=$('petSelect').value;
+  try{
+    selectedPlayer=await api('/api/admin/player/restore-pet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,target:selectedPlayer.user.username,petId})});
+    drawPlayer();
+    toast('Pet restored.');
+  }catch(err){toast(err.message||'Pet restore failed.')}
+}
+
+async function loadMarket(show=true){
+  try{
+    marketData=await api('/api/admin/market?user='+encodeURIComponent(adminUser));
+    drawMarket();
+    if(show)toast('Market loaded.');
+  }catch(err){if(show)toast(err.message||'Market load failed.')}
+}
+
+function drawMarket(){
+  let q=($('marketFilter')&&$('marketFilter').value||'').toLowerCase().trim();
+  let list=(marketData.listings||[]).filter(l=>!q||String(l.seller||'').toLowerCase().includes(q)||String(l.itemName||l.itemId||'').toLowerCase().includes(q)||String(l.itemId||'').toLowerCase().includes(q));
+  $('marketList').innerHTML=list.length?list.map(listingCard).join(''):'<div class="empty">No matching listings.</div>';
+}
+
+async function removeListing(id){
+  let returnEscrow=$('returnEscrow')?$('returnEscrow').checked:true;
+  if(!confirm('Remove listing '+id+'? '+(returnEscrow?'Items will be returned.':'Items will not be returned.')))return;
+  try{
+    let data=await api('/api/admin/market/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,listingId:id,returnEscrow})});
+    marketData.listings=data.listings||[];
+    drawMarket();
+    if(selectedPlayer)loadPlayer();
+    refreshAll();
+    toast('Listing removed.');
+  }catch(err){toast(err.message||'Remove listing failed.')}
+}
+
+function listingCard(l){
+  return cardHtml(
+    esc(l.itemName||itemName(l.itemId))+' <span class="badge">x'+Number(l.quantity||0)+'</span>',
+    'Seller: '+esc(l.seller||'')+' · Item: '+esc(l.itemId||'')+' · Price: '+Number(l.price||0)+' coins each',
+    '<button onclick="quickLoadPlayer(\''+escAttr(l.seller||'')+'\')">Seller</button><button class="danger" onclick="removeListing(\''+escAttr(l.id||'')+'\')">Remove</button>'
+  );
+}
+
+function cardHtml(title,meta,actions){
+  return '<div class="item"><div class="itemTop"><div><div class="itemTitle">'+title+'</div><div class="itemMeta">'+meta+'</div></div><div class="actions">'+(actions||'')+'</div></div></div>';
+}
+
+function itemName(id){
+  let found=(itemCatalog||[]).find(x=>x.id===id);
+  if(found)return found.name;
+  let itemMap=marketData.items||{};
+  return itemMap[id]&&itemMap[id].name?itemMap[id].name:id;
+}
+
+function toast(t){
+  let box=$('toast');
+  box.innerText=t;
+  box.classList.remove('show');
+  void box.offsetWidth;
+  box.classList.add('show');
+}
+
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function escAttr(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'')}
+
+init();
 </script>
 </body>
 </html>
