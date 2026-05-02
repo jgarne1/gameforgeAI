@@ -778,6 +778,332 @@ app.get('/api/admin/rooms',(req,res)=>{
   res.json(Object.values(rooms).filter(r=>!r.closed).map(roomPublic));
 });
 
+
+function requireAdmin(req,res){
+  let username=(req.body&&req.body.username)||req.query.user;
+
+  if(!username){
+    res.status(400).json({error:'Missing admin username'});
+    return null;
+  }
+
+  if(!admins().includes(username)){
+    res.status(403).json({error:'forbidden'});
+    return null;
+  }
+
+  return username;
+}
+
+function adminItemCatalog(){
+  return Object.keys(SHOP_ITEMS).map(id=>({
+    id,
+    name:SHOP_ITEMS[id].name||id,
+    price:Number(SHOP_ITEMS[id].price||0),
+    description:SHOP_ITEMS[id].description||''
+  }));
+}
+
+function adminRoomSummary(){
+  return Object.values(rooms).filter(r=>!r.closed).map(roomPublic);
+}
+
+function adminListingArray(){
+  let mk=market();
+  return Object.values(mk.listings||{})
+    .filter(x=>x&&Number(x.quantity||0)>0)
+    .sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
+}
+
+function adminPlayerPayload(targetUsername){
+  let allUsers=users();
+  let allPets=pets();
+
+  if(!allUsers[targetUsername])return null;
+
+  if(!allPets[targetUsername]){
+    allPets[targetUsername]=defaultPetProfile(targetUsername);
+    writeJSON(petsFile,allPets);
+  }
+
+  let profile=normalizePetProfile(allPets[targetUsername],targetUsername);
+  allPets[targetUsername]=profile;
+  writeJSON(petsFile,allPets);
+
+  return {
+    user:safeUser(allUsers[targetUsername]),
+    admin:admins().includes(targetUsername),
+    profile,
+    listings:adminListingArray().filter(x=>x.seller===targetUsername)
+  };
+}
+
+function saveAdminTargetProfile(targetUsername,profile){
+  savePetProfile(targetUsername,profile);
+  return adminPlayerPayload(targetUsername);
+}
+
+function adminAgePet(pet,stage,level){
+  const stages=['egg','baby','young','adult'];
+
+  if(stage&&stages.includes(stage)){
+    if(stage!=='egg'&&pet.stage==='egg'){
+      hatchPet(pet);
+    }
+
+    pet.stage=stage;
+
+    if(stage==='egg'){
+      pet.species=null;
+      pet.type=null;
+      pet.personality=null;
+      pet.name=pet.name||'Mystery Egg';
+      pet.moves=['tackle'];
+    }
+  }
+
+  if(level!==undefined&&level!==null&&level!==''){
+    let nextLevel=clamp(Math.floor(Number(level||1)),1,100);
+    let currentLevel=Number(pet.stats.level||1);
+    let diff=nextLevel-currentLevel;
+
+    pet.stats.level=nextLevel;
+    pet.stats.xp=0;
+
+    if(diff>0){
+      pet.stats.maxHp=Number(pet.stats.maxHp||20)+(diff*2);
+      pet.stats.attack=Number(pet.stats.attack||5)+Math.floor(diff/2);
+      pet.stats.defense=Number(pet.stats.defense||4)+Math.floor(diff/3);
+      pet.stats.speed=Number(pet.stats.speed||5)+Math.floor(diff/3);
+    }
+
+    pet.stats.hp=pet.stats.maxHp;
+  }
+
+  pet.lastUpdated=Date.now();
+  return pet;
+}
+
+app.get('/api/admin/dashboard',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let allUsers=users();
+  let allPets=pets();
+  let listings=adminListingArray();
+  let openRooms=adminRoomSummary();
+
+  res.json({
+    ok:true,
+    admin:adminUser,
+    counts:{
+      users:Object.keys(allUsers).length,
+      petProfiles:Object.keys(allPets).length,
+      openRooms:openRooms.length,
+      onlineUsers:presence().length,
+      listings:listings.length
+    },
+    onlineUsers:presence(),
+    rooms:openRooms,
+    recentListings:listings.slice(0,20),
+    items:adminItemCatalog()
+  });
+});
+
+app.get('/api/admin/player',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let target=String(req.query.target||'').trim();
+  if(!target)return res.status(400).json({error:'Missing target username'});
+
+  let payload=adminPlayerPayload(target);
+  if(!payload)return res.status(404).json({error:'Player not found'});
+
+  res.json({ok:true,...payload,items:adminItemCatalog()});
+});
+
+app.post('/api/admin/player/coins',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let target=String(req.body.target||req.body.targetUsername||'').trim();
+  let mode=String(req.body.mode||'add');
+  let amount=Math.floor(Number(req.body.amount||0));
+
+  if(!target)return res.status(400).json({error:'Missing target username'});
+  if(!['add','set'].includes(mode))return res.status(400).json({error:'Invalid coin mode'});
+
+  let payload=adminPlayerPayload(target);
+  if(!payload)return res.status(404).json({error:'Player not found'});
+
+  let profile=payload.profile;
+
+  if(mode==='set'){
+    profile.money=clamp(amount,0,999999999);
+  }else{
+    profile.money=clamp(Number(profile.money||0)+amount,0,999999999);
+  }
+
+  let updated=saveAdminTargetProfile(target,profile);
+
+  res.json({
+    ok:true,
+    message:'Coins updated for '+target+'.',
+    ...updated,
+    items:adminItemCatalog()
+  });
+});
+
+app.post('/api/admin/player/item',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let target=String(req.body.target||req.body.targetUsername||'').trim();
+  let itemId=String(req.body.itemId||'').trim();
+  let mode=String(req.body.mode||'add');
+  let quantity=Math.floor(Number(req.body.quantity||0));
+
+  if(!target)return res.status(400).json({error:'Missing target username'});
+  if(!SHOP_ITEMS[itemId])return res.status(400).json({error:'Unknown item'});
+  if(!['add','remove','set'].includes(mode))return res.status(400).json({error:'Invalid item mode'});
+  if(quantity<0)return res.status(400).json({error:'Invalid quantity'});
+
+  let payload=adminPlayerPayload(target);
+  if(!payload)return res.status(404).json({error:'Player not found'});
+
+  let profile=payload.profile;
+  profile.inventory=profile.inventory||{};
+
+  if(mode==='set'){
+    profile.inventory[itemId]=quantity;
+  }else if(mode==='remove'){
+    profile.inventory[itemId]=Math.max(0,Number(profile.inventory[itemId]||0)-quantity);
+  }else{
+    profile.inventory[itemId]=Number(profile.inventory[itemId]||0)+quantity;
+  }
+
+  if(profile.inventory[itemId]<=0)delete profile.inventory[itemId];
+
+  let updated=saveAdminTargetProfile(target,profile);
+
+  res.json({
+    ok:true,
+    message:'Inventory updated for '+target+'.',
+    ...updated,
+    items:adminItemCatalog()
+  });
+});
+
+app.post('/api/admin/player/pet-age',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let target=String(req.body.target||req.body.targetUsername||'').trim();
+  let selectedPetId=String(req.body.petId||'').trim();
+  let stage=String(req.body.stage||'').trim();
+  let level=req.body.level;
+
+  if(!target)return res.status(400).json({error:'Missing target username'});
+  if(stage&&!['egg','baby','young','adult'].includes(stage))return res.status(400).json({error:'Invalid pet stage'});
+
+  let payload=adminPlayerPayload(target);
+  if(!payload)return res.status(404).json({error:'Player not found'});
+
+  let profile=payload.profile;
+  let pet=selectedPetId?profile.pets[selectedPetId]:activePet(profile);
+
+  if(!pet)return res.status(404).json({error:'Pet not found'});
+
+  adminAgePet(pet,stage,level);
+  let updated=saveAdminTargetProfile(target,profile);
+
+  res.json({
+    ok:true,
+    message:'Pet updated for '+target+'.',
+    ...updated,
+    items:adminItemCatalog()
+  });
+});
+
+app.post('/api/admin/player/restore-pet',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let target=String(req.body.target||req.body.targetUsername||'').trim();
+  let selectedPetId=String(req.body.petId||'').trim();
+
+  if(!target)return res.status(400).json({error:'Missing target username'});
+
+  let payload=adminPlayerPayload(target);
+  if(!payload)return res.status(404).json({error:'Player not found'});
+
+  let profile=payload.profile;
+  let pet=selectedPetId?profile.pets[selectedPetId]:activePet(profile);
+
+  if(!pet)return res.status(404).json({error:'Pet not found'});
+
+  pet.needs={hunger:100,happiness:100,energy:100,cleanliness:100};
+  pet.stats.hp=pet.stats.maxHp;
+  pet.lastUpdated=Date.now();
+
+  let updated=saveAdminTargetProfile(target,profile);
+
+  res.json({
+    ok:true,
+    message:'Pet restored for '+target+'.',
+    ...updated,
+    items:adminItemCatalog()
+  });
+});
+
+app.get('/api/admin/market',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  res.json({
+    ok:true,
+    listings:adminListingArray(),
+    shops:publicShopProfiles(),
+    items:SHOP_ITEMS,
+    limits:MARKET_LIMITS
+  });
+});
+
+app.post('/api/admin/market/remove',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let listingId=String(req.body.listingId||'');
+  let returnEscrow=req.body.returnEscrow!==false;
+  let mk=market();
+  let listing=mk.listings&&mk.listings[listingId];
+
+  if(!listing)return res.status(404).json({error:'Listing not found'});
+
+  let sellerUsername=listing.seller;
+  let sellerProfile=null;
+
+  if(returnEscrow&&sellerUsername){
+    let all=pets();
+    sellerProfile=normalizePetProfile(all[sellerUsername]||defaultPetProfile(sellerUsername),sellerUsername);
+    sellerProfile.inventory[listing.itemId]=(sellerProfile.inventory[listing.itemId]||0)+Number(listing.quantity||0);
+    all[sellerUsername]=sellerProfile;
+    writeJSON(petsFile,all);
+    sendToUser(sellerUsername,{type:'petUpdate',profile:sellerProfile});
+  }
+
+  delete mk.listings[listingId];
+  saveMarket(mk);
+
+  res.json({
+    ok:true,
+    message:'Listing removed.',
+    listings:adminListingArray(),
+    sellerProfile
+  });
+});
+
 app.get('/admin',(req,res)=>res.sendFile(path.join(__dirname,'public','admin.html')));
 
 /* ===== PET API ===== */
