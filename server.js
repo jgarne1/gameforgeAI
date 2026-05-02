@@ -1289,32 +1289,51 @@ app.post('/api/market/buy',(req,res)=>{
 
   let listingId=String(req.body.listingId||'');
   let quantity=Math.floor(Number(req.body.quantity||1));
+
   let mk=market();
-  let listing=mk.listings&&mk.listings[listingId];
+  let listing=mk.listings && mk.listings[listingId];
 
   if(!listing)return res.json({error:'Listing not found'});
   if(quantity<1)return res.json({error:'Invalid quantity'});
   if(quantity>Number(listing.quantity||0))return res.json({error:'Not enough quantity available'});
   if(listing.seller===buyer)return res.json({error:'You cannot buy your own listing'});
 
-  let all=pets();
-  let buyerProfile=normalizePetProfile(all[buyer]||defaultPetProfile(buyer),buyer);
- // 🔥 ensure seller exists
-if(!all[sellerUsername]){
-  all[sellerUsername]=defaultPetProfile(sellerUsername);
-}
+  // ✅ FIX: define seller FIRST
+  let sellerUsername = listing.seller;
 
-let sellerProfile=normalizePetProfile(all[sellerUsername],sellerUsername);
+  let all=pets();
+
+  let buyerProfile=normalizePetProfile(
+    all[buyer] || defaultPetProfile(buyer),
+    buyer
+  );
+
+  // ✅ ensure seller exists
+  if(!all[sellerUsername]){
+    all[sellerUsername]=defaultPetProfile(sellerUsername);
+  }
+
+  let sellerProfile=normalizePetProfile(
+    all[sellerUsername],
+    sellerUsername
+  );
+
   let total=Number(listing.price||0)*quantity;
   let tax=Math.floor(total*MARKET_LIMITS.marketTaxRate);
   let sellerReceives=total-tax;
 
-  if((buyerProfile.money||0)<total)return res.json({error:'Not enough coins'});
+  if((buyerProfile.money||0)<total){
+    return res.json({error:'Not enough coins'});
+  }
 
+  // 💰 transaction
   buyerProfile.money-=total;
-  buyerProfile.inventory[listing.itemId]=(buyerProfile.inventory[listing.itemId]||0)+quantity;
   sellerProfile.money=(sellerProfile.money||0)+sellerReceives;
 
+  buyerProfile.inventory[listing.itemId]=
+    (buyerProfile.inventory[listing.itemId]||0)+quantity;
+
+  // 📉 update listing
   listing.quantity-=quantity;
   listing.lastPurchasedAt=Date.now();
   listing.lastBuyer=buyer;
@@ -1323,13 +1342,16 @@ let sellerProfile=normalizePetProfile(all[sellerUsername],sellerUsername);
     delete mk.listings[listingId];
   }
 
-all[buyer]=buyerProfile;
-all[sellerUsername]=sellerProfile;
-writeJSON(petsFile,all);
-saveMarket(mk);
+  // 💾 save
+  all[buyer]=buyerProfile;
+  all[sellerUsername]=sellerProfile;
 
-sendToUser(buyer,{type:'petUpdate',profile:buyerProfile});
-sendToUser(sellerUsername,{type:'petUpdate',profile:sellerProfile});
+  writeJSON(petsFile,all);
+  saveMarket(mk);
+
+  // 🔄 realtime updates
+  sendToUser(buyer,{type:'petUpdate',profile:buyerProfile});
+  sendToUser(sellerUsername,{type:'petUpdate',profile:sellerProfile});
 
   res.json({
     ok:true,
@@ -1339,7 +1361,6 @@ sendToUser(sellerUsername,{type:'petUpdate',profile:sellerProfile});
     shops:publicShopProfiles()
   });
 });
-
 /* ===== ROOM / WEBSOCKET ===== */
 
 function roomPublic(r){
