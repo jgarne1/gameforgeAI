@@ -5,215 +5,792 @@
 <title>GameForge Inventory</title>
 
 <style>
+/*
+GameForge Inventory notes:
+- Single-file inventory page. No shared JS/CSS dependencies.
+- Loads profile from /api/pet/profile.
+- Uses items through /api/pet/use-item.
+- Lists marketplace items through /api/market/list.
+- Item images load from /assets/items/<itemId>.png.
+- Use transparent PNGs for best results.
+*/
+
+:root{
+  --bg:#05090f;
+  --panel:#0b1117;
+  --panel2:#101922;
+  --panel3:#14222b;
+  --ink:#e5f0f2;
+  --muted:#91a9ad;
+  --soft:#c8dce1;
+  --teal:#8abfc0;
+  --gold:#facc15;
+  --green:#22c55e;
+  --blue:#60a5fa;
+  --purple:#a78bfa;
+  --red:#ef4444;
+  --line:#1d3035;
+  --line2:#28424a;
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Arial, sans-serif;
-  background:#05090f;
-  color:white;
+  background:
+    radial-gradient(circle at 12% 0%,rgba(138,191,192,.13),transparent 25%),
+    radial-gradient(circle at 82% 9%,rgba(96,165,250,.10),transparent 28%),
+    linear-gradient(135deg,#020304,#070d12 58%,#040609);
+  color:var(--ink);
+  overflow:hidden;
 }
-.container{padding:20px}
-h1{
-  font-family:Georgia, serif;
-  letter-spacing:6px;
-  color:#8abfc0;
+
+button,input,select{
+  font-family:inherit;
 }
-.topbar{
-  display:flex;
-  gap:10px;
-  align-items:center;
+
+.wrap{
+  height:650px;
+  min-height:650px;
+  display:grid;
+  grid-template-columns:230px minmax(0,1fr);
+  overflow:hidden;
+}
+
+/* LEFT PANEL */
+
+.left{
+  background:
+    linear-gradient(180deg,rgba(14,21,27,.98),rgba(5,9,15,.98)),
+    radial-gradient(circle at top,rgba(138,191,192,.08),transparent 34%);
+  border-right:1px solid var(--line);
+  padding:16px 14px;
+  overflow:auto;
+}
+
+.profile{
+  padding:13px;
+  border:1px solid rgba(138,191,192,.18);
+  border-radius:18px;
+  background:rgba(255,255,255,.035);
   margin-bottom:14px;
+}
+
+.profile h2{
+  margin:0;
+  font-size:18px;
+  color:#fff;
+}
+
+.profile p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.coins{
+  font-size:17px;
+  color:var(--gold);
+  font-weight:1000;
+  margin-top:9px;
+}
+
+.navTitle{
+  color:var(--teal);
+  letter-spacing:3px;
+  font-family:Georgia,serif;
+  text-transform:uppercase;
+  margin:16px 0 7px;
+  font-size:14px;
+}
+
+.navBtn{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--muted);
+  padding:8px 8px;
+  text-align:left;
+  cursor:pointer;
+  font-weight:900;
+}
+
+.navBtn:hover{
+  color:#fff;
+  background:rgba(138,191,192,.06);
+}
+
+.navBtn.active{
+  color:#fff;
+  background:rgba(138,191,192,.12);
+}
+
+.count{
+  color:#fff;
+  background:rgba(138,191,192,.12);
+  border:1px solid rgba(138,191,192,.24);
+  border-radius:999px;
+  padding:3px 8px;
+  font-size:11px;
+}
+
+/* MAIN */
+
+.main{
+  min-width:0;
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr);
+  background:
+    linear-gradient(180deg,rgba(8,13,17,.97),rgba(0,0,0,.97)),
+    radial-gradient(circle at center,rgba(138,191,192,.05),transparent 45%);
+}
+
+.top{
+  padding:20px 26px 10px;
+}
+
+.titleRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+}
+
+.title h1{
+  margin:0;
+  font-family:Georgia,serif;
+  color:var(--teal);
+  letter-spacing:8px;
+  font-size:39px;
+  font-weight:400;
+  text-transform:uppercase;
+}
+
+.title p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.capacity{
+  text-align:right;
+  color:#fff;
+  font-weight:900;
+  font-size:15px;
+}
+
+.capacity span{
+  color:var(--teal);
+}
+
+.rule{
+  border-top:3px dotted rgba(138,191,192,.22);
+  margin-top:11px;
+}
+
+.tabbar{
+  padding:10px 26px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid rgba(138,191,192,.12);
+}
+
+.tabs{
+  display:flex;
+  gap:21px;
   flex-wrap:wrap;
 }
-.badge{
-  padding:7px 10px;
-  border-radius:999px;
-  background:#101820;
-  border:1px solid #1d3035;
-  color:#cbd5e1;
-  font-weight:bold;
+
+.tab{
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  border-radius:0;
+  padding:0;
+  font-family:Georgia,serif;
+  letter-spacing:2px;
+  color:var(--teal);
+  text-transform:uppercase;
+  font-size:15px;
+  cursor:pointer;
 }
+
+.tab:hover,
+.tab.active{
+  color:#fff;
+}
+
+.filters{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.search{
+  width:220px;
+}
+
+input,select{
+  border:1px solid var(--line2);
+  background:#070c10;
+  color:var(--ink);
+  border-radius:12px;
+  padding:11px 12px;
+  min-width:0;
+}
+
+.content{
+  min-height:0;
+  overflow:auto;
+  padding:15px 26px 26px;
+}
+
+.sectionTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+  gap:12px;
+}
+
+.sectionTitle h2{
+  margin:0;
+  font-family:Georgia,serif;
+  color:var(--teal);
+  letter-spacing:5px;
+  font-size:29px;
+  font-weight:400;
+  text-transform:uppercase;
+}
+
+.hint{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* CARDS */
+
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  border-top:1px solid #1d3035;
-  border-left:1px solid #1d3035;
+  grid-template-columns:repeat(auto-fill,minmax(176px,1fr));
+  border-top:1px solid var(--line);
+  border-left:1px solid var(--line);
 }
-.item{
-  border-right:1px solid #1d3035;
-  border-bottom:1px solid #1d3035;
-  padding:14px;
+
+.itemCell{
+  min-height:178px;
+  padding:14px 12px 12px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(circle at 80% 12%,rgba(138,191,192,.06),transparent 35%),
+    rgba(0,0,0,.34);
   cursor:pointer;
-  text-align:center;
-  background:#080e14;
-  min-height:155px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  transition:.12s ease;
 }
-.item:hover{background:#0e1a20}
-.icon{
-  height:72px;
+
+.itemCell:hover{
+  background:
+    radial-gradient(circle at 80% 12%,rgba(138,191,192,.11),transparent 35%),
+    rgba(138,191,192,.055);
+  outline:1px solid rgba(138,191,192,.32);
+  z-index:1;
+}
+
+.itemQty{
+  position:absolute;
+  top:8px;
+  right:8px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(250,204,21,.12);
+  border:1px solid rgba(250,204,21,.24);
+  color:#fde68a;
+  font-size:12px;
+  font-weight:1000;
+}
+
+.iconShell{
+  width:80px;
+  height:80px;
+  border-radius:23px;
   display:flex;
   align-items:center;
   justify-content:center;
-  margin-bottom:8px;
+  background:
+    radial-gradient(circle at 35% 25%,rgba(255,255,255,.16),transparent 35%),
+    linear-gradient(135deg,rgba(30,41,59,.95),rgba(2,6,23,.95));
+  border:1px solid rgba(148,163,184,.24);
+  overflow:hidden;
+  position:relative;
 }
-.icon img{
-  width:64px;
-  height:64px;
+
+.iconShell:after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:18px;
+  background:radial-gradient(circle,rgba(255,255,255,.08),transparent 60%);
+  pointer-events:none;
+}
+
+.iconShell img{
+  width:72px;
+  height:72px;
   object-fit:contain;
+  position:relative;
+  z-index:2;
+  filter:drop-shadow(0 10px 10px rgba(0,0,0,.45));
 }
-.iconFallback{font-size:38px}
-.itemName{font-weight:bold;color:#e5f0f2}
-.itemQty{color:#facc15;margin-top:5px}
-.itemType{font-size:12px;color:#9bb6b9;margin-top:4px}
+
+.iconFallback{
+  font-size:38px;
+  position:relative;
+  z-index:2;
+}
+
+.iconShell.common{box-shadow:0 0 0 1px rgba(148,163,184,.10)}
+.iconShell.uncommon{box-shadow:0 0 16px rgba(34,197,94,.16)}
+.iconShell.rare{box-shadow:0 0 18px rgba(59,130,246,.22)}
+.iconShell.epic{box-shadow:0 0 20px rgba(168,85,247,.25)}
+.iconShell.legendary{box-shadow:0 0 24px rgba(250,204,21,.28)}
+
+.itemName{
+  margin-top:10px;
+  color:#e5f0f2;
+  font-weight:1000;
+  text-align:center;
+  line-height:1.18;
+}
+
+.itemType{
+  color:var(--muted);
+  text-align:center;
+  font-size:11px;
+  margin-top:5px;
+}
+
+.rarity{
+  margin-top:auto;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+
+.rarity.common{color:#cbd5e1}
+.rarity.uncommon{color:#86efac}
+.rarity.rare{color:#93c5fd}
+.rarity.epic{color:#d8b4fe}
+.rarity.legendary{color:#fde68a}
+
 .empty{
-  padding:25px;
-  color:#9bb6b9;
-  border:1px dashed #274149;
-  border-radius:14px;
+  border:1px dashed rgba(138,191,192,.28);
+  background:rgba(255,255,255,.035);
+  border-radius:18px;
+  padding:28px;
+  color:var(--muted);
+  text-align:center;
 }
+
+/* PETS */
+
+.petGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:12px;
+}
+
+.petCard{
+  background:rgba(0,0,0,.34);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  display:grid;
+  grid-template-columns:82px 1fr;
+  gap:13px;
+}
+
+.petCard.active{
+  border-color:var(--teal);
+  box-shadow:0 0 0 2px rgba(138,191,192,.12);
+}
+
+.petAvatar{
+  width:82px;
+  height:82px;
+  border-radius:21px;
+  background:#060b0f;
+  border:1px solid var(--line2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  overflow:hidden;
+}
+
+.petAvatar img{
+  width:78px;
+  height:78px;
+  object-fit:contain;
+  filter:drop-shadow(0 9px 9px rgba(0,0,0,.35));
+}
+
+.petName{
+  font-weight:1000;
+  color:#fff;
+  font-size:17px;
+  margin-bottom:4px;
+}
+
+.petDesc{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+
+/* BUTTONS */
+
+button{
+  padding:10px 13px;
+  border-radius:12px;
+  border:1px solid var(--line2);
+  background:#142026;
+  color:white;
+  cursor:pointer;
+  font-weight:900;
+}
+
+button:hover{
+  border-color:var(--teal);
+}
+
+button.primary{
+  background:#2d5961;
+  border-color:#8abfc0;
+}
+
+button.gold{
+  background:#d97706;
+  border-color:#facc15;
+  color:#111;
+}
+
+button.danger{
+  background:#991b1b;
+  border-color:#ef4444;
+}
+
+button.ghost{
+  background:rgba(255,255,255,.045);
+}
+
+/* MODAL */
+
 .modalBG{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.8);
+  background:rgba(0,0,0,.78);
   display:none;
   align-items:center;
   justify-content:center;
   z-index:50;
 }
-.modalBG.show{display:flex}
-.modal{
-  background:#111719;
-  border:1px solid #28424a;
-  padding:22px;
-  width:min(560px,92vw);
-  max-height:90vh;
-  overflow:auto;
-  box-shadow:0 25px 80px rgba(0,0,0,.65);
-}
-.modalTop{
+
+.modalBG.show{
   display:flex;
-  gap:14px;
-  align-items:center;
-  margin-bottom:15px;
 }
+
+.modal{
+  width:min(680px,94vw);
+  max-height:92vh;
+  overflow:auto;
+  background:
+    radial-gradient(circle at 82% 8%,rgba(138,191,192,.10),transparent 35%),
+    #111719;
+  border:1px solid #28424a;
+  box-shadow:0 28px 90px rgba(0,0,0,.70);
+  padding:24px;
+}
+
+.modalTop{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:18px;
+  align-items:center;
+  margin-bottom:18px;
+}
+
 .modalIcon{
-  width:85px;
-  height:85px;
+  width:120px;
+  height:120px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#070c10;
-  border:1px solid #274149;
-  border-radius:16px;
 }
-.modalIcon img{
-  width:74px;
-  height:74px;
-  object-fit:contain;
+
+.modalIcon .iconShell{
+  width:115px;
+  height:115px;
+  border-radius:28px;
 }
+
+.modalIcon .iconShell img{
+  width:100px;
+  height:100px;
+}
+
 .modal h2{
   margin:0;
-  color:#8abfc0;
-  font-family:Georgia, serif;
+  color:var(--teal);
+  font-family:Georgia,serif;
+  font-size:34px;
+  font-style:italic;
 }
-.modal p{color:#cbd5e1;line-height:1.4}
+
+.modalSub{
+  font-size:18px;
+  color:#fff;
+  margin-top:5px;
+}
+
+.modalInfo{
+  font-size:15px;
+  color:#cbd5e1;
+  line-height:1.55;
+  margin-top:9px;
+}
+
+.modalInfo b{
+  color:var(--gold);
+}
+
+.question{
+  text-align:center;
+  font-family:Georgia,serif;
+  font-size:25px;
+  margin:22px 0 16px;
+}
+
 .actions{
   display:grid;
-  gap:8px;
-  margin:15px 0;
+  gap:10px;
+  margin:0 auto;
+  max-width:480px;
 }
+
 .action{
+  width:100%;
   text-align:left;
-  border:1px solid #274149;
-  background:#0b1116;
-  color:white;
-  border-radius:12px;
-  padding:12px;
-  cursor:pointer;
-  font-weight:bold;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:rgba(0,0,0,.18);
+  border:1px solid transparent;
+  padding:11px;
+  border-radius:14px;
+  font-size:16px;
 }
+
+.action:hover,
 .action.selected{
-  border-color:#8abfc0;
-  background:#14262b;
+  background:rgba(138,191,192,.08);
+  border-color:rgba(138,191,192,.30);
 }
+
+.radio{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#fff;
+  border:2px solid #999;
+  flex:0 0 auto;
+}
+
+.action.selected .radio{
+  background:var(--teal);
+  box-shadow:inset 0 0 0 5px #fff;
+}
+
 .sellBox{
   display:none;
-  margin-top:12px;
-  padding:12px;
-  border:1px solid #274149;
-  background:#080e14;
-  border-radius:12px;
+  max-width:480px;
+  margin:14px auto 0;
+  padding:13px;
+  border:1px solid var(--line2);
+  background:rgba(0,0,0,.25);
+  border-radius:16px;
 }
-.sellBox.show{display:block}
+
+.sellBox.show{
+  display:block;
+}
+
 .sellGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
+
 label{
   display:block;
   font-size:12px;
-  color:#9bb6b9;
-  margin-bottom:4px;
+  color:var(--muted);
+  margin-bottom:5px;
 }
-input{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #274149;
-  background:#05090f;
-  color:white;
-  box-sizing:border-box;
+
+.sellSummary{
+  font-size:13px;
+  color:var(--muted);
+  margin:9px 0 0;
 }
-button{
-  padding:10px 13px;
-  border-radius:10px;
-  border:1px solid #274149;
-  background:#142026;
-  color:white;
-  cursor:pointer;
-  font-weight:bold;
-}
-button:hover{border-color:#8abfc0}
-button.primary{background:#2d5961;border-color:#8abfc0}
-button.gold{background:#d97706;border-color:#facc15;color:#111}
-button.danger{background:#991b1b;border-color:#ef4444}
+
 .modalFooter{
   display:flex;
-  gap:8px;
-  justify-content:flex-end;
-  margin-top:18px;
+  justify-content:center;
+  gap:10px;
+  margin-top:22px;
+  flex-wrap:wrap;
 }
+
 .toast{
   position:fixed;
   left:50%;
-  bottom:18px;
+  bottom:20px;
   transform:translateX(-50%);
   background:#111827;
   color:white;
-  padding:11px 16px;
   border-radius:999px;
-  font-weight:bold;
+  padding:11px 16px;
+  font-weight:900;
   opacity:0;
-  transition:.25s ease;
   pointer-events:none;
-  z-index:80;
+  transition:.25s ease;
+  box-shadow:0 15px 40px rgba(0,0,0,.45);
+  z-index:60;
 }
-.toast.show{opacity:1;bottom:30px}
+
+.toast.show{
+  opacity:1;
+  bottom:30px;
+}
+
+@media(max-width:900px){
+  body{overflow:auto}
+  .wrap{
+    height:auto;
+    grid-template-columns:1fr;
+  }
+  .left{display:none}
+  .main{min-height:650px}
+  .titleRow{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .tabbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .filters{
+    width:100%;
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .search{width:100%}
+  .grid{
+    grid-template-columns:repeat(auto-fill,minmax(145px,1fr));
+  }
+  .modalTop{
+    grid-template-columns:1fr;
+    text-align:center;
+    justify-items:center;
+  }
+}
 </style>
 </head>
 
 <body>
-<div class="container">
-  <h1>INVENTORY</h1>
+<div class="wrap">
 
-  <div class="topbar">
-    <span id="userBadge" class="badge">👤 Loading</span>
-    <span id="coinBadge" class="badge">🪙 0</span>
-    <span id="countBadge" class="badge">🎒 0 items</span>
-    <button onclick="loadInventory()">Refresh</button>
-  </div>
+  <aside class="left">
+    <div class="profile">
+      <h2 id="profileName">Player</h2>
+      <p>Inventory Keeper</p>
+      <div class="coins" id="profileCoins">0 coins</div>
+    </div>
 
-  <div id="grid" class="grid"></div>
+    <div class="navTitle">Your Items</div>
+    <button class="navBtn active" onclick="setTab('items')">Inventory <span id="leftItems" class="count">0</span></button>
+    <button class="navBtn" onclick="setTab('pets')">Pets <span id="leftPets" class="count">0</span></button>
+    <button class="navBtn" onclick="setTab('collections')">Collections <span id="leftCollections" class="count">0</span></button>
+
+    <div class="navTitle">Economy</div>
+    <button class="navBtn" onclick="showToast('Use item actions to list items on the marketplace.')">Sell Items</button>
+    <button class="navBtn" onclick="showToast('Open Marketplace from GameForge nav to browse stalls.')">Marketplace</button>
+
+    <div class="navTitle">Future</div>
+    <button class="navBtn" onclick="showToast('Trunk storage is planned for larger collections.')">Trunk</button>
+    <button class="navBtn" onclick="showToast('Crafting is planned for collectible materials.')">Crafting</button>
+  </aside>
+
+  <main class="main">
+    <section class="top">
+      <div class="titleRow">
+        <div class="title">
+          <h1 id="pageTitle">Inventory</h1>
+          <p id="pageSub">Click an item to use it, sell it, or prepare it for future systems.</p>
+        </div>
+        <div class="capacity">
+          <span id="capacityLabel">MY ITEMS</span><br>
+          <span id="capacityNow">0</span> / <span id="capacityMax">100</span>
+        </div>
+      </div>
+      <div class="rule"></div>
+    </section>
+
+    <section class="tabbar">
+      <div class="tabs">
+        <button id="top-items" class="tab active" onclick="setTab('items')">Quick Inventory</button>
+        <button id="top-pets" class="tab" onclick="setTab('pets')">Pets</button>
+        <button id="top-collections" class="tab" onclick="setTab('collections')">Collections</button>
+        <button class="tab" onclick="showToast('Marketplace browsing opens from the main GameForge nav.')">Market</button>
+        <button class="tab" onclick="showToast('Trunk storage is planned.')">Trunk</button>
+      </div>
+
+      <div class="filters">
+        <input id="searchBox" class="search" placeholder="Search inventory..." oninput="draw()">
+        <select id="viewMode" onchange="draw()">
+          <option value="mine">My Items</option>
+          <option value="usable">Usable</option>
+          <option value="materials">Materials</option>
+          <option value="egg">Egg Care</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="sectionTitle">
+        <div>
+          <h2 id="sectionTitle">My Items</h2>
+          <div id="sectionHint" class="hint">Transparent item PNGs at /assets/items/&lt;itemId&gt;.png will display automatically.</div>
+        </div>
+        <button class="ghost" onclick="loadInventory()">Refresh</button>
+      </div>
+
+      <div id="contentArea"></div>
+    </section>
+  </main>
 </div>
 
 <div id="modalBG" class="modalBG" onclick="closeModal(event)">
@@ -222,14 +799,18 @@ button.danger{background:#991b1b;border-color:#ef4444}
       <div id="modalIcon" class="modalIcon"></div>
       <div>
         <h2 id="modalName">Item</h2>
-        <p id="modalDesc">Choose an action.</p>
+        <div id="modalQuality" class="modalSub">Inventory item</div>
+        <div id="modalInfo" class="modalInfo"></div>
       </div>
     </div>
 
+    <div class="question">What do you want to do?</div>
+
     <div class="actions">
-      <button id="actionUse" class="action" onclick="selectAction('use')">🐾 Use on active pet</button>
-      <button id="actionSell" class="action" onclick="selectAction('sell')">🏪 Sell on Marketplace</button>
-      <button id="actionCancel" class="action" onclick="hideModal()">Cancel</button>
+      <button id="actionUse" class="action" onclick="selectAction('use')"><span class="radio"></span><span>🐾 Use on active pet</span></button>
+      <button id="actionSell" class="action" onclick="selectAction('sell')"><span class="radio"></span><span>🏪 Sell on Marketplace</span></button>
+      <button id="actionStore" class="action" onclick="selectAction('store')"><span class="radio"></span><span>📦 Put into storage trunk <small style="color:var(--muted)">soon</small></span></button>
+      <button id="actionCraft" class="action" onclick="selectAction('craft')"><span class="radio"></span><span>✨ Craft / transfigure <small style="color:var(--muted)">soon</small></span></button>
     </div>
 
     <div id="sellBox" class="sellBox">
@@ -243,12 +824,12 @@ button.danger{background:#991b1b;border-color:#ef4444}
           <input id="sellPrice" type="number" min="1" value="10">
         </div>
       </div>
-      <p id="sellSummary" style="font-size:13px;color:#9bb6b9"></p>
+      <p id="sellSummary" class="sellSummary">Listing total: 10 coins.</p>
     </div>
 
     <div class="modalFooter">
-      <button onclick="hideModal()">Close</button>
       <button class="primary" onclick="runSelectedAction()">Submit</button>
+      <button class="ghost" onclick="hideModal()">Cancel</button>
     </div>
   </div>
 </div>
@@ -261,22 +842,39 @@ let profile=null;
 let shop={};
 let selectedItemId='';
 let selectedAction='';
+const INVENTORY_LIMIT=100;
 
 const ITEM_META={
-  berry:{name:'Berry',icon:'berry.png',fallback:'🍓',type:'Food',desc:'A simple snack used to feed your pet.'},
-  soap:{name:'Soap',icon:'soap.png',fallback:'🫧',type:'Care',desc:'Used to clean your pet.'},
-  nap_blanket:{name:'Nap Blanket',icon:'nap_blanket.png',fallback:'💤',type:'Rest',desc:'Helps your pet recover energy.'},
-  warm_pad:{name:'Warm Pad',icon:'warm_pad.png',fallback:'🔥',type:'Egg Care',desc:'Adds warmth influence to an egg.'},
-  cool_cloth:{name:'Cool Cloth',icon:'cool_cloth.png',fallback:'❄️',type:'Egg Care',desc:'Adds cold influence to an egg.'},
-  mist_spray:{name:'Mist Spray',icon:'mist_spray.png',fallback:'💧',type:'Egg Care',desc:'Adds wet influence to an egg.'},
-  dry_towel:{name:'Dry Towel',icon:'dry_towel.png',fallback:'🌵',type:'Egg Care',desc:'Adds dry influence to an egg.'},
-  sun_lamp:{name:'Sun Lamp',icon:'sun_lamp.png',fallback:'☀️',type:'Egg Care',desc:'Adds light influence to an egg.'},
-  shade_cover:{name:'Shade Cover',icon:'shade_cover.png',fallback:'🌙',type:'Egg Care',desc:'Adds dark influence to an egg.'},
-  sparkle_treat:{name:'Sparkle Treat',icon:'sparkle_treat.png',fallback:'✨',type:'Treat',desc:'A special treat that boosts happiness.'},
-  toy_ball:{name:'Toy Ball',icon:'toy_ball.png',fallback:'🎾',type:'Toy',desc:'A toy for play and happiness.'}
+  berry:{name:'Berry',fallback:'🍓',type:'Food',rarity:'common',desc:'A simple snack used to feed your pet.'},
+  soap:{name:'Soap',fallback:'🫧',type:'Care',rarity:'common',desc:'Used to clean your pet.'},
+  nap_blanket:{name:'Nap Blanket',fallback:'💤',type:'Rest',rarity:'common',desc:'Helps your pet recover energy.'},
+  warm_pad:{name:'Warm Pad',fallback:'🔥',type:'Egg Care',rarity:'uncommon',desc:'Adds warmth influence to an egg.'},
+  cool_cloth:{name:'Cool Cloth',fallback:'❄️',type:'Egg Care',rarity:'uncommon',desc:'Adds cold influence to an egg.'},
+  mist_spray:{name:'Mist Spray',fallback:'💧',type:'Egg Care',rarity:'uncommon',desc:'Adds wet influence to an egg.'},
+  dry_towel:{name:'Dry Towel',fallback:'🌵',type:'Egg Care',rarity:'uncommon',desc:'Adds dry influence to an egg.'},
+  sun_lamp:{name:'Sun Lamp',fallback:'☀️',type:'Egg Care',rarity:'rare',desc:'Adds light influence to an egg.'},
+  shade_cover:{name:'Shade Cover',fallback:'🌙',type:'Egg Care',rarity:'rare',desc:'Adds dark influence to an egg.'},
+  sparkle_treat:{name:'Sparkle Treat',fallback:'✨',type:'Treat',rarity:'uncommon',desc:'A special treat that boosts happiness.'},
+  toy_ball:{name:'Toy Ball',fallback:'🎾',type:'Toy',rarity:'common',desc:'A toy for play and happiness.'},
+
+  ember_shell:{name:'Ember Shell',fallback:'🔥',type:'Fragment',rarity:'uncommon',desc:'A warm shell fragment for future fire egg crafting.'},
+  tide_pearl:{name:'Tide Pearl',fallback:'💧',type:'Fragment',rarity:'uncommon',desc:'A cool pearl tied to water companions.'},
+  moon_wisp:{name:'Moon Wisp',fallback:'🌙',type:'Fragment',rarity:'rare',desc:'A shadowy collectible for future rare eggs.'},
+  fossil_shard:{name:'Fossil Shard',fallback:'🪨',type:'Fragment',rarity:'rare',desc:'An ancient shard tied to earth companions.'},
+  first_hatch_badge:{name:'First Hatch Badge',fallback:'🏅',type:'Badge',rarity:'rare',desc:'A badge for hatching your first companion.'}
 };
 
+function el(id){return document.getElementById(id)}
+
 function getUsername(){
+  if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
+    let s=window.GAME_MY_SEAT||0;
+    return (window.GAME_PLAYERS[s]&&window.GAME_PLAYERS[s].name) ||
+           (window.GAME_PLAYERS[0]&&window.GAME_PLAYERS[0].name) ||
+           localStorage.getItem('gf_user') ||
+           '';
+  }
+
   try{return localStorage.getItem('gf_user')||''}
   catch(e){return ''}
 }
@@ -285,11 +883,14 @@ function meta(id){
   let fromShop=shop[id]||{};
   let local=ITEM_META[id]||{};
   return {
+    id:id,
     name:fromShop.name||local.name||prettyName(id),
-    icon:local.icon||id+'.png',
     fallback:local.fallback||'🎁',
     type:local.type||itemType(id,fromShop),
-    desc:fromShop.description||local.desc||'Inventory item.'
+    rarity:local.rarity||itemRarity(id,fromShop),
+    desc:fromShop.description||local.desc||'Inventory item.',
+    price:Number(fromShop.price||0),
+    image:'/assets/items/'+id+'.png'
   };
 }
 
@@ -297,7 +898,7 @@ async function loadInventory(){
   username=getUsername();
 
   if(!username){
-    grid.innerHTML='<div class="empty">Log in first.</div>';
+    contentArea.innerHTML='<div class="empty">Log in first.</div>';
     return;
   }
 
@@ -312,42 +913,182 @@ async function loadInventory(){
 
     profile=data.profile;
     shop=data.shop||{};
-
     draw();
   }catch(err){
     showToast('Inventory failed to load.');
   }
 }
 
+function setTab(tab){
+  ['items','pets','collections'].forEach(t=>{
+    let top=el('top-'+t);
+    if(top)top.classList.toggle('active',t===tab);
+  });
+
+  document.querySelectorAll('.left .navBtn').forEach(b=>b.classList.remove('active'));
+
+  let navs=document.querySelectorAll('.left .navBtn');
+  let index=tab==='items'?0:tab==='pets'?1:2;
+  if(navs[index])navs[index].classList.add('active');
+
+  currentTab=tab;
+  draw();
+}
+
+let currentTab='items';
+
 function draw(){
-  if(!profile)return;
+  if(!profile){
+    contentArea.innerHTML='<div class="empty">Loading inventory...</div>';
+    return;
+  }
 
   let inv=profile.inventory||{};
   let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0);
   let total=ids.reduce((sum,id)=>sum+Number(inv[id]||0),0);
+  let pets=profile.pets?Object.values(profile.pets):[];
+  let collections=ids.filter(id=>isCollectionType(meta(id).type));
 
-  userBadge.innerText='👤 '+username;
-  coinBadge.innerText='🪙 '+Number(profile.money||0);
-  countBadge.innerText='🎒 '+total+' items';
+  profileName.innerText=username;
+  profileCoins.innerText=Number(profile.money||0).toLocaleString()+' coins';
+  leftItems.innerText=ids.length;
+  leftPets.innerText=pets.length;
+  leftCollections.innerText=collections.length;
+  capacityNow.innerText=total;
+  capacityMax.innerText=INVENTORY_LIMIT;
+
+  if(currentTab==='pets')drawPets();
+  else if(currentTab==='collections')drawCollections();
+  else drawItems();
+}
+
+function filteredItems(list){
+  let q=(searchBox.value||'').toLowerCase().trim();
+  let mode=viewMode.value||'mine';
+
+  return list.filter(id=>{
+    let m=meta(id);
+    let txt=(m.name+' '+m.desc+' '+m.type+' '+id).toLowerCase();
+
+    if(q&&!txt.includes(q))return false;
+    if(mode==='usable'&&!shop[id])return false;
+    if(mode==='materials'&&!isCollectionType(m.type))return false;
+    if(mode==='egg'&&m.type!=='Egg Care')return false;
+
+    return true;
+  }).sort((a,b)=>meta(a).name.localeCompare(meta(b).name));
+}
+
+function drawItems(){
+  pageTitle.innerText='Inventory';
+  pageSub.innerText='Click an item to use it, sell it, or prepare it for future systems.';
+  sectionTitle.innerText='My Items';
+  sectionHint.innerText='Item images load from /assets/items/<itemId>.png. Transparent PNGs look best.';
+  capacityLabel.innerText='MY ITEMS';
+
+  let inv=profile.inventory||{};
+  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&!isCollectionType(meta(id).type));
+  ids=filteredItems(ids);
 
   if(!ids.length){
-    grid.innerHTML='<div class="empty">No items yet. Buy supplies, explore, or complete quests.</div>';
+    contentArea.innerHTML='<div class="empty">No items found. Buy supplies, explore, or complete quests to fill your inventory.</div>';
     return;
   }
 
-  grid.innerHTML=ids.map(id=>itemCard(id,Number(inv[id]||0))).join('');
+  contentArea.innerHTML='<div class="grid">'+ids.map(id=>itemCard(id,Number(inv[id]||0))).join('')+'</div>';
+}
+
+function drawCollections(){
+  pageTitle.innerText='Collections';
+  pageSub.innerText='Fragments, badges, trophies, cosmetics, and event items can grow here.';
+  sectionTitle.innerText='Collections';
+  sectionHint.innerText='Future collection systems should use server-owned items and transparent PNG art.';
+  capacityLabel.innerText='COLLECTIONS';
+
+  let inv=profile.inventory||{};
+  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&isCollectionType(meta(id).type));
+  ids=filteredItems(ids);
+
+  if(!ids.length){
+    contentArea.innerHTML='<div class="empty"><h3 style="margin-top:0;color:#fff">No collectibles yet</h3>Future drops can include egg fragments, badges, trophies, event tokens, cosmetics, and crafting materials.</div>';
+    return;
+  }
+
+  contentArea.innerHTML='<div class="grid">'+ids.map(id=>itemCard(id,Number(inv[id]||0))).join('')+'</div>';
+}
+
+function drawPets(){
+  pageTitle.innerText='Pets';
+  pageSub.innerText='View your current pet roster.';
+  sectionTitle.innerText='My Pets';
+  sectionHint.innerText='Pet art loads from /assets/pets/<species>/<stage>.png.';
+  capacityLabel.innerText='ROSTER';
+
+  let pets=profile.pets?Object.values(profile.pets):[];
+  let q=(searchBox.value||'').toLowerCase().trim();
+
+  pets=pets.filter(p=>{
+    let txt=((p.name||'')+' '+(p.stage||'')+' '+(p.species||'')+' '+(p.type||'')).toLowerCase();
+    return !q||txt.includes(q);
+  });
+
+  if(!pets.length){
+    contentArea.innerHTML='<div class="empty">No pets found.</div>';
+    return;
+  }
+
+  pets.sort((a,b)=>{
+    if(a.id===profile.activePetId)return -1;
+    if(b.id===profile.activePetId)return 1;
+    return String(a.name||'').localeCompare(String(b.name||''));
+  });
+
+  contentArea.innerHTML='<div class="petGrid">'+pets.map(petCard).join('')+'</div>';
 }
 
 function itemCard(id,qty){
   let m=meta(id);
+
   return `
-    <div class="item" onclick="openItem('${escAttr(id)}')">
-      <div class="icon">
-        <img src="/assets/items/${escAttr(m.icon)}" onerror="this.outerHTML='<span class=&quot;iconFallback&quot;>${escAttr(m.fallback)}</span>'">
-      </div>
+    <div class="itemCell" onclick="openItem('${escAttr(id)}')">
+      <span class="itemQty">x${qty}</span>
+      ${itemIcon(m)}
       <div class="itemName">${esc(m.name)}</div>
-      <div class="itemQty">x${qty}</div>
       <div class="itemType">${esc(m.type)}</div>
+      <div class="rarity ${escAttr(m.rarity)}">${esc(m.rarity)}</div>
+    </div>
+  `;
+}
+
+function itemIcon(m){
+  return `
+    <div class="iconShell ${escAttr(m.rarity)}">
+      <img src="${escAttr(m.image)}" alt="${escAttr(m.name)}"
+           onerror="this.outerHTML='<span class=&quot;iconFallback&quot;>${escAttr(m.fallback)}</span>'">
+    </div>
+  `;
+}
+
+function petCard(p){
+  let active=p.id===profile.activePetId;
+  let img=petAssetPath(p);
+
+  let desc=(p.stage||'egg')==='egg'
+    ? 'Mystery Egg · '+eggProgress(p)+'% hatch progress'
+    : prettyName(p.type||'pet')+' · Lv '+Number((p.stats&&p.stats.level)||1)+' · '+prettyName(p.personality||'unknown');
+
+  return `
+    <div class="petCard ${active?'active':''}">
+      <div class="petAvatar">
+        <img src="${escAttr(img)}" onerror="this.style.display='none';this.parentNode.innerHTML='${escAttr(p.emoji||'🥚')}';">
+      </div>
+      <div>
+        <div class="petName">${esc(p.name||'Mystery Egg')}</div>
+        <div class="petDesc">${esc(desc)}</div>
+        <div style="margin-top:10px">
+          <button class="gold" onclick="showToast('Open PetWorld from the main nav.')">Open PetWorld</button>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -360,14 +1101,22 @@ function openItem(id){
   let qty=Number((profile.inventory||{})[id]||0);
 
   modalName.innerText=m.name;
-  modalDesc.innerText=m.desc+' You own '+qty+'.';
-  modalIcon.innerHTML=`<img src="/assets/items/${escAttr(m.icon)}" onerror="this.outerHTML='<span class=&quot;iconFallback&quot;>${escAttr(m.fallback)}</span>'">`;
+  modalQuality.innerText=itemFlavor(m);
+  modalInfo.innerHTML=
+    'Type: <b>'+esc(m.type)+'</b><br>'+
+    'Rarity: <b>'+esc(m.rarity)+'</b><br>'+
+    'Owned: <b>'+qty+'</b><br>'+
+    esc(m.desc);
+
+  modalIcon.innerHTML=itemIcon(m);
 
   sellQty.value=1;
   sellQty.max=qty;
-  sellPrice.value=Math.max(1,Number((shop[id]&&shop[id].price)||10));
+  sellPrice.value=Math.max(1,Number(m.price||10));
+
   sellBox.classList.remove('show');
   updateActionStyles();
+  updateSellSummary();
 
   modalBG.classList.add('show');
 }
@@ -385,15 +1134,18 @@ function selectAction(action){
 }
 
 function updateActionStyles(){
-  [actionUse,actionSell].forEach(b=>b.classList.remove('selected'));
+  [actionUse,actionSell,actionStore,actionCraft].forEach(b=>b.classList.remove('selected'));
+
   if(selectedAction==='use')actionUse.classList.add('selected');
   if(selectedAction==='sell')actionSell.classList.add('selected');
+  if(selectedAction==='store')actionStore.classList.add('selected');
+  if(selectedAction==='craft')actionCraft.classList.add('selected');
 }
 
 function updateSellSummary(){
   let q=Math.max(1,Math.floor(Number(sellQty.value||1)));
   let p=Math.max(1,Math.floor(Number(sellPrice.value||1)));
-  sellSummary.innerText='Listing total: '+(q*p)+' coins.';
+  sellSummary.innerText='Listing total: '+(q*p).toLocaleString()+' coins. Marketplace will hold these items while listed.';
 }
 
 sellQty.addEventListener('input',updateSellSummary);
@@ -401,6 +1153,7 @@ sellPrice.addEventListener('input',updateSellSummary);
 
 async function runSelectedAction(){
   if(!selectedItemId)return;
+
   if(!selectedAction){
     showToast('Choose an action first.');
     return;
@@ -415,6 +1168,8 @@ async function runSelectedAction(){
     await sellItem(selectedItemId);
     return;
   }
+
+  showToast('That action is planned for a future update.');
 }
 
 async function useItem(itemId){
@@ -457,10 +1212,11 @@ async function sellItem(itemId){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        username,
-        itemId,
-        quantity,
-        price
+        user:username,
+        username:username,
+        itemId:itemId,
+        quantity:quantity,
+        price:price
       })
     });
 
@@ -471,8 +1227,11 @@ async function sellItem(itemId){
       return;
     }
 
-    if(data.profile)profile=data.profile;
-    else await loadInventory();
+    if(data.profile){
+      profile=data.profile;
+    }else{
+      await loadInventory();
+    }
 
     parent.postMessage({type:'petUpdated'},'*');
     parent.postMessage({type:'marketUpdated'},'*');
@@ -495,6 +1254,11 @@ function closeModal(e){
   if(e.target.id==='modalBG')hideModal();
 }
 
+function isCollectionType(type){
+  type=String(type||'').toLowerCase();
+  return ['fragment','badge','trophy','cosmetic','material'].includes(type);
+}
+
 function itemType(id,def){
   if(def&&def.eggTrait)return 'Egg Care';
   if(def&&def.effect&&def.effect.hunger)return 'Food';
@@ -504,8 +1268,56 @@ function itemType(id,def){
   return 'Supply';
 }
 
+function itemRarity(id,def){
+  if(def&&def.rarity)return def.rarity;
+  if(['shade_cover','sun_lamp'].includes(id))return 'rare';
+  if(['warm_pad','cool_cloth','mist_spray','dry_towel','sparkle_treat'].includes(id))return 'uncommon';
+  if(String(id).includes('wisp')||String(id).includes('shard')||String(id).includes('badge'))return 'rare';
+  return 'common';
+}
+
+function itemFlavor(m){
+  if(m.rarity==='legendary')return 'LEGENDARY FIND!';
+  if(m.rarity==='epic')return 'EPIC FIND!';
+  if(m.rarity==='rare')return 'RARE FIND!';
+  if(m.type==='Egg Care')return 'EGG CARE!';
+  if(m.type==='Food')return 'SO GOOD!';
+  return 'USEFUL SUPPLY';
+}
+
+function petAssetPath(p){
+  if(!p)return '';
+
+  if((p.stage||'egg')==='egg'){
+    return eggProgress(p)>=80
+      ? '/assets/pets/egg/egg_cracked.png'
+      : '/assets/pets/egg/egg_idle.png';
+  }
+
+  let species=p.species||'egg';
+  let stage=p.stage||'baby';
+  let file=stage==='adult'?'adult':stage==='young'||stage==='teen'?'young':'baby';
+
+  return '/assets/pets/'+species+'/'+file+'.png';
+}
+
+function eggProgress(p){
+  let t=p.eggTraits||{};
+  let total=
+    Number(t.warm||0)+
+    Number(t.cold||0)+
+    Number(t.wet||0)+
+    Number(t.dry||0)+
+    Number(t.light||0)+
+    Number(t.dark||0);
+
+  return Math.min(100,Math.floor(total/18*100));
+}
+
 function prettyName(id){
-  return String(id||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  return String(id||'')
+    .replace(/_/g,' ')
+    .replace(/\b\w/g,c=>c.toUpperCase());
 }
 
 function esc(s){
@@ -519,20 +1331,25 @@ function esc(s){
 }
 
 function escAttr(s){
-  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'');
+  return String(s||'')
+    .replace(/\\/g,'\\\\')
+    .replace(/'/g,"\\'")
+    .replace(/</g,'');
 }
 
 function showToast(text){
   toast.innerText=text;
   toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),2200);
+  setTimeout(()=>toast.classList.remove('show'),2300);
 }
 
 window.addEventListener('message',function(event){
   let msg=event.data||{};
+
   if(msg.type==='gameSetup'){
     loadInventory();
   }
+
   if(msg.type==='petUpdate'&&msg.profile){
     profile=msg.profile;
     draw();
