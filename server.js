@@ -1159,7 +1159,7 @@ wss.on('connection',ws=>{
         players:[],
         chat:[],
         gameState:null,
-        gameStateType='state',
+        gameStateType:'state',
         gameVersion:0,
         gameUpdatedAt:0
       };
@@ -1223,7 +1223,7 @@ wss.on('connection',ws=>{
         r.started=false;
         r.seats=Array(g.seats).fill(null);
         r.gameState=null;
-        r.gameStateType:'state';
+        r.gameStateType='state';
         r.gameVersion=0;
         r.gameUpdatedAt=0;
         broadcastRoom(r.id,{type:'roomUpdate',room:roomPublic(r),scroll:'table'});
