@@ -238,6 +238,139 @@ button,input,select{font-family:inherit}
 @keyframes carePop{0%{transform:scale(1)}35%{transform:scale(1.28) rotate(-4deg)}70%{transform:scale(.98) rotate(3deg)}100%{transform:scale(1)}}
 @keyframes tapBounce{0%{transform:scale(1)}45%{transform:scale(1.13) translateY(-8px)}100%{transform:scale(1)}}
 
+
+/* Compact stage HUD: quick needs and single progression bar live with the pet, not as bulky dashboard cards. */
+.stageVitals{
+  position:absolute;
+  left:50%;
+  top:calc(50% + 164px);
+  transform:translateX(-50%);
+  z-index:11;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  background:rgba(15,23,42,.54);
+  color:white;
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 16px 40px rgba(15,23,42,.22);
+  backdrop-filter:blur(14px);
+  pointer-events:none;
+}
+.stageVital{
+  min-width:64px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.1px;
+}
+.stageVital.good{color:#bbf7d0}
+.stageVital.mid{color:#fde68a}
+.stageVital.low{color:#fecaca}
+.stageProgressBox{
+  position:absolute;
+  left:50%;
+  top:calc(50% + 215px);
+  transform:translateX(-50%);
+  z-index:11;
+  width:min(440px,calc(100% - 36px));
+  padding:9px 11px;
+  border-radius:18px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(148,163,184,.34);
+  box-shadow:0 16px 36px rgba(15,23,42,.14);
+  backdrop-filter:blur(14px);
+  pointer-events:none;
+}
+.stageProgressTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  color:#334155;
+  font-size:12px;
+  font-weight:1000;
+  margin-bottom:6px;
+}
+.stageProgressTrack{
+  height:10px;
+  border-radius:999px;
+  background:rgba(148,163,184,.24);
+  overflow:hidden;
+}
+.stageProgressFill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);
+  transition:width .35s ease;
+}
+.petOrb{
+  animation:none;
+  will-change:transform;
+}
+.petOrb.playful:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.lazy:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.napping:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.aggressive:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.calm:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.curious:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.moody:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg){
+  animation:none;
+}
+.petOrb.walking{
+  animation:none!important;
+}
+.petOverview{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.overviewTile{
+  background:rgba(255,255,255,.70);
+  border:1px solid rgba(148,163,184,.30);
+  border-radius:16px;
+  padding:9px;
+}
+.overviewTile b{display:block;font-size:12px;color:#334155}
+.overviewTile span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.itemRow{
+  display:grid;
+  grid-template-columns:58px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+}
+.itemThumb{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.95),rgba(255,255,255,.48));
+  border:1px solid rgba(148,163,184,.32);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  box-shadow:inset 0 0 22px rgba(255,255,255,.36);
+}
+.itemThumb img{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 8px rgba(15,23,42,.16));
+}
+.itemThumb span{font-size:26px}
+.itemActionRow{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.itemActionRow button{padding:8px 10px;font-size:12px}
+
 .actionDock{
   position:absolute;
   left:16px;
@@ -546,6 +679,10 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   .petOrb{width:260px;height:260px}
   .petImg{width:175px;height:175px}
   .petEmoji{font-size:112px}
+  .stageVitals{top:calc(50% + 137px);gap:5px;padding:7px}
+  .stageVital{min-width:52px;font-size:12px;padding:5px 7px}
+  .stageProgressBox{top:calc(50% + 183px)}
+  .petOverview{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -606,6 +743,9 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
           <div id="petEmoji" class="petEmoji">🥚</div>
         </div>
 
+        <div id="stageVitals" class="stageVitals hidden"></div>
+        <div id="stageProgressBox" class="stageProgressBox hidden"></div>
+
         <div id="eggIdentityPanel" class="eggIdentityPanel hidden"></div>
         <div id="floatingFx" class="floatingFx">+1</div>
         <div id="actionDock" class="actionDock"></div>
@@ -665,7 +805,7 @@ var limits={maxRoster:6,newEggBaseCost:75};
 var currentTab='quests';
 var selectedZoneId='meadow';
 var logs=[];
-var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null};
+var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200};
 
 function el(id){return document.getElementById(id);}
 
@@ -745,6 +885,7 @@ function draw(){
   drawDock();
   drawStats();
   drawProgress();
+  drawStageHud();
   drawEggIdentityPanel();
   drawQuests();
   drawDetails();
@@ -823,14 +964,7 @@ function drawStats(){
   if(pet.stage==='egg'){
     var strongest=strongestTrait(pet.eggTraits||{});
     var pct=eggProgress(pet);
-    var labels={
-      warm:'Warmth',
-      cold:'Cold',
-      wet:'Moisture',
-      dry:'Dryness',
-      light:'Light',
-      dark:'Shadow'
-    };
+    var labels={warm:'Warmth',cold:'Cold',wet:'Moisture',dry:'Dryness',light:'Light',dark:'Shadow'};
 
     html+='<div class="eggSignal">';
     html+='<h3>Egg Signal</h3>';
@@ -843,16 +977,20 @@ function drawStats(){
     html+='</div>';
     html+='</div>';
   }else{
-    html+='<div class="petSnapshot">';
-    html+=needCard('🍽️ Hunger',pet.needs.hunger,100,'Feed when low.');
-    html+=needCard('🙂 Happiness',pet.needs.happiness,100,'Play raises mood and XP.');
-    html+=needCard('⚡ Energy',pet.needs.energy,100,'Rest before exploring or training.');
+    html+='<div class="petOverview">';
+    html+=overviewTile('Level','Lv '+Number((pet.stats&&pet.stats.level)||1));
+    html+=overviewTile('Type',personalityLabel(pet.type||'pet'));
+    html+=overviewTile('Personality',personalityLabel(pet.personality));
+    html+=overviewTile('Bond',Number(pet.affection||0));
     html+='</div>';
   }
 
   el('statStack').innerHTML=html;
 }
 
+function overviewTile(label,value){
+  return '<div class="overviewTile"><b>'+escapeHtml(label)+'</b><span>'+escapeHtml(value)+'</span></div>';
+}
 function needCard(name,val,max,hint){
   val=Number(val||0); max=Number(max||100);
   var pct=Math.max(0,Math.min(100,Math.floor((val/max)*100)));
@@ -869,22 +1007,66 @@ function miniStat(name,val,max){
 
 function drawProgress(){
   var pet=activePet();
-  var html='';
+  var box=el('progressBox');
+  if(!box)return;
+
   if(pet.stage==='egg'){
     var pct=eggProgress(pet);
+    var html='';
     html+='<b>Hatch Progress</b><div class="muted">'+traitTotal(pet.eggTraits||{})+' / 18 care points</div>';
     html+='<div class="progress"><div class="progressFill" style="width:'+pct+'%"></div></div>';
     html+=eggInfluenceCard(pet);
-  }else{
-    var need=Math.max(20,Number(pet.stats.level||1)*20);
-    var xp=Number(pet.stats.xp||0);
-    var xpPct=Math.max(0,Math.min(100,Math.floor((xp/need)*100)));
-    html+='<b>Level Progress</b><div class="muted">Lv '+Number(pet.stats.level||1)+' · '+xp+' / '+need+' XP</div>';
-    html+='<div class="progress"><div class="progressFill" style="width:'+xpPct+'%"></div></div>';
+    box.classList.remove('hidden');
+    box.innerHTML=html;
+    return;
   }
-  el('progressBox').innerHTML=html;
+
+  box.classList.add('hidden');
+  box.innerHTML='';
 }
 
+function drawStageHud(){
+  var pet=activePet();
+  if(!pet)return;
+
+  var vitals=el('stageVitals');
+  var progress=el('stageProgressBox');
+  if(!vitals||!progress)return;
+
+  if(pet.stage==='egg'){
+    var pct=eggProgress(pet);
+    vitals.classList.remove('hidden');
+    vitals.innerHTML='<span class="stageVital '+vitalClass(pct)+'">🥚 '+pct+'%</span><span class="stageVital '+vitalClass(pet.affection||0)+'">♡ '+Number(pet.affection||0)+'</span>';
+    progress.classList.remove('hidden');
+    progress.innerHTML=stageProgressHtml('Hatch Progress',traitTotal(pet.eggTraits||{})+' / 18 care',pct);
+    return;
+  }
+
+  var n=pet.needs||{};
+  var need=Math.max(20,Number((pet.stats&&pet.stats.level)||1)*20);
+  var xp=Number((pet.stats&&pet.stats.xp)||0);
+  var xpPct=Math.max(0,Math.min(100,Math.floor((xp/need)*100)));
+
+  vitals.classList.remove('hidden');
+  vitals.innerHTML=''+
+    '<span class="stageVital '+vitalClass(n.hunger)+'">🍽 '+Number(n.hunger||0)+'</span>'+
+    '<span class="stageVital '+vitalClass(n.happiness)+'">🙂 '+Number(n.happiness||0)+'</span>'+
+    '<span class="stageVital '+vitalClass(n.energy)+'">⚡ '+Number(n.energy||0)+'</span>';
+
+  progress.classList.remove('hidden');
+  progress.innerHTML=stageProgressHtml('Level '+Number((pet.stats&&pet.stats.level)||1)+' Progress',xp+' / '+need+' XP',xpPct);
+}
+
+function stageProgressHtml(label,value,pct){
+  return '<div class="stageProgressTop"><span>'+escapeHtml(label)+'</span><span>'+escapeHtml(value)+'</span></div><div class="stageProgressTrack"><div class="stageProgressFill" style="width:'+pct+'%"></div></div>';
+}
+
+function vitalClass(v){
+  v=Number(v||0);
+  if(v<30)return 'low';
+  if(v<60)return 'mid';
+  return 'good';
+}
 function drawQuests(){
   var quests=(profile.daily&&profile.daily.quests)||[];
   var html='<h3>Daily Quests</h3><p class="muted">Complete small goals to earn coins, items, and XP.</p>';
@@ -996,12 +1178,16 @@ function drawItems(){
   if(!keys.length)html+='<p class="muted">No items yet. Explore or visit the shop.</p>';
   keys.forEach(function(id){
     var item=shop[id]||{name:id,description:'Item'};
-    html+='<div class="item"><div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><span class="badge">x'+inv[id]+'</span></div>';
-    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div><button class="primary" onclick="useItem(\''+id+'\')">Use Item</button></div>';
+    html+='<div class="item"><div class="itemRow">';
+    html+='<div class="itemThumb"><img src="'+escapeAttr(itemAssetPath(id))+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'"><span style="display:none">🎁</span></div>';
+    html+='<div>';
+    html+='<div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><span class="badge">x'+inv[id]+'</span></div>';
+    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div>';
+    html+='<div class="itemActionRow"><button class="primary" onclick="useItem(\''+id+'\')">Use Item</button></div>';
+    html+='</div></div></div>';
   });
   el('itemsPanel').innerHTML=html;
 }
-
 function drawShop(){
   var html='<h3>Shop</h3><p class="muted">Buy food, care tools, and comfort items.</p>';
   Object.keys(shop).forEach(function(id){
@@ -1397,8 +1583,9 @@ function triggerPetReaction(type){
 
 function setPetPersonalityMotion(pet,mood){
   var orb=el('petOrb');
-  clearWanderClasses(orb);
-  orb.className='petOrb';
+  if(!orb)return;
+
+  clearMotionClasses(orb);
 
   if(pet.stage==='egg'){
     orb.classList.add('eggStill');
@@ -1419,6 +1606,13 @@ function setPetPersonalityMotion(pet,mood){
   else orb.classList.add('calm');
 }
 
+function clearMotionClasses(orb){
+  if(!orb)return;
+  [
+    'eggStill','eggWarm','eggCold','eggWet','eggDry','eggLight','eggDark',
+    'playful','lazy','napping','aggressive','calm','curious','moody'
+  ].forEach(function(c){orb.classList.remove(c)});
+}
 function idleSpeech(pet,mood){
   var name=pet.name||'Your pet';
 
@@ -1453,60 +1647,86 @@ function tickPetLife(){
 
 function maybeWanderPet(pet){
   var now=Date.now();
-  if(now-localState.lastWanderAt<5200)return;
+  if(now-localState.lastWanderAt<Number(localState.nextWanderDelay||4200))return;
+
+  var orb=el('petOrb');
+  if(!orb)return;
 
   localState.lastWanderAt=now;
-  var orb=el('petOrb');
-
-  clearWanderClasses(orb);
 
   if(pet.stage==='egg'){
+    localState.nextWanderDelay=eggProgress(pet)>=80?2800:5200;
     if(eggProgress(pet)>=80){
-      orb.classList.add('hop');
-      setTimeout(function(){clearWanderClasses(orb)},700);
+      smartMovePet(0,-34,0,1.04,420);
+      setTimeout(function(){smartMovePet(0,0,0,1,520)},520);
+    }else{
+      smartMovePet(0,0,0,1,500);
     }
     return;
   }
 
   var personality=pet.personality||'calm';
+  var mood=getMood(pet);
+  var step=95;
+  var delay=4300;
+  var restChance=.18;
 
-  var choices=['wanderNearLeft','wanderNearRight','wanderLeft','wanderRight','hop',''];
-  if(personality==='lazy')choices=['wanderNearLeft','wanderNearRight','','',''];
-  if(personality==='playful')choices=['wanderLeft','wanderRight','hop','wanderNearLeft','wanderNearRight'];
-  if(personality==='curious')choices=['wanderLeft','wanderRight','wanderNearLeft','wanderNearRight','hop'];
-  if(personality==='calm')choices=['wanderNearLeft','wanderNearRight','','wanderLeft','wanderRight'];
-  if(personality==='aggressive')choices=['wanderLeft','wanderRight','wanderLeft','wanderRight','hop'];
-  if(personality==='moody')choices=['wanderLeft','wanderRight','hop','','wanderNearLeft','wanderNearRight'];
+  if(personality==='lazy'){step=46;delay=6200;restChance=.48}
+  if(personality==='playful'){step=145;delay=3000;restChance=.06}
+  if(personality==='curious'){step=130;delay=3400;restChance=.08}
+  if(personality==='aggressive'){step=155;delay=3200;restChance=.04}
+  if(personality==='calm'){step=78;delay=4800;restChance=.22}
+  if(personality==='moody'){step=170;delay=3600;restChance=.22}
+  if(mood.label==='Tired'||mood.label==='Struggling'){step=38;delay=6600;restChance=.55}
 
-  var c=choices[Math.floor(Math.random()*choices.length)];
+  localState.nextWanderDelay=delay+Math.floor(Math.random()*1200);
 
-  if(c){
-    orb.classList.add('walking');
-    orb.classList.add(c);
+  if(Math.random()<restChance){
+    smartMovePet(Number(localState.petX||0),Number(localState.petY||0),0,.99,900);
+    return;
   }
 
-  var duration=c==='hop'?800:2600;
+  var nextX=clampNumber(Number(localState.petX||0)+randRange(-step,step),-190,190);
+  var nextY=clampNumber(randRange(-2,28),-10,34);
+  var dir=nextX>=Number(localState.petX||0)?1:-1;
+  var rot=clampNumber(dir*randRange(1,4),-5,5);
+  var scale=personality==='playful'&&Math.random()<.22?1.045:1;
+
+  smartMovePet(nextX,nextY,rot,scale,1800+Math.floor(Math.random()*900));
+}
+
+function smartMovePet(x,y,rot,scale,duration){
+  var orb=el('petOrb');
+  if(!orb)return;
+
+  localState.petX=x;
+  localState.petY=y;
+  localState.petRot=rot||0;
+  localState.petScale=scale||1;
+
+  orb.classList.add('walking');
+  orb.style.transition='transform '+Number(duration||1800)+'ms cubic-bezier(.25,.8,.25,1)';
+  orb.style.transform='translateX('+x+'px) translateY('+y+'px) rotate('+(rot||0)+'deg) scale('+(scale||1)+')';
 
   setTimeout(function(){
-    if(orb)clearWanderClasses(orb);
-  },duration);
+    if(orb)orb.classList.remove('walking');
+  },Number(duration||1800)+80);
 }
 
 function clearWanderClasses(orb){
   if(!orb)return;
   [
-    'wanderLeft',
-    'wanderRight',
-    'wanderNearLeft',
-    'wanderNearRight',
-    'wanderUp',
-    'hop',
-    'walking'
-  ].forEach(function(c){
-    orb.classList.remove(c);
-  });
+    'wanderLeft','wanderRight','wanderNearLeft','wanderNearRight','wanderUp','hop','walking'
+  ].forEach(function(c){orb.classList.remove(c)});
 }
 
+function randRange(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function clampNumber(n,min,max){
+  return Math.max(min,Math.min(max,n));
+}
 function tickLocalPrompt(){
   var pet=activePet();
   if(!pet||pet.stage!=='egg')return;
