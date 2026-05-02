@@ -26,12 +26,11 @@ app.use('/games',express.static(path.join(__dirname,'games')));
 /*
 GameForge AI server maintainer notes for future AI chats/editors:
 - Keep comments useful. Add, edit, or remove comments whenever behavior changes.
-- Do not add comments that simply repeat obvious code.
-- Preserve account, admin, room, WebSocket, iframe game, chat, marketplace, and pet APIs unless the user explicitly asks to redesign them.
+- Preserve account, admin, room, WebSocket, iframe game, chat, marketplace, and pet APIs unless explicitly redesigning them.
 - Pets store move IDs only. Move definitions come from data/pet_moves.json or DEFAULT_MOVES fallback.
-- Pet roster ownership, active pet switching, future gifting, future trading, rewards, and egg-help features must stay server-authoritative.
+- Pet progression, quests, exploration, rewards, roster ownership, future gifting/trading, and egg-help must stay server-authoritative.
 - Do not add a generic client-side /api/pet/update that overwrites the whole pet profile. That is unsafe.
-- Marketplace listings escrow items on the server when listed; never let buyers/sellers transfer items only on the client.
+- Marketplace listings escrow items on the server when listed.
 - Room gameState is in-memory for reconnect/late-join support. Games should send {type:'state',state} or {type:'battleState',state}.
 - Real-time pet updates are pushed with WebSocket message {type:'petUpdate',profile} after server-side pet/profile mutations.
 */
@@ -137,12 +136,88 @@ const MARKET_LIMITS={
 const PET_PERSONALITIES=['playful','lazy','aggressive','calm','curious','moody'];
 const TRAINABLE_STATS=['attack','defense','speed'];
 
-const EXPLORE_REWARDS=[
-  {kind:'coins',weight:44,min:8,max:22},
-  {kind:'item',weight:30,item:'berry',quantity:1},
-  {kind:'item',weight:12,item:'sparkle_treat',quantity:1},
-  {kind:'item',weight:8,item:'soap',quantity:1},
-  {kind:'xp',weight:20,min:5,max:11}
+const EXPLORE_ZONES={
+  meadow:{
+    id:'meadow',
+    name:'Sunny Meadow',
+    minLevel:1,
+    energyCost:10,
+    description:'Balanced beginner zone with coins, berries, XP, and small surprises.',
+    rewards:[
+      {kind:'coins',weight:44,min:8,max:22},
+      {kind:'item',weight:30,item:'berry',quantity:1},
+      {kind:'item',weight:12,item:'sparkle_treat',quantity:1},
+      {kind:'xp',weight:20,min:5,max:11}
+    ]
+  },
+  tidepools:{
+    id:'tidepools',
+    name:'Tide Pools',
+    minLevel:2,
+    energyCost:12,
+    description:'Water-themed zone with soap, treats, and water move discovery chances.',
+    rewards:[
+      {kind:'coins',weight:30,min:10,max:24},
+      {kind:'item',weight:25,item:'soap',quantity:1},
+      {kind:'item',weight:16,item:'mist_spray',quantity:1},
+      {kind:'xp',weight:24,min:7,max:13},
+      {kind:'move',weight:5,type:'water'}
+    ]
+  },
+  embercave:{
+    id:'embercave',
+    name:'Ember Cave',
+    minLevel:3,
+    energyCost:14,
+    description:'Fire-themed zone with higher coin swings and fire move discovery chances.',
+    rewards:[
+      {kind:'coins',weight:36,min:12,max:32},
+      {kind:'item',weight:18,item:'warm_pad',quantity:1},
+      {kind:'item',weight:12,item:'sun_lamp',quantity:1},
+      {kind:'xp',weight:24,min:8,max:15},
+      {kind:'move',weight:6,type:'fire'}
+    ]
+  },
+  shadowwoods:{
+    id:'shadowwoods',
+    name:'Shadow Woods',
+    minLevel:4,
+    energyCost:15,
+    description:'Riskier zone with stronger XP and shadow move discovery chances.',
+    rewards:[
+      {kind:'coins',weight:26,min:12,max:36},
+      {kind:'item',weight:16,item:'shade_cover',quantity:1},
+      {kind:'item',weight:10,item:'nap_blanket',quantity:1},
+      {kind:'xp',weight:30,min:10,max:18},
+      {kind:'move',weight:8,type:'shadow'}
+    ]
+  },
+  fossilridge:{
+    id:'fossilridge',
+    name:'Fossil Ridge',
+    minLevel:5,
+    energyCost:16,
+    description:'Earth-themed zone with sturdy rewards and earth move discovery chances.',
+    rewards:[
+      {kind:'coins',weight:28,min:14,max:38},
+      {kind:'item',weight:16,item:'dry_towel',quantity:1},
+      {kind:'item',weight:12,item:'cool_cloth',quantity:1},
+      {kind:'xp',weight:30,min:10,max:18},
+      {kind:'move',weight:8,type:'earth'}
+    ]
+  }
+};
+
+const QUEST_POOL=[
+  {id:'care_egg_3',title:'Egg Tender',type:'eggCare',target:3,reward:{coins:18,item:'warm_pad',quantity:1}},
+  {id:'play_1',title:'Play Time',type:'play',target:1,reward:{coins:20,xp:5}},
+  {id:'train_2',title:'Training Day',type:'train',target:2,reward:{coins:24,xp:8}},
+  {id:'explore_2',title:'Little Explorer',type:'explore',target:2,reward:{coins:28,item:'berry',quantity:1}},
+  {id:'feed_1',title:'Snack Break',type:'feed',target:1,reward:{coins:15,item:'sparkle_treat',quantity:1}},
+  {id:'clean_1',title:'Fresh & Clean',type:'clean',target:1,reward:{coins:15,item:'soap',quantity:1}},
+  {id:'rest_1',title:'Rested Companion',type:'rest',target:1,reward:{coins:15,item:'nap_blanket',quantity:1}},
+  {id:'bond_3',title:'Build the Bond',type:'bondGain',target:3,reward:{coins:25,xp:6}},
+  {id:'coins_25',title:'Coin Finder',type:'coinsEarned',target:25,reward:{coins:30}}
 ];
 
 const MOVE_UNLOCKS={
@@ -156,6 +231,10 @@ const MOVE_UNLOCKS={
 
 function randomPersonality(){
   return PET_PERSONALITIES[Math.floor(Math.random()*PET_PERSONALITIES.length)];
+}
+
+function todayKey(){
+  return new Date().toISOString().slice(0,10);
 }
 
 function createEggPet(username){
@@ -208,6 +287,36 @@ function normalizePet(pet,username){
   return pet;
 }
 
+function normalizeDaily(profile){
+  let key=todayKey();
+
+  if(!profile.daily||profile.daily.date!==key){
+    let pool=QUEST_POOL.slice();
+    let selected=[];
+
+    while(selected.length<3&&pool.length){
+      let idx=Math.floor(Math.random()*pool.length);
+      let q=pool.splice(idx,1)[0];
+      selected.push({
+        id:q.id,
+        title:q.title,
+        type:q.type,
+        target:q.target,
+        progress:0,
+        claimed:false,
+        reward:q.reward
+      });
+    }
+
+    profile.daily={
+      date:key,
+      quests:selected
+    };
+  }
+
+  return profile.daily;
+}
+
 function normalizePetProfile(profile,username){
   profile.username=profile.username||username;
   profile.money=Number(profile.money||0);
@@ -234,6 +343,8 @@ function normalizePetProfile(profile,username){
     profile.activePetId=Object.keys(profile.pets)[0];
   }
 
+  normalizeDaily(profile);
+
   return profile;
 }
 
@@ -244,7 +355,7 @@ function petCount(profile){
 function defaultPetProfile(username){
   let pet=createEggPet(username);
 
-  return {
+  return normalizePetProfile({
     username,
     money:100,
     activePetId:pet.id,
@@ -259,7 +370,7 @@ function defaultPetProfile(username){
     pets:{
       [pet.id]:pet
     }
-  };
+  },username);
 }
 
 const PET_SPECIES={
@@ -273,10 +384,10 @@ const PET_SPECIES={
 };
 
 const SHOP_ITEMS={
-  berry:{name:'Berry',price:10,description:'Restores hunger.',effect:{hunger:18}},
+  berry:{name:'Berry',price:10,description:'Restores hunger.',effect:{hunger:18},questType:'feed'},
   sparkle_treat:{name:'Sparkle Treat',price:25,description:'Boosts happiness.',effect:{happiness:18}},
-  soap:{name:'Bubble Soap',price:20,description:'Improves cleanliness.',effect:{cleanliness:25}},
-  nap_blanket:{name:'Nap Blanket',price:30,description:'Restores energy.',effect:{energy:22}},
+  soap:{name:'Bubble Soap',price:20,description:'Improves cleanliness.',effect:{cleanliness:25},questType:'clean'},
+  nap_blanket:{name:'Nap Blanket',price:30,description:'Restores energy.',effect:{energy:22},questType:'rest'},
   warm_pad:{name:'Warm Pad',price:20,description:'Egg care: increases warmth.',eggTrait:{warm:3}},
   cool_cloth:{name:'Cool Cloth',price:20,description:'Egg care: increases cold.',eggTrait:{cold:3}},
   mist_spray:{name:'Mist Spray',price:20,description:'Egg care: increases wet.',eggTrait:{wet:3}},
@@ -332,6 +443,42 @@ function weightedPick(items){
   }
 
   return items[items.length-1];
+}
+
+function trackQuest(profile,type,amount=1){
+  normalizeDaily(profile);
+  let changed=false;
+
+  profile.daily.quests.forEach(q=>{
+    if(q.type===type&&!q.claimed&&q.progress<q.target){
+      q.progress=clamp(Number(q.progress||0)+amount,0,q.target);
+      changed=true;
+    }
+  });
+
+  return changed;
+}
+
+function grantReward(profile,pet,reward){
+  let granted={coins:0,items:[],xpResult:null};
+
+  if(reward.coins){
+    profile.money=(profile.money||0)+Number(reward.coins);
+    granted.coins=Number(reward.coins);
+    trackQuest(profile,'coinsEarned',Number(reward.coins));
+  }
+
+  if(reward.item){
+    let qty=Number(reward.quantity||1);
+    profile.inventory[reward.item]=(profile.inventory[reward.item]||0)+qty;
+    granted.items.push({item:reward.item,quantity:qty});
+  }
+
+  if(reward.xp&&pet&&pet.stage!=='egg'){
+    granted.xpResult=addPetXp(pet,Number(reward.xp));
+  }
+
+  return granted;
 }
 
 function hatchSpecies(traits){
@@ -427,12 +574,12 @@ function addPetXp(pet,amount){
   return result;
 }
 
-function maybeLearnMove(pet,chance){
+function maybeLearnMove(pet,chance,typeHint){
   if((pet.moves||[]).length>=4)return null;
   if(Math.random()>chance)return null;
 
   let book=moves();
-  let typeList=MOVE_UNLOCKS[pet.type]||[];
+  let typeList=MOVE_UNLOCKS[typeHint]||MOVE_UNLOCKS[pet.type]||[];
   let normalList=MOVE_UNLOCKS.normal||[];
   let candidates=typeList.concat(normalList).filter(id=>book[id]&&!pet.moves.includes(id));
 
@@ -470,6 +617,89 @@ function trainPetStat(pet,stat){
   let xpResult=addPetXp(pet,xpGain);
 
   return {stat,gain,energyCost,xp:xpGain,xpResult};
+}
+
+function resolveExplore(profile,pet,zoneId){
+  let zone=EXPLORE_ZONES[zoneId]||EXPLORE_ZONES.meadow;
+  let level=Number(pet.stats.level||1);
+
+  if(!pet||pet.stage==='egg')return {error:'Eggs cannot explore yet'};
+  if(level<zone.minLevel)return {error:zone.name+' requires level '+zone.minLevel};
+  if(Number(pet.needs.energy||0)<zone.energyCost)return {error:pet.name+' is too tired to explore'};
+
+  let reward=weightedPick(zone.rewards);
+  let result={
+    zone:zone.id,
+    zoneName:zone.name,
+    kind:reward.kind,
+    bonus:[],
+    learnedMove:null,
+    leveled:false
+  };
+
+  pet.needs.energy=clamp(Number(pet.needs.energy||0)-zone.energyCost,0,100);
+  pet.needs.happiness=clamp(Number(pet.needs.happiness||0)+4,0,100);
+  pet.affection=clamp(Number(pet.affection||0)+2,0,100);
+
+  if(reward.kind==='coins'){
+    let amount=randInt(reward.min,reward.max);
+    if(pet.personality==='curious'&&Math.random()<.35){
+      amount+=5;
+      result.bonus.push('Curious bonus +5 coins');
+    }
+    profile.money=(profile.money||0)+amount;
+    result.amount=amount;
+    result.message=pet.name+' explored '+zone.name+' and found '+amount+' coins.';
+    trackQuest(profile,'coinsEarned',amount);
+  }
+
+  if(reward.kind==='item'){
+    let quantity=Number(reward.quantity||1);
+    if(pet.personality==='curious'&&Math.random()<.25){
+      quantity++;
+      result.bonus.push('Curious bonus found one extra');
+    }
+    profile.inventory[reward.item]=(profile.inventory[reward.item]||0)+quantity;
+    result.item=reward.item;
+    result.quantity=quantity;
+    result.message=pet.name+' explored '+zone.name+' and found '+quantity+' '+itemName(reward.item)+'.';
+  }
+
+  if(reward.kind==='xp'){
+    let xp=randInt(reward.min,reward.max);
+    if(pet.personality==='playful')xp+=2;
+    let xpResult=addPetXp(pet,xp);
+    result.amount=xp;
+    result.xpResult=xpResult;
+    result.learnedMove=xpResult.learnedMove;
+    result.leveled=!!xpResult.leveled;
+    result.message=pet.name+' explored '+zone.name+' and gained '+xp+' XP.';
+  }
+
+  if(reward.kind==='move'){
+    let learned=maybeLearnMove(pet,.75,reward.type);
+    result.learnedMove=learned;
+    result.message=learned
+      ? pet.name+' explored '+zone.name+' and discovered '+learned.name+'!'
+      : pet.name+' explored '+zone.name+' and practiced battle instincts.';
+    if(!learned){
+      let xpResult=addPetXp(pet,8);
+      result.xpResult=xpResult;
+      result.leveled=!!xpResult.leveled;
+    }
+  }
+
+  let extraMove=maybeLearnMove(pet,pet.personality==='curious'?.18:.08);
+  if(extraMove&&!result.learnedMove){
+    result.learnedMove=extraMove;
+    result.message+=' '+pet.name+' discovered '+extraMove.name+'!';
+  }
+
+  trackQuest(profile,'explore',1);
+  trackQuest(profile,'bondGain',2);
+
+  pet.lastUpdated=Date.now();
+  return result;
 }
 
 /* ===== API ===== */
@@ -543,6 +773,348 @@ app.get('/api/admin/rooms',(req,res)=>{
 
 app.get('/admin',(req,res)=>res.sendFile(path.join(__dirname,'public','admin.html')));
 
+/* ===== PET API ===== */
+
+app.get('/api/pet/profile',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let profile=getPetProfile(username);
+
+  res.json({
+    ok:true,
+    profile,
+    species:PET_SPECIES,
+    limits:PET_LIMITS,
+    shop:SHOP_ITEMS,
+    moves:moves(),
+    zones:EXPLORE_ZONES,
+    daily:normalizeDaily(profile)
+  });
+});
+
+app.get('/api/pet/daily',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let profile=getPetProfile(username);
+
+  res.json({
+    ok:true,
+    daily:normalizeDaily(profile),
+    profile
+  });
+});
+
+app.post('/api/pet/claim-quest',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let questId=String(req.body.questId||'');
+  let profile=getPetProfile(username);
+  let pet=activePet(profile);
+  let daily=normalizeDaily(profile);
+  let quest=daily.quests.find(q=>q.id===questId);
+
+  if(!quest)return res.json({error:'Quest not found'});
+  if(quest.claimed)return res.json({error:'Quest already claimed'});
+  if(Number(quest.progress||0)<Number(quest.target||1))return res.json({error:'Quest is not complete yet'});
+
+  quest.claimed=true;
+  let granted=grantReward(profile,pet,quest.reward||{});
+
+  savePetProfile(username,profile);
+
+  res.json({
+    ok:true,
+    message:'Claimed '+quest.title+' reward!',
+    reward:granted,
+    daily:profile.daily,
+    profile
+  });
+});
+
+app.post('/api/pet/rename',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let profile=getPetProfile(username);
+  let pet=activePet(profile);
+  let name=String(req.body.name||'').trim().slice(0,24);
+
+  if(!name)return res.json({error:'Missing name'});
+
+  pet.name=name;
+  pet.lastUpdated=Date.now();
+
+  savePetProfile(username,profile);
+  res.json({ok:true,profile});
+});
+
+app.post('/api/pet/care-egg',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let action=String(req.body.action||'');
+  let profile=getPetProfile(username);
+  let pet=activePet(profile);
+
+  if(!pet||pet.stage!=='egg')return res.json({error:'Active pet is not an egg'});
+
+  const actions={
+    warm:{trait:'warm',amount:1,label:'kept the egg warm'},
+    cold:{trait:'cold',amount:1,label:'cooled the egg'},
+    wet:{trait:'wet',amount:1,label:'misted the egg'},
+    dry:{trait:'dry',amount:1,label:'dried the egg'},
+    light:{trait:'light',amount:1,label:'gave the egg light'},
+    dark:{trait:'dark',amount:1,label:'kept the egg shaded'}
+  };
+
+  let a=actions[action];
+  if(!a)return res.json({error:'Unknown egg care action'});
+
+  pet.eggTraits[a.trait]=(pet.eggTraits[a.trait]||0)+a.amount;
+  pet.needs.happiness=clamp((pet.needs.happiness||70)+1,0,100);
+  pet.affection=clamp(Number(pet.affection||0)+1,0,100);
+  pet.lastUpdated=Date.now();
+
+  trackQuest(profile,'eggCare',1);
+  trackQuest(profile,'bondGain',1);
+
+  let total=Object.values(pet.eggTraits).reduce((x,y)=>x+y,0);
+  let hatched=false;
+
+  if(total>=18){
+    hatchPet(pet);
+    hatched=true;
+  }
+
+  savePetProfile(username,profile);
+
+  res.json({
+    ok:true,
+    message:hatched?'Your egg hatched into '+pet.name+'!':'You '+a.label+'.',
+    hatched,
+    profile
+  });
+});
+
+app.post('/api/pet/buy',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let itemId=String(req.body.itemId||'');
+  let item=SHOP_ITEMS[itemId];
+
+  if(!item)return res.json({error:'Unknown item'});
+
+  let profile=getPetProfile(username);
+
+  if((profile.money||0)<item.price)return res.json({error:'Not enough coins'});
+
+  profile.money-=item.price;
+  profile.inventory[itemId]=(profile.inventory[itemId]||0)+1;
+
+  savePetProfile(username,profile);
+
+  res.json({ok:true,profile});
+});
+
+app.post('/api/pet/use-item',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let itemId=String(req.body.itemId||'');
+  let item=SHOP_ITEMS[itemId];
+
+  if(!item)return res.json({error:'Unknown item'});
+
+  let profile=getPetProfile(username);
+
+  if((profile.inventory[itemId]||0)<=0)return res.json({error:'You do not have this item'});
+
+  let pet=activePet(profile);
+
+  if(item.eggTrait&&pet.stage!=='egg'){
+    return res.json({error:'That item only works on eggs'});
+  }
+
+  profile.inventory[itemId]--;
+
+  let hatched=false;
+
+  if(item.effect){
+    Object.keys(item.effect).forEach(k=>{
+      pet.needs[k]=clamp((pet.needs[k]||0)+item.effect[k],0,100);
+    });
+
+    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
+
+    if(item.questType)trackQuest(profile,item.questType,1);
+    trackQuest(profile,'bondGain',1);
+  }
+
+  if(item.eggTrait){
+    Object.keys(item.eggTrait).forEach(k=>{
+      pet.eggTraits[k]=(pet.eggTraits[k]||0)+item.eggTrait[k];
+    });
+
+    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
+    trackQuest(profile,'eggCare',1);
+    trackQuest(profile,'bondGain',1);
+
+    let total=Object.values(pet.eggTraits).reduce((x,y)=>x+y,0);
+    if(total>=18&&pet.stage==='egg'){
+      hatchPet(pet);
+      hatched=true;
+    }
+  }
+
+  pet.lastUpdated=Date.now();
+
+  savePetProfile(username,profile);
+  res.json({ok:true,hatched,profile});
+});
+
+app.post('/api/pet/play',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let profile=getPetProfile(username);
+  let pet=activePet(profile);
+
+  pet.needs.happiness=clamp((pet.needs.happiness||0)+12,0,100);
+  pet.needs.energy=clamp((pet.needs.energy||0)-8,0,100);
+  pet.affection=clamp(Number(pet.affection||0)+2,0,100);
+
+  let xpGain=pet.personality==='playful'?5:3;
+  let xpResult=addPetXp(pet,xpGain);
+
+  profile.money=(profile.money||0)+5;
+  pet.lastUpdated=Date.now();
+
+  trackQuest(profile,'play',1);
+  trackQuest(profile,'bondGain',2);
+  trackQuest(profile,'coinsEarned',5);
+
+  savePetProfile(username,profile);
+  res.json({
+    ok:true,
+    message:'You played together. +5 coins, +'+xpGain+' XP.',
+    reward:{coins:5,xp:xpGain,xpResult},
+    profile
+  });
+});
+
+app.post('/api/pet/train',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let stat=String(req.body.stat||'').toLowerCase();
+  if(!TRAINABLE_STATS.includes(stat))return res.json({error:'Invalid training stat'});
+
+  let profile=getPetProfile(username);
+  let pet=activePet(profile);
+
+  if(!pet||pet.stage==='egg')return res.json({error:'Eggs cannot train yet'});
+  if(Number(pet.needs.energy||0)<8)return res.json({error:pet.name+' is too tired to train'});
+
+  let result=trainPetStat(pet,stat);
+  pet.lastUpdated=Date.now();
+
+  trackQuest(profile,'train',1);
+  trackQuest(profile,'bondGain',1);
+
+  let moveText=result.xpResult.learnedMove?' Learned '+result.xpResult.learnedMove.name+'!':'';
+  let levelText=result.xpResult.leveled?' Level up!':'';
+
+  savePetProfile(username,profile);
+
+  res.json({
+    ok:true,
+    message:pet.name+' trained '+stat+' +'+result.gain+'.'+levelText+moveText,
+    result,
+    profile
+  });
+});
+
+app.post('/api/pet/explore',(req,res)=>{
+  req.body.zoneId='meadow';
+  return handleExploreRequest(req,res);
+});
+
+app.post('/api/pet/explore-zone',handleExploreRequest);
+
+function handleExploreRequest(req,res){
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let zoneId=String(req.body.zoneId||'meadow');
+  let profile=getPetProfile(username);
+  let pet=activePet(profile);
+  let result=resolveExplore(profile,pet,zoneId);
+
+  if(result.error)return res.json({error:result.error});
+
+  savePetProfile(username,profile);
+
+  res.json({
+    ok:true,
+    message:result.message,
+    result,
+    profile
+  });
+}
+
+app.post('/api/pet/set-active',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let selectedPetId=String(req.body.petId||'');
+  let profile=getPetProfile(username);
+
+  if(!profile.pets[selectedPetId]){
+    return res.json({error:'Pet not found'});
+  }
+
+  profile.activePetId=selectedPetId;
+  profile.pets[selectedPetId].lastUpdated=Date.now();
+
+  savePetProfile(username,profile);
+  res.json({ok:true,profile});
+});
+
+app.post('/api/pet/new-egg',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let profile=getPetProfile(username);
+
+  if(petCount(profile)>=PET_LIMITS.maxRoster){
+    return res.json({error:'Your roster is full. Storage will be added later.'});
+  }
+
+  let cost=PET_LIMITS.newEggBaseCost + Math.max(0,petCount(profile)-1)*25;
+
+  if((profile.money||0)<cost){
+    return res.json({error:'Not enough coins for a new egg. Cost: '+cost});
+  }
+
+  profile.money-=cost;
+
+  let newPet=createEggPet(username);
+  profile.pets[newPet.id]=newPet;
+  profile.activePetId=newPet.id;
+
+  savePetProfile(username,profile);
+
+  res.json({
+    ok:true,
+    message:'You adopted a new Mystery Egg.',
+    cost,
+    profile
+  });
+});
 /* ===== MARKETPLACE API ===== */
 
 function marketListingsArray(){
@@ -749,337 +1321,6 @@ app.post('/api/market/buy',(req,res)=>{
     profile:buyerProfile,
     listings:marketListingsArray(),
     shops:publicShopProfiles()
-  });
-});
-
-/* ===== PET API ===== */
-
-app.get('/api/pet/profile',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let profile=getPetProfile(username);
-
-  res.json({
-    ok:true,
-    profile,
-    species:PET_SPECIES,
-    limits:PET_LIMITS,
-    shop:SHOP_ITEMS,
-    moves:moves()
-  });
-});
-
-app.post('/api/pet/rename',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let profile=getPetProfile(username);
-  let pet=activePet(profile);
-  let name=String(req.body.name||'').trim().slice(0,24);
-
-  if(!name)return res.json({error:'Missing name'});
-
-  pet.name=name;
-  pet.lastUpdated=Date.now();
-
-  savePetProfile(username,profile);
-  res.json({ok:true,profile});
-});
-
-app.post('/api/pet/care-egg',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let action=String(req.body.action||'');
-  let profile=getPetProfile(username);
-  let pet=activePet(profile);
-
-  if(!pet||pet.stage!=='egg')return res.json({error:'Active pet is not an egg'});
-
-  const actions={
-    warm:{trait:'warm',amount:1,label:'kept the egg warm'},
-    cold:{trait:'cold',amount:1,label:'cooled the egg'},
-    wet:{trait:'wet',amount:1,label:'misted the egg'},
-    dry:{trait:'dry',amount:1,label:'dried the egg'},
-    light:{trait:'light',amount:1,label:'gave the egg light'},
-    dark:{trait:'dark',amount:1,label:'kept the egg shaded'}
-  };
-
-  let a=actions[action];
-  if(!a)return res.json({error:'Unknown egg care action'});
-
-  pet.eggTraits[a.trait]=(pet.eggTraits[a.trait]||0)+a.amount;
-  pet.needs.happiness=clamp((pet.needs.happiness||70)+1,0,100);
-  pet.affection=clamp(Number(pet.affection||0)+1,0,100);
-  pet.lastUpdated=Date.now();
-
-  let total=Object.values(pet.eggTraits).reduce((x,y)=>x+y,0);
-  let hatched=false;
-
-  if(total>=18){
-    hatchPet(pet);
-    hatched=true;
-  }
-
-  savePetProfile(username,profile);
-
-  res.json({
-    ok:true,
-    message:hatched?'Your egg hatched into '+pet.name+'!':'You '+a.label+'.',
-    hatched,
-    profile
-  });
-});
-
-app.post('/api/pet/buy',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let itemId=String(req.body.itemId||'');
-  let item=SHOP_ITEMS[itemId];
-
-  if(!item)return res.json({error:'Unknown item'});
-
-  let profile=getPetProfile(username);
-
-  if((profile.money||0)<item.price)return res.json({error:'Not enough coins'});
-
-  profile.money-=item.price;
-  profile.inventory[itemId]=(profile.inventory[itemId]||0)+1;
-
-  savePetProfile(username,profile);
-
-  res.json({ok:true,profile});
-});
-
-app.post('/api/pet/use-item',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let itemId=String(req.body.itemId||'');
-  let item=SHOP_ITEMS[itemId];
-
-  if(!item)return res.json({error:'Unknown item'});
-
-  let profile=getPetProfile(username);
-
-  if((profile.inventory[itemId]||0)<=0)return res.json({error:'You do not have this item'});
-
-  let pet=activePet(profile);
-
-  if(item.eggTrait&&pet.stage!=='egg'){
-    return res.json({error:'That item only works on eggs'});
-  }
-
-  profile.inventory[itemId]--;
-
-  let hatched=false;
-
-  if(item.effect){
-    Object.keys(item.effect).forEach(k=>{
-      pet.needs[k]=clamp((pet.needs[k]||0)+item.effect[k],0,100);
-    });
-
-    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
-  }
-
-  if(item.eggTrait){
-    Object.keys(item.eggTrait).forEach(k=>{
-      pet.eggTraits[k]=(pet.eggTraits[k]||0)+item.eggTrait[k];
-    });
-
-    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
-
-    let total=Object.values(pet.eggTraits).reduce((x,y)=>x+y,0);
-    if(total>=18&&pet.stage==='egg'){
-      hatchPet(pet);
-      hatched=true;
-    }
-  }
-
-  pet.lastUpdated=Date.now();
-
-  savePetProfile(username,profile);
-  res.json({ok:true,hatched,profile});
-});
-
-app.post('/api/pet/play',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let profile=getPetProfile(username);
-  let pet=activePet(profile);
-
-  pet.needs.happiness=clamp((pet.needs.happiness||0)+12,0,100);
-  pet.needs.energy=clamp((pet.needs.energy||0)-8,0,100);
-  pet.affection=clamp(Number(pet.affection||0)+2,0,100);
-
-  let xpGain=pet.personality==='playful'?5:3;
-  let xpResult=addPetXp(pet,xpGain);
-
-  profile.money=(profile.money||0)+5;
-  pet.lastUpdated=Date.now();
-
-  savePetProfile(username,profile);
-  res.json({
-    ok:true,
-    message:'You played together. +5 coins, +'+xpGain+' XP.',
-    reward:{coins:5,xp:xpGain,xpResult},
-    profile
-  });
-});
-
-app.post('/api/pet/train',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let stat=String(req.body.stat||'').toLowerCase();
-  if(!TRAINABLE_STATS.includes(stat))return res.json({error:'Invalid training stat'});
-
-  let profile=getPetProfile(username);
-  let pet=activePet(profile);
-
-  if(!pet||pet.stage==='egg')return res.json({error:'Eggs cannot train yet'});
-  if(Number(pet.needs.energy||0)<8)return res.json({error:pet.name+' is too tired to train'});
-
-  let result=trainPetStat(pet,stat);
-  pet.lastUpdated=Date.now();
-
-  let moveText=result.xpResult.learnedMove?' Learned '+result.xpResult.learnedMove.name+'!':'';
-  let levelText=result.xpResult.leveled?' Level up!':'';
-
-  savePetProfile(username,profile);
-
-  res.json({
-    ok:true,
-    message:pet.name+' trained '+stat+' +'+result.gain+'.'+levelText+moveText,
-    result,
-    profile
-  });
-});
-
-app.post('/api/pet/explore',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let profile=getPetProfile(username);
-  let pet=activePet(profile);
-
-  if(!pet||pet.stage==='egg')return res.json({error:'Eggs cannot explore yet'});
-  if(Number(pet.needs.energy||0)<10)return res.json({error:pet.name+' is too tired to explore'});
-
-  let reward=weightedPick(EXPLORE_REWARDS);
-  let result={
-    kind:reward.kind,
-    bonus:[],
-    learnedMove:null,
-    leveled:false
-  };
-
-  pet.needs.energy=clamp(Number(pet.needs.energy||0)-10,0,100);
-  pet.needs.happiness=clamp(Number(pet.needs.happiness||0)+4,0,100);
-  pet.affection=clamp(Number(pet.affection||0)+2,0,100);
-
-  if(reward.kind==='coins'){
-    let amount=randInt(reward.min,reward.max);
-    if(pet.personality==='curious'&&Math.random()<.35){
-      amount+=5;
-      result.bonus.push('Curious bonus +5 coins');
-    }
-    profile.money=(profile.money||0)+amount;
-    result.amount=amount;
-    result.message=pet.name+' explored and found '+amount+' coins.';
-  }
-
-  if(reward.kind==='item'){
-    let quantity=Number(reward.quantity||1);
-    if(pet.personality==='curious'&&Math.random()<.25){
-      quantity++;
-      result.bonus.push('Curious bonus found one extra');
-    }
-    profile.inventory[reward.item]=(profile.inventory[reward.item]||0)+quantity;
-    result.item=reward.item;
-    result.quantity=quantity;
-    result.message=pet.name+' explored and found '+quantity+' '+itemName(reward.item)+'.';
-  }
-
-  if(reward.kind==='xp'){
-    let xp=randInt(reward.min,reward.max);
-    if(pet.personality==='playful')xp+=2;
-    let xpResult=addPetXp(pet,xp);
-    result.amount=xp;
-    result.xpResult=xpResult;
-    result.learnedMove=xpResult.learnedMove;
-    result.leveled=!!xpResult.leveled;
-    result.message=pet.name+' explored and gained '+xp+' XP.';
-  }
-
-  let extraMove=maybeLearnMove(pet,pet.personality==='curious'?.18:.08);
-  if(extraMove&&!result.learnedMove){
-    result.learnedMove=extraMove;
-    result.message+=' '+pet.name+' discovered '+extraMove.name+'!';
-  }
-
-  pet.lastUpdated=Date.now();
-
-  savePetProfile(username,profile);
-
-  res.json({
-    ok:true,
-    message:result.message,
-    result,
-    profile
-  });
-});
-
-app.post('/api/pet/set-active',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let selectedPetId=String(req.body.petId||'');
-  let profile=getPetProfile(username);
-
-  if(!profile.pets[selectedPetId]){
-    return res.json({error:'Pet not found'});
-  }
-
-  profile.activePetId=selectedPetId;
-  profile.pets[selectedPetId].lastUpdated=Date.now();
-
-  savePetProfile(username,profile);
-  res.json({ok:true,profile});
-});
-
-app.post('/api/pet/new-egg',(req,res)=>{
-  let username=requireUser(req,res);
-  if(!username)return;
-
-  let profile=getPetProfile(username);
-
-  if(petCount(profile)>=PET_LIMITS.maxRoster){
-    return res.json({error:'Your roster is full. Storage will be added later.'});
-  }
-
-  let cost=PET_LIMITS.newEggBaseCost + Math.max(0,petCount(profile)-1)*25;
-
-  if((profile.money||0)<cost){
-    return res.json({error:'Not enough coins for a new egg. Cost: '+cost});
-  }
-
-  profile.money-=cost;
-
-  let newPet=createEggPet(username);
-  profile.pets[newPet.id]=newPet;
-  profile.activePetId=newPet.id;
-
-  savePetProfile(username,profile);
-
-  res.json({
-    ok:true,
-    message:'You adopted a new Mystery Egg.',
-    cost,
-    profile
   });
 });
 
