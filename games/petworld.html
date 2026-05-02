@@ -14,6 +14,8 @@ GameForge AI / PetWorld maintainer notes:
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
 - Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
+- Pet reactions are client-only animations; profile changes still come from server APIs.
+- Egg influence shown here explains current trait weighting, but final hatch result is still server-authoritative.
 */
 
 :root{
@@ -192,6 +194,18 @@ button,input,select{font-family:inherit}
 .petOrb.calm{animation:calmFloat 4s ease-in-out infinite}
 .petOrb.curious{animation:curiousFloat 2.8s ease-in-out infinite}
 .petOrb.moody{animation:moodyFloat 2.9s ease-in-out infinite}
+.petOrb.reactHappy{animation:happyBounce .72s ease}
+.petOrb.reactExcited{animation:excitedShake .78s ease}
+.petOrb.reactFocus{animation:focusPulse .82s ease}
+.petOrb.reactSleep{animation:sleepySettle 1.05s ease}
+.petOrb.reactExplore{animation:leaveAndReturn 1.55s ease}
+.petOrb.reactEgg{animation:eggReact .72s ease}
+@keyframes happyBounce{0%,100%{transform:translateY(0) scale(1)}38%{transform:translateY(-34px) scale(1.08)}70%{transform:translateY(-8px) scale(1.03)}}
+@keyframes excitedShake{0%,100%{transform:translateX(0) rotate(0)}18%{transform:translateX(-28px) rotate(-4deg)}36%{transform:translateX(28px) rotate(4deg)}58%{transform:translateX(-16px) rotate(-3deg)}78%{transform:translateX(14px) rotate(3deg)}}
+@keyframes focusPulse{0%,100%{transform:scale(1)}45%{transform:scale(1.12)}70%{transform:scale(1.04)}}
+@keyframes sleepySettle{0%,100%{transform:translateY(0) scale(1)}55%{transform:translateY(18px) scale(.96)}}
+@keyframes leaveAndReturn{0%{transform:translateX(0);opacity:1}42%{transform:translateX(420px);opacity:.08}58%{transform:translateX(-420px);opacity:.08}100%{transform:translateX(0);opacity:1}}
+@keyframes eggReact{0%,100%{transform:rotate(0deg) scale(1)}20%{transform:rotate(-8deg) scale(1.07)}42%{transform:rotate(8deg) scale(1.09)}68%{transform:rotate(-4deg) scale(1.04)}}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes playfulFloat{0%,100%{transform:translateY(0) rotate(-2deg)}35%{transform:translateY(-20px) rotate(3deg)}70%{transform:translateY(-6px) rotate(-4deg)}}
 @keyframes napFloat{0%,100%{transform:translateY(3px) scale(.99)}50%{transform:translateY(-5px) scale(1.01)}}
@@ -403,6 +417,17 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   padding:7px 10px;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;
   color:#3730a3;font-size:12px;font-weight:900;
 }
+.eggInfluence{
+  margin-top:10px;
+  padding:10px;
+  border-radius:16px;
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(148,163,184,.28);
+}
+.eggInfluence b{display:block;margin-bottom:4px}
+.eggInfluence .hint{font-size:12px;color:var(--muted);line-height:1.35}
+.eggInfluence .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.eggInfluence .tags span{font-size:11px;font-weight:900;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:5px 8px}
 
 .log{
   height:160px;
@@ -800,6 +825,7 @@ function drawProgress(){
     var pct=eggProgress(pet);
     html+='<b>Hatch Progress</b><div class="muted">'+traitTotal(pet.eggTraits||{})+' / 18 care points</div>';
     html+='<div class="progress"><div class="progressFill" style="width:'+pct+'%"></div></div>';
+    html+=eggInfluenceCard(pet);
   }else{
     var need=Math.max(20,Number(pet.stats.level||1)*20);
     var xp=Number(pet.stats.xp||0);
@@ -957,6 +983,7 @@ async function careEgg(action){
     addLog(data.message||careMessage(action));
     notify(data.message||careMessage(action));
     animateCare(action);
+    triggerPetReaction('egg');
     localState.prompt=null;
     if(data.hatched||beforeStage==='egg'&&pet.stage!=='egg'){
       showHatch(pet);
@@ -976,6 +1003,7 @@ async function playPet(){
     handleRewardResult(data.reward&&data.reward.xpResult);
     notify(data.message||'Play complete!');
     animateCare('play');
+    triggerPetReaction('play');
     draw();
   }catch(err){notify('Play failed: '+err.message)}
 }
@@ -990,6 +1018,7 @@ async function trainPet(stat){
     handleRewardResult(data.result&&data.result.xpResult);
     notify(data.message||'Training complete!');
     animateCare(stat==='attack'?'attack':stat==='defense'?'defense':'speed');
+    triggerPetReaction('train');
     draw();
   }catch(err){notify('Train failed: '+err.message)}
 }
@@ -1011,6 +1040,7 @@ async function exploreZone(zoneId){
     if(data.result&&data.result.learnedMove)showMoveLearned(data.result.learnedMove);
     notify(data.message||'Exploration complete!');
     animateCare('explore');
+    triggerPetReaction('explore');
     draw();
   }catch(err){notify('Explore failed: '+err.message)}
 }
@@ -1046,6 +1076,10 @@ async function useItem(itemId){
     addLog('Used '+itemName(itemId)+'.');
     notify('Used '+itemName(itemId)+'.');
     animateItemUse(itemId);
+    if(itemId==='berry')triggerPetReaction('feed');
+    else if(itemId==='nap_blanket')triggerPetReaction('rest');
+    else if(itemId==='soap')triggerPetReaction('clean');
+    else triggerPetReaction(pet.stage==='egg'?'egg':'happy');
     if(data.hatched||beforeStage==='egg'&&pet.stage!=='egg'){
       showHatch(pet);
       addLog('A new companion hatched: '+(pet.name||'New pet')+'!');
@@ -1192,6 +1226,65 @@ function setAura(pet){
   }
 }
 
+function eggInfluenceSummary(pet){
+  var traits=pet.eggTraits||{};
+  var total=traitTotal(traits);
+  var strongest=strongestTrait(traits);
+  var pairs=[];
+  Object.keys(traits).forEach(function(k){pairs.push({key:k,value:Number(traits[k]||0)})});
+  pairs.sort(function(a,b){return b.value-a.value});
+
+  var likely={
+    warm:{label:'Fire-leaning',species:['Flarecub','Emberwing','Chompasaur'],hint:'Warmth is shaping a bold, heated companion.'},
+    cold:{label:'Water-leaning',species:['Frostfin','Pebblet'],hint:'Cold care is shaping a calm, resilient companion.'},
+    wet:{label:'Water/Nature-leaning',species:['Frostfin','Leafbun'],hint:'Moisture is shaping a gentle, adaptable companion.'},
+    dry:{label:'Earth/Shadow-leaning',species:['Pebblet','Chompasaur','Shadepup'],hint:'Dry care is shaping something sturdy or mysterious.'},
+    light:{label:'Light-touched',species:['Leafbun','Emberwing','Flarecub'],hint:'Light is shaping a bright, energetic companion.'},
+    dark:{label:'Shadow-touched',species:['Shadepup','Pebblet'],hint:'Shade is shaping a quiet, mysterious companion.'}
+  };
+
+  var top=likely[strongest]||likely.warm;
+  var balanced=pairs.length>1&&pairs[0].value-pairs[1].value<=2&&total>=8;
+
+  return {
+    strongest:strongest,
+    label:balanced?'Balanced aura':top.label,
+    hint:balanced?'No single trait fully dominates. This egg may hatch into something less predictable.':top.hint,
+    species:balanced?['Any species weighted by care mix'].concat(top.species.slice(0,2)):top.species,
+    total:total
+  };
+}
+
+function eggInfluenceCard(pet){
+  var info=eggInfluenceSummary(pet);
+  var html='<div class="eggInfluence"><b>Egg Influence: '+escapeHtml(info.label)+'</b>';
+  html+='<div class="hint">'+escapeHtml(info.hint)+' Hatch result is influenced by care, but never guaranteed.</div>';
+  html+='<div class="tags">';
+  info.species.forEach(function(x){html+='<span>'+escapeHtml(x)+'</span>'});
+  html+='</div></div>';
+  return html;
+}
+
+function triggerPetReaction(type){
+  var orb=el('petOrb');
+  if(!orb)return;
+
+  ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
+  void orb.offsetWidth;
+
+  if(type==='feed'||type==='happy'||type==='clean')orb.classList.add('reactHappy');
+  else if(type==='play')orb.classList.add('reactExcited');
+  else if(type==='train')orb.classList.add('reactFocus');
+  else if(type==='rest')orb.classList.add('reactSleep');
+  else if(type==='explore')orb.classList.add('reactExplore');
+  else if(type==='egg')orb.classList.add('reactEgg');
+
+  setTimeout(function(){
+    if(!orb)return;
+    ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
+  },1700);
+}
+
 function setPetPersonalityMotion(pet,mood){
   var orb=el('petOrb');
   clearWanderClasses(orb);
@@ -1220,17 +1313,9 @@ function idleSpeech(pet,mood){
   var name=pet.name||'Your pet';
 
   if(pet.stage==='egg'){
-    var strongest=strongestTrait(pet.eggTraits||{});
-    var traitLines={
-      warm:'The egg gives off a soft warmth. Something fiery may be stirring.',
-      cold:'A cool mist clings to the shell. It feels calm and quiet.',
-      wet:'Tiny droplets bead across the shell. It seems to enjoy the moisture.',
-      dry:'The shell feels sturdy and dry, like sun-warmed stone.',
-      light:'A golden shimmer moves across the egg. It seems hopeful.',
-      dark:'A faint shadowy glow pulses under the shell.'
-    };
-    if(eggProgress(pet)>=80)return 'The egg trembles. Your care has shaped what waits inside.';
-    return traitLines[strongest]||'Your egg is listening. Every care choice shapes what it may become.';
+    var info=eggInfluenceSummary(pet);
+    if(eggProgress(pet)>=80)return 'The egg trembles. '+info.label+' energy is close to hatching.';
+    return info.hint;
   }
 
   if(mood.label==='Tired')return name+' curls up and looks ready for a rest.';
@@ -1406,7 +1491,7 @@ function showHatch(pet){
   img.src=src;
   emoji.innerText=pet.emoji||'🐣';
   hatchTitle.innerText='Your egg hatched!';
-  hatchText.innerText=(pet.name||'A new companion')+' joined you. Your care shaped its path. Personality: '+personalityLabel(pet.personality)+'.';
+  hatchText.innerText=(pet.name||'A new companion')+' joined you. Your care shaped its path through the egg. Personality: '+personalityLabel(pet.personality)+'.';
   hatchOverlay.classList.add('show');
   setTimeout(function(){hatchOverlay.classList.remove('show')},2200);
 }
