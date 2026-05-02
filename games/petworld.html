@@ -13,7 +13,9 @@ GameForge AI / PetWorld maintainer notes:
 - Pets store only move IDs. Move data comes from /api/pet/profile.
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
 - Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
-- Top-level duplicate tab buttons were intentionally removed; utility systems live in the right-side tabs only.
+- Top-level duplicate tab buttons and duplicate progress panels were intentionally removed; utility systems live in the right-side tabs and progression lives on the stage.
+- Rename is a small title-bar utility so the left panel stays focused on companion identity and journal.
+- Exploration now uses a short client-side adventure animation and reward reveal, while rewards remain server-authoritative.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 - Pet reactions are client-only animations; profile changes still come from server APIs.
 - Egg influence shown here explains current trait weighting, but final hatch result is still server-authoritative.
@@ -76,6 +78,28 @@ button,input,select{font-family:inherit}
 .brand h1{margin:0;font-size:23px;letter-spacing:-.8px}
 .brand span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .topRight{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.topRename{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:4px;
+  border-radius:999px;
+  background:rgba(255,255,255,.46);
+  border:1px solid rgba(148,163,184,.22);
+}
+.topRename input{
+  width:118px;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  background:rgba(255,255,255,.84);
+}
+.topRename button{
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:11px;
+}
 
 .badge{
   display:inline-flex;
@@ -640,6 +664,72 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 }
 @keyframes itemFly{0%{opacity:0;transform:translate(210px,80px) scale(.6) rotate(-18deg)}20%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.25) rotate(16deg)}}
 
+
+.adventureOverlay{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:97;
+  background:
+    radial-gradient(circle at 50% 32%,rgba(255,255,255,.92),rgba(186,230,253,.72) 28%,rgba(15,23,42,.74) 86%);
+  color:white;
+  text-align:center;
+}
+.adventureOverlay.show{display:flex;animation:adventureIn .28s ease forwards}
+.adventureBox{
+  width:min(520px,calc(100% - 32px));
+  background:rgba(15,23,42,.70);
+  border:1px solid rgba(255,255,255,.30);
+  border-radius:32px;
+  padding:28px;
+  box-shadow:0 30px 90px rgba(15,23,42,.38);
+  backdrop-filter:blur(16px);
+}
+.adventurePet{
+  width:150px;
+  height:150px;
+  margin:0 auto 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+.adventurePet img{width:142px;height:142px;object-fit:contain;filter:drop-shadow(0 18px 18px rgba(0,0,0,.25));animation:scoutRun 1.05s ease-in-out infinite}
+.adventurePet span{font-size:96px;filter:drop-shadow(0 18px 18px rgba(0,0,0,.25));animation:scoutRun 1.05s ease-in-out infinite}
+.adventureBox h1{margin:4px 0 6px;font-size:30px;letter-spacing:-.8px}
+.adventureText{margin:0;color:#dbeafe;font-weight:900;line-height:1.35}
+.rewardCard{
+  display:none;
+  text-align:left;
+  margin-top:16px;
+  background:rgba(255,255,255,.92);
+  color:#172033;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.36);
+  padding:14px;
+}
+.rewardCard.show{display:block;animation:rewardPop .32s ease forwards}
+.rewardTitle{font-size:18px;font-weight:1000;margin-bottom:6px;color:#0f172a}
+.rewardLine{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid rgba(148,163,184,.25);font-size:13px;font-weight:900}
+.rewardLine:last-child{border-bottom:0}
+.rewardFooter{margin-top:11px;display:flex;justify-content:flex-end;gap:8px}
+.nextUnlockHint{
+  margin-top:10px;
+  padding:9px 10px;
+  border-radius:16px;
+  background:rgba(37,99,235,.08);
+  border:1px solid rgba(37,99,235,.18);
+  color:#1e3a8a;
+  font-size:12px;
+  line-height:1.35;
+  font-weight:900;
+}
+@keyframes adventureIn{from{opacity:0}to{opacity:1}}
+@keyframes scoutRun{0%,100%{transform:translateX(-18px) translateY(0) rotate(-4deg)}50%{transform:translateX(18px) translateY(-8px) rotate(4deg)}}
+@keyframes rewardPop{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
 .toast{
   position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
   background:#111827;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900;
@@ -674,6 +764,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 }
 @media(max-width:680px){
   .top{align-items:flex-start;flex-direction:column}
+  .topRight{justify-content:flex-start}
+  .topRename input{width:120px}
   .dockActions,.dockActions.egg,.detailGrid{grid-template-columns:1fr 1fr}
   .tabs{grid-template-columns:1fr 1fr}
   .petOrb{width:260px;height:260px}
@@ -695,6 +787,10 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <span>Care, train, explore, complete quests, and collect companions.</span>
     </div>
     <div class="topRight">
+      <div class="topRename" title="Rename active companion">
+        <input id="renameInput" placeholder="Pet name">
+        <button class="primary" onclick="renamePet()">Rename</button>
+      </div>
       <span id="userBadge" class="badge">👤 Loading</span>
       <span id="coinBadge" class="badge">🪙 0</span>
       <span id="rosterBadge" class="badge">🐾 1/6</span>
@@ -707,15 +803,9 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <div class="petCard">
         <h2 id="petNameTitle">Mystery Egg</h2>
         <div id="petSubTitle" class="muted">Loading...</div>
-        <div class="renameRow">
-          <input id="renameInput" placeholder="Pet name">
-          <button class="primary" onclick="renamePet()">Rename</button>
-        </div>
       </div>
 
       <div id="statStack" class="statStack"></div>
-      <div id="progressBox" class="card"></div>
-
 
       <div style="margin-top:10px">
         <b>Journal</b>
@@ -766,6 +856,15 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   </div>
 </div>
 
+<div id="adventureOverlay" class="adventureOverlay">
+  <div class="adventureBox">
+    <div id="adventurePet" class="adventurePet"></div>
+    <h1 id="adventureTitle">Exploring...</h1>
+    <p id="adventureText" class="adventureText">Your companion heads out.</p>
+    <div id="rewardCard" class="rewardCard"></div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <div id="hatchOverlay" class="hatchOverlay">
@@ -797,7 +896,7 @@ var limits={maxRoster:6,newEggBaseCost:75};
 var currentTab='quests';
 var selectedZoneId='meadow';
 var logs=[];
-var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200};
+var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1};
 
 function el(id){return document.getElementById(id);}
 
@@ -876,7 +975,6 @@ function draw(){
   setPetPersonalityMotion(pet,mood);
   drawDock();
   drawStats();
-  drawProgress();
   drawStageHud();
   drawEggIdentityPanel();
   drawQuests();
@@ -917,7 +1015,7 @@ function drawDock(){
       var z=zones[id];
       html+='<option value="'+escapeAttr(id)+'" '+(id===selectedZoneId?'selected':'')+'>'+escapeHtml(z.name)+' · Lv '+Number(z.minLevel||1)+' · ⚡ '+Number(z.energyCost||0)+'</option>';
     });
-    html+='</select><button class="gold" onclick="exploreSelectedZone()">Explore</button></div>';
+    html+='</select><button class="gold" onclick="exploreSelectedZone()">Adventure</button></div>';
     html+='<div class="dockActions">';
     html+='<button class="dockBtn good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Hunger + bond</span></button>';
     html+='<button class="dockBtn blue" onclick="playPet()"><strong>🎾 Play</strong><span>Coins + XP</span></button>';
@@ -926,7 +1024,7 @@ function drawDock(){
     html+='<button class="dockBtn red" onclick="trainPet(\'attack\')"><strong>⚔️ ATK</strong><span>Train attack</span></button>';
     html+='<button class="dockBtn blue" onclick="trainPet(\'defense\')"><strong>🛡 DEF</strong><span>Train defense</span></button>';
     html+='<button class="dockBtn sky" onclick="trainPet(\'speed\')"><strong>💨 SPD</strong><span>Train speed</span></button>';
-    html+='<button class="dockBtn gold" onclick="setTab(\'quests\')"><strong>✅ Quests</strong><span>Claim rewards</span></button>';
+    html+='<button class="dockBtn gold" onclick="openPetBattle()"><strong>⚔️ Battle</strong><span>Test your pet</span></button>';
     html+='</div>';
   }
 
@@ -998,23 +1096,7 @@ function miniStat(name,val,max){
 }
 
 function drawProgress(){
-  var pet=activePet();
-  var box=el('progressBox');
-  if(!box)return;
-
-  if(pet.stage==='egg'){
-    var pct=eggProgress(pet);
-    var html='';
-    html+='<b>Hatch Progress</b><div class="muted">'+traitTotal(pet.eggTraits||{})+' / 18 care points</div>';
-    html+='<div class="progress"><div class="progressFill" style="width:'+pct+'%"></div></div>';
-    html+=eggInfluenceCard(pet);
-    box.classList.remove('hidden');
-    box.innerHTML=html;
-    return;
-  }
-
-  box.classList.add('hidden');
-  box.innerHTML='';
+  // Progression is intentionally shown only on the pet stage to avoid duplicate hatch/XP bars.
 }
 
 function drawStageHud(){
@@ -1255,22 +1337,134 @@ function exploreSelectedZone(){
 }
 
 async function exploreZone(zoneId){
+  if(localState.adventureBusy)return;
+
+  var pet=activePet();
+  if(!pet)return;
+  if(pet.stage==='egg')return notify('Eggs cannot explore yet.');
+
+  var z=(zones&&zones[zoneId])||zones.meadow||{name:'Adventure',energyCost:0,minLevel:1};
+  selectedZoneId=zoneId;
+  localState.adventureBusy=true;
+
+  var beforeLevel=Number((pet.stats&&pet.stats.level)||1);
+  var beforeXp=Number((pet.stats&&pet.stats.xp)||0);
+
   try{
-    selectedZoneId=zoneId;
+    startAdventureOverlay(pet,z);
+    smartMovePet(210,18,5,1.03,650);
+    await wait(950);
+
     var res=await fetch('/api/pet/explore-zone',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,zoneId:zoneId})});
     var data=await res.json();
-    if(data.error)return notify(data.error);
+
+    if(data.error){
+      endAdventureOverlay();
+      smartMovePet(0,0,0,1,650);
+      localState.adventureBusy=false;
+      return notify(data.error);
+    }
+
     profile=data.profile;
+    var updated=activePet();
+    var afterLevel=Number((updated&&updated.stats&&updated.stats.level)||beforeLevel);
     addLog(data.message||'Exploration complete.');
     if(data.result&&data.result.bonus&&data.result.bonus.length)data.result.bonus.forEach(function(x){addLog(x)});
     handleRewardResult(data.result&&data.result.xpResult);
     if(data.result&&data.result.learnedMove)showMoveLearned(data.result.learnedMove);
-    notify(data.message||'Exploration complete!');
+
     animateCare('explore');
     triggerPetReaction('explore');
+    smartMovePet(0,0,0,1,700);
     draw();
-  }catch(err){notify('Explore failed: '+err.message)}
+    showAdventureReward(data,z,beforeLevel,afterLevel,beforeXp);
+    notify(data.message||'Exploration complete!');
+  }catch(err){
+    endAdventureOverlay();
+    smartMovePet(0,0,0,1,650);
+    notify('Explore failed: '+err.message);
+  }
+
+  localState.adventureBusy=false;
 }
+
+function startAdventureOverlay(pet,zone){
+  var overlay=el('adventureOverlay');
+  var card=el('rewardCard');
+  var petBox=el('adventurePet');
+  if(!overlay||!card||!petBox)return;
+
+  card.classList.remove('show');
+  card.innerHTML='';
+
+  var img=petAssetPath(pet);
+  petBox.innerHTML='<img src="'+escapeAttr(img)+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-block\'"><span style="display:none">'+escapeHtml(pet.emoji||'🐾')+'</span>';
+
+  el('adventureTitle').innerText='Exploring '+(zone.name||'the wilds');
+  el('adventureText').innerText=(pet.name||'Your pet')+' heads out looking for coins, XP, items, and surprises...';
+  overlay.classList.add('show');
+}
+
+function showAdventureReward(data,zone,beforeLevel,afterLevel,beforeXp){
+  var card=el('rewardCard');
+  if(!card)return;
+
+  var result=data.result||{};
+  var title=afterLevel>beforeLevel?'🎉 Level Up Adventure!':'Adventure Complete';
+  var lines=[];
+
+  if(result.amount!==undefined&&result.kind){
+    if(result.kind==='coins')lines.push(['Coins Found','🪙 '+result.amount]);
+    else if(result.kind==='xp')lines.push(['XP Gained','✨ '+result.amount]);
+  }
+  if(result.item)lines.push(['Item Found','🎁 '+Number(result.quantity||1)+' '+itemName(result.item)]);
+  if(result.learnedMove)lines.push(['Move Learned','✨ '+(result.learnedMove.name||result.learnedMove.id)]);
+  if(result.xpResult&&result.xpResult.xpGained)lines.push(['XP Gained','✨ '+result.xpResult.xpGained]);
+  if(afterLevel>beforeLevel)lines.push(['Level Up','Lv '+beforeLevel+' → Lv '+afterLevel]);
+  if(result.bonus&&result.bonus.length)result.bonus.forEach(function(b){lines.push(['Bonus',b])});
+  if(!lines.length)lines.push(['Result',data.message||'Your companion returned safely.']);
+
+  var html='<div class="rewardTitle">'+escapeHtml(title)+'</div>';
+  html+='<div class="muted">'+escapeHtml(data.message||((zone.name||'Adventure')+' complete.'))+'</div>';
+  lines.forEach(function(pair){html+='<div class="rewardLine"><span>'+escapeHtml(pair[0])+'</span><span>'+escapeHtml(pair[1])+'</span></div>'});
+
+  var hint=nextUnlockHint();
+  if(hint)html+='<div class="nextUnlockHint">'+escapeHtml(hint)+'</div>';
+
+  html+='<div class="rewardFooter"><button class="ghost" onclick="endAdventureOverlay()">Close</button><button class="gold" onclick="endAdventureOverlay(); exploreSelectedZone();">Explore Again</button></div>';
+  card.innerHTML=html;
+  card.classList.add('show');
+  el('adventureTitle').innerText=title;
+  el('adventureText').innerText='Your companion came back with rewards.';
+}
+
+function endAdventureOverlay(){
+  var overlay=el('adventureOverlay');
+  if(overlay)overlay.classList.remove('show');
+}
+
+function wait(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
+
+function nextUnlockHint(){
+  var pet=activePet();
+  if(!pet||pet.stage==='egg'||!zones)return '';
+
+  var level=Number((pet.stats&&pet.stats.level)||1);
+  var locked=Object.keys(zones).map(function(id){return zones[id]}).filter(function(z){return Number(z.minLevel||1)>level}).sort(function(a,b){return Number(a.minLevel||1)-Number(b.minLevel||1)});
+  if(!locked.length)return 'All current zones are unlocked. Keep leveling for future rare events.';
+  return 'Next unlock: '+locked[0].name+' at level '+Number(locked[0].minLevel||1)+'.';
+}
+
+function openPetBattle(){
+  try{
+    if(parent&&typeof parent.selectGame==='function'){
+      parent.selectGame('petbattle');
+      return;
+    }
+  }catch(e){}
+  notify('Open Pet Battle from the GameForge hub.');
+}
+
 
 async function claimQuest(questId){
   try{
