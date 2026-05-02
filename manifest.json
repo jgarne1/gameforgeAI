@@ -1,0 +1,51 @@
+{
+  "pets": {
+    "egg": [
+      "egg_idle.png",
+      "egg_cracked.png"
+    ],
+    "flarecub": [
+      "baby.png",
+      "young.png",
+      "adult.png",
+      "idle.png"
+    ],
+    "frostfin": [
+      "baby.png",
+      "young.png",
+      "adult.png",
+      "idle.png"
+    ],
+    "leafbun": [
+      "baby.png",
+      "young.png",
+      "adult.png",
+      "idle.png"
+    ],
+    "shadepup": [
+      "baby.png",
+      "young.png",
+      "adult.png",
+      "idle.png"
+    ],
+    "pebblet": [
+      "baby.png",
+      "young.png",
+      "adult.png",
+      "idle.png"
+    ]
+  },
+  "items": [
+    "berry.png",
+    "sparkle_treat.png",
+    "soap.png",
+    "nap_blanket.png",
+    "warm_pad.png",
+    "cool_cloth.png",
+    "mist_spray.png",
+    "dry_towel.png",
+    "sun_lamp.png",
+    "shade_cover.png"
+  ],
+  "recommended_path": "public/assets/"
+}
