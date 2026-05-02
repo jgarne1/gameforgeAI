@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GameForge Inventory</title>
+
+<!--
+GAMEFORGE INVENTORY SYSTEM
+--------------------------------
+- Uses /api/pet/profile
+- Uses /api/pet/use-item
+- Item click opens action modal
+- Future ready for market, storage, trading, crafting
+
+IMPORTANT FOR FUTURE AI:
+- Keep item modal system intact
+- Add new actions by extending actions array
+- Do NOT hardcode inventory — always use server profile
+-->
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#05090f;
+  color:white;
+}
+
+.container{
+  padding:20px;
+}
+
+h1{
+  font-family:Georgia;
+  letter-spacing:6px;
+  color:#8abfc0;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-top:1px solid #1d3035;
+  border-left:1px solid #1d3035;
+}
+
+.item{
+  border-right:1px solid #1d3035;
+  border-bottom:1px solid #1d3035;
+  padding:12px;
+  cursor:pointer;
+  text-align:center;
+}
+
+.item:hover{
+  background:#0e1a20;
+}
+
+.icon{
+  font-size:40px;
+}
+
+.modalBG{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.modalBG.show{
+  display:flex;
+}
+
+.modal{
+  background:#111;
+  padding:20px;
+  width:500px;
+}
+
+button{
+  padding:10px;
+  margin:5px;
+  cursor:pointer;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>INVENTORY</h1>
+  <div id="grid" class="grid"></div>
+</div>
+
+<div id="modalBG" class="modalBG" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2 id="modalName">Item</h2>
+    <div id="actions"></div>
+    <button onclick="runAction()">Submit</button>
+  </div>
+</div>
+
+<script>
+
+let username='';
+let profile=null;
+let selectedItem=null;
+let selectedAction=null;
+
+async function init(){
+  username=localStorage.getItem('gf_user');
+  let res=await fetch('/api/pet/profile?user='+username);
+  let data=await res.json();
+  profile=data.profile;
+  draw();
+}
+
+function draw(){
+  let grid=document.getElementById('grid');
+  grid.innerHTML='';
+
+  let inv=profile.inventory||{};
+
+  Object.keys(inv).forEach(id=>{
+    let qty=inv[id];
+    if(qty<=0)return;
+
+    let div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`
+      <div class="icon">🎁</div>
+      <div>${id}</div>
+      <div>x${qty}</div>
+    `;
+    div.onclick=()=>openItem(id);
+    grid.appendChild(div);
+  });
+}
+
+function openItem(id){
+  selectedItem=id;
+  selectedAction=null;
+
+  document.getElementById('modalName').innerText=id;
+
+  let actions=[
+    {id:'use',label:'Use'},
+    {id:'market',label:'Sell'},
+    {id:'discard',label:'Discard'}
+  ];
+
+  let html='';
+  actions.forEach(a=>{
+    html+=`<div onclick="selectAction('${a.id}')">◯ ${a.label}</div>`;
+  });
+
+  document.getElementById('actions').innerHTML=html;
+  document.getElementById('modalBG').classList.add('show');
+}
+
+function selectAction(a){
+  selectedAction=a;
+}
+
+async function runAction(){
+  if(!selectedAction)return alert('Select action');
+
+  if(selectedAction==='use'){
+    let res=await fetch('/api/pet/use-item',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username,itemId:selectedItem})
+    });
+
+    let data=await res.json();
+    profile=data.profile;
+    draw();
+  }
+
+  if(selectedAction==='market'){
+    alert('Hook into marketplace next');
+  }
+
+  if(selectedAction==='discard'){
+    alert('Add discard endpoint later');
+  }
+
+  document.getElementById('modalBG').classList.remove('show');
+}
+
+function closeModal(e){
+  if(e.target.id==='modalBG'){
+    document.getElementById('modalBG').classList.remove('show');
+  }
+}
+
+init();
+
+</script>
+
+</body>
+</html>
