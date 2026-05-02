@@ -4,61 +4,72 @@
 <meta charset="UTF-8">
 <title>GameForge Inventory</title>
 
-<!--
-GAMEFORGE INVENTORY SYSTEM
---------------------------------
-- Uses /api/pet/profile
-- Uses /api/pet/use-item
-- Item click opens action modal
-- Future ready for market, storage, trading, crafting
-
-IMPORTANT FOR FUTURE AI:
-- Keep item modal system intact
-- Add new actions by extending actions array
-- Do NOT hardcode inventory — always use server profile
--->
-
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   background:#05090f;
   color:white;
 }
-
-.container{
-  padding:20px;
-}
-
+.container{padding:20px}
 h1{
-  font-family:Georgia;
+  font-family:Georgia, serif;
   letter-spacing:6px;
   color:#8abfc0;
 }
-
+.topbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.badge{
+  padding:7px 10px;
+  border-radius:999px;
+  background:#101820;
+  border:1px solid #1d3035;
+  color:#cbd5e1;
+  font-weight:bold;
+}
 .grid{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
   border-top:1px solid #1d3035;
   border-left:1px solid #1d3035;
 }
-
 .item{
   border-right:1px solid #1d3035;
   border-bottom:1px solid #1d3035;
-  padding:12px;
+  padding:14px;
   cursor:pointer;
   text-align:center;
+  background:#080e14;
+  min-height:155px;
 }
-
-.item:hover{
-  background:#0e1a20;
-}
-
+.item:hover{background:#0e1a20}
 .icon{
-  font-size:40px;
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:8px;
 }
-
+.icon img{
+  width:64px;
+  height:64px;
+  object-fit:contain;
+}
+.iconFallback{font-size:38px}
+.itemName{font-weight:bold;color:#e5f0f2}
+.itemQty{color:#facc15;margin-top:5px}
+.itemType{font-size:12px;color:#9bb6b9;margin-top:4px}
+.empty{
+  padding:25px;
+  color:#9bb6b9;
+  border:1px dashed #274149;
+  border-radius:14px;
+}
 .modalBG{
   position:fixed;
   inset:0;
@@ -66,138 +77,469 @@ h1{
   display:none;
   align-items:center;
   justify-content:center;
+  z-index:50;
 }
-
-.modalBG.show{
-  display:flex;
-}
-
+.modalBG.show{display:flex}
 .modal{
-  background:#111;
-  padding:20px;
-  width:500px;
+  background:#111719;
+  border:1px solid #28424a;
+  padding:22px;
+  width:min(560px,92vw);
+  max-height:90vh;
+  overflow:auto;
+  box-shadow:0 25px 80px rgba(0,0,0,.65);
 }
-
-button{
-  padding:10px;
-  margin:5px;
+.modalTop{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  margin-bottom:15px;
+}
+.modalIcon{
+  width:85px;
+  height:85px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#070c10;
+  border:1px solid #274149;
+  border-radius:16px;
+}
+.modalIcon img{
+  width:74px;
+  height:74px;
+  object-fit:contain;
+}
+.modal h2{
+  margin:0;
+  color:#8abfc0;
+  font-family:Georgia, serif;
+}
+.modal p{color:#cbd5e1;line-height:1.4}
+.actions{
+  display:grid;
+  gap:8px;
+  margin:15px 0;
+}
+.action{
+  text-align:left;
+  border:1px solid #274149;
+  background:#0b1116;
+  color:white;
+  border-radius:12px;
+  padding:12px;
   cursor:pointer;
+  font-weight:bold;
 }
-
+.action.selected{
+  border-color:#8abfc0;
+  background:#14262b;
+}
+.sellBox{
+  display:none;
+  margin-top:12px;
+  padding:12px;
+  border:1px solid #274149;
+  background:#080e14;
+  border-radius:12px;
+}
+.sellBox.show{display:block}
+.sellGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+label{
+  display:block;
+  font-size:12px;
+  color:#9bb6b9;
+  margin-bottom:4px;
+}
+input{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #274149;
+  background:#05090f;
+  color:white;
+  box-sizing:border-box;
+}
+button{
+  padding:10px 13px;
+  border-radius:10px;
+  border:1px solid #274149;
+  background:#142026;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+button:hover{border-color:#8abfc0}
+button.primary{background:#2d5961;border-color:#8abfc0}
+button.gold{background:#d97706;border-color:#facc15;color:#111}
+button.danger{background:#991b1b;border-color:#ef4444}
+.modalFooter{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-top:18px;
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  background:#111827;
+  color:white;
+  padding:11px 16px;
+  border-radius:999px;
+  font-weight:bold;
+  opacity:0;
+  transition:.25s ease;
+  pointer-events:none;
+  z-index:80;
+}
+.toast.show{opacity:1;bottom:30px}
 </style>
 </head>
-<body>
 
+<body>
 <div class="container">
   <h1>INVENTORY</h1>
+
+  <div class="topbar">
+    <span id="userBadge" class="badge">👤 Loading</span>
+    <span id="coinBadge" class="badge">🪙 0</span>
+    <span id="countBadge" class="badge">🎒 0 items</span>
+    <button onclick="loadInventory()">Refresh</button>
+  </div>
+
   <div id="grid" class="grid"></div>
 </div>
 
 <div id="modalBG" class="modalBG" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
-    <h2 id="modalName">Item</h2>
-    <div id="actions"></div>
-    <button onclick="runAction()">Submit</button>
+    <div class="modalTop">
+      <div id="modalIcon" class="modalIcon"></div>
+      <div>
+        <h2 id="modalName">Item</h2>
+        <p id="modalDesc">Choose an action.</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="actionUse" class="action" onclick="selectAction('use')">🐾 Use on active pet</button>
+      <button id="actionSell" class="action" onclick="selectAction('sell')">🏪 Sell on Marketplace</button>
+      <button id="actionCancel" class="action" onclick="hideModal()">Cancel</button>
+    </div>
+
+    <div id="sellBox" class="sellBox">
+      <div class="sellGrid">
+        <div>
+          <label>Quantity to sell</label>
+          <input id="sellQty" type="number" min="1" value="1">
+        </div>
+        <div>
+          <label>Price per item</label>
+          <input id="sellPrice" type="number" min="1" value="10">
+        </div>
+      </div>
+      <p id="sellSummary" style="font-size:13px;color:#9bb6b9"></p>
+    </div>
+
+    <div class="modalFooter">
+      <button onclick="hideModal()">Close</button>
+      <button class="primary" onclick="runSelectedAction()">Submit</button>
+    </div>
   </div>
 </div>
 
-<script>
+<div id="toast" class="toast"></div>
 
+<script>
 let username='';
 let profile=null;
-let selectedItem=null;
-let selectedAction=null;
+let shop={};
+let selectedItemId='';
+let selectedAction='';
 
-async function init(){
-  username=localStorage.getItem('gf_user');
-  let res=await fetch('/api/pet/profile?user='+username);
-  let data=await res.json();
-  profile=data.profile;
-  draw();
+const ITEM_META={
+  berry:{name:'Berry',icon:'berry.png',fallback:'🍓',type:'Food',desc:'A simple snack used to feed your pet.'},
+  soap:{name:'Soap',icon:'soap.png',fallback:'🫧',type:'Care',desc:'Used to clean your pet.'},
+  nap_blanket:{name:'Nap Blanket',icon:'nap_blanket.png',fallback:'💤',type:'Rest',desc:'Helps your pet recover energy.'},
+  warm_pad:{name:'Warm Pad',icon:'warm_pad.png',fallback:'🔥',type:'Egg Care',desc:'Adds warmth influence to an egg.'},
+  cool_cloth:{name:'Cool Cloth',icon:'cool_cloth.png',fallback:'❄️',type:'Egg Care',desc:'Adds cold influence to an egg.'},
+  mist_spray:{name:'Mist Spray',icon:'mist_spray.png',fallback:'💧',type:'Egg Care',desc:'Adds wet influence to an egg.'},
+  dry_towel:{name:'Dry Towel',icon:'dry_towel.png',fallback:'🌵',type:'Egg Care',desc:'Adds dry influence to an egg.'},
+  sun_lamp:{name:'Sun Lamp',icon:'sun_lamp.png',fallback:'☀️',type:'Egg Care',desc:'Adds light influence to an egg.'},
+  shade_cover:{name:'Shade Cover',icon:'shade_cover.png',fallback:'🌙',type:'Egg Care',desc:'Adds dark influence to an egg.'},
+  sparkle_treat:{name:'Sparkle Treat',icon:'sparkle_treat.png',fallback:'✨',type:'Treat',desc:'A special treat that boosts happiness.'},
+  toy_ball:{name:'Toy Ball',icon:'toy_ball.png',fallback:'🎾',type:'Toy',desc:'A toy for play and happiness.'}
+};
+
+function getUsername(){
+  try{return localStorage.getItem('gf_user')||''}
+  catch(e){return ''}
+}
+
+function meta(id){
+  let fromShop=shop[id]||{};
+  let local=ITEM_META[id]||{};
+  return {
+    name:fromShop.name||local.name||prettyName(id),
+    icon:local.icon||id+'.png',
+    fallback:local.fallback||'🎁',
+    type:local.type||itemType(id,fromShop),
+    desc:fromShop.description||local.desc||'Inventory item.'
+  };
+}
+
+async function loadInventory(){
+  username=getUsername();
+
+  if(!username){
+    grid.innerHTML='<div class="empty">Log in first.</div>';
+    return;
+  }
+
+  try{
+    let res=await fetch('/api/pet/profile?user='+encodeURIComponent(username));
+    let data=await res.json();
+
+    if(data.error){
+      showToast(data.error);
+      return;
+    }
+
+    profile=data.profile;
+    shop=data.shop||{};
+
+    draw();
+  }catch(err){
+    showToast('Inventory failed to load.');
+  }
 }
 
 function draw(){
-  let grid=document.getElementById('grid');
-  grid.innerHTML='';
+  if(!profile)return;
 
   let inv=profile.inventory||{};
+  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0);
+  let total=ids.reduce((sum,id)=>sum+Number(inv[id]||0),0);
 
-  Object.keys(inv).forEach(id=>{
-    let qty=inv[id];
-    if(qty<=0)return;
+  userBadge.innerText='👤 '+username;
+  coinBadge.innerText='🪙 '+Number(profile.money||0);
+  countBadge.innerText='🎒 '+total+' items';
 
-    let div=document.createElement('div');
-    div.className='item';
-    div.innerHTML=`
-      <div class="icon">🎁</div>
-      <div>${id}</div>
-      <div>x${qty}</div>
-    `;
-    div.onclick=()=>openItem(id);
-    grid.appendChild(div);
-  });
+  if(!ids.length){
+    grid.innerHTML='<div class="empty">No items yet. Buy supplies, explore, or complete quests.</div>';
+    return;
+  }
+
+  grid.innerHTML=ids.map(id=>itemCard(id,Number(inv[id]||0))).join('');
+}
+
+function itemCard(id,qty){
+  let m=meta(id);
+  return `
+    <div class="item" onclick="openItem('${escAttr(id)}')">
+      <div class="icon">
+        <img src="/assets/items/${escAttr(m.icon)}" onerror="this.outerHTML='<span class=&quot;iconFallback&quot;>${escAttr(m.fallback)}</span>'">
+      </div>
+      <div class="itemName">${esc(m.name)}</div>
+      <div class="itemQty">x${qty}</div>
+      <div class="itemType">${esc(m.type)}</div>
+    </div>
+  `;
 }
 
 function openItem(id){
-  selectedItem=id;
-  selectedAction=null;
+  selectedItemId=id;
+  selectedAction='';
 
-  document.getElementById('modalName').innerText=id;
+  let m=meta(id);
+  let qty=Number((profile.inventory||{})[id]||0);
 
-  let actions=[
-    {id:'use',label:'Use'},
-    {id:'market',label:'Sell'},
-    {id:'discard',label:'Discard'}
-  ];
+  modalName.innerText=m.name;
+  modalDesc.innerText=m.desc+' You own '+qty+'.';
+  modalIcon.innerHTML=`<img src="/assets/items/${escAttr(m.icon)}" onerror="this.outerHTML='<span class=&quot;iconFallback&quot;>${escAttr(m.fallback)}</span>'">`;
 
-  let html='';
-  actions.forEach(a=>{
-    html+=`<div onclick="selectAction('${a.id}')">◯ ${a.label}</div>`;
-  });
+  sellQty.value=1;
+  sellQty.max=qty;
+  sellPrice.value=Math.max(1,Number((shop[id]&&shop[id].price)||10));
+  sellBox.classList.remove('show');
+  updateActionStyles();
 
-  document.getElementById('actions').innerHTML=html;
-  document.getElementById('modalBG').classList.add('show');
+  modalBG.classList.add('show');
 }
 
-function selectAction(a){
-  selectedAction=a;
+function selectAction(action){
+  selectedAction=action;
+  updateActionStyles();
+
+  if(action==='sell'){
+    sellBox.classList.add('show');
+    updateSellSummary();
+  }else{
+    sellBox.classList.remove('show');
+  }
 }
 
-async function runAction(){
-  if(!selectedAction)return alert('Select action');
+function updateActionStyles(){
+  [actionUse,actionSell].forEach(b=>b.classList.remove('selected'));
+  if(selectedAction==='use')actionUse.classList.add('selected');
+  if(selectedAction==='sell')actionSell.classList.add('selected');
+}
+
+function updateSellSummary(){
+  let q=Math.max(1,Math.floor(Number(sellQty.value||1)));
+  let p=Math.max(1,Math.floor(Number(sellPrice.value||1)));
+  sellSummary.innerText='Listing total: '+(q*p)+' coins.';
+}
+
+sellQty.addEventListener('input',updateSellSummary);
+sellPrice.addEventListener('input',updateSellSummary);
+
+async function runSelectedAction(){
+  if(!selectedItemId)return;
+  if(!selectedAction){
+    showToast('Choose an action first.');
+    return;
+  }
 
   if(selectedAction==='use'){
+    await useItem(selectedItemId);
+    return;
+  }
+
+  if(selectedAction==='sell'){
+    await sellItem(selectedItemId);
+    return;
+  }
+}
+
+async function useItem(itemId){
+  try{
     let res=await fetch('/api/pet/use-item',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username,itemId:selectedItem})
+      body:JSON.stringify({username,itemId})
     });
 
     let data=await res.json();
+
+    if(data.error){
+      showToast(data.error);
+      return;
+    }
+
     profile=data.profile;
+    parent.postMessage({type:'petUpdated'},'*');
+
+    showToast('Used '+meta(itemId).name+'.');
+    hideModal();
     draw();
+  }catch(err){
+    showToast('Use failed.');
   }
+}
 
-  if(selectedAction==='market'){
-    alert('Hook into marketplace next');
+async function sellItem(itemId){
+  let owned=Number((profile.inventory||{})[itemId]||0);
+  let quantity=Math.floor(Number(sellQty.value||1));
+  let price=Math.floor(Number(sellPrice.value||1));
+
+  if(quantity<1)return showToast('Quantity must be at least 1.');
+  if(price<1)return showToast('Price must be at least 1.');
+  if(quantity>owned)return showToast('You do not have that many.');
+
+  try{
+    let res=await fetch('/api/market/list',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username,
+        itemId,
+        quantity,
+        price
+      })
+    });
+
+    let data=await res.json();
+
+    if(data.error){
+      showToast(data.error);
+      return;
+    }
+
+    if(data.profile)profile=data.profile;
+    else await loadInventory();
+
+    parent.postMessage({type:'petUpdated'},'*');
+    parent.postMessage({type:'marketUpdated'},'*');
+
+    showToast('Listed '+quantity+' '+meta(itemId).name+' for '+price+' each.');
+    hideModal();
+    draw();
+  }catch(err){
+    showToast('Listing failed.');
   }
+}
 
-  if(selectedAction==='discard'){
-    alert('Add discard endpoint later');
-  }
-
-  document.getElementById('modalBG').classList.remove('show');
+function hideModal(){
+  modalBG.classList.remove('show');
+  selectedItemId='';
+  selectedAction='';
 }
 
 function closeModal(e){
-  if(e.target.id==='modalBG'){
-    document.getElementById('modalBG').classList.remove('show');
-  }
+  if(e.target.id==='modalBG')hideModal();
 }
 
-init();
+function itemType(id,def){
+  if(def&&def.eggTrait)return 'Egg Care';
+  if(def&&def.effect&&def.effect.hunger)return 'Food';
+  if(def&&def.effect&&def.effect.happiness)return 'Treat';
+  if(def&&def.effect&&def.effect.energy)return 'Rest';
+  if(def&&def.effect&&def.effect.cleanliness)return 'Care';
+  return 'Supply';
+}
 
+function prettyName(id){
+  return String(id||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+function esc(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+
+function escAttr(s){
+  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'');
+}
+
+function showToast(text){
+  toast.innerText=text;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),2200);
+}
+
+window.addEventListener('message',function(event){
+  let msg=event.data||{};
+  if(msg.type==='gameSetup'){
+    loadInventory();
+  }
+  if(msg.type==='petUpdate'&&msg.profile){
+    profile=msg.profile;
+    draw();
+  }
+});
+
+loadInventory();
 </script>
-
 </body>
 </html>
