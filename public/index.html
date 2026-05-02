@@ -892,6 +892,182 @@ iframe{
   box-shadow:0 8px 22px rgba(0,0,0,.18);
 }
 
+
+.playerIdentityCard{
+  position:relative;
+  overflow:hidden;
+  padding:0;
+  border-color:rgba(56,189,248,.28);
+  background:
+    radial-gradient(circle at 80% 8%,rgba(250,204,21,.16),transparent 31%),
+    radial-gradient(circle at 12% 15%,rgba(56,189,248,.18),transparent 34%),
+    linear-gradient(180deg,rgba(15,23,42,.96),rgba(2,6,23,.96));
+  box-shadow:0 18px 48px rgba(0,0,0,.28),0 0 32px rgba(56,189,248,.08);
+}
+
+.playerIdentityCard:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.10),transparent 36%,rgba(255,255,255,.04));
+  pointer-events:none;
+}
+
+.playerCardInner{
+  position:relative;
+  z-index:1;
+  padding:14px;
+}
+
+.playerHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.playerNameBlock b{
+  display:block;
+  font-size:18px;
+  line-height:1.05;
+  color:#fff;
+  letter-spacing:-.3px;
+}
+
+.playerMoney{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:7px;
+  padding:6px 9px;
+  border-radius:999px;
+  color:#fde68a;
+  background:rgba(250,204,21,.12);
+  border:1px solid rgba(250,204,21,.28);
+  font-size:12px;
+  font-weight:900;
+}
+
+.playerRoleBadge{
+  flex:0 0 auto;
+  padding:6px 9px;
+  border-radius:999px;
+  color:#bae6fd;
+  background:rgba(56,189,248,.12);
+  border:1px solid rgba(56,189,248,.30);
+  font-size:11px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.playerRoleBadge.admin{
+  color:#fef3c7;
+  background:rgba(250,204,21,.16);
+  border-color:rgba(250,204,21,.34);
+}
+
+.playerPetHero{
+  display:grid;
+  grid-template-columns:86px 1fr;
+  gap:12px;
+  align-items:center;
+  padding:11px;
+  border-radius:22px;
+  background:rgba(2,6,23,.42);
+  border:1px solid rgba(148,163,184,.20);
+}
+
+.playerPetAvatar{
+  width:86px;
+  height:86px;
+  border-radius:27px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  font-size:46px;
+  background:
+    radial-gradient(circle at 35% 24%,rgba(255,255,255,.20),transparent 34%),
+    linear-gradient(135deg,#1e293b,#020617);
+  border:1px solid rgba(148,163,184,.34);
+  box-shadow:inset 0 0 28px rgba(255,255,255,.05),0 12px 24px rgba(0,0,0,.22);
+}
+
+.playerPetAvatar img{
+  width:82px;
+  height:82px;
+  object-fit:contain;
+  position:absolute;
+  z-index:2;
+  animation:playerPetIdle 2.6s ease-in-out infinite;
+  filter:drop-shadow(0 10px 10px rgba(0,0,0,.30));
+}
+
+.playerPetAvatar span{
+  position:relative;
+  z-index:1;
+}
+
+@keyframes playerPetIdle{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-5px) scale(1.03)}
+}
+
+.playerPetName{
+  color:#fff;
+  font-weight:1000;
+  font-size:17px;
+  line-height:1.1;
+  margin-bottom:5px;
+}
+
+.playerPetMeta{
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.35;
+}
+
+.playerMoodChip{
+  display:inline-flex;
+  margin-top:7px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  color:#e5e7eb;
+  font-size:11px;
+  font-weight:900;
+}
+
+.playerQuickActions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:7px;
+  margin-top:11px;
+}
+
+.playerQuickActions button{
+  margin:0;
+  padding:9px 7px;
+  font-size:12px;
+  border-radius:15px;
+  justify-content:center;
+  text-align:center;
+}
+
+.playerEmptyState{
+  position:relative;
+  z-index:1;
+  padding:14px;
+}
+
+.playerEmptyState b{
+  color:#fff;
+}
+
 .sideCompanionMini{
   margin-top:10px;
 }
@@ -1596,19 +1772,21 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
   </div>
 
   <div class="side">
+    <div class="sideCard playerIdentityCard" id="playerIdentityPanel">
+      <div id="playerCardContent">
+        <div class="playerEmptyState">
+          <b>Player</b>
+          <p class="muted">Log in to load your profile, coins, and active companion.</p>
+        </div>
+      </div>
+    </div>
+
     <div class="sideCard" id="presencePanel">
       <div class="sidebarTitle">
         <h3>Online Users</h3>
       </div>
       <p class="muted">Click a user in a public room to join them.</p>
       <div id="presence"></div>
-    </div>
-
-    <div class="sideCard" id="sideCompanionPanel">
-      <div class="sidebarTitle">
-        <h3>Companion</h3>
-      </div>
-      <div id="sideCompanion" class="sideCompanionMini"><p class="muted">Log in to load your companion.</p></div>
     </div>
 
     <div class="sideCard hidden" id="roomChatPanel">
@@ -1720,6 +1898,8 @@ function drawAuth(){
     navUserBox.innerText='Not logged in';
     navAdmin.classList.add('hidden');
   }
+
+  drawPlayerCard();
 }
 
 async function register(){
@@ -2599,7 +2779,7 @@ async function loadPet(){
   }catch(err){
     homePet.innerHTML='<p class="muted">Could not load pet.</p>';
     petPanel.innerHTML='<p class="muted">Could not load pet.</p>';
-    if(document.getElementById('sideCompanion'))sideCompanion.innerHTML='<p class="muted">Could not load companion.</p>';
+    if(document.getElementById('playerCardContent'))playerCardContent.innerHTML='<div class="playerEmptyState"><b>Player</b><p class="muted">Could not load profile.</p></div>';
   }
 }
 
@@ -2637,11 +2817,136 @@ function petAvatarHtml(pet,emoji){
     '</div>';
 }
 
+
+function coinText(value){
+  return Number(value||0).toLocaleString();
+}
+
+function eggProgressPercent(pet){
+  let t=(pet&&pet.eggTraits)||{};
+  let total=Number(t.warm||0)+Number(t.cold||0)+Number(t.wet||0)+Number(t.dry||0)+Number(t.light||0)+Number(t.dark||0);
+  return Math.max(0,Math.min(100,Math.floor(total/18*100)));
+}
+
+function petMoodSummary(pet){
+  if(!pet)return {icon:'•',label:'Unknown'};
+
+  if((pet.stage||'egg')==='egg'){
+    let prog=eggProgressPercent(pet);
+    if(prog>=80)return {icon:'✨',label:'Restless'};
+    if(prog>=45)return {icon:'💫',label:'Growing'};
+    return {icon:'😌',label:'Calm'};
+  }
+
+  let n=pet.needs||{};
+  if(Number(n.energy||0)<25)return {icon:'😴',label:'Tired'};
+  if(Number(n.hunger||0)<25)return {icon:'🍽️',label:'Hungry'};
+
+  let avg=(Number(n.hunger||0)+Number(n.happiness||0)+Number(n.energy||0)+Number(n.cleanliness||0))/4;
+
+  if(avg>=82)return {icon:'😄',label:'Thriving'};
+  if(avg>=62)return {icon:'🙂',label:'Content'};
+  if(avg>=38)return {icon:'😐',label:'Needy'};
+  return {icon:'😟',label:'Struggling'};
+}
+
+function playerPetMeta(pet){
+  let stage=pet.stage||'egg';
+
+  if(stage==='egg'){
+    return 'Egg · '+eggProgressPercent(pet)+'% hatch';
+  }
+
+  let level=Number((pet.stats&&pet.stats.level)||1);
+  let type=pet.type?String(pet.type).charAt(0).toUpperCase()+String(pet.type).slice(1):'Pet';
+  return type+' · '+stage+' · Lv '+level;
+}
+
+function playerPetAvatarHtml(pet,emoji){
+  let imgPath=petImagePath(pet);
+
+  return ''+
+    '<div class="playerPetAvatar">'+
+      '<img src="'+imgPath+'" onload="this.nextElementSibling.style.display=\'none\'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'">'+
+      '<span>'+escapeHtml(emoji)+'</span>'+
+    '</div>';
+}
+
+function drawPlayerCard(){
+  if(!document.getElementById('playerCardContent'))return;
+
+  if(!me){
+    playerCardContent.innerHTML=
+      '<div class="playerEmptyState">'+
+        '<b>Player</b>'+
+        '<p class="muted">Log in to load your profile, coins, and active companion.</p>'+
+      '</div>';
+    return;
+  }
+
+  if(!petProfile){
+    playerCardContent.innerHTML=
+      '<div class="playerEmptyState">'+
+        '<b>'+escapeHtml(me)+'</b>'+
+        '<p class="muted">Loading profile...</p>'+
+      '</div>';
+    return;
+  }
+
+  let pet=activePet();
+  let role=admin?'Admin':'Player';
+  let roleClass=admin?'playerRoleBadge admin':'playerRoleBadge';
+
+  if(!pet){
+    playerCardContent.innerHTML=
+      '<div class="playerCardInner">'+
+        '<div class="playerHeader">'+
+          '<div class="playerNameBlock"><b>'+escapeHtml(me)+'</b><span class="playerMoney">🪙 '+coinText(petProfile.money)+' Coins</span></div>'+
+          '<span class="'+roleClass+'">'+role+'</span>'+
+        '</div>'+
+        '<p class="muted">No active companion yet.</p>'+
+        '<div class="playerQuickActions">'+
+          '<button class="gold" onclick="openInventory()">Inventory</button>'+
+          '<button class="primary" onclick="openPetWorldDirect()">Pet World</button>'+
+          '<button class="ghost" onclick="openMarketDirect()">Market</button>'+
+        '</div>'+
+      '</div>';
+    return;
+  }
+
+  let emoji=pet.emoji||'🥚';
+  let mood=petMoodSummary(pet);
+
+  playerCardContent.innerHTML=
+    '<div class="playerCardInner">'+
+      '<div class="playerHeader">'+
+        '<div class="playerNameBlock">'+
+          '<b>'+escapeHtml(me)+'</b>'+
+          '<span class="playerMoney">🪙 '+coinText(petProfile.money)+' Coins</span>'+
+        '</div>'+
+        '<span class="'+roleClass+'">'+role+'</span>'+
+      '</div>'+
+      '<div class="playerPetHero">'+
+        playerPetAvatarHtml(pet,emoji)+
+        '<div>'+
+          '<div class="playerPetName">'+escapeHtml(pet.name||'Mystery Egg')+'</div>'+
+          '<div class="playerPetMeta">'+escapeHtml(playerPetMeta(pet))+'</div>'+
+          '<span class="playerMoodChip">'+escapeHtml(mood.icon+' '+mood.label)+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="playerQuickActions">'+
+        '<button class="gold" onclick="openInventory()">Inventory</button>'+
+        '<button class="primary" onclick="openPetWorldDirect()">Pet World</button>'+
+        '<button class="ghost" onclick="openMarketDirect()">Market</button>'+
+      '</div>'+
+    '</div>';
+}
+
 function drawPet(){
   if(!petProfile||!me){
     homePet.innerHTML='<p class="muted">Log in to load your pet.</p>';
     petPanel.innerHTML='<p class="muted">Log in to load your pet.</p>';
-    if(document.getElementById('sideCompanion'))sideCompanion.innerHTML='<p class="muted">Log in to load your companion.</p>';
+    drawPlayerCard();
     return;
   }
 
@@ -2650,7 +2955,7 @@ function drawPet(){
   if(!pet){
     homePet.innerHTML='<p class="muted">No pet yet.</p>';
     petPanel.innerHTML='<p class="muted">No pet yet.</p>';
-    if(document.getElementById('sideCompanion'))sideCompanion.innerHTML='<p class="muted">No companion yet.</p>';
+    drawPlayerCard();
     return;
   }
 
@@ -2669,13 +2974,7 @@ function drawPet(){
 
   homePet.innerHTML=mini;
 
-  if(document.getElementById('sideCompanion')){
-    sideCompanion.innerHTML=
-      mini+
-      '<div class="petActions">'+
-        '<button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>'+
-      '</div>';
-  }
+  drawPlayerCard();
 
   let html=mini;
 
