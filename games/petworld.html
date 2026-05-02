@@ -12,6 +12,7 @@ GameForge AI / PetWorld maintainer notes:
 - Server owns profile changes. Do not permanently mutate pet/profile client-side without calling the matching API.
 - Pets store only move IDs. Move data comes from /api/pet/profile.
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
+- Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 */
 
@@ -86,7 +87,7 @@ button,input,select{font-family:inherit}
 .hud{
   min-height:0;
   display:grid;
-  grid-template-columns:300px minmax(0,1fr)340px;
+  grid-template-columns:260px minmax(0,1fr)330px;
   gap:10px;
 }
 
@@ -105,7 +106,7 @@ button,input,select{font-family:inherit}
   overflow:hidden;
   position:relative;
   display:grid;
-  grid-template-rows:minmax(0,1fr)76px;
+  grid-template-rows:minmax(0,1fr)64px;
 }
 
 .petStage{
@@ -179,21 +180,18 @@ button,input,select{font-family:inherit}
 .petOrb.hop{transform:translateY(-42px) scale(1.04)}
 .petOrb.walking{transition:transform 2.4s cubic-bezier(.25,.8,.25,1)}
 .petOrb.eggStill{transition:transform .35s ease}
-
 .petOrb.eggWarm{box-shadow:0 0 90px rgba(251,146,60,.9), inset 0 0 52px rgba(254,215,170,.72)}
 .petOrb.eggCold{box-shadow:0 0 90px rgba(125,211,252,.9), inset 0 0 52px rgba(186,230,253,.72)}
 .petOrb.eggWet{box-shadow:0 0 90px rgba(14,165,233,.75), inset 0 0 52px rgba(186,230,253,.75)}
 .petOrb.eggDry{box-shadow:0 0 90px rgba(217,119,6,.55), inset 0 0 52px rgba(254,243,199,.75)}
 .petOrb.eggLight{box-shadow:0 0 100px rgba(250,204,21,.95), inset 0 0 56px rgba(254,249,195,.8)}
 .petOrb.eggDark{box-shadow:0 0 95px rgba(124,58,237,.85), inset 0 0 52px rgba(221,214,254,.75)}
-
 .petOrb.playful{animation:playfulFloat 2.1s ease-in-out infinite}
 .petOrb.lazy,.petOrb.napping{animation:napFloat 4.8s ease-in-out infinite}
 .petOrb.aggressive{animation:sharpFloat 2.2s ease-in-out infinite}
 .petOrb.calm{animation:calmFloat 4s ease-in-out infinite}
 .petOrb.curious{animation:curiousFloat 2.8s ease-in-out infinite}
 .petOrb.moody{animation:moodyFloat 2.9s ease-in-out infinite}
-
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes playfulFloat{0%,100%{transform:translateY(0) rotate(-2deg)}35%{transform:translateY(-20px) rotate(3deg)}70%{transform:translateY(-6px) rotate(-4deg)}}
 @keyframes napFloat{0%,100%{transform:translateY(3px) scale(.99)}50%{transform:translateY(-5px) scale(1.01)}}
@@ -328,6 +326,50 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .statFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#22c55e,#86efac);transition:width .35s ease}
 .statFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
 .statFill.low{background:linear-gradient(90deg,#ef4444,#f97316)}
+
+.petSnapshot{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.needCard{
+  background:rgba(255,255,255,.70);
+  border:1px solid rgba(148,163,184,.30);
+  border-radius:16px;
+  padding:9px;
+}
+.needCard b{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:12px;
+  color:#334155;
+  margin-bottom:6px;
+}
+.needHint{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:5px;
+}
+.eggSignal{
+  background:rgba(255,255,255,.70);
+  border:1px solid rgba(148,163,184,.30);
+  border-radius:16px;
+  padding:10px;
+  margin-top:10px;
+}
+.eggSignal h3{font-size:15px;margin-bottom:4px}
+.eggTraitChips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.eggTraitChip{
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  color:#3730a3;
+}
 
 .progress{height:10px;border-radius:999px;background:#e5e7eb;overflow:hidden;margin-top:6px}
 .progressFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);transition:width .35s ease}
@@ -469,7 +511,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
       <div class="quickTools">
         <button class="ghost" onclick="setTab('quests')">✅ Quests</button>
-        <button class="ghost" onclick="setTab('details')">📊 Details</button>
+        <button class="ghost" onclick="setTab('details')">ℹ️ Info</button>
         <button class="ghost" onclick="setTab('roster')">🐾 Roster</button>
         <button class="ghost" onclick="setTab('items')">🎒 Items</button>
         <button class="ghost" onclick="setTab('shop')">🛒 Shop</button>
@@ -504,7 +546,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
     <div class="panel">
       <div class="tabs">
         <button id="questsTab" onclick="setTab('quests')" class="active">Quests</button>
-        <button id="detailsTab" onclick="setTab('details')">Details</button>
+        <button id="detailsTab" onclick="setTab('details')">Info</button>
         <button id="rosterTab" onclick="setTab('roster')">Roster</button>
         <button id="itemsTab" onclick="setTab('items')">Items</button>
         <button id="shopTab" onclick="setTab('shop')">Shop</button>
@@ -641,8 +683,12 @@ function draw(){
   drawLog();
 
   if(localState.prompt)speak(localState.prompt.text);
-  else if(pet.stage==='egg')speak(idleSpeech(pet,mood));
-  else speak(idleSpeech(pet,mood));
+  else if(pet.stage==='egg'){
+    var prog=eggProgress(pet);
+    if(prog>=80)speak('The egg trembles. Something inside is ready to meet you soon.');
+    else if(prog>=45)speak('The egg responds to your care. Its personality is beginning to form.');
+    else speak('Your egg is listening. Every care choice nudges what it may become.');
+  }else speak(idleSpeech(pet,mood));
 }
 
 function drawDock(){
@@ -699,22 +745,45 @@ function petSubtitle(pet){
 function drawStats(){
   var pet=activePet();
   var html='';
+
   if(pet.stage==='egg'){
-    html+=miniStat('Warm',pet.eggTraits.warm,18);
-    html+=miniStat('Cold',pet.eggTraits.cold,18);
-    html+=miniStat('Wet',pet.eggTraits.wet,18);
-    html+=miniStat('Dry',pet.eggTraits.dry,18);
-    html+=miniStat('Light',pet.eggTraits.light,18);
-    html+=miniStat('Dark',pet.eggTraits.dark,18);
-    html+=miniStat('Bond',pet.affection||0,100);
+    var strongest=strongestTrait(pet.eggTraits||{});
+    var pct=eggProgress(pet);
+    var labels={
+      warm:'Warmth',
+      cold:'Cold',
+      wet:'Moisture',
+      dry:'Dryness',
+      light:'Light',
+      dark:'Shadow'
+    };
+
+    html+='<div class="eggSignal">';
+    html+='<h3>Egg Signal</h3>';
+    html+='<div class="muted">'+escapeHtml(labels[strongest]||'Mystery')+' is shaping this egg. '+pct+'% hatch progress.</div>';
+    html+='<div class="eggTraitChips">';
+    ['warm','cold','wet','dry','light','dark'].forEach(function(k){
+      var v=Number((pet.eggTraits||{})[k]||0);
+      if(v>0)html+='<span class="eggTraitChip">'+escapeHtml(labels[k]||k)+' '+v+'</span>';
+    });
+    html+='</div>';
+    html+='</div>';
   }else{
-    html+=miniStat('Hunger',pet.needs.hunger,100);
-    html+=miniStat('Happy',pet.needs.happiness,100);
-    html+=miniStat('Energy',pet.needs.energy,100);
-    html+=miniStat('Clean',pet.needs.cleanliness,100);
-    html+=miniStat('Bond',pet.affection||0,100);
+    html+='<div class="petSnapshot">';
+    html+=needCard('🍽️ Hunger',pet.needs.hunger,100,'Feed when low.');
+    html+=needCard('🙂 Happiness',pet.needs.happiness,100,'Play raises mood and XP.');
+    html+=needCard('⚡ Energy',pet.needs.energy,100,'Rest before exploring or training.');
+    html+='</div>';
   }
+
   el('statStack').innerHTML=html;
+}
+
+function needCard(name,val,max,hint){
+  val=Number(val||0); max=Number(max||100);
+  var pct=Math.max(0,Math.min(100,Math.floor((val/max)*100)));
+  var cls=pct<30?'low':pct<60?'mid':'';
+  return '<div class="needCard"><b><span>'+escapeHtml(name)+'</span><span>'+val+'/'+max+'</span></b><div class="statBar"><div class="statFill '+cls+'" style="width:'+pct+'%"></div></div><div class="needHint">'+escapeHtml(hint)+'</div></div>';
 }
 
 function miniStat(name,val,max){
@@ -768,15 +837,29 @@ function rewardText(r){
 
 function drawDetails(){
   var pet=activePet();
-  var html='<h3>Details</h3><div class="detailGrid">';
+  var html='<h3>Pet Info</h3><p class="muted">Detailed stats are tucked away here so the main screen stays focused on your companion.</p><div class="detailGrid">';
   html+=detailBox('Stage',pet.stage||'egg');
   html+=detailBox('Type',pet.type||'Mystery');
   html+=detailBox('Personality',personalityLabel(pet.personality));
   html+=detailBox('Bond',Number(pet.affection||0));
-  html+=detailBox('HP',Number(pet.stats.hp||0)+' / '+Number(pet.stats.maxHp||0));
-  html+=detailBox('Attack',Number(pet.stats.attack||0));
-  html+=detailBox('Defense',Number(pet.stats.defense||0));
-  html+=detailBox('Speed',Number(pet.stats.speed||0));
+
+  if(pet.stage==='egg'){
+    html+=detailBox('Warm',Number(pet.eggTraits.warm||0));
+    html+=detailBox('Cold',Number(pet.eggTraits.cold||0));
+    html+=detailBox('Wet',Number(pet.eggTraits.wet||0));
+    html+=detailBox('Dry',Number(pet.eggTraits.dry||0));
+    html+=detailBox('Light',Number(pet.eggTraits.light||0));
+    html+=detailBox('Dark',Number(pet.eggTraits.dark||0));
+  }else{
+    html+=detailBox('HP',Number(pet.stats.hp||0)+' / '+Number(pet.stats.maxHp||0));
+    html+=detailBox('Level',Number(pet.stats.level||1));
+    html+=detailBox('XP',Number(pet.stats.xp||0));
+    html+=detailBox('Attack',Number(pet.stats.attack||0));
+    html+=detailBox('Defense',Number(pet.stats.defense||0));
+    html+=detailBox('Speed',Number(pet.stats.speed||0));
+    html+=detailBox('Cleanliness',Number(pet.needs.cleanliness||0));
+  }
+
   html+='</div><h3 style="margin-top:10px">Moves</h3><div class="moves">';
   (pet.moves||[]).forEach(function(id){
     var move=moves[id]||{name:id,type:'normal'};
@@ -1170,7 +1253,7 @@ function tickPetLife(){
   var pet=activePet();
   if(!pet)return;
   maybeWanderPet(pet);
-  if(Math.random()<.28&&!localState.prompt)speak(idleSpeech(pet,getMood(pet)));
+  if(Math.random()<.28&&!localState.prompt)speak(pet.stage==='egg'?'The egg gives a tiny wiggle.':idleSpeech(pet,getMood(pet)));
 }
 
 function maybeWanderPet(pet){
