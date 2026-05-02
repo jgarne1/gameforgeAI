@@ -15,6 +15,7 @@ if(!fs.existsSync(DATA))fs.mkdirSync(DATA,{recursive:true});
 const usersFile=path.join(DATA,'users.json');
 const adminsFile=path.join(DATA,'admins.json');
 const petsFile=path.join(DATA,'pets.json');
+const movesFile=path.join(DATA,'pet_moves.json');
 const gamesFile=path.join(__dirname,'games.json');
 
 app.use(express.json());
@@ -33,10 +34,73 @@ function writeJSON(f,o){
 function games(){return readJSON(gamesFile,[])}
 function users(){return readJSON(usersFile,{})}
 function pets(){return readJSON(petsFile,{})}
+function moves(){return readJSON(movesFile,DEFAULT_MOVES)}
+
 function admins(){
   let a=readJSON(adminsFile,[]);
   return Array.isArray(a)?a:(a.admins||[]);
 }
+
+const DEFAULT_MOVES={
+  tackle:{
+    name:'Tackle',
+    type:'normal',
+    category:'physical',
+    power:30,
+    accuracy:95,
+    crit:5,
+    description:'A reliable basic attack.'
+  },
+  ember_nip:{
+    name:'Ember Nip',
+    type:'fire',
+    category:'special',
+    power:42,
+    accuracy:90,
+    crit:8,
+    status:{effect:'burn',chance:25,duration:3},
+    description:'A fiery bite that may burn.'
+  },
+  bubble_snap:{
+    name:'Bubble Snap',
+    type:'water',
+    category:'special',
+    power:40,
+    accuracy:92,
+    crit:6,
+    status:{effect:'slow',chance:20,duration:2},
+    description:'A snapping water burst that may slow.'
+  },
+  vine_bop:{
+    name:'Vine Bop',
+    type:'nature',
+    category:'physical',
+    power:38,
+    accuracy:95,
+    crit:7,
+    status:{effect:'snare',chance:18,duration:2},
+    description:'A vine strike that may snare.'
+  },
+  shadow_pounce:{
+    name:'Shadow Pounce',
+    type:'shadow',
+    category:'physical',
+    power:46,
+    accuracy:86,
+    crit:18,
+    description:'A risky shadow attack with high critical chance.'
+  },
+  stone_bump:{
+    name:'Stone Bump',
+    type:'earth',
+    category:'physical',
+    power:44,
+    accuracy:88,
+    crit:5,
+    status:{effect:'stun',chance:12,duration:1},
+    description:'A heavy impact that may stun.'
+  }
+};
 
 function safeUser(u){
   return {
@@ -215,15 +279,6 @@ const SHOP_ITEMS={
   }
 };
 
-const MOVES={
-  tackle:{name:'Tackle',type:'normal',power:30,accuracy:95,energy:0},
-  ember_nip:{name:'Ember Nip',type:'fire',power:42,accuracy:90,energy:4},
-  bubble_snap:{name:'Bubble Snap',type:'water',power:40,accuracy:92,energy:4},
-  vine_bop:{name:'Vine Bop',type:'nature',power:38,accuracy:95,energy:4},
-  shadow_pounce:{name:'Shadow Pounce',type:'shadow',power:46,accuracy:86,energy:5},
-  stone_bump:{name:'Stone Bump',type:'earth',power:44,accuracy:88,energy:5}
-};
-
 function getPetProfile(username){
   let all=pets();
 
@@ -301,9 +356,16 @@ function requireUser(req,res){
   return username;
 }
 
-/* ===== EXISTING API ===== */
+/* ===== API ===== */
 
 app.get('/api/games',(req,res)=>res.json(games()));
+
+app.get('/api/pet/moves',(req,res)=>{
+  res.json({
+    ok:true,
+    moves:moves()
+  });
+});
 
 app.post('/api/register',(req,res)=>{
   let {username,password}=req.body;
@@ -375,7 +437,7 @@ app.get('/api/pet/profile',(req,res)=>{
     profile,
     species:PET_SPECIES,
     shop:SHOP_ITEMS,
-    moves:MOVES
+    moves:moves()
   });
 });
 
@@ -476,6 +538,10 @@ app.post('/api/pet/use-item',(req,res)=>{
 
   let pet=activePet(profile);
 
+  if(item.eggTrait&&pet.stage!=='egg'){
+    return res.json({error:'That item only works on eggs'});
+  }
+
   profile.inventory[itemId]--;
 
   if(item.effect){
@@ -485,8 +551,6 @@ app.post('/api/pet/use-item',(req,res)=>{
   }
 
   if(item.eggTrait){
-    if(pet.stage!=='egg')return res.json({error:'That item only works on eggs'});
-
     Object.keys(item.eggTrait).forEach(k=>{
       pet.eggTraits[k]=(pet.eggTraits[k]||0)+item.eggTrait[k];
     });
