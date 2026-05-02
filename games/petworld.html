@@ -16,6 +16,9 @@ GameForge AI / PetWorld maintainer notes:
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 - Pet reactions are client-only animations; profile changes still come from server APIs.
 - Egg influence shown here explains current trait weighting, but final hatch result is still server-authoritative.
+- Future pet art/design rule: keep assets as transparent PNGs at /assets/pets/{species}/{baby|young|adult}.png.
+  Design future pets as stylized companion realism: 40% cute / 60% cool, readable silhouette, consistent 3/4 view,
+  no baked backgrounds, no heavy gear on base creatures, and clear evolution continuity from baby to young to adult.
 */
 
 :root{
@@ -170,18 +173,17 @@ button,input,select{font-family:inherit}
   box-shadow:0 0 90px rgba(255,255,255,.72), inset 0 0 52px rgba(255,255,255,.54);
   z-index:2;
   cursor:pointer;
-  translate:0 0;
-  transition:translate 2.4s cubic-bezier(.25,.8,.25,1), transform .8s cubic-bezier(.25,.8,.25,1), box-shadow .35s ease, background .35s ease;
+  transition:transform .8s cubic-bezier(.25,.8,.25,1), box-shadow .35s ease, background .35s ease;
   animation:floaty 3.3s ease-in-out infinite;
 }
 
-/* Hatched pets wander using CSS translate so idle transform animations do not override walking. Eggs stay centered and only wobble. */
-.petOrb.wanderLeft{translate:-165px 18px}
-.petOrb.wanderRight{translate:165px 18px}
-.petOrb.wanderNearLeft{translate:-90px 10px}
-.petOrb.wanderNearRight{translate:90px 10px}
-.petOrb.hop{translate:0 -42px}
-.petOrb.walking{transition:translate 2.4s cubic-bezier(.25,.8,.25,1), transform .8s ease}
+/* Hatched pets wander; eggs stay centered except for wobble/hop near hatch. */
+.petOrb.wanderLeft{transform:translateX(-165px) translateY(18px) rotate(-3deg)}
+.petOrb.wanderRight{transform:translateX(165px) translateY(18px) rotate(3deg)}
+.petOrb.wanderNearLeft{transform:translateX(-90px) translateY(10px) rotate(-2deg)}
+.petOrb.wanderNearRight{transform:translateX(90px) translateY(10px) rotate(2deg)}
+.petOrb.hop{transform:translateY(-42px) scale(1.04)}
+.petOrb.walking{transition:transform 2.4s cubic-bezier(.25,.8,.25,1)}
 .petOrb.eggStill{transition:transform .35s ease}
 .petOrb.eggWarm{box-shadow:0 0 90px rgba(251,146,60,.9), inset 0 0 52px rgba(254,215,170,.72)}
 .petOrb.eggCold{box-shadow:0 0 90px rgba(125,211,252,.9), inset 0 0 52px rgba(186,230,253,.72)}
@@ -205,7 +207,7 @@ button,input,select{font-family:inherit}
 @keyframes excitedShake{0%,100%{transform:translateX(0) rotate(0)}18%{transform:translateX(-28px) rotate(-4deg)}36%{transform:translateX(28px) rotate(4deg)}58%{transform:translateX(-16px) rotate(-3deg)}78%{transform:translateX(14px) rotate(3deg)}}
 @keyframes focusPulse{0%,100%{transform:scale(1)}45%{transform:scale(1.12)}70%{transform:scale(1.04)}}
 @keyframes sleepySettle{0%,100%{transform:translateY(0) scale(1)}55%{transform:translateY(18px) scale(.96)}}
-@keyframes leaveAndReturn{0%{translate:0 0;opacity:1}42%{translate:420px 0;opacity:.08}58%{translate:-420px 0;opacity:.08}100%{translate:0 0;opacity:1}}
+@keyframes leaveAndReturn{0%{transform:translateX(0);opacity:1}42%{transform:translateX(420px);opacity:.08}58%{transform:translateX(-420px);opacity:.08}100%{transform:translateX(0);opacity:1}}
 @keyframes eggReact{0%,100%{transform:rotate(0deg) scale(1)}20%{transform:rotate(-8deg) scale(1.07)}42%{transform:rotate(8deg) scale(1.09)}68%{transform:rotate(-4deg) scale(1.04)}}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes playfulFloat{0%,100%{transform:translateY(0) rotate(-2deg)}35%{transform:translateY(-20px) rotate(3deg)}70%{transform:translateY(-6px) rotate(-4deg)}}
@@ -442,6 +444,48 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   line-height:1.35;
 }
 
+.eggIdentityPanel{
+  position:absolute;
+  left:18px;
+  top:18px;
+  width:min(300px,calc(100% - 36px));
+  z-index:9;
+  background:rgba(15,23,42,.48);
+  color:white;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:22px;
+  padding:11px 12px;
+  box-shadow:0 16px 40px rgba(15,23,42,.22);
+  backdrop-filter:blur(14px);
+  pointer-events:none;
+}
+.eggIdentityPanel.hidden{display:none}
+.eggIdentityTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.2px;
+  margin-bottom:7px;
+}
+.eggIdentityMain{font-size:16px;font-weight:1000;margin-bottom:4px}
+.eggIdentitySub{font-size:12px;opacity:.86;line-height:1.35}
+.eggIdentityBars{display:grid;gap:5px;margin-top:9px}
+.eggIdentityBar{display:grid;grid-template-columns:68px 1fr 28px;gap:7px;align-items:center;font-size:11px;font-weight:900}
+.eggIdentityTrack{height:7px;border-radius:999px;background:rgba(255,255,255,.22);overflow:hidden}
+.eggIdentityFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#facc15,#38bdf8,#a855f7)}
+.eggIdentityChips{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.eggIdentityChips span{
+  font-size:10px;
+  font-weight:900;
+  padding:4px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.22);
+}
+
 .floatingFx{
   position:absolute;
   left:50%;
@@ -562,6 +606,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
           <div id="petEmoji" class="petEmoji">🥚</div>
         </div>
 
+        <div id="eggIdentityPanel" class="eggIdentityPanel hidden"></div>
         <div id="floatingFx" class="floatingFx">+1</div>
         <div id="actionDock" class="actionDock"></div>
       </div>
@@ -700,6 +745,7 @@ function draw(){
   drawDock();
   drawStats();
   drawProgress();
+  drawEggIdentityPanel();
   drawQuests();
   drawDetails();
   drawRoster();
@@ -1286,6 +1332,49 @@ function eggInfluenceCard(pet){
   return html;
 }
 
+function drawEggIdentityPanel(){
+  var panel=el('eggIdentityPanel');
+  var pet=activePet();
+  if(!panel||!pet)return;
+
+  if(pet.stage!=='egg'){
+    panel.classList.add('hidden');
+    panel.innerHTML='';
+    return;
+  }
+
+  var info=eggInfluenceSummary(pet);
+  var labels={fire:'🔥 Fire',water:'💧 Water',nature:'🌿 Nature',shadow:'🌙 Shadow',earth:'🪨 Earth'};
+  var ranked=info.ranked||[];
+  var top=ranked[0]||{type:'fire',score:1};
+  var second=ranked[1]||{type:'water',score:1};
+  var max=Math.max(1,Number(top.score||1));
+  var progress=eggProgress(pet);
+
+  var html='';
+  html+='<div class="eggIdentityTitle"><span>Egg Identity</span><span>'+progress+'%</span></div>';
+  html+='<div class="eggIdentityMain">'+escapeHtml(info.balanced?'⚖️ Balanced aura':(labels[top.type]||top.type)+' energy')+'</div>';
+  html+='<div class="eggIdentitySub">Secondary: '+escapeHtml(labels[second.type]||second.type)+'. Your care shifts probabilities, not guarantees.</div>';
+  html+='<div class="eggIdentityBars">';
+
+  ranked.slice(0,3).forEach(function(row){
+    var pct=Math.max(8,Math.min(100,Math.floor(Number(row.score||0)/max*100)));
+    html+='<div class="eggIdentityBar">'+
+      '<span>'+escapeHtml(labels[row.type]||row.type)+'</span>'+
+      '<div class="eggIdentityTrack"><div class="eggIdentityFill" style="width:'+pct+'%"></div></div>'+
+      '<span>'+Number(row.score||0)+'</span>'+
+    '</div>';
+  });
+
+  html+='</div>';
+  html+='<div class="eggIdentityChips">';
+  (info.species||[]).slice(0,3).forEach(function(x){html+='<span>'+escapeHtml(x)+'</span>'});
+  html+='</div>';
+
+  panel.innerHTML=html;
+  panel.classList.remove('hidden');
+}
+
 function triggerPetReaction(type){
   var orb=el('petOrb');
   if(!orb)return;
@@ -1372,7 +1461,10 @@ function maybeWanderPet(pet){
   clearWanderClasses(orb);
 
   if(pet.stage==='egg'){
-    // Eggs do not wander. Near hatch, the existing egg wobble animation handles movement.
+    if(eggProgress(pet)>=80){
+      orb.classList.add('hop');
+      setTimeout(function(){clearWanderClasses(orb)},700);
+    }
     return;
   }
 
