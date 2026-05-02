@@ -267,7 +267,7 @@ button,input,select{font-family:inherit}
   grid-template-columns:repeat(4,1fr);
   gap:8px;
 }
-.dockActions.egg{grid-template-columns:repeat(3,1fr)}
+.dockActions.egg{grid-template-columns:repeat(4,1fr)}
 .dockBtn{
   min-height:58px;
   border-radius:18px;
@@ -722,12 +722,14 @@ function drawDock(){
 
   if(pet.stage==='egg'){
     html+='<div class="dockActions egg">';
-    html+=dockBtn('🔥 Warm','warm','Care','gold','careEgg');
-    html+=dockBtn('❄️ Cool','cold','Care','sky','careEgg');
-    html+=dockBtn('💧 Mist','wet','Care','blue','careEgg');
-    html+=dockBtn('🌵 Dry','dry','Care','gold','careEgg');
-    html+=dockBtn('☀️ Light','light','Care','good','careEgg');
-    html+=dockBtn('🌙 Shade','dark','Care','purple','careEgg');
+    html+=dockBtn('🔥 Warm','warm','Fire pull','gold','careEgg');
+    html+=dockBtn('❄️ Cool','cold','Water pull','sky','careEgg');
+    html+=dockBtn('💧 Mist','wet','Water/Nature','blue','careEgg');
+    html+=dockBtn('🌵 Dry','dry','Earth pull','gold','careEgg');
+    html+=dockBtn('☀️ Light','light','Nature/Fire','good','careEgg');
+    html+=dockBtn('🌙 Shade','dark','Shadow pull','purple','careEgg');
+    html+=dockBtn('⚖️ Balance','balance','Lift weakest','sky','careEgg');
+    html+=dockBtn('♡ Bond','bond','Affection','good','careEgg');
     html+='</div>';
   }else{
     html+='<div class="dockTop"><select id="stageZoneSelect">';
@@ -1228,31 +1230,49 @@ function setAura(pet){
 
 function eggInfluenceSummary(pet){
   var traits=pet.eggTraits||{};
+  var influence={
+    warm:{fire:4,earth:1},
+    cold:{water:3,shadow:1},
+    wet:{water:3,nature:1},
+    dry:{earth:3,shadow:1},
+    light:{nature:3,fire:1},
+    dark:{shadow:3,earth:1}
+  };
+  var labels={fire:'Fire',water:'Water',nature:'Nature',shadow:'Shadow',earth:'Earth'};
+  var hints={
+    fire:'A warm, bright pressure builds inside. Fire-leaning companions are more likely, but not guaranteed.',
+    water:'Cool currents swirl beneath the shell. Water-leaning companions are more likely, but mystery remains.',
+    nature:'A gentle living glow moves across the shell. Nature-leaning companions are more likely.',
+    shadow:'A quiet pulse hides under the shell. Shadow-leaning companions are more likely.',
+    earth:'The shell feels sturdy and ancient. Earth-leaning companions are more likely.'
+  };
+  var speciesByType={
+    fire:['Flarecub','Emberwing'],
+    water:['Frostfin'],
+    nature:['Leafbun'],
+    shadow:['Shadepup'],
+    earth:['Pebblet','Chompasaur']
+  };
+  var scores={fire:1,water:1,nature:1,shadow:1,earth:1};
+  Object.keys(influence).forEach(function(trait){
+    var amount=Number(traits[trait]||0);
+    Object.keys(influence[trait]).forEach(function(type){
+      scores[type]+=amount*Number(influence[trait][type]||0);
+    });
+  });
+  var ranked=Object.keys(scores).map(function(type){return {type:type,score:scores[type]}}).sort(function(a,b){return b.score-a.score});
   var total=traitTotal(traits);
-  var strongest=strongestTrait(traits);
-  var pairs=[];
-  Object.keys(traits).forEach(function(k){pairs.push({key:k,value:Number(traits[k]||0)})});
-  pairs.sort(function(a,b){return b.value-a.value});
-
-  var likely={
-    warm:{label:'Fire-leaning',species:['Flarecub','Emberwing','Chompasaur'],hint:'Warmth is shaping a bold, heated companion.'},
-    cold:{label:'Water-leaning',species:['Frostfin','Pebblet'],hint:'Cold care is shaping a calm, resilient companion.'},
-    wet:{label:'Water/Nature-leaning',species:['Frostfin','Leafbun'],hint:'Moisture is shaping a gentle, adaptable companion.'},
-    dry:{label:'Earth/Shadow-leaning',species:['Pebblet','Chompasaur','Shadepup'],hint:'Dry care is shaping something sturdy or mysterious.'},
-    light:{label:'Light-touched',species:['Leafbun','Emberwing','Flarecub'],hint:'Light is shaping a bright, energetic companion.'},
-    dark:{label:'Shadow-touched',species:['Shadepup','Pebblet'],hint:'Shade is shaping a quiet, mysterious companion.'}
-  };
-
-  var top=likely[strongest]||likely.warm;
-  var balanced=pairs.length>1&&pairs[0].value-pairs[1].value<=2&&total>=8;
-
-  return {
-    strongest:strongest,
-    label:balanced?'Balanced aura':top.label,
-    hint:balanced?'No single trait fully dominates. This egg may hatch into something less predictable.':top.hint,
-    species:balanced?['Any species weighted by care mix'].concat(top.species.slice(0,2)):top.species,
-    total:total
-  };
+  var balanced=total>=8&&ranked.length>1&&(ranked[0].score-ranked[1].score)<=4;
+  var top=ranked[0]||{type:'fire',score:1};
+  var second=ranked[1]||{type:'water',score:1};
+  var label=balanced?'Balanced aura':labels[top.type]+'-leaning';
+  var hint=balanced
+    ? 'Several energies are close together. The hatch pool becomes less predictable and may pull from multiple types.'
+    : hints[top.type];
+  var species=balanced
+    ? ['Mixed hatch pool',labels[top.type]+' energy',labels[second.type]+' energy']
+    : (speciesByType[top.type]||['Unknown species']);
+  return {strongest:top.type,label:label,hint:hint,species:species,total:total,ranked:ranked,balanced:balanced};
 }
 
 function eggInfluenceCard(pet){
@@ -1338,7 +1358,7 @@ function tickPetLife(){
   var pet=activePet();
   if(!pet)return;
   maybeWanderPet(pet);
-  if(Math.random()<.28&&!localState.prompt)speak(pet.stage==='egg'?'The egg gives a tiny wiggle.':idleSpeech(pet,getMood(pet)));
+  if(Math.random()<.28&&!localState.prompt)speak(idleSpeech(pet,getMood(pet)));
 }
 
 function maybeWanderPet(pet){
@@ -1430,7 +1450,16 @@ function strongestTrait(t){
 function personalityLabel(p){if(!p)return 'Unknown';return String(p).charAt(0).toUpperCase()+String(p).slice(1)}
 function itemName(id){return shop[id]?shop[id].name:id}
 function careMessage(action){
-  var map={warm:'You warmed the egg.',cold:'You cooled the egg.',wet:'You misted the egg.',dry:'You dried the egg.',light:'You gave the egg light.',dark:'You shaded the egg.'};
+  var map={
+    warm:'You warmed the egg.',
+    cold:'You cooled the egg.',
+    wet:'You misted the egg.',
+    dry:'You dried the egg.',
+    light:'You gave the egg light.',
+    dark:'You shaded the egg.',
+    balance:"You balanced the egg's weakest energy.",
+    bond:'You bonded quietly with the egg.'
+  };
   return map[action]||'You cared for the egg.';
 }
 
