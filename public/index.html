@@ -429,31 +429,66 @@ button:disabled{
   align-items:start;
 }
 
-.gameBtn{
-  display:block;
+.gameGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.gameBtn,.gameCardBtn{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
   width:100%;
+  min-height:112px;
   text-align:left;
-  margin:8px 0;
+  margin:0;
   padding:14px;
   border-radius:18px;
   background:
+    radial-gradient(circle at top right,rgba(56,189,248,.09),transparent 40%),
     linear-gradient(180deg,rgba(15,23,42,.92),rgba(2,6,23,.9));
   border:1px solid #475569;
   color:var(--text);
   position:relative;
 }
 
-.gameBtn:hover{
+.gameCardTop{
+  padding-right:70px;
+}
+
+.gameCardTitle{
+  display:block;
+  font-size:15px;
+  line-height:1.15;
+}
+
+.gameCardMeta{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+  margin-top:5px;
+}
+
+.gameCardAction{
+  margin-top:10px;
+  font-size:12px;
+  color:#bae6fd;
+  font-weight:900;
+}
+
+.gameBtn:hover,.gameCardBtn:hover{
   background:#1e293b;
 }
 
-.gameBtn.selected{
+.gameBtn.selected,.gameCardBtn.selected{
   background:linear-gradient(135deg,#1d4ed8,#2563eb)!important;
   border-color:#60a5fa!important;
   color:white;
 }
 
-.gameBtn .gameType{
+.gameBtn .gameType,.gameCardBtn .gameType{
   position:absolute;
   top:12px;
   right:12px;
@@ -732,6 +767,39 @@ iframe{
   margin:9px 0;
 }
 
+
+.companionSideMini{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top:8px;
+}
+
+.companionSideMini .petAvatar{
+  width:54px;
+  height:54px;
+  border-radius:18px;
+  flex:0 0 auto;
+}
+
+.companionSideMini .petAvatar img{
+  width:50px;
+  height:50px;
+}
+
+.companionSideName{
+  font-weight:1000;
+  font-size:15px;
+}
+
+.companionSideActions{
+  margin-top:10px;
+}
+
+.companionSideActions button{
+  width:100%;
+}
+
 /* ===== CHAT NEW MESSAGE NOTICE ===== */
 #roomChatPanel.chatUnread{
   animation:chatBluePulse 2.4s ease-in-out infinite;
@@ -883,6 +951,10 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
   display:none;
 }
 
+@media(min-width:1350px){
+  .gameGrid{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:1150px){
   .wrap{
@@ -903,6 +975,8 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
 }
 
 @media(max-width:760px){
+  .gameGrid{grid-template-columns:1fr;}
+
   .wrap{
     grid-template-columns:1fr;
   }
@@ -1049,12 +1123,16 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
           </div>
 
           <input id="gameSearch" class="gameSearch" placeholder="Search games..." oninput="drawGames()">
-          <div id="gameList"></div>
+          <div id="gameList" class="gameGrid"></div>
 
           <div class="soloLaunchCard">
             <h3>Companion Hub</h3>
-            <p class="muted">Care, Play, Train, Battle!</p>
-            <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+            <p class="muted">Care, train, and battle with your companion. No rooms required.</p>
+            <div class="row">
+              <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+              <button class="gold" onclick="selectGame('petbattle')">Pet Battle Arena</button>
+            </div>
+            <p class="muted">Pet Battle uses a multiplayer room today. The button will create/select a room if needed.</p>
           </div>
         </div>
 
@@ -1139,6 +1217,14 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
       <div id="presence"></div>
     </div>
 
+    <div class="sideCard" id="companionSidePanel">
+      <div class="sidebarTitle">
+        <h3>Companion</h3>
+        <button class="chatToggle gold" onclick="openPetWorldDirect()">Open</button>
+      </div>
+      <div id="sidePet"><p class="muted">Log in to load your companion.</p></div>
+    </div>
+
     <div class="sideCard hidden" id="roomChatPanel">
       <div class="sidebarTitle">
         <h3>Room Chat <span id="chatUnreadDot"></span></h3>
@@ -1164,6 +1250,7 @@ let room=null;
 let games=[];
 let loadedGameKey='';
 let directGameKey='';
+let pendingGameToSelect='';
 let overlayChatCollapsed=false;
 let lastChatCount=0;
 let petProfile=null;
@@ -1326,6 +1413,13 @@ function connect(){
       room=m.room;
       currentRoom=room.id;
       drawRoom();
+
+      if(pendingGameToSelect&&room&&!room.selectedGame){
+        let id=pendingGameToSelect;
+        pendingGameToSelect='';
+        setTimeout(function(){send({type:'selectGame',gameId:id});},100);
+      }
+
       if(m.scroll==='table'||m.scroll==='game')showSection('play');
     }
 
@@ -1393,21 +1487,32 @@ function drawGames(){
 
   let q=(gameSearch&&gameSearch.value?gameSearch.value:'').toLowerCase().trim();
 
+  g.className='gameGrid';
   g.innerHTML='';
 
   games
+    .filter(x=>x.id!=='petworld')
     .filter(x=>!q||String(x.name||'').toLowerCase().includes(q)||String(x.id||'').toLowerCase().includes(q))
     .forEach(function(x){
       let solo=gameIsSolo(x);
+      let selected=room&&room.selectedGame&&room.selectedGame.id===x.id;
 
       let b=document.createElement('button');
-      b.className='gameBtn '+(room&&room.selectedGame&&room.selectedGame.id===x.id?'selected':'');
+      b.className='gameCardBtn '+(selected?'selected':'');
+
+      let badge=solo?'Solo':'Room Game';
+      let action=solo?'Launch':(room?'Select':'Create Room');
+      let meta=solo
+        ? 'Instant launch · no room required'
+        : 'Multiplayer · '+x.minPlayers+'-'+x.maxPlayers+' players · '+x.seats+' seats';
+
       b.innerHTML=
-        '<span class="gameType">'+(solo?'Solo':'Multiplayer')+'</span>'+
-        '<b>'+escapeHtml(x.name)+'</b><br>'+
-        '<span class="muted">'+
-          (solo?'Launches instantly':'Room game · '+x.minPlayers+'-'+x.maxPlayers+' players')+
-        '</span>';
+        '<span class="gameType">'+badge+'</span>'+
+        '<span class="gameCardTop">'+
+          '<span class="gameCardTitle">'+escapeHtml(x.name)+'</span>'+
+          '<span class="gameCardMeta">'+escapeHtml(meta)+'</span>'+
+        '</span>'+
+        '<span class="gameCardAction">'+escapeHtml(action)+'</span>';
 
       b.onclick=function(){
         if(solo){
@@ -1486,6 +1591,7 @@ function leaveRoom(){
   room=null;
   currentRoom=null;
   loadedGameKey='';
+  pendingGameToSelect='';
   lastChatCount=0;
   clearChatUnread();
   document.body.classList.remove('gameMode');
@@ -1495,13 +1601,19 @@ function leaveRoom(){
 function selectGame(id){
   let g=games.find(x=>x.id===id);
 
-  if(g&&gameIsSolo(g)){
+  if(!g){
+    alert('Game not found.');
+    return;
+  }
+
+  if(gameIsSolo(g)){
     launchSoloGame(g);
     return;
   }
 
   if(!room){
-    alert('Create or join a room first for multiplayer games.');
+    pendingGameToSelect=id;
+    send({type:'createRoom',private:false});
     showSection('play');
     return;
   }
@@ -1880,10 +1992,37 @@ function petAvatarHtml(pet,emoji){
     '</div>';
 }
 
+
+function drawSidePet(pet,emoji){
+  if(!sidePet)return;
+
+  if(!petProfile||!me){
+    sidePet.innerHTML='<p class="muted">Log in to load your companion.</p>';
+    return;
+  }
+
+  if(!pet){
+    sidePet.innerHTML='<p class="muted">No companion yet.</p>';
+    return;
+  }
+
+  sidePet.innerHTML=
+    '<div class="companionSideMini">'+
+      petAvatarHtml(pet,emoji||pet.emoji||'🥚')+
+      '<div>'+
+        '<div class="companionSideName">'+escapeHtml(pet.name||'Mystery Egg')+'</div>'+
+        '<div class="petSub">'+escapeHtml(pet.stage||'egg')+(pet.type?' · '+escapeHtml(pet.type):'')+'</div>'+
+        '<div class="petCoins">Coins: '+Number(petProfile.money||0)+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="companionSideActions"><button class="gold" onclick="openPetWorldDirect()">Open Pet World</button></div>';
+}
+
 function drawPet(){
   if(!petProfile||!me){
     homePet.innerHTML='<p class="muted">Log in to load your pet.</p>';
     petPanel.innerHTML='<p class="muted">Log in to load your pet.</p>';
+    drawSidePet(null);
     return;
   }
 
@@ -1892,6 +2031,7 @@ function drawPet(){
   if(!pet){
     homePet.innerHTML='<p class="muted">No pet yet.</p>';
     petPanel.innerHTML='<p class="muted">No pet yet.</p>';
+    drawSidePet(null);
     return;
   }
 
@@ -1909,6 +2049,7 @@ function drawPet(){
     '</div>';
 
   homePet.innerHTML=mini;
+  drawSidePet(pet,emoji);
 
   let html=mini;
 
