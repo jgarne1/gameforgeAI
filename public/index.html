@@ -1834,6 +1834,13 @@ function connect(){
 
     if(m.type==='chat')drawChat(m.chat||[],true);
 
+    if(m.type==='petUpdate'){
+      petProfile=m.profile;
+      drawPet();
+      drawInventory();
+      drawShop();
+    }
+
     if(m.type==='roomClosed'){
       alert('Room closed');
       room=null;
