@@ -6,19 +6,20 @@
 <!--
 GameForge AI / PetWorld maintainer notes:
 - Keep comments useful. Update comments when gameplay or architecture changes.
-- PetWorld is a direct account experience, not a room game.
-- Keep the pet visible while actions are available. Do not return to a clunky dashboard layout.
-- Server owns profile changes. Do not mutate profile permanently without calling the matching API.
+- PetWorld is a direct account companion experience, not a room game.
+- Primary pet actions must remain visible with the pet. Avoid layouts where players scroll away from the companion to act.
+- Server owns profile changes. Do not permanently change pet/profile data without calling the matching API.
 - Pets store only move IDs. Move definitions come from /api/pet/profile.
-- This layout is the "Companion Room": big pet stage, compact stats, action console, roster/items/shop tabs.
+- This interface is the "Companion Room / cockpit" layout: center pet stage, left quick status, right action controls, lower drawer for secondary systems.
 -->
 
 <style>
 :root{
   --ink:#172033;
   --muted:#64748b;
-  --line:rgba(255,255,255,.36);
   --glass:rgba(255,255,255,.76);
+  --glass2:rgba(255,255,255,.58);
+  --line:rgba(255,255,255,.38);
   --blue:#2563eb;
   --blue2:#1d4ed8;
   --green:#16a34a;
@@ -26,6 +27,7 @@ GameForge AI / PetWorld maintainer notes:
   --red:#dc2626;
   --purple:#7c3aed;
   --sky:#38bdf8;
+  --shadow:0 24px 65px rgba(15,23,42,.14);
 }
 
 *{box-sizing:border-box}
@@ -36,9 +38,9 @@ body{
   color:var(--ink);
   overflow:hidden;
   background:
-    radial-gradient(circle at 14% 16%,rgba(56,189,248,.36),transparent 28%),
-    radial-gradient(circle at 84% 16%,rgba(250,204,21,.30),transparent 25%),
-    radial-gradient(circle at 50% 94%,rgba(34,197,94,.26),transparent 34%),
+    radial-gradient(circle at 12% 14%,rgba(56,189,248,.36),transparent 28%),
+    radial-gradient(circle at 88% 14%,rgba(250,204,21,.32),transparent 25%),
+    radial-gradient(circle at 50% 96%,rgba(34,197,94,.26),transparent 36%),
     linear-gradient(135deg,#dbeafe,#f8fafc 54%,#dcfce7);
 }
 
@@ -46,10 +48,10 @@ button,input{font-family:inherit}
 
 .wrap{
   height:100vh;
-  min-height:650px;
+  min-height:690px;
   padding:12px;
   display:grid;
-  grid-template-rows:auto 1fr auto;
+  grid-template-rows:auto minmax(0,1fr)176px;
   gap:10px;
 }
 
@@ -57,18 +59,18 @@ button,input{font-family:inherit}
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
+  gap:10px;
   background:var(--glass);
   backdrop-filter:blur(18px);
   border:1px solid var(--line);
   border-radius:22px;
-  padding:10px 14px;
-  box-shadow:0 18px 45px rgba(15,23,42,.11);
+  padding:9px 12px;
+  box-shadow:0 18px 45px rgba(15,23,42,.10);
 }
 
 .brand h1{
   margin:0;
-  font-size:24px;
+  font-size:23px;
   letter-spacing:-.8px;
 }
 
@@ -93,46 +95,52 @@ button,input{font-family:inherit}
   gap:6px;
   padding:6px 10px;
   border-radius:999px;
-  background:rgba(255,255,255,.72);
+  background:rgba(255,255,255,.74);
   border:1px solid rgba(148,163,184,.35);
   font-size:12px;
   font-weight:900;
   color:#334155;
 }
 
-.room{
+.cockpit{
   min-height:0;
   display:grid;
-  grid-template-columns:minmax(0,1fr)410px;
+  grid-template-columns:260px minmax(0,1fr)330px;
   gap:10px;
 }
 
-.stageCard,.console,.bottomTray{
+.panel,.stageShell,.drawer{
   background:var(--glass);
   backdrop-filter:blur(18px);
   border:1px solid var(--line);
-  box-shadow:0 20px 55px rgba(15,23,42,.13);
+  box-shadow:var(--shadow);
 }
 
-.stageCard{
+.panel{
+  border-radius:28px;
+  padding:12px;
   min-height:0;
+  overflow:auto;
+}
+
+.stageShell{
+  border-radius:32px;
   overflow:hidden;
-  border-radius:30px;
   display:grid;
-  grid-template-rows:1fr auto;
-  position:relative;
+  grid-template-rows:minmax(0,1fr)88px;
+  min-height:0;
 }
 
 .petStage{
   position:relative;
   overflow:hidden;
   min-height:0;
-  background:
-    radial-gradient(circle at 50% 45%,rgba(255,255,255,.94),rgba(255,255,255,.22) 31%,transparent 55%),
-    linear-gradient(180deg,#93c5fd 0%,#bfdbfe 42%,#86efac 100%);
   display:flex;
   align-items:center;
   justify-content:center;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(255,255,255,.96),rgba(255,255,255,.25) 32%,transparent 58%),
+    linear-gradient(180deg,#93c5fd 0%,#bfdbfe 42%,#86efac 100%);
 }
 
 .clouds{
@@ -166,7 +174,7 @@ button,input{font-family:inherit}
   left:0;
   right:0;
   bottom:0;
-  height:130px;
+  height:132px;
   background:
     radial-gradient(ellipse at center,rgba(21,128,61,.42),transparent 58%),
     linear-gradient(180deg,rgba(34,197,94,.18),rgba(22,101,52,.72));
@@ -174,8 +182,8 @@ button,input{font-family:inherit}
 
 .aura{
   position:absolute;
-  width:420px;
-  height:420px;
+  width:430px;
+  height:430px;
   border-radius:50%;
   background:radial-gradient(circle,rgba(255,255,255,.88),rgba(255,255,255,.18) 45%,transparent 70%);
   filter:blur(2px);
@@ -195,22 +203,22 @@ button,input{font-family:inherit}
 
 .petOrb{
   position:relative;
-  width:310px;
-  height:310px;
+  width:315px;
+  height:315px;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   background:rgba(255,255,255,.42);
-  box-shadow:0 0 85px rgba(255,255,255,.85), inset 0 0 50px rgba(255,255,255,.62);
+  box-shadow:0 0 90px rgba(255,255,255,.86), inset 0 0 52px rgba(255,255,255,.64);
   z-index:2;
   cursor:pointer;
   transition:transform .6s ease;
   animation:floaty 3.3s ease-in-out infinite;
 }
 
-.petOrb.wanderLeft{transform:translateX(-48px)}
-.petOrb.wanderRight{transform:translateX(48px)}
+.petOrb.wanderLeft{transform:translateX(-54px)}
+.petOrb.wanderRight{transform:translateX(54px)}
 .petOrb.wanderUp{transform:translateY(-24px)}
 .petOrb.playful{animation:playfulFloat 2.1s ease-in-out infinite}
 .petOrb.lazy,.petOrb.napping{animation:napFloat 4.8s ease-in-out infinite}
@@ -229,8 +237,8 @@ button,input{font-family:inherit}
 
 .petImg{
   position:absolute;
-  width:205px;
-  height:205px;
+  width:210px;
+  height:210px;
   object-fit:contain;
   z-index:2;
   pointer-events:none;
@@ -241,7 +249,7 @@ button,input{font-family:inherit}
 .petImg.hide{display:none}
 
 .petEmoji{
-  font-size:132px;
+  font-size:136px;
   filter:drop-shadow(0 20px 20px rgba(15,23,42,.23));
   animation:breathe 2.4s ease-in-out infinite;
   transform-origin:center;
@@ -258,6 +266,26 @@ button,input{font-family:inherit}
 @keyframes eggWobble{0%,100%{transform:rotate(0deg) scale(1.06)}20%{transform:rotate(-7deg) scale(1.07)}40%{transform:rotate(7deg) scale(1.08)}60%{transform:rotate(-5deg) scale(1.07)}80%{transform:rotate(5deg) scale(1.08)}}
 @keyframes carePop{0%{transform:scale(1)}35%{transform:scale(1.28) rotate(-4deg)}70%{transform:scale(.98) rotate(3deg)}100%{transform:scale(1)}}
 @keyframes tapBounce{0%{transform:scale(1)}45%{transform:scale(1.13) translateY(-8px)}100%{transform:scale(1)}}
+
+.floatingFx{
+  position:absolute;
+  left:50%;
+  top:43%;
+  transform:translate(-50%,-50%);
+  font-weight:900;
+  font-size:32px;
+  pointer-events:none;
+  opacity:0;
+  animation:floatUp 1.1s ease forwards;
+  text-shadow:0 3px 10px rgba(15,23,42,.18);
+  z-index:8;
+}
+
+@keyframes floatUp{
+  0%{opacity:0;transform:translate(-50%,-20%) scale(.8)}
+  15%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-160%) scale(1.22)}
+}
 
 .flyingItem{
   position:absolute;
@@ -276,66 +304,40 @@ button,input{font-family:inherit}
   100%{opacity:0;transform:translate(0,0) scale(1.25) rotate(16deg)}
 }
 
-.floatingFx{
-  position:absolute;
-  left:50%;
-  top:45%;
-  transform:translate(-50%,-50%);
-  font-weight:900;
-  font-size:30px;
-  pointer-events:none;
-  opacity:0;
-  animation:floatUp 1.1s ease forwards;
-  text-shadow:0 3px 10px rgba(15,23,42,.18);
-  z-index:8;
-}
-
-@keyframes floatUp{
-  0%{opacity:0;transform:translate(-50%,-20%) scale(.8)}
-  15%{opacity:1}
-  100%{opacity:0;transform:translate(-50%,-160%) scale(1.22)}
-}
-
 .speech{
   position:relative;
   z-index:3;
-  margin:0 18px 16px;
-  background:rgba(255,255,255,.88);
-  border:1px solid rgba(148,163,184,.35);
-  border-radius:22px;
-  padding:12px 14px;
+  margin:0;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   text-align:center;
   font-weight:900;
   color:#334155;
-  box-shadow:0 12px 25px rgba(15,23,42,.09);
-}
-
-.console{
-  min-height:0;
-  overflow:auto;
-  border-radius:28px;
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.petHeader{
   background:rgba(255,255,255,.66);
+  border-top:1px solid rgba(255,255,255,.45);
+}
+
+h2,h3{margin:0}
+
+.muted{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.35;
+}
+
+.petCard{
+  background:var(--glass2);
   border:1px solid rgba(148,163,184,.28);
   border-radius:22px;
   padding:12px;
 }
 
-.petHeaderTop{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  align-items:flex-start;
+.petCard h2{
+  font-size:22px;
+  margin-bottom:3px;
 }
-
-.petHeader h2{margin:0;font-size:22px}
-.petHeader .muted{margin-top:3px}
 
 .renameRow{
   display:flex;
@@ -377,188 +379,14 @@ button.sky{background:linear-gradient(135deg,#38bdf8,#0284c7);color:white;border
 button.ghost{background:rgba(255,255,255,.65);color:#334155}
 button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
-.actionSection{
-  background:rgba(255,255,255,.66);
-  border:1px solid rgba(148,163,184,.28);
-  border-radius:22px;
-  padding:12px;
-}
-
-.sectionTitle{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.statStack{
+  display:grid;
   gap:8px;
-  margin-bottom:9px;
-}
-
-.sectionTitle h3{margin:0;font-size:16px}
-
-.actionGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.actionTile{
-  padding:12px;
-  min-height:92px;
-  border-radius:18px;
-  text-align:left;
-  border:1px solid rgba(148,163,184,.32);
-  background:rgba(255,255,255,.78);
-}
-
-.actionTile strong{display:block;font-size:14px}
-.actionTile span{display:block;margin-top:3px;color:var(--muted);font-size:12px;line-height:1.28}
-.actionTile small{display:block;margin-top:7px;font-size:11px;color:#475569;font-weight:900}
-
-.tabs{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:7px;
-}
-
-.tabs button{
-  padding:9px 6px;
-  font-size:12px;
-}
-
-.tabs button.active{
-  background:#dbeafe;
-  border-color:#60a5fa;
-  color:#1d4ed8;
-}
-
-.tabPanel{
-  background:rgba(255,255,255,.66);
-  border:1px solid rgba(148,163,184,.28);
-  border-radius:22px;
-  padding:12px;
-}
-
-.hidden{display:none!important}
-
-.muted{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.35;
-}
-
-.item,.rosterCard{
-  border:1px solid rgba(148,163,184,.28);
-  background:rgba(255,255,255,.76);
-  border-radius:18px;
-  padding:11px;
-  margin:8px 0;
-}
-
-.itemTop,.rosterTop{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  align-items:center;
-}
-
-.itemName,.rosterName{font-weight:900}
-
-.itemDesc,.rosterDesc{
-  font-size:12px;
-  color:var(--muted);
-  margin:5px 0 9px;
-  line-height:1.3;
-}
-
-.rosterCard.active{
-  border-color:#38bdf8;
-  box-shadow:0 0 0 3px rgba(56,189,248,.14);
-}
-
-.rosterRow{
-  display:grid;
-  grid-template-columns:58px 1fr;
-  gap:10px;
-  align-items:center;
-}
-
-.rosterAvatar{
-  width:58px;
-  height:58px;
-  border-radius:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.78);
-  border:1px solid rgba(148,163,184,.30);
-  position:relative;
-  overflow:hidden;
-  font-size:32px;
-}
-
-.rosterAvatar img{
-  width:54px;
-  height:54px;
-  object-fit:contain;
-  position:absolute;
-}
-
-.rosterActions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-top:8px;
-}
-
-.rosterActions button{
-  padding:8px 10px;
-  font-size:12px;
-}
-
-.moves{display:flex;flex-wrap:wrap;gap:7px}
-
-.movePill{
-  padding:7px 10px;
-  border-radius:999px;
-  background:#eef2ff;
-  border:1px solid #c7d2fe;
-  color:#3730a3;
-  font-size:12px;
-  font-weight:900;
-}
-
-.detailGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.detailBox{
-  border-radius:16px;
-  border:1px solid rgba(148,163,184,.28);
-  background:rgba(255,255,255,.76);
-  padding:10px;
-}
-
-.detailBox b{display:block}
-.detailBox span{font-size:12px;color:var(--muted)}
-
-.bottomTray{
-  border-radius:24px;
-  padding:10px;
-  display:grid;
-  grid-template-columns:1.1fr 2fr 1.2fr;
-  gap:10px;
-  min-height:104px;
-}
-
-.miniStats{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
+  margin-top:10px;
 }
 
 .statMini{
-  background:rgba(255,255,255,.72);
+  background:rgba(255,255,255,.70);
   border:1px solid rgba(148,163,184,.30);
   border-radius:16px;
   padding:8px;
@@ -590,23 +418,12 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .statFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
 .statFill.low{background:linear-gradient(90deg,#ef4444,#f97316)}
 
-.log{
-  height:84px;
-  overflow:auto;
-  background:#fffbea;
-  border:1px solid #d6bd6b;
-  border-radius:17px;
-  padding:8px;
-  font-size:12px;
-  color:#1f2937;
-  line-height:1.35;
-}
-
-.progressBlock{
-  background:rgba(255,255,255,.72);
+.progressCard{
+  margin-top:10px;
+  background:rgba(255,255,255,.70);
   border:1px solid rgba(148,163,184,.30);
   border-radius:16px;
-  padding:8px;
+  padding:9px;
 }
 
 .progress{
@@ -622,6 +439,183 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   border-radius:999px;
   background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);
   transition:width .35s ease;
+}
+
+.actionsTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.actionGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.actionBtn{
+  min-height:94px;
+  text-align:left;
+  padding:11px;
+  border-radius:18px;
+}
+
+.actionBtn strong{display:block;font-size:14px}
+.actionBtn span{display:block;margin-top:4px;font-size:12px;line-height:1.25;opacity:.88}
+.actionBtn small{display:block;margin-top:7px;font-size:11px;opacity:.82}
+
+.quickTools{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin-bottom:9px;
+}
+
+.tabs button{
+  padding:9px 6px;
+  font-size:12px;
+}
+
+.tabs button.active{
+  background:#dbeafe;
+  border-color:#60a5fa;
+  color:#1d4ed8;
+}
+
+.drawer{
+  border-radius:26px;
+  padding:10px;
+  min-height:0;
+  display:grid;
+  grid-template-columns:260px minmax(0,1fr);
+  gap:10px;
+}
+
+.drawerPanel{
+  min-height:0;
+  overflow:auto;
+  background:rgba(255,255,255,.56);
+  border:1px solid rgba(148,163,184,.25);
+  border-radius:20px;
+  padding:10px;
+}
+
+.hidden{display:none!important}
+
+.item,.rosterCard,.detailBox{
+  border:1px solid rgba(148,163,184,.28);
+  background:rgba(255,255,255,.76);
+  border-radius:18px;
+  padding:10px;
+  margin:7px 0;
+}
+
+.itemTop,.rosterTop{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+}
+
+.itemName,.rosterName{font-weight:900}
+
+.itemDesc,.rosterDesc{
+  font-size:12px;
+  color:var(--muted);
+  margin:5px 0 8px;
+  line-height:1.3;
+}
+
+.rosterCard.active{
+  border-color:#38bdf8;
+  box-shadow:0 0 0 3px rgba(56,189,248,.14);
+}
+
+.rosterRow{
+  display:grid;
+  grid-template-columns:54px 1fr;
+  gap:10px;
+  align-items:center;
+}
+
+.rosterAvatar{
+  width:54px;
+  height:54px;
+  border-radius:17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(148,163,184,.30);
+  position:relative;
+  overflow:hidden;
+  font-size:30px;
+}
+
+.rosterAvatar img{
+  width:50px;
+  height:50px;
+  object-fit:contain;
+  position:absolute;
+}
+
+.rosterActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:7px;
+}
+
+.rosterActions button{
+  padding:7px 9px;
+  font-size:12px;
+}
+
+.detailGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.detailBox{
+  margin:0;
+}
+
+.detailBox b{display:block}
+.detailBox span{font-size:12px;color:var(--muted)}
+
+.moves{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+
+.movePill{
+  padding:7px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  color:#3730a3;
+  font-size:12px;
+  font-weight:900;
+}
+
+.log{
+  height:100%;
+  min-height:126px;
+  overflow:auto;
+  background:#fffbea;
+  border:1px solid #d6bd6b;
+  border-radius:17px;
+  padding:8px;
+  font-size:12px;
+  color:#1f2937;
+  line-height:1.35;
 }
 
 .toast{
@@ -698,18 +692,19 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
 @keyframes hatchPop{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}
 
-@media(max-width:1050px){
+@media(max-width:1120px){
   body{overflow:auto}
   .wrap{height:auto}
-  .room{grid-template-columns:1fr}
-  .stageCard{min-height:520px}
-  .petStage{min-height:410px}
-  .bottomTray{grid-template-columns:1fr}
+  .cockpit{grid-template-columns:1fr}
+  .panel{overflow:visible}
+  .stageShell{min-height:560px}
+  .petStage{min-height:450px}
+  .drawer{grid-template-columns:1fr}
 }
 
-@media(max-width:620px){
+@media(max-width:640px){
   .top{align-items:flex-start;flex-direction:column}
-  .actionGrid,.detailGrid,.miniStats{grid-template-columns:1fr}
+  .actionGrid,.quickTools,.detailGrid{grid-template-columns:1fr}
   .petOrb{width:260px;height:260px}
   .petImg{width:175px;height:175px}
   .petEmoji{font-size:112px}
@@ -728,11 +723,33 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <span id="userBadge" class="badge">👤 Loading</span>
       <span id="coinBadge" class="badge">🪙 0</span>
       <span id="rosterBadge" class="badge">🐾 1/6</span>
+      <span id="moodBadge" class="badge">🙂 Calm</span>
     </div>
   </div>
 
-  <div class="room">
-    <div class="stageCard">
+  <div class="cockpit">
+    <div class="panel">
+      <div class="petCard">
+        <h2 id="petNameTitle">Mystery Egg</h2>
+        <div id="petSubTitle" class="muted">Loading...</div>
+        <div class="renameRow">
+          <input id="renameInput" placeholder="Pet name">
+          <button class="primary" onclick="renamePet()">Rename</button>
+        </div>
+      </div>
+
+      <div id="statStack" class="statStack"></div>
+      <div id="progressBox" class="progressCard"></div>
+
+      <div class="quickTools">
+        <button class="ghost" onclick="setTab('roster')">🐾 Roster</button>
+        <button class="ghost" onclick="setTab('items')">🎒 Items</button>
+        <button class="ghost" onclick="setTab('shop')">🛒 Shop</button>
+        <button class="ghost" onclick="setTab('details')">📊 Details</button>
+      </div>
+    </div>
+
+    <div class="stageShell">
       <div class="petStage" id="petStage">
         <div class="clouds"></div>
         <div class="sparkles"></div>
@@ -750,45 +767,33 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <div id="speech" class="speech">Loading your companion...</div>
     </div>
 
-    <div class="console">
-      <div class="petHeader">
-        <div class="petHeaderTop">
-          <div>
-            <h2 id="petNameTitle">Mystery Egg</h2>
-            <div id="petSubTitle" class="muted">Loading...</div>
-          </div>
-          <span id="moodBadge" class="badge">🙂 Calm</span>
-        </div>
-
-        <div class="renameRow">
-          <input id="renameInput" placeholder="Pet name">
-          <button class="primary" onclick="renamePet()">Rename</button>
-        </div>
+    <div class="panel">
+      <div class="actionsTitle">
+        <h3 id="actionTitle">Actions</h3>
+        <span id="energyBadge" class="badge">Energy 0</span>
       </div>
+      <div id="actionPanel"></div>
+    </div>
+  </div>
 
-      <div id="mainActions" class="actionSection"></div>
-
+  <div class="drawer">
+    <div>
       <div class="tabs">
         <button id="detailsTab" onclick="setTab('details')" class="active">Details</button>
         <button id="rosterTab" onclick="setTab('roster')">Roster</button>
         <button id="itemsTab" onclick="setTab('items')">Items</button>
         <button id="shopTab" onclick="setTab('shop')">Shop</button>
       </div>
-
-      <div id="detailsPanel" class="tabPanel"></div>
-      <div id="rosterPanel" class="tabPanel hidden"></div>
-      <div id="itemsPanel" class="tabPanel hidden"></div>
-      <div id="shopPanel" class="tabPanel hidden"></div>
+      <div id="detailsPanel" class="drawerPanel"></div>
+      <div id="rosterPanel" class="drawerPanel hidden"></div>
+      <div id="itemsPanel" class="drawerPanel hidden"></div>
+      <div id="shopPanel" class="drawerPanel hidden"></div>
     </div>
-  </div>
 
-  <div class="bottomTray">
-    <div id="miniStats" class="miniStats"></div>
     <div>
       <b>Journal</b>
       <div id="log" class="log"></div>
     </div>
-    <div id="progressBox" class="progressBlock"></div>
   </div>
 </div>
 
@@ -889,7 +894,6 @@ function draw(){
 
   normalizePet(pet);
 
-  var stage=pet.stage||'egg';
   var mood=getMood(pet);
   var rosterCount=Object.keys(profile.pets||{}).length;
 
@@ -897,15 +901,16 @@ function draw(){
   el('coinBadge').innerText='🪙 '+Number(profile.money||0);
   el('rosterBadge').innerText='🐾 '+rosterCount+'/'+Number(limits.maxRoster||6);
   el('moodBadge').innerText=mood.icon+' '+mood.label;
+  el('energyBadge').innerText='Energy '+Number(pet.needs.energy||0);
 
   el('petNameTitle').innerText=pet.name||'Mystery Egg';
   el('petSubTitle').innerText=petSubtitle(pet);
   el('renameInput').value=pet.name||'';
-
   el('petEmoji').innerText=pet.emoji||'🥚';
+
   updatePetVisual(pet);
 
-  var nearHatch=stage==='egg'&&eggProgress(pet)>=80;
+  var nearHatch=pet.stage==='egg'&&eggProgress(pet)>=80;
   el('petEmoji').classList.toggle('eggNearHatch',nearHatch);
   el('petImg').classList.toggle('eggNearHatch',nearHatch);
 
@@ -914,7 +919,7 @@ function draw(){
 
   if(localState.prompt){
     speak(localState.prompt.text);
-  }else if(stage==='egg'){
+  }else if(pet.stage==='egg'){
     var prog=eggProgress(pet);
     if(prog>=80)speak('The egg trembles. Something inside is ready to meet you soon.');
     else if(prog>=45)speak('The egg responds to your care. Its personality is beginning to form.');
@@ -923,8 +928,8 @@ function draw(){
     speak(idleSpeech(pet,mood));
   }
 
-  drawMainActions();
-  drawMiniStats();
+  drawActions();
+  drawStats();
   drawProgress();
   drawDetails();
   drawRoster();
@@ -946,64 +951,69 @@ function petSubtitle(pet){
   ].join(' · ');
 }
 
-function drawMainActions(){
+function drawActions(){
   var pet=activePet();
   var html='';
 
   if(pet.stage==='egg'){
-    html+='<div class="sectionTitle"><h3>Egg Care</h3><span class="badge">'+eggProgress(pet)+'%</span></div>';
-    html+='<p class="muted">Care choices influence weighted hatch odds. They help, but never guarantee the result.</p>';
+    el('actionTitle').innerText='Egg Care';
 
     if(localState.prompt){
       html+='<div class="item" style="border-color:rgba(56,189,248,.38);background:rgba(224,242,254,.72)"><b>'+escapeHtml(localState.prompt.title)+'</b><div class="itemDesc">'+escapeHtml(localState.prompt.help)+'</div></div>';
+    }else{
+      html+='<p class="muted">Care choices influence weighted hatch odds, but never fully guarantee the result.</p>';
     }
 
     html+='<div class="actionGrid">';
-    html+=careTile('🔥 Warm','warm','Fire, boldness, affection.','Good when the egg shivers.');
-    html+=careTile('❄️ Cool','cold','Water, calm, focus.','Good when the egg feels hot.');
-    html+=careTile('💧 Mist','wet','Water, nature, softness.','Good when the shell looks dry.');
-    html+=careTile('🌵 Dry','dry','Earth, shadow, toughness.','Good when the shell is damp.');
-    html+=careTile('☀️ Light','light','Bright, brave, social.','Good when the egg seems sleepy.');
-    html+=careTile('🌙 Shade','dark','Mysterious, fast, independent.','Good when the egg hides from light.');
+    html+=actionButton('🔥 Warm','warm','Fire, boldness, affection.','Good when the egg shivers.','ghost','careEgg');
+    html+=actionButton('❄️ Cool','cold','Water, calm, focus.','Good when the egg feels hot.','ghost','careEgg');
+    html+=actionButton('💧 Mist','wet','Water, nature, softness.','Good when the shell looks dry.','sky','careEgg');
+    html+=actionButton('🌵 Dry','dry','Earth, shadow, toughness.','Good when the shell is damp.','gold','careEgg');
+    html+=actionButton('☀️ Light','light','Bright, brave, social.','Good when the egg seems sleepy.','gold','careEgg');
+    html+=actionButton('🌙 Shade','dark','Mysterious, fast, independent.','Good when the egg hides from light.','purple','careEgg');
     html+='</div>';
   }else{
-    html+='<div class="sectionTitle"><h3>Actions</h3><span class="badge">Energy '+Number(pet.needs.energy||0)+'</span></div>';
+    el('actionTitle').innerText='Companion Actions';
     html+='<div class="actionGrid">';
-    html+='<button class="actionTile good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Restore hunger and build bond.</span><small>Uses Berry</small></button>';
-    html+='<button class="actionTile primary" onclick="playPet()"><strong>🎾 Play</strong><span>Gain coins, XP, happiness, and bond.</span><small>Best for playful pets</small></button>';
-    html+='<button class="actionTile sky" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Raise cleanliness and comfort.</span><small>Uses Bubble Soap</small></button>';
-    html+='<button class="actionTile purple" onclick="useItem(\'nap_blanket\')"><strong>💤 Rest</strong><span>Restore energy for training or exploring.</span><small>Uses Nap Blanket</small></button>';
-    html+='<button class="actionTile gold" onclick="explorePet()"><strong>🧭 Explore</strong><span>Find coins, items, XP, or moves.</span><small>Curious pets are better</small></button>';
-    html+='<button class="actionTile danger" onclick="trainPet(\'attack\')"><strong>⚔️ Train ATK</strong><span>Increase attack and earn XP.</span><small>Aggressive bonus</small></button>';
-    html+='<button class="actionTile primary" onclick="trainPet(\'defense\')"><strong>🛡 Train DEF</strong><span>Increase defense and earn XP.</span><small>Calm bonus</small></button>';
-    html+='<button class="actionTile sky" onclick="trainPet(\'speed\')"><strong>💨 Train SPD</strong><span>Increase speed and earn XP.</span><small>Useful in battles</small></button>';
+    html+='<button class="actionBtn good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Restore hunger and build bond.</span><small>Uses Berry</small></button>';
+    html+='<button class="actionBtn primary" onclick="playPet()"><strong>🎾 Play</strong><span>Gain coins, XP, happiness, and bond.</span><small>Best for playful pets</small></button>';
+    html+='<button class="actionBtn sky" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Raise cleanliness and comfort.</span><small>Uses Bubble Soap</small></button>';
+    html+='<button class="actionBtn purple" onclick="useItem(\'nap_blanket\')"><strong>💤 Rest</strong><span>Restore energy for training/explore.</span><small>Uses Nap Blanket</small></button>';
+    html+='<button class="actionBtn gold" onclick="explorePet()"><strong>🧭 Explore</strong><span>Find coins, items, XP, or moves.</span><small>Curious pets are better</small></button>';
+    html+='<button class="actionBtn danger" onclick="trainPet(\'attack\')"><strong>⚔️ Train ATK</strong><span>Increase attack and earn XP.</span><small>Aggressive bonus</small></button>';
+    html+='<button class="actionBtn primary" onclick="trainPet(\'defense\')"><strong>🛡 Train DEF</strong><span>Increase defense and earn XP.</span><small>Calm bonus</small></button>';
+    html+='<button class="actionBtn sky" onclick="trainPet(\'speed\')"><strong>💨 Train SPD</strong><span>Increase speed and earn XP.</span><small>Useful in battles</small></button>';
     html+='</div>';
   }
 
-  el('mainActions').innerHTML=html;
+  el('actionPanel').innerHTML=html;
 }
 
-function careTile(title,action,desc,tip){
-  return '<button class="actionTile ghost" onclick="careEgg(\''+action+'\')"><strong>'+title+'</strong><span>'+desc+'</span><small>'+tip+'</small></button>';
+function actionButton(title,arg,desc,tip,cls,fn){
+  return '<button class="actionBtn '+cls+'" onclick="'+fn+'(\''+arg+'\')"><strong>'+title+'</strong><span>'+desc+'</span><small>'+tip+'</small></button>';
 }
 
-function drawMiniStats(){
+function drawStats(){
   var pet=activePet();
   var html='';
 
   if(pet.stage==='egg'){
     html+=miniStat('Warm',pet.eggTraits.warm,18);
+    html+=miniStat('Cold',pet.eggTraits.cold,18);
     html+=miniStat('Wet',pet.eggTraits.wet,18);
+    html+=miniStat('Dry',pet.eggTraits.dry,18);
     html+=miniStat('Light',pet.eggTraits.light,18);
+    html+=miniStat('Dark',pet.eggTraits.dark,18);
     html+=miniStat('Bond',pet.affection||0,100);
   }else{
     html+=miniStat('Hunger',pet.needs.hunger,100);
     html+=miniStat('Happy',pet.needs.happiness,100);
     html+=miniStat('Energy',pet.needs.energy,100);
+    html+=miniStat('Clean',pet.needs.cleanliness,100);
     html+=miniStat('Bond',pet.affection||0,100);
   }
 
-  el('miniStats').innerHTML=html;
+  el('statStack').innerHTML=html;
 }
 
 function miniStat(name,val,max){
@@ -1036,9 +1046,7 @@ function drawProgress(){
 
 function drawDetails(){
   var pet=activePet();
-  var html='<h3>Details</h3>';
-
-  html+='<div class="detailGrid">';
+  var html='<h3>Details</h3><div class="detailGrid">';
   html+=detailBox('Stage',pet.stage||'egg');
   html+=detailBox('Type',pet.type||'Mystery');
   html+=detailBox('Personality',personalityLabel(pet.personality));
@@ -1049,7 +1057,7 @@ function drawDetails(){
   html+=detailBox('Speed',Number(pet.stats.speed||0));
   html+='</div>';
 
-  html+='<h3 style="margin-top:12px">Moves</h3><div class="moves">';
+  html+='<h3 style="margin-top:10px">Moves</h3><div class="moves">';
   (pet.moves||[]).forEach(function(id){
     var move=moves[id]||{name:id,type:'normal'};
     html+='<span class="movePill">'+escapeHtml(move.name)+' · '+escapeHtml(move.type)+'</span>';
@@ -1068,7 +1076,6 @@ function drawRoster(){
   var max=Number(limits.maxRoster||6);
   var cost=Number(limits.newEggBaseCost||75)+Math.max(0,ids.length-1)*25;
   var html='<h3>Pet Roster</h3><p class="muted">Choose your active companion. PetWorld and Pet Battle use the active pet.</p>';
-
   html+='<div class="item"><div class="itemTop"><b>Adopt Mystery Egg</b><span class="badge">'+cost+' coins</span></div><div class="itemDesc">Roster: '+ids.length+'/'+max+'. New eggs create collection goals and future trade value.</div><button class="gold" onclick="adoptEgg()" '+(ids.length>=max?'disabled':'')+'>Adopt Egg</button></div>';
 
   ids.forEach(function(pid){
@@ -1197,7 +1204,6 @@ async function playPet(){
     addLog(data.message||'You played together.');
     handleRewardResult(data.reward&&data.reward.xpResult);
     notify(data.message||'Play complete!');
-    floatFx('+XP');
     animateCare('play');
     draw();
   }catch(err){
@@ -1221,7 +1227,6 @@ async function trainPet(stat){
     handleRewardResult(data.result&&data.result.xpResult);
     notify(data.message||'Training complete!');
     animateCare(stat==='attack'?'attack':stat==='defense'?'defense':'speed');
-    floatFx(stat==='attack'?'⚔️':stat==='defense'?'🛡':'💨');
     draw();
   }catch(err){
     notify('Train failed: '+err.message);
@@ -1251,7 +1256,6 @@ async function explorePet(){
 
     notify(data.message||'Exploration complete!');
     animateCare('explore');
-    floatFx(data.result&&data.result.kind==='coins'?'🪙':data.result&&data.result.kind==='item'?'🎁':'✨');
     draw();
   }catch(err){
     notify('Explore failed: '+err.message);
@@ -1420,7 +1424,6 @@ function comfortPet(){
 function updatePetVisual(pet){
   var img=el('petImg');
   var emojiEl=el('petEmoji');
-
   var src=petAssetPath(pet);
 
   img.onload=function(){
