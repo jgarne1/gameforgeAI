@@ -248,7 +248,11 @@ function itemIcon(id){return '/assets/items/'+id+'.png'}
 function receiveSetup(setupPlayers,setupSeat){
   players=Array.isArray(setupPlayers)?setupPlayers:[];
   mySeat=Number(setupSeat||0);
-  username=(players[mySeat]&&players[mySeat].name)||(players[0]&&players[0].name)||'guest';
+  username=
+  (players[mySeat]&&players[mySeat].name) ||
+  (players[0]&&players[0].name) ||
+  localStorage.getItem('gf_user') ||
+  'guest';
   el('userPill').innerText=username;
   reloadAll();
 }
