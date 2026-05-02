@@ -13,6 +13,7 @@ GameForge AI / PetWorld maintainer notes:
 - Pets store only move IDs. Move data comes from /api/pet/profile.
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
 - Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
+- Top-level duplicate tab buttons were intentionally removed; utility systems live in the right-side tabs only.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 - Pet reactions are client-only animations; profile changes still come from server APIs.
 - Egg influence shown here explains current trait weighting, but final hatch result is still server-authoritative.
@@ -524,7 +525,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .progress{height:10px;border-radius:999px;background:#e5e7eb;overflow:hidden;margin-top:6px}
 .progressFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);transition:width .35s ease}
 
-.quickTools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px}
 .tabs button{padding:9px 6px;font-size:12px}
 .tabs button.active{background:#dbeafe;border-color:#60a5fa;color:#1d4ed8}
@@ -674,7 +674,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 }
 @media(max-width:680px){
   .top{align-items:flex-start;flex-direction:column}
-  .dockActions,.dockActions.egg,.quickTools,.detailGrid{grid-template-columns:1fr 1fr}
+  .dockActions,.dockActions.egg,.detailGrid{grid-template-columns:1fr 1fr}
   .tabs{grid-template-columns:1fr 1fr}
   .petOrb{width:260px;height:260px}
   .petImg{width:175px;height:175px}
@@ -716,14 +716,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <div id="statStack" class="statStack"></div>
       <div id="progressBox" class="card"></div>
 
-      <div class="quickTools">
-        <button class="ghost" onclick="setTab('quests')">✅ Quests</button>
-        <button class="ghost" onclick="setTab('details')">ℹ️ Info</button>
-        <button class="ghost" onclick="setTab('roster')">🐾 Roster</button>
-        <button class="ghost" onclick="setTab('items')">🎒 Items</button>
-        <button class="ghost" onclick="setTab('shop')">🛒 Shop</button>
-        <button class="ghost" onclick="setTab('zones')">🧭 Zones</button>
-      </div>
 
       <div style="margin-top:10px">
         <b>Journal</b>
