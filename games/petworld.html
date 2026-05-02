@@ -170,17 +170,18 @@ button,input,select{font-family:inherit}
   box-shadow:0 0 90px rgba(255,255,255,.72), inset 0 0 52px rgba(255,255,255,.54);
   z-index:2;
   cursor:pointer;
-  transition:transform .8s cubic-bezier(.25,.8,.25,1), box-shadow .35s ease, background .35s ease;
+  translate:0 0;
+  transition:translate 2.4s cubic-bezier(.25,.8,.25,1), transform .8s cubic-bezier(.25,.8,.25,1), box-shadow .35s ease, background .35s ease;
   animation:floaty 3.3s ease-in-out infinite;
 }
 
-/* Hatched pets wander; eggs stay centered except for wobble/hop near hatch. */
-.petOrb.wanderLeft{transform:translateX(-165px) translateY(18px) rotate(-3deg)}
-.petOrb.wanderRight{transform:translateX(165px) translateY(18px) rotate(3deg)}
-.petOrb.wanderNearLeft{transform:translateX(-90px) translateY(10px) rotate(-2deg)}
-.petOrb.wanderNearRight{transform:translateX(90px) translateY(10px) rotate(2deg)}
-.petOrb.hop{transform:translateY(-42px) scale(1.04)}
-.petOrb.walking{transition:transform 2.4s cubic-bezier(.25,.8,.25,1)}
+/* Hatched pets wander using CSS translate so idle transform animations do not override walking. Eggs stay centered and only wobble. */
+.petOrb.wanderLeft{translate:-165px 18px}
+.petOrb.wanderRight{translate:165px 18px}
+.petOrb.wanderNearLeft{translate:-90px 10px}
+.petOrb.wanderNearRight{translate:90px 10px}
+.petOrb.hop{translate:0 -42px}
+.petOrb.walking{transition:translate 2.4s cubic-bezier(.25,.8,.25,1), transform .8s ease}
 .petOrb.eggStill{transition:transform .35s ease}
 .petOrb.eggWarm{box-shadow:0 0 90px rgba(251,146,60,.9), inset 0 0 52px rgba(254,215,170,.72)}
 .petOrb.eggCold{box-shadow:0 0 90px rgba(125,211,252,.9), inset 0 0 52px rgba(186,230,253,.72)}
@@ -204,7 +205,7 @@ button,input,select{font-family:inherit}
 @keyframes excitedShake{0%,100%{transform:translateX(0) rotate(0)}18%{transform:translateX(-28px) rotate(-4deg)}36%{transform:translateX(28px) rotate(4deg)}58%{transform:translateX(-16px) rotate(-3deg)}78%{transform:translateX(14px) rotate(3deg)}}
 @keyframes focusPulse{0%,100%{transform:scale(1)}45%{transform:scale(1.12)}70%{transform:scale(1.04)}}
 @keyframes sleepySettle{0%,100%{transform:translateY(0) scale(1)}55%{transform:translateY(18px) scale(.96)}}
-@keyframes leaveAndReturn{0%{transform:translateX(0);opacity:1}42%{transform:translateX(420px);opacity:.08}58%{transform:translateX(-420px);opacity:.08}100%{transform:translateX(0);opacity:1}}
+@keyframes leaveAndReturn{0%{translate:0 0;opacity:1}42%{translate:420px 0;opacity:.08}58%{translate:-420px 0;opacity:.08}100%{translate:0 0;opacity:1}}
 @keyframes eggReact{0%,100%{transform:rotate(0deg) scale(1)}20%{transform:rotate(-8deg) scale(1.07)}42%{transform:rotate(8deg) scale(1.09)}68%{transform:rotate(-4deg) scale(1.04)}}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes playfulFloat{0%,100%{transform:translateY(0) rotate(-2deg)}35%{transform:translateY(-20px) rotate(3deg)}70%{transform:translateY(-6px) rotate(-4deg)}}
@@ -1371,10 +1372,7 @@ function maybeWanderPet(pet){
   clearWanderClasses(orb);
 
   if(pet.stage==='egg'){
-    if(eggProgress(pet)>=80){
-      orb.classList.add('hop');
-      setTimeout(function(){clearWanderClasses(orb)},700);
-    }
+    // Eggs do not wander. Near hatch, the existing egg wobble animation handles movement.
     return;
   }
 
