@@ -1257,7 +1257,11 @@ app.post('/api/market/cancel',(req,res)=>{
 
   let listingId=String(req.body.listingId||'');
   let mk=market();
-  let listing=mk.listings&&mk.listings[listingId];
+ let listing=mk.listings && mk.listings[listingId];
+if(!listing) return res.json({error:'Listing not found'});
+
+// 🔥 lock seller before mutation
+let sellerUsername = listing.seller;
 
   if(!listing)return res.json({error:'Listing not found'});
   if(listing.seller!==username)return res.status(403).json({error:'You do not own this listing'});
@@ -1296,11 +1300,11 @@ app.post('/api/market/buy',(req,res)=>{
   let all=pets();
   let buyerProfile=normalizePetProfile(all[buyer]||defaultPetProfile(buyer),buyer);
  // 🔥 ensure seller exists
-if(!all[listing.seller]){
-  all[listing.seller]=defaultPetProfile(listing.seller);
+if(!all[sellerUsername]){
+  all[sellerUsername]=defaultPetProfile(sellerUsername);
 }
 
-let sellerProfile=normalizePetProfile(all[listing.seller],listing.seller);
+let sellerProfile=normalizePetProfile(all[sellerUsername],sellerUsername);
   let total=Number(listing.price||0)*quantity;
   let tax=Math.floor(total*MARKET_LIMITS.marketTaxRate);
   let sellerReceives=total-tax;
@@ -1319,13 +1323,13 @@ let sellerProfile=normalizePetProfile(all[listing.seller],listing.seller);
     delete mk.listings[listingId];
   }
 
-  all[buyer]=buyerProfile;
-  all[listing.seller]=sellerProfile;
-  writeJSON(petsFile,all);
-  saveMarket(mk);
+all[buyer]=buyerProfile;
+all[sellerUsername]=sellerProfile;
+writeJSON(petsFile,all);
+saveMarket(mk);
 
-  sendToUser(buyer,{type:'petUpdate',profile:buyerProfile});
-  sendToUser(listing.seller,{type:'petUpdate',profile:sellerProfile});
+sendToUser(buyer,{type:'petUpdate',profile:buyerProfile});
+sendToUser(sellerUsername,{type:'petUpdate',profile:sellerProfile});
 
   res.json({
     ok:true,
