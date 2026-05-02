@@ -22,6 +22,16 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/games',express.static(path.join(__dirname,'games')));
 
+/*
+GameForge AI server maintainer notes for future AI chats/editors:
+- Keep comments useful. Add, edit, or remove comments whenever behavior changes.
+- Do not add comments that simply repeat obvious code.
+- Preserve the account, room, WebSocket, iframe game, chat, and pet APIs unless the user explicitly asks to redesign them.
+- Pets store move IDs only. Move definitions come from data/pet_moves.json or DEFAULT_MOVES fallback.
+- Pet roster ownership, active pet switching, future gifting, future trading, and egg-help features must stay server-authoritative.
+- Do not trust client-provided pet objects for ownership transfers or rewards.
+*/
+
 function readJSON(f,fb){
   try{return JSON.parse(fs.readFileSync(f,'utf8'))}
   catch(e){return fb}
@@ -77,13 +87,108 @@ function petId(){
   return 'pet_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6);
 }
 
-function defaultPetProfile(username){
+/*
+Pet roster/social design:
+- Accounts may own several pets, but only activePetId appears in PetWorld and Pet Battle.
+- maxRoster is a short-term collection cap until true storage boxes are added.
+- New eggs cost coins and scale slightly so collection feels meaningful without becoming spammy.
+- Future gifting/trading should use originalOwner, previousOwners, and social locks.
+*/
+const PET_LIMITS={
+  maxRoster:6,
+  newEggBaseCost:75
+};
+
+const PET_PERSONALITIES=['playful','lazy','aggressive','calm','curious','moody'];
+
+function randomPersonality(){
+  return PET_PERSONALITIES[Math.floor(Math.random()*PET_PERSONALITIES.length)];
+}
+
+function createEggPet(username){
   let pid=petId();
+
+  return {
+    id:pid,
+    owner:username,
+    originalOwner:username,
+    previousOwners:[],
+    name:'Mystery Egg',
+    stage:'egg',
+    species:null,
+    personality:null,
+    affection:0,
+    createdAt:Date.now(),
+    lastUpdated:Date.now(),
+    eggTraits:{warm:0,cold:0,wet:0,dry:0,light:0,dark:0},
+    stats:{level:1,xp:0,hp:20,maxHp:20,attack:5,defense:4,speed:5},
+    needs:{hunger:80,happiness:70,energy:80,cleanliness:90},
+    moves:['tackle'],
+    battle:{wins:0,losses:0},
+    social:{
+      tradeLockedUntil:0,
+      giftLockedUntil:0,
+      helpedBy:[]
+    }
+  };
+}
+
+function normalizePet(pet,username){
+  if(!pet)return pet;
+
+  pet.owner=pet.owner||username;
+  pet.originalOwner=pet.originalOwner||pet.owner||username;
+  pet.previousOwners=Array.isArray(pet.previousOwners)?pet.previousOwners:[];
+  pet.affection=Number(pet.affection||0);
+  pet.eggTraits=pet.eggTraits||{warm:0,cold:0,wet:0,dry:0,light:0,dark:0};
+  pet.stats=pet.stats||{level:1,xp:0,hp:20,maxHp:20,attack:5,defense:4,speed:5};
+  pet.needs=pet.needs||{hunger:80,happiness:70,energy:80,cleanliness:90};
+  pet.moves=Array.isArray(pet.moves)&&pet.moves.length?pet.moves:['tackle'];
+  pet.battle=pet.battle||{wins:0,losses:0};
+  pet.social=pet.social||{};
+  pet.social.helpedBy=Array.isArray(pet.social.helpedBy)?pet.social.helpedBy:[];
+  pet.social.tradeLockedUntil=Number(pet.social.tradeLockedUntil||0);
+  pet.social.giftLockedUntil=Number(pet.social.giftLockedUntil||0);
+
+  return pet;
+}
+
+function normalizePetProfile(profile,username){
+  profile.username=profile.username||username;
+  profile.money=Number(profile.money||0);
+  profile.inventory=profile.inventory||{};
+  profile.pets=profile.pets||{};
+
+  Object.keys(profile.pets).forEach(pid=>{
+    normalizePet(profile.pets[pid],username);
+  });
+
+  let ids=Object.keys(profile.pets);
+
+  if(!ids.length){
+    let pet=createEggPet(username);
+    profile.pets[pet.id]=pet;
+    profile.activePetId=pet.id;
+  }
+
+  if(!profile.activePetId||!profile.pets[profile.activePetId]){
+    profile.activePetId=Object.keys(profile.pets)[0];
+  }
+
+  return profile;
+}
+
+function petCount(profile){
+  return Object.keys(profile.pets||{}).length;
+}
+
+function defaultPetProfile(username){
+  let pet=createEggPet(username);
 
   return {
     username,
     money:100,
-    activePetId:pid,
+    activePetId:pet.id,
     inventory:{
       warm_pad:1,
       cool_cloth:1,
@@ -93,20 +198,7 @@ function defaultPetProfile(username){
       toy_ball:1
     },
     pets:{
-      [pid]:{
-        id:pid,
-        owner:username,
-        name:'Mystery Egg',
-        stage:'egg',
-        species:null,
-        createdAt:Date.now(),
-        lastUpdated:Date.now(),
-        eggTraits:{warm:0,cold:0,wet:0,dry:0,light:0,dark:0},
-        stats:{level:1,xp:0,hp:20,maxHp:20,attack:5,defense:4,speed:5},
-        needs:{hunger:80,happiness:70,energy:80,cleanliness:90},
-        moves:['tackle'],
-        battle:{wins:0,losses:0}
-      }
+      [pet.id]:pet
     }
   };
 }
@@ -137,16 +229,22 @@ const SHOP_ITEMS={
 
 function getPetProfile(username){
   let all=pets();
+
   if(!all[username]){
     all[username]=defaultPetProfile(username);
     writeJSON(petsFile,all);
+    return all[username];
   }
+
+  all[username]=normalizePetProfile(all[username],username);
+  writeJSON(petsFile,all);
+
   return all[username];
 }
 
 function savePetProfile(username,profile){
   let all=pets();
-  all[username]=profile;
+  all[username]=normalizePetProfile(profile,username);
   writeJSON(petsFile,all);
 }
 
@@ -158,6 +256,11 @@ function clamp(n,min,max){
   return Math.max(min,Math.min(max,n));
 }
 
+/*
+Hatching is still partly deterministic from the older implementation.
+Next server improvement should convert this to full weighted RNG where traits influence odds
+without guaranteeing a species.
+*/
 function hatchSpecies(traits){
   let warm=traits.warm||0;
   let cold=traits.cold||0;
@@ -190,6 +293,8 @@ function hatchPet(pet){
   pet.name=species.name;
   pet.emoji=species.emoji;
   pet.type=species.type;
+  pet.personality=pet.personality||randomPersonality();
+  pet.affection=Number(pet.affection||5);
   pet.stats.hp=species.base.hp;
   pet.stats.maxHp=species.base.hp;
   pet.stats.attack=species.base.attack;
@@ -294,6 +399,7 @@ app.get('/api/pet/profile',(req,res)=>{
     ok:true,
     profile,
     species:PET_SPECIES,
+    limits:PET_LIMITS,
     shop:SHOP_ITEMS,
     moves:moves()
   });
@@ -340,6 +446,7 @@ app.post('/api/pet/care-egg',(req,res)=>{
 
   pet.eggTraits[a.trait]=(pet.eggTraits[a.trait]||0)+a.amount;
   pet.needs.happiness=clamp((pet.needs.happiness||70)+1,0,100);
+  pet.affection=clamp(Number(pet.affection||0)+1,0,100);
   pet.lastUpdated=Date.now();
 
   let total=Object.values(pet.eggTraits).reduce((x,y)=>x+y,0);
@@ -406,12 +513,16 @@ app.post('/api/pet/use-item',(req,res)=>{
     Object.keys(item.effect).forEach(k=>{
       pet.needs[k]=clamp((pet.needs[k]||0)+item.effect[k],0,100);
     });
+
+    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
   }
 
   if(item.eggTrait){
     Object.keys(item.eggTrait).forEach(k=>{
       pet.eggTraits[k]=(pet.eggTraits[k]||0)+item.eggTrait[k];
     });
+
+    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
 
     let total=Object.values(pet.eggTraits).reduce((x,y)=>x+y,0);
     if(total>=18)hatchPet(pet);
@@ -433,6 +544,7 @@ app.post('/api/pet/play',(req,res)=>{
   pet.needs.happiness=clamp((pet.needs.happiness||0)+12,0,100);
   pet.needs.energy=clamp((pet.needs.energy||0)-8,0,100);
   pet.stats.xp=(pet.stats.xp||0)+3;
+  pet.affection=clamp(Number(pet.affection||0)+2,0,100);
 
   profile.money=(profile.money||0)+5;
 
@@ -450,23 +562,54 @@ app.post('/api/pet/play',(req,res)=>{
   res.json({ok:true,profile});
 });
 
+app.post('/api/pet/set-active',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let selectedPetId=String(req.body.petId||'');
+  let profile=getPetProfile(username);
+
+  if(!profile.pets[selectedPetId]){
+    return res.json({error:'Pet not found'});
+  }
+
+  profile.activePetId=selectedPetId;
+  profile.pets[selectedPetId].lastUpdated=Date.now();
+
+  savePetProfile(username,profile);
+  res.json({ok:true,profile});
+});
+
 app.post('/api/pet/new-egg',(req,res)=>{
   let username=requireUser(req,res);
   if(!username)return;
 
   let profile=getPetProfile(username);
-  let pid=petId();
-  let newProfile=defaultPetProfile(username);
-  let newPet=newProfile.pets[Object.keys(newProfile.pets)[0]];
 
-  newPet.id=pid;
-  newPet.owner=username;
+  if(petCount(profile)>=PET_LIMITS.maxRoster){
+    return res.json({error:'Your roster is full. Storage will be added later.'});
+  }
 
-  profile.pets[pid]=newPet;
-  profile.activePetId=pid;
+  let cost=PET_LIMITS.newEggBaseCost + Math.max(0,petCount(profile)-1)*25;
+
+  if((profile.money||0)<cost){
+    return res.json({error:'Not enough coins for a new egg. Cost: '+cost});
+  }
+
+  profile.money-=cost;
+
+  let newPet=createEggPet(username);
+  profile.pets[newPet.id]=newPet;
+  profile.activePetId=newPet.id;
 
   savePetProfile(username,profile);
-  res.json({ok:true,profile});
+
+  res.json({
+    ok:true,
+    message:'You adopted a new Mystery Egg.',
+    cost,
+    profile
+  });
 });
 
 /* ===== ROOM / WEBSOCKET ===== */
