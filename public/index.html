@@ -9,7 +9,9 @@ GameForge AI maintainer notes for future AI chats:
 - This file is intentionally still one copy-paste-ready index.html while the layout is actively changing.
 - Preserve the wrapper contract for games: iframe games receive GAME_PLAYERS/GAME_MY_SEAT and send parent.postMessage({type:'move', data}, '*').
 - Room/game/chat/pet systems are intentionally separated in the UI: room controls stay compact at the top, the right sidebar is for useful live info, and session game cards stay clean/clickable.
-- Pet World belongs in Companion Hub, not the normal game library. Pet Battle is currently a room game and should not be direct-launched unless architecture changes.
+- Pet World and Marketplace belong in Companion Hub, not the normal session game library. Pet Battle is currently a room game and should not be direct-launched unless architecture changes.
+- Ready indicators are intentionally cosmetic/fun only; do not block Start Game with readiness unless the user explicitly asks.
+- Pet/marketplace iframes should post parent.postMessage({type:'petUpdated'}, '*') after any server action that changes coins, items, eggs, or pets.
 -->
 
 <style>
@@ -574,6 +576,62 @@ button:disabled{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
+}
+
+.readyBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:6px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,.28);
+  background:rgba(15,23,42,.78);
+  color:#cbd5e1;
+  font-size:11px;
+  font-weight:900;
+}
+
+.readyBadge.ready{
+  color:#86efac;
+  border-color:rgba(34,197,94,.55);
+  background:rgba(22,163,74,.14);
+}
+
+.readyToggleBtn{
+  margin-top:6px!important;
+  padding:7px 9px!important;
+  font-size:12px!important;
+}
+
+.selectedHelp{
+  margin:8px 0 10px;
+  padding:10px 12px;
+  border-radius:16px;
+  background:rgba(56,189,248,.08);
+  border:1px solid rgba(56,189,248,.22);
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.selectedHelp b{
+  color:#fff;
+}
+
+.selectedHelpSteps{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:7px;
+}
+
+.selectedHelpSteps span{
+  display:inline-flex;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.10);
 }
 
 .libraryCard{
@@ -1309,6 +1367,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
     <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
     <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play</button>
     <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet</button>
+    <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
     <button onclick="showSection('shop')" id="navShop"><span class="navIcon">🛒</span>Shop</button>
     <button onclick="showSection('inventory')" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
     <button onclick="openAdmin()" id="navAdmin" class="hidden"><span class="navIcon">🛡</span>Admin</button>
@@ -1331,6 +1390,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
         <div class="heroActions">
           <button class="primary" onclick="showSection('play')">Play a Game</button>
           <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+          <button class="gold" onclick="openMarketDirect()">Visit Marketplace</button>
         </div>
       </div>
 
@@ -1466,12 +1526,13 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
           <div class="cardHeader">
             <div>
               <h3>Companion Hub</h3>
-              <p class="muted">Care, train, and battle with your companion. Pet World opens instantly; battles can create a room.</p>
+              <p class="muted">Care, train, shop, and battle with your companion. Pet World and Marketplace open instantly; battles can create a room.</p>
             </div>
             <span class="pill">Persistent Pet</span>
           </div>
           <div class="companionActions">
             <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+            <button class="gold" onclick="openMarketDirect()">Visit Marketplace</button>
             <button class="gold" onclick="selectGame('petbattle')">Pet Battle Arena</button>
             <button class="ghost" disabled>Training Soon</button>
           </div>
@@ -1508,6 +1569,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
         <div class="heroActions">
           <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
           <button class="primary" onclick="showSection('shop')">Visit Shop</button>
+          <button class="gold" onclick="openMarketDirect()">Marketplace</button>
         </div>
       </div>
       <div class="card glow">
@@ -1568,7 +1630,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
 <script>
 /*
 Runtime notes for future AI chats:
-- Multiplayer rooms are server-relayed, but individual games still own their own state unless you intentionally move state to the server.
+- Multiplayer rooms are server-relayed; the server can now cache full game state when games send {type:'state', state}.
 - The Play page hides the game library after a room game is selected to keep the game window and table controls focused.
 - Whole game cards are clickable; avoid adding duplicate Select buttons inside cards.
 */
@@ -1589,6 +1651,8 @@ let latestPresenceUsers=[];
 let latestPresenceRooms=[];
 let pendingGameToSelect='';
 let gameLibraryForcedOpen=false; // Keeps the library open only when the user explicitly chooses Change Game after selecting a room game.
+let roomReadyStatus={}; // Cosmetic lobby readiness by username. It is relayed as a gameMove, but it intentionally does not block Start Game.
+let readyRoomId=''; // Tracks which room the cosmetic ready map belongs to so old ready flags do not leak between rooms.
 
 function showSection(id){
   document.body.classList.remove('directGameMode');
@@ -1618,6 +1682,14 @@ function openAdmin(){
   if(!admin)return;
   window.open('/admin','_blank');
 }
+
+// Global refresh hook used by PetWorld, Marketplace, and future companion games.
+// Child iframes should post {type:'petUpdated'} after actions that change pets, coins, or inventory.
+window.refreshPetUI=async function(){
+  if(!me)return;
+  await loadPet();
+};
+
 
 /* ===== ACCOUNT ===== */
 
@@ -1706,6 +1778,7 @@ function logout(){
   petProfile=null;
   petShop={};
   petMoves={};
+  roomReadyStatus={};
 
   localStorage.removeItem('gf_user');
   localStorage.removeItem('gf_admin');
@@ -1741,8 +1814,13 @@ function connect(){
     }
 
     if(m.type==='roomJoined'||m.type==='roomUpdate'){
+      if(!room||room.id!==m.room.id){
+        roomReadyStatus={};
+        readyRoomId=m.room.id;
+      }
       room=m.room;
       currentRoom=room.id;
+      pruneReadyStatus();
       drawRoom();
 
       if(pendingGameToSelect&&room&&!room.selectedGame){
@@ -1761,11 +1839,22 @@ function connect(){
       room=null;
       currentRoom=null;
       loadedGameKey='';
+      roomReadyStatus={};
+      readyRoomId='';
       document.body.classList.remove('gameMode');
       drawRoom();
     }
 
     if(m.type==='gameMove'){
+      // Lobby ready signals are handled by the wrapper UI. They are cosmetic and are not forwarded into games.
+      if(m.data&&m.data.type==='lobbyReady'){
+        if(m.data.roomId&&m.data.roomId!==currentRoom)return;
+        roomReadyStatus[m.data.username]=!!m.data.ready;
+        pruneReadyStatus();
+        drawRoom();
+        return;
+      }
+
       let f=document.getElementById('gameFrame');
       if(f&&f.contentWindow){
         f.contentWindow.postMessage({
@@ -1809,7 +1898,7 @@ async function loadGames(){
 }
 
 function gameIsSolo(g){
-  return Number(g.maxPlayers||g.seats||0)<=1 || Number(g.seats||0)<=1 || g.id==='petworld' || g.id==='pixelquest';
+  return Number(g.maxPlayers||g.seats||0)<=1 || Number(g.seats||0)<=1 || g.id==='petworld' || g.id==='market' || g.id==='pixelquest';
 }
 
 function drawGames(){
@@ -1820,7 +1909,7 @@ function drawGames(){
 
   container.innerHTML='';
 
-  const companionIds=['petworld','petbattle'];
+  const companionIds=['petworld','market','petbattle'];
   const groups=[
     {key:'classic',title:'Classic Tables',hint:'Fast competitive favorites',ids:['tictactoe','connect4','battleship','battleship2','hangman','trouble']},
     {key:'card',title:'Cards & Dice',hint:'Tabletop game night',ids:['uno','gofish','yahtzee']},
@@ -1979,11 +2068,26 @@ function leaveRoom(){
   send({type:'leaveRoom'});
   room=null;
   currentRoom=null;
-  loadedGameKey='';
+  pendingGameToSelect='';
+  roomReadyStatus={};
+  readyRoomId='';
   lastChatCount=0;
   clearChatUnread();
-  document.body.classList.remove('gameMode');
+  clearActiveGameFrame();
   drawRoom();
+}
+
+function clearActiveGameFrame(){
+  // UX rule: browsing/changing games should never leave the previous iframe mounted.
+  // This prevents the last played direct or room game from visually reappearing while the user is choosing another game.
+  document.body.classList.remove('gameMode');
+  document.body.classList.remove('directGameMode');
+  gameArea.classList.add('hidden');
+  gameHint.innerText='Select a game, sit at the table, and wait for the room owner to start. The game screen will appear here only when it is ready.';
+  gameFrame.onload=null;
+  gameFrame.removeAttribute('srcdoc');
+  loadedGameKey='';
+  directGameKey='';
 }
 
 function selectGame(id){
@@ -2000,6 +2104,8 @@ function selectGame(id){
     return;
   }
 
+  clearActiveGameFrame();
+
   if(!room){
     pendingGameToSelect=id;
     send({type:'createRoom',private:false});
@@ -2012,8 +2118,47 @@ function selectGame(id){
 
 function changeGame(){
   gameLibraryForcedOpen=true;
+  pendingGameToSelect='';
+
+  // If the room was already started, stop rendering the old game locally while the user picks a new one.
+  // The next selectGame call tells the server to reset the room's selected game and started state.
+  if(room&&room.started){
+    room.started=false;
+  }
+
+  clearActiveGameFrame();
   drawRoom();
   showSection('play');
+}
+
+function toggleReady(){
+  if(!room||!me)return;
+
+  let isSeated=room.seats&&room.seats.some(function(s){return s&&s.name===me;});
+  if(!isSeated){
+    alert('Sit at the table first, then you can toggle ready.');
+    return;
+  }
+
+  let ready=!roomReadyStatus[me];
+  roomReadyStatus[me]=ready;
+  drawRoom();
+
+  // This uses the existing websocket relay so no server change is required. It is intentionally not a game rule.
+  send({type:'gameMove',data:{type:'lobbyReady',username:me,ready:ready,roomId:room.id}});
+}
+
+function pruneReadyStatus(){
+  if(!room||!Array.isArray(room.players)){
+    roomReadyStatus={};
+    return;
+  }
+
+  let allowed={};
+  room.players.forEach(function(p){allowed[p]=true;});
+  Object.keys(roomReadyStatus).forEach(function(name){
+    if(!allowed[name])delete roomReadyStatus[name];
+  });
 }
 
 function sit(i){
@@ -2034,6 +2179,26 @@ function passOwner(to){
 
 function closeRoom(){
   if(confirm('Close this room for everyone?'))send({type:'closeRoom'});
+}
+
+function buildSelectedGameHelp(game,seatedCount,totalSeats,mySeated,isOwner,readyCount){
+  let minPlayers=Number(game.minPlayers||1);
+  let enough=seatedCount>=minPlayers;
+  let sitText=mySeated?'You are seated':'Sit at an open seat';
+  let startText=isOwner?'Start Game when you want':'Owner starts the game';
+
+  return ''+
+    '<div class="selectedHelp">'+
+      '<b>'+escapeHtml(game.name)+'</b> is selected. '+
+      'Minimum players: '+minPlayers+'. Current table: '+seatedCount+'/'+totalSeats+'. '+
+      'Ready: '+readyCount+'/'+seatedCount+'.'+
+      '<div class="selectedHelpSteps">'+
+        '<span>'+(enough?'✓':'1')+' Select game</span>'+
+        '<span>'+(mySeated?'✓':'2')+' '+escapeHtml(sitText)+'</span>'+
+        '<span>3 '+escapeHtml(startText)+'</span>'+
+      '</div>'+ 
+      '<div class="muted" style="margin-top:7px">Ready is optional and does not block starting.</div>'+ 
+    '</div>';
 }
 
 function drawRoom(){
@@ -2095,26 +2260,41 @@ function drawRoom(){
   seats.innerHTML='';
 
   if(room&&room.selectedGame){
+    let seatedCount=room.seats.filter(Boolean).length;
+    let mySeated=room.seats.some(function(s){return s&&s.name===me;});
+    let isOwner=room.owner===me;
+    let readyCount=room.seats.filter(function(s){return s&&roomReadyStatus[s.name];}).length;
+
+    seats.innerHTML=buildSelectedGameHelp(room.selectedGame,seatedCount,room.seats.length,mySeated,isOwner,readyCount);
+
     room.seats.forEach(function(seat,i){
       let d=document.createElement('div');
+      let ready=seat&&roomReadyStatus[seat.name];
       d.className='seat '+(seat?'filled':'empty');
       d.innerHTML=
         '<b>Seat '+(i+1)+'</b><br>'+
         (seat?escapeHtml(seat.name):'Open')+
+        (seat?'<br><span class="readyBadge '+(ready?'ready':'')+'">'+(ready?'Ready':'Not Ready')+'</span>':'')+
         '<br><button onclick="sit('+i+')">'+(seat?'Switch Here':'Sit Here')+'</button>';
 
       seats.appendChild(d);
     });
 
-    let seatedCount=room.seats.filter(Boolean).length;
+    if(mySeated){
+      let b=document.createElement('button');
+      b.className='readyToggleBtn '+(roomReadyStatus[me]?'good':'ghost');
+      b.onclick=toggleReady;
+      b.innerText=roomReadyStatus[me]?'Ready ✓':'Toggle Ready';
+      seats.appendChild(b);
+    }
 
-    startBtn.style.display=room.owner===me?'inline-block':'none';
+    startBtn.style.display=isOwner?'inline-block':'none';
 
-    startHint.innerText=room.owner===me
-      ? 'Sit at the table, then press Start Game. After start, the game screen becomes the focus.'
+    startHint.innerText=isOwner
+      ? 'Ready is just for fun. You can start when the table has enough players.'
       : 'Sit at the table and wait for the room owner to start. The game screen appears after start.';
 
-    startHint.innerText+=' Selected: '+room.selectedGame.name+' ('+seatedCount+'/'+room.seats.length+' seated).';
+    startHint.innerText+=' '+room.selectedGame.name+' · '+seatedCount+'/'+room.seats.length+' seated · '+readyCount+' ready.';
   }else{
     startBtn.style.display='none';
     startHint.innerText='';
@@ -2170,6 +2350,17 @@ function openPetWorldDirect(){
 
   if(!g){
     alert('Pet World is not in games.json yet.');
+    return;
+  }
+
+  launchSoloGame(g);
+}
+
+function openMarketDirect(){
+  let g=games.find(x=>x.id==='market');
+
+  if(!g){
+    alert('Marketplace is not in games.json yet.');
     return;
   }
 
@@ -2656,6 +2847,10 @@ window.addEventListener('message',function(e){
 
   if(msg.type==='gameSaveStore'){
     handleGameSaveStore(msg);
+  }
+
+  if(msg.type==='petUpdated'||msg.type==='marketUpdated'){
+    refreshPetUI();
   }
 });
 
