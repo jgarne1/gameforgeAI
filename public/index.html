@@ -805,9 +805,10 @@ iframe{
   max-height:900px;
   border:3px solid #020617;
   border-radius:22px;
-  background:#fff;
+  background:#020617;
 }
 
+/* Game frame should never appear as a blank white box. It stays hidden until a direct game loads or a room owner starts a multiplayer game. */
 #gameArea{
   margin-top:14px;
 }
@@ -1495,7 +1496,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
           <h2 id="gameAreaTitle">Game Area</h2>
           <button class="danger" onclick="exitGameMode()">Exit Game</button>
         </div>
-        <p id="gameHint" class="muted">The started game appears here.</p>
+        <p id="gameHint" class="muted">Select a game, sit at the table, and start the match. The game screen will appear here only when it is ready.</p>
         <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
@@ -2037,7 +2038,10 @@ function closeRoom(){
 
 function drawRoom(){
   roomChatPanel.classList.toggle('hidden',!room);
-  gameArea.classList.toggle('hidden',!room&&!document.body.classList.contains('directGameMode'));
+
+  // UX rule: do not show an empty iframe. Multiplayer gameArea only appears after Start Game. Direct companion games show it immediately.
+  let activeGameVisible=document.body.classList.contains('directGameMode') || !!(room&&room.started&&room.selectedGame);
+  gameArea.classList.toggle('hidden',!activeGameVisible);
 
   roomLabel.innerText=room?room.id:'None';
 
@@ -2107,8 +2111,8 @@ function drawRoom(){
     startBtn.style.display=room.owner===me?'inline-block':'none';
 
     startHint.innerText=room.owner===me
-      ? 'Start when the table is ready. Seated players will enter the game.'
-      : 'Only the room owner can start the game.';
+      ? 'Sit at the table, then press Start Game. After start, the game screen becomes the focus.'
+      : 'Sit at the table and wait for the room owner to start. The game screen appears after start.';
 
     startHint.innerText+=' Selected: '+room.selectedGame.name+' ('+seatedCount+'/'+room.seats.length+' seated).';
   }else{
@@ -2125,14 +2129,16 @@ async function maybeLoadGame(){
   if(!(room&&room.started&&room.selectedGame)){
     if(!document.body.classList.contains('directGameMode')){
       document.body.classList.remove('gameMode');
-      gameHint.innerText='The started game appears here.';
+      gameHint.innerText='Select a game, sit at the table, and wait for the room owner to start. The game screen will appear here only when it is ready.';
       gameFrame.removeAttribute('srcdoc');
+      gameArea.classList.add('hidden');
     }
     return;
   }
 
   document.body.classList.remove('directGameMode');
   document.body.classList.add('gameMode');
+  gameArea.classList.remove('hidden');
   showSection('play');
 
   let seated=room.seats.filter(Boolean);
@@ -2154,6 +2160,7 @@ async function maybeLoadGame(){
   let mySeatIndex=room.seats.findIndex(function(x){return x&&x.name===me;});
 
   await loadGameIntoFrame(room.selectedGame,players,mySeatIndex);
+  gameArea.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 /* ===== SOLO GAME LAUNCH ===== */
@@ -2180,9 +2187,11 @@ async function launchSoloGame(g){
   document.body.classList.add('directGameMode');
   showSection('play');
 
+  // Direct companion games skip rooms/seats and immediately focus the iframe area.
+  gameFrame.removeAttribute('srcdoc');
   gameArea.classList.remove('hidden');
   gameAreaTitle.innerText=g.name;
-  gameHint.innerText='Solo account game. Progress is tied to your username.';
+  gameHint.innerText='Loading '+g.name+'... Progress is tied to your username.';
 
   roomChatPanel.classList.add('hidden');
 
@@ -2193,6 +2202,8 @@ async function launchSoloGame(g){
 
   let players=[{seat:0,name:me}];
   await loadGameIntoFrame(g,players,0);
+  gameHint.innerText='Account experience. Progress is tied to your username.';
+  gameArea.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
