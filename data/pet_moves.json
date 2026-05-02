@@ -5,9 +5,33 @@
     "category": "physical",
     "power": 30,
     "accuracy": 95,
-    "crit": 5
+    "crit": 5,
+    "description": "A reliable basic attack."
   },
-
+  "quick_jab": {
+    "name": "Quick Jab",
+    "type": "normal",
+    "category": "physical",
+    "power": 24,
+    "accuracy": 100,
+    "crit": 12,
+    "description": "A fast strike with a higher critical chance."
+  },
+  "guard_up": {
+    "name": "Guard Up",
+    "type": "earth",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "crit": 0,
+    "status": {
+      "effect": "defense_up",
+      "chance": 100,
+      "amount": 2,
+      "duration": 3
+    },
+    "description": "Raises defense for a few turns."
+  },
   "ember_nip": {
     "name": "Ember Nip",
     "type": "fire",
@@ -19,32 +43,58 @@
       "effect": "burn",
       "chance": 25,
       "duration": 3
-    }
+    },
+    "description": "A fiery bite that may burn."
   },
-
   "bubble_snap": {
     "name": "Bubble Snap",
     "type": "water",
     "category": "special",
     "power": 40,
     "accuracy": 92,
+    "crit": 6,
     "status": {
       "effect": "slow",
       "chance": 20,
       "duration": 2
-    }
+    },
+    "description": "A snapping water burst that may slow."
   },
-
-  "guard_up": {
-    "name": "Guard Up",
-    "type": "earth",
-    "category": "status",
-    "power": 0,
-    "accuracy": 100,
+  "vine_bop": {
+    "name": "Vine Bop",
+    "type": "nature",
+    "category": "physical",
+    "power": 38,
+    "accuracy": 95,
+    "crit": 7,
     "status": {
-      "effect": "defense_up",
-      "amount": 2,
-      "duration": 3
-    }
+      "effect": "snare",
+      "chance": 18,
+      "duration": 2
+    },
+    "description": "A vine strike that may snare."
+  },
+  "shadow_pounce": {
+    "name": "Shadow Pounce",
+    "type": "shadow",
+    "category": "physical",
+    "power": 46,
+    "accuracy": 86,
+    "crit": 18,
+    "description": "A risky shadow attack with high critical chance."
+  },
+  "stone_bump": {
+    "name": "Stone Bump",
+    "type": "earth",
+    "category": "physical",
+    "power": 44,
+    "accuracy": 88,
+    "crit": 5,
+    "status": {
+      "effect": "stun",
+      "chance": 12,
+      "duration": 1
+    },
+    "description": "A heavy impact that may stun."
   }
 }
