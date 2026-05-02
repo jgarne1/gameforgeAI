@@ -3,13 +3,13 @@
 <head>
 <title>GameForge Marketplace</title>
 <!--
-GameForge AI Marketplace maintainer notes for future AI chats:
-- Keep comments useful and update/remove them when behavior changes.
-- This is a direct companion experience loaded by index.html like PetWorld, not a multiplayer room game.
-- Any action that changes coins, inventory, pets, listings, or shop settings should notify the parent with {type:'petUpdated'}.
-- Marketplace transfers must stay server-authoritative. Never move coins/items only in this client file.
-- Market Board groups listings by item and buys from the cheapest listing to avoid clutter.
-- Forum House is intentionally shown as coming soon; implement forum APIs only after marketplace basics are stable.
+GameForge AI Marketplace maintainer notes:
+- Keep this file self-contained. It runs inside the GameForge iframe.
+- This is a direct companion experience, not a multiplayer room game.
+- All economy actions must stay server-authoritative.
+- Normal Store buys from /api/pet/buy.
+- Market Board buys from /api/market/buy.
+- After any buy/list/cancel/shop change, notify parent with petUpdated and marketUpdated.
 -->
 <style>
 :root{
@@ -239,33 +239,54 @@ let profile=null;
 let items={};
 let listings=[];
 let shops=[];
+let buyingNow=false;
 
 function el(id){return document.getElementById(id)}
 function money(){return profile?Number(profile.money||0):0}
-function itemDef(id){return items[id]||{name:id,description:''}}
+function itemDef(id){return items[id]||{name:id,description:'',price:0}}
 function itemIcon(id){return '/assets/items/'+id+'.png'}
 
 function receiveSetup(setupPlayers,setupSeat){
   players=Array.isArray(setupPlayers)?setupPlayers:[];
-  mySeat=Number(setupSeat||0);
+  mySeat=setupSeat===null||setupSeat===undefined?0:Number(setupSeat);
+
   username=
-  (players[mySeat]&&players[mySeat].name) ||
-  (players[0]&&players[0].name) ||
-  localStorage.getItem('gf_user') ||
-  'guest';
+    (players[mySeat]&&players[mySeat].name) ||
+    (players[0]&&players[0].name) ||
+    localStorage.getItem('gf_user') ||
+    '';
+
+  if(!username){
+    showToast('Login required.');
+    return;
+  }
+
   el('userPill').innerText=username;
   reloadAll();
 }
 
 async function api(url,opts){
   let res=await fetch(url,opts);
-  let data=await res.json();
+  let text=await res.text();
+  let data={};
+
+  try{
+    data=text?JSON.parse(text):{};
+  }catch(err){
+    throw new Error('Server returned invalid response.');
+  }
+
+  if(!res.ok){
+    throw new Error(data.error||data.message||('Request failed: '+res.status));
+  }
+
   if(data.error)throw new Error(data.error);
   return data;
 }
 
 async function reloadAll(){
   if(!username)return;
+
   try{
     let mine=await api('/api/market/profile?user='+encodeURIComponent(username));
     profile=mine.profile;
@@ -274,11 +295,12 @@ async function reloadAll(){
 
     let board=await api('/api/market/listings');
     listings=board.listings||[];
-    shops=board.shops||[];
+    shops=board.shops||shops;
     items=board.items||items;
 
     draw();
   }catch(err){
+    console.error(err);
     showToast(err.message||'Marketplace failed to load.');
   }
 }
@@ -290,6 +312,7 @@ function groupedListings(){
     if(!l||Number(l.quantity||0)<=0)return;
 
     let itemId=l.itemId;
+
     if(!grouped[itemId]){
       grouped[itemId]={
         itemId,
@@ -313,12 +336,11 @@ function groupedListings(){
       if(priceDiff!==0)return priceDiff;
       return Number(a.createdAt||0)-Number(b.createdAt||0);
     });
+
     g.cheapest=g.listings[0];
     return g;
   }).sort((a,b)=>{
-    let nameA=String(a.itemName||a.itemId).toLowerCase();
-    let nameB=String(b.itemName||b.itemId).toLowerCase();
-    return nameA.localeCompare(nameB);
+    return String(a.itemName||a.itemId).toLowerCase().localeCompare(String(b.itemName||b.itemId).toLowerCase());
   });
 }
 
@@ -341,20 +363,54 @@ function drawNpc(){
 
   Object.keys(items).forEach(id=>{
     let it=itemDef(id);
+
     html+=rowHtml(
       id,
       it.name,
       it.description||'Companion supply',
-      it.price+' coins',
-      '<button class="gold" onclick="buyNpcPlaceholder()">Store Only</button>'
+      Number(it.price||0)+' coins',
+      '<button class="gold" onclick="buyNpc(\''+escAttr(id)+'\')">Buy</button>'
     );
   });
 
   el('npcList').innerHTML=html||'<div class="empty">Store items unavailable.</div>';
 }
 
-function buyNpcPlaceholder(){
-  showToast('Use the main Shop for fixed-price purchases for now. Market buying is active on the Market Board.');
+async function buyNpc(itemId){
+  if(buyingNow)return;
+  buyingNow=true;
+
+  try{
+    let item=itemDef(itemId);
+
+    if(money()<Number(item.price||0)){
+      showToast('Not enough coins.');
+      buyingNow=false;
+      return;
+    }
+
+    showToast('Buying '+(item.name||itemId)+'...');
+
+    let data=await api('/api/pet/buy',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username,
+        itemId
+      })
+    });
+
+    if(data.profile)profile=data.profile;
+
+    notifyParent();
+    await reloadAll();
+    showToast('Purchased '+(item.name||itemId)+'.');
+  }catch(err){
+    console.error(err);
+    showToast(err.message||'Purchase failed.');
+  }
+
+  buyingNow=false;
 }
 
 function drawBoard(groups){
@@ -384,6 +440,7 @@ function drawBoard(groups){
 
 function drawStalls(){
   let m=profile&&profile.market?profile.market:{};
+
   el('shopName').value=m.shopName||username+"'s Stall";
   el('shopOpen').checked=!!m.shopOpen;
 
@@ -404,11 +461,12 @@ function drawStalls(){
   el('shopList').innerHTML=open.length
     ? open.map(s=>{
         let pet=s.pet?(' · '+(s.pet.emoji||'🐾')+' '+s.pet.name):'';
+
         return '<div class="shopRow">'+
           '<div class="itemIcon">⛺</div>'+
           '<div>'+
             '<div class="itemName">'+esc(s.shopName||s.username+"'s Stall")+'</div>'+
-            '<div class="itemMeta">'+esc(s.username)+pet+' · '+Number(s.listingCount||0)+' listing(s)</div>'+
+            '<div class="itemMeta">'+esc(s.username)+esc(pet)+' · '+Number(s.listingCount||0)+' listing(s)</div>'+
           '</div>'+
           '<button onclick="showSeller(\''+escAttr(s.username)+'\')">View</button>'+
         '</div>';
@@ -469,7 +527,8 @@ async function saveShopSettings(){
     draw();
     showToast('Shop settings saved.');
   }catch(err){
-    showToast(err.message);
+    console.error(err);
+    showToast(err.message||'Save failed.');
   }
 }
 
@@ -494,7 +553,8 @@ async function createListing(){
     await reloadAll();
     showToast('Listing created.');
   }catch(err){
-    showToast(err.message);
+    console.error(err);
+    showToast(err.message||'Listing failed.');
   }
 }
 
@@ -511,7 +571,8 @@ async function cancelListing(id){
     await reloadAll();
     showToast('Listing canceled and item returned.');
   }catch(err){
-    showToast(err.message);
+    console.error(err);
+    showToast(err.message||'Cancel failed.');
   }
 }
 
@@ -527,6 +588,7 @@ function cheapestListingForItem(itemId){
 
 async function buyCheapest(itemId){
   let listing=cheapestListingForItem(itemId);
+
   if(!listing){
     showToast('No buyable listings for that item.');
     return;
@@ -536,19 +598,28 @@ async function buyCheapest(itemId){
 }
 
 async function buyListing(id){
+  if(buyingNow)return;
+  buyingNow=true;
+
   try{
     let listing=listings.find(x=>x.id===id);
-    if(!listing)return showToast('Listing not found.');
+
+    if(!listing){
+      buyingNow=false;
+      return showToast('Listing not found.');
+    }
 
     if(listing.seller===username){
+      buyingNow=false;
       return showToast('You cannot buy your own listing.');
     }
 
-    if(money()<Number(listing.price)){
+    if(money()<Number(listing.price||0)){
+      buyingNow=false;
       return showToast('Not enough coins.');
     }
 
-    if(!confirm('Buy 1 '+(listing.itemName||listing.itemId)+' for '+listing.price+' coins?'))return;
+    showToast('Buying '+(listing.itemName||listing.itemId)+'...');
 
     let data=await api('/api/market/buy',{
       method:'POST',
@@ -569,6 +640,8 @@ async function buyListing(id){
     console.error(err);
     showToast(err.message||'Purchase failed.');
   }
+
+  buyingNow=false;
 }
 
 function rowHtml(itemId,name,meta,price,action){
