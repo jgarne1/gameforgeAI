@@ -2381,22 +2381,22 @@ function openInventory(){
     return;
   }
 
-  // Inventory is a direct system panel, not a games.json game card.
-  // Keep /games/inventory.html as a standalone iframe page so it can use the same shell as PetWorld/Marketplace.
   document.body.classList.remove('gameMode');
   document.body.classList.add('directGameMode');
+
   showSection('play');
+
+  roomChatPanel.classList.add('hidden');
+  gameArea.classList.remove('hidden');
+  gameAreaTitle.innerText='Inventory';
+  gameHint.innerText='Manage your items and resources.';
+
+  loadedGameKey='';
+  directGameKey='inventory|'+me;
 
   gameFrame.onload=null;
   gameFrame.removeAttribute('srcdoc');
   gameFrame.src='/games/inventory.html?v='+Date.now();
-
-  gameArea.classList.remove('hidden');
-  gameAreaTitle.innerText='Inventory';
-  gameHint.innerText='Manage your items, pets, and future collectibles.';
-
-  roomChatPanel.classList.add('hidden');
-  directGameKey='inventory|'+me;
 
   gameArea.scrollIntoView({behavior:'smooth',block:'start'});
 }
