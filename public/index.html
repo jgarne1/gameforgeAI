@@ -636,6 +636,28 @@ iframe{
   justify-content:center;
   font-size:38px;
   box-shadow:inset 0 0 24px rgba(255,255,255,.04);
+  position:relative;
+  overflow:hidden;
+}
+
+.petAvatar img{
+  width:62px;
+  height:62px;
+  object-fit:contain;
+  position:absolute;
+  z-index:2;
+  animation:petMiniIdle 2.4s ease-in-out infinite;
+  filter:drop-shadow(0 8px 8px rgba(0,0,0,.25));
+}
+
+.petAvatar span{
+  position:relative;
+  z-index:1;
+}
+
+@keyframes petMiniIdle{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-4px)}
 }
 
 .petName{
@@ -1132,6 +1154,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
   </div>
 
 </div>
+
 <script>
 let me=localStorage.getItem('gf_user')||'';
 let admin=localStorage.getItem('gf_admin')==='true';
@@ -1828,6 +1851,35 @@ function activePet(){
   return petProfile.pets[petProfile.activePetId];
 }
 
+function petImagePath(pet){
+  if(!pet)return '';
+
+  let stage=pet.stage||'egg';
+
+  if(stage==='egg'){
+    let t=pet.eggTraits||{};
+    let total=Number(t.warm||0)+Number(t.cold||0)+Number(t.wet||0)+Number(t.dry||0)+Number(t.light||0)+Number(t.dark||0);
+    return total>=15
+      ? '/assets/pets/egg/egg_cracked.png'
+      : '/assets/pets/egg/egg_idle.png';
+  }
+
+  let species=pet.species||'egg';
+  let file=stage==='adult'?'adult':(stage==='young'||stage==='teen')?'young':'baby';
+
+  return '/assets/pets/'+species+'/'+file+'.png';
+}
+
+function petAvatarHtml(pet,emoji){
+  let imgPath=petImagePath(pet);
+
+  return ''+
+    '<div class="petAvatar">'+
+      '<img src="'+imgPath+'" onload="this.nextElementSibling.style.display=\'none\'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'">'+
+      '<span>'+escapeHtml(emoji)+'</span>'+
+    '</div>';
+}
+
 function drawPet(){
   if(!petProfile||!me){
     homePet.innerHTML='<p class="muted">Log in to load your pet.</p>';
@@ -1848,7 +1900,7 @@ function drawPet(){
 
   let mini=
     '<div class="petMini">'+
-      '<div class="petAvatar">'+escapeHtml(emoji)+'</div>'+
+      petAvatarHtml(pet,emoji)+
       '<div>'+
         '<div class="petName">'+escapeHtml(pet.name||'Mystery Egg')+'</div>'+
         '<div class="petSub">'+escapeHtml(stage)+(pet.type?' · '+escapeHtml(pet.type):'')+'</div>'+
