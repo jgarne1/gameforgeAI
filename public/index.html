@@ -5,20 +5,28 @@
 
 <style>
 :root{
-  --bg:#0f172a;
-  --panel:#1e293b;
-  --panel2:#111827;
+  --bg:#070b18;
+  --bg2:#0f172a;
+  --panel:#101827;
+  --panel2:#0b1120;
   --panel3:#020617;
-  --line:#334155;
+  --card:#111827;
+  --line:rgba(148,163,184,.24);
+  --line2:rgba(255,255,255,.10);
   --blue:#3b82f6;
   --blue2:#2563eb;
-  --accent:#38bdf8;
+  --cyan:#38bdf8;
   --green:#16a34a;
+  --green2:#22c55e;
   --red:#dc2626;
   --gold:#facc15;
+  --purple:#7c3aed;
+  --pink:#ec4899;
   --text:#e5e7eb;
   --muted:#94a3b8;
-  --cardShadow:0 18px 45px rgba(0,0,0,.25);
+  --soft:#cbd5e1;
+  --shadow:0 24px 70px rgba(0,0,0,.38);
+  --shadow2:0 10px 28px rgba(0,0,0,.22);
 }
 
 *{box-sizing:border-box}
@@ -27,23 +35,32 @@ body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:
-    radial-gradient(circle at top left,rgba(56,189,248,.16),transparent 34%),
-    radial-gradient(circle at bottom right,rgba(250,204,21,.08),transparent 30%),
-    linear-gradient(135deg,#020617,#0f172a);
+    radial-gradient(circle at 12% 8%,rgba(56,189,248,.18),transparent 26%),
+    radial-gradient(circle at 80% 16%,rgba(124,58,237,.15),transparent 28%),
+    radial-gradient(circle at 50% 100%,rgba(34,197,94,.10),transparent 32%),
+    linear-gradient(135deg,#020617,#0f172a 55%,#111827);
   color:var(--text);
-}
-
-.wrap{
-  display:grid;
-  grid-template-columns:230px minmax(0,1fr)350px;
   min-height:100vh;
 }
 
-/* ===== LEFT RPG NAV ===== */
+button,input,select{
+  font-family:inherit;
+}
+
+/* ===== APP SHELL ===== */
+.wrap{
+  display:grid;
+  grid-template-columns:250px minmax(0,1fr)360px;
+  min-height:100vh;
+}
+
+/* ===== LEFT NAV ===== */
 .nav{
-  background:rgba(2,6,23,.96);
-  border-right:2px solid var(--line);
-  padding:14px;
+  background:
+    linear-gradient(180deg,rgba(2,6,23,.98),rgba(15,23,42,.96)),
+    radial-gradient(circle at top,rgba(56,189,248,.12),transparent 28%);
+  border-right:1px solid var(--line);
+  padding:16px;
   position:sticky;
   top:0;
   height:100vh;
@@ -51,68 +68,109 @@ body{
 }
 
 .navBrand{
-  padding:8px 8px 14px;
+  padding:10px 10px 16px;
   border-bottom:1px solid var(--line);
   margin-bottom:12px;
 }
 
 .navBrand h1{
   margin:0;
-  font-size:25px;
-  letter-spacing:-1px;
+  font-size:28px;
+  letter-spacing:-1.2px;
+  line-height:1;
+}
+
+.navBrand .mark{
+  display:inline-flex;
+  width:34px;
+  height:34px;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--cyan),var(--blue2));
+  box-shadow:0 8px 22px rgba(56,189,248,.28);
+  margin-right:8px;
 }
 
 .navBrand span{
   display:block;
-  margin-top:3px;
+  margin-top:7px;
   color:var(--muted);
   font-size:12px;
-  line-height:1.35;
+  line-height:1.4;
 }
 
 .nav button{
   width:100%;
   margin:6px 0;
-  padding:11px 12px;
-  border-radius:13px;
+  padding:12px 13px;
+  border-radius:15px;
   border:1px solid var(--line);
-  background:rgba(15,23,42,.88);
+  background:rgba(15,23,42,.76);
   color:var(--text);
   cursor:pointer;
   text-align:left;
-  font-weight:800;
-  transition:.15s ease;
+  font-weight:900;
+  transition:.16s ease;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
 .nav button:hover{
   transform:translateY(-1px);
   background:#1e293b;
-  box-shadow:0 6px 16px rgba(0,0,0,.22);
+  box-shadow:0 8px 18px rgba(0,0,0,.22);
+  border-color:rgba(56,189,248,.35);
 }
 
 .nav button.active{
   background:linear-gradient(135deg,var(--blue),var(--blue2));
   border-color:#60a5fa;
   color:#fff;
+  box-shadow:0 12px 25px rgba(37,99,235,.28);
 }
 
 .nav button.hidden{
   display:none;
 }
 
+.navIcon{
+  width:27px;
+  height:27px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.08);
+}
+
 .navUser{
-  margin-top:14px;
-  padding:10px;
-  background:rgba(15,23,42,.9);
+  margin-top:16px;
+  padding:12px;
+  background:rgba(15,23,42,.72);
   border:1px solid var(--line);
-  border-radius:14px;
+  border-radius:18px;
   color:var(--muted);
   font-size:12px;
 }
 
+.navUser b{
+  color:#fff;
+  font-size:14px;
+}
+
+.navFooter{
+  margin-top:12px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.35;
+  padding:0 4px;
+}
+
 /* ===== MAIN ===== */
 .main{
-  padding:16px;
+  padding:18px;
   min-width:0;
 }
 
@@ -125,55 +183,94 @@ body{
 }
 
 .hero{
+  position:relative;
+  overflow:hidden;
   background:
-    radial-gradient(circle at 18% 18%,rgba(56,189,248,.18),transparent 30%),
-    linear-gradient(135deg,rgba(30,41,59,.98),rgba(15,23,42,.98));
+    radial-gradient(circle at 18% 14%,rgba(56,189,248,.18),transparent 28%),
+    radial-gradient(circle at 84% 16%,rgba(250,204,21,.12),transparent 24%),
+    linear-gradient(135deg,rgba(30,41,59,.98),rgba(2,6,23,.98));
   border:1px solid var(--line);
-  border-radius:22px;
-  padding:18px;
-  margin-bottom:14px;
-  box-shadow:var(--cardShadow);
+  border-radius:28px;
+  padding:22px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:auto -80px -90px auto;
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(56,189,248,.24),transparent 64%);
+  pointer-events:none;
 }
 
 .hero h2{
   margin:0;
-  font-size:30px;
-  letter-spacing:-1px;
+  font-size:34px;
+  letter-spacing:-1.4px;
+  line-height:1.05;
 }
 
 .hero p{
-  margin:6px 0 0;
+  margin:8px 0 0;
   color:var(--muted);
   font-size:14px;
+  max-width:820px;
+  line-height:1.45;
+}
+
+.heroActions{
+  margin-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
 }
 
 .grid2{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
+  gap:14px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
 }
 
 .card{
-  background:rgba(2,6,23,.84);
+  background:
+    linear-gradient(180deg,rgba(15,23,42,.92),rgba(2,6,23,.90));
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.18);
+  border-radius:22px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow2);
 }
 
-.card h3{
-  margin:0 0 9px;
+.card.glow{
+  box-shadow:0 16px 40px rgba(56,189,248,.12),var(--shadow2);
+  border-color:rgba(56,189,248,.30);
 }
 
-.card h2{
+.card h2,.card h3{
   margin:0 0 10px;
+}
+
+.cardHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
 }
 
 .muted{
   color:var(--muted);
   font-size:13px;
-  line-height:1.35;
+  line-height:1.42;
 }
 
 .row{
@@ -184,9 +281,9 @@ body{
 }
 
 button,input,select{
-  padding:9px 11px;
+  padding:10px 12px;
   margin:3px;
-  border-radius:11px;
+  border-radius:13px;
   border:1px solid #475569;
   font-size:14px;
 }
@@ -201,12 +298,13 @@ button{
   background:#0f172a;
   color:var(--text);
   transition:.15s ease;
-  font-weight:800;
+  font-weight:900;
 }
 
 button:hover{
   transform:translateY(-1px);
-  box-shadow:0 4px 12px rgba(0,0,0,.22);
+  box-shadow:0 6px 16px rgba(0,0,0,.24);
+  border-color:rgba(56,189,248,.38);
 }
 
 button.primary{
@@ -233,14 +331,28 @@ button.gold{
   border-color:#facc15;
 }
 
+button.purple{
+  background:linear-gradient(135deg,#7c3aed,#a855f7);
+  color:#fff;
+  border-color:#a855f7;
+}
+
+button.ghost{
+  background:rgba(15,23,42,.5);
+}
+
 button:disabled{
   opacity:.45;
   cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
 }
 
 .pill,.badge{
-  display:inline-block;
-  padding:5px 9px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 10px;
   border-radius:999px;
   background:#1e293b;
   border:1px solid #475569;
@@ -255,18 +367,65 @@ button:disabled{
 
 /* ===== ACCOUNT ===== */
 .accountBox{
-  max-width:760px;
+  max-width:820px;
 }
 
 #loggedInControls{
   align-items:center;
 }
 
+.quickStat{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  background:rgba(2,6,23,.58);
+}
+
+.quickStat b{
+  display:block;
+  font-size:24px;
+  margin-bottom:2px;
+}
+
+.quickStat span{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* ===== HOME GAME STRIP ===== */
+.homeGames{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+
+.homeGame{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(30,41,59,.72),rgba(15,23,42,.76));
+  border-radius:20px;
+  padding:14px;
+  min-height:116px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.homeGame strong{
+  font-size:16px;
+}
+
+.homeGame small{
+  display:block;
+  color:var(--muted);
+  margin-top:4px;
+  line-height:1.3;
+}
+
 /* ===== PLAY PAGE ===== */
 .playLayout{
   display:grid;
-  grid-template-columns:360px minmax(0,1fr);
-  gap:12px;
+  grid-template-columns:380px minmax(0,1fr);
+  gap:14px;
   align-items:start;
 }
 
@@ -274,12 +433,14 @@ button:disabled{
   display:block;
   width:100%;
   text-align:left;
-  margin:7px 0;
-  padding:13px;
-  border-radius:15px;
-  background:#0f172a;
+  margin:8px 0;
+  padding:14px;
+  border-radius:18px;
+  background:
+    linear-gradient(180deg,rgba(15,23,42,.92),rgba(2,6,23,.9));
   border:1px solid #475569;
   color:var(--text);
+  position:relative;
 }
 
 .gameBtn:hover{
@@ -292,11 +453,27 @@ button:disabled{
   color:white;
 }
 
+.gameBtn .gameType{
+  position:absolute;
+  top:12px;
+  right:12px;
+  font-size:11px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+}
+
+.gameSearch{
+  width:100%;
+  margin:6px 0 10px;
+}
+
 .seat{
   display:inline-block;
   border:1px solid #475569;
-  border-radius:15px;
-  padding:12px;
+  border-radius:16px;
+  padding:13px;
   margin:6px;
   background:#0f172a;
   min-width:145px;
@@ -320,13 +497,28 @@ button:disabled{
 .notice{
   background:rgba(56,189,248,.10);
   border:1px solid rgba(56,189,248,.42);
-  border-radius:13px;
-  padding:10px;
+  border-radius:16px;
+  padding:12px;
   color:#bae6fd;
+  line-height:1.4;
 }
 
 .locked{color:#fbbf24}
 .public{color:#86efac}
+
+.soloLaunchCard{
+  border:1px solid rgba(56,189,248,.32);
+  background:
+    radial-gradient(circle at top right,rgba(56,189,248,.12),transparent 40%),
+    rgba(2,6,23,.66);
+  border-radius:20px;
+  padding:14px;
+  margin-top:10px;
+}
+
+.soloLaunchCard h3{
+  margin:0 0 6px;
+}
 
 /* ===== GAME AREA ===== */
 iframe{
@@ -335,19 +527,20 @@ iframe{
   min-height:650px;
   max-height:900px;
   border:3px solid #020617;
-  border-radius:18px;
+  border-radius:22px;
   background:#fff;
 }
 
 #gameArea{
-  margin-top:12px;
+  margin-top:14px;
 }
 
 /* ===== RIGHT SIDE ===== */
 .side{
-  background:rgba(30,41,59,.94);
-  border-left:2px solid var(--line);
-  padding:14px;
+  background:
+    linear-gradient(180deg,rgba(15,23,42,.96),rgba(30,41,59,.92));
+  border-left:1px solid var(--line);
+  padding:16px;
   position:sticky;
   top:0;
   height:100vh;
@@ -357,10 +550,10 @@ iframe{
 .sideCard{
   background:rgba(2,6,23,.72);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:13px;
-  margin-bottom:12px;
-  box-shadow:0 8px 22px rgba(0,0,0,.16);
+  border-radius:22px;
+  padding:14px;
+  margin-bottom:14px;
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
 }
 
 .sidebarTitle{
@@ -376,8 +569,8 @@ iframe{
 
 .userItem{
   border-bottom:1px solid #334155;
-  padding:9px;
-  border-radius:11px;
+  padding:10px;
+  border-radius:13px;
 }
 
 .userItem.clickable{
@@ -399,10 +592,11 @@ iframe{
   overflow:auto;
   background:#020617;
   border:1px solid #334155;
-  padding:8px;
+  padding:9px;
   text-align:left;
-  border-radius:13px;
+  border-radius:15px;
   font-size:13px;
+  line-height:1.35;
 }
 
 .chatInput{
@@ -425,25 +619,28 @@ iframe{
 /* ===== PET PANEL ===== */
 .petMini{
   display:flex;
-  gap:10px;
+  gap:12px;
   align-items:center;
 }
 
 .petAvatar{
-  width:58px;
-  height:58px;
-  border-radius:18px;
-  background:linear-gradient(135deg,#1e293b,#0f172a);
+  width:66px;
+  height:66px;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 30% 25%,rgba(255,255,255,.18),transparent 34%),
+    linear-gradient(135deg,#1e293b,#020617);
   border:1px solid #475569;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:34px;
+  font-size:38px;
+  box-shadow:inset 0 0 24px rgba(255,255,255,.04);
 }
 
 .petName{
   font-weight:900;
-  font-size:17px;
+  font-size:18px;
 }
 
 .petSub{
@@ -458,7 +655,7 @@ iframe{
 }
 
 .statLine{
-  margin:8px 0;
+  margin:9px 0;
 }
 
 .statTop{
@@ -466,11 +663,11 @@ iframe{
   justify-content:space-between;
   font-size:12px;
   color:#cbd5e1;
-  margin-bottom:3px;
+  margin-bottom:4px;
 }
 
 .statBar{
-  height:9px;
+  height:10px;
   background:#334155;
   border-radius:999px;
   overflow:hidden;
@@ -485,32 +682,32 @@ iframe{
 .eggTraits{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:5px;
+  gap:7px;
   font-size:12px;
   color:#cbd5e1;
-  margin:8px 0;
+  margin:10px 0;
 }
 
 .petActions{
   display:flex;
-  gap:6px;
+  gap:7px;
   flex-wrap:wrap;
-  margin-top:9px;
+  margin-top:10px;
 }
 
 .petActions button{
   flex:1;
-  min-width:76px;
-  padding:8px;
+  min-width:82px;
+  padding:9px;
   font-size:12px;
 }
 
 .itemCard{
   border:1px solid #334155;
   background:#020617;
-  border-radius:14px;
-  padding:10px;
-  margin:8px 0;
+  border-radius:16px;
+  padding:12px;
+  margin:9px 0;
 }
 
 /* ===== CHAT NEW MESSAGE NOTICE ===== */
@@ -538,7 +735,53 @@ iframe{
   100%{box-shadow:0 10px 30px rgba(15,23,42,.18),0 0 0 rgba(56,189,248,0)}
 }
 
-/* ===== GAME MODE ===== */
+/* ===== DIRECT SOLO MODE ===== */
+body.directGameMode .wrap{
+  grid-template-columns:1fr;
+}
+
+body.directGameMode .nav{
+  display:none;
+}
+
+body.directGameMode .main{
+  width:100%;
+  padding:10px;
+}
+
+body.directGameMode .side{
+  display:none;
+}
+
+body.directGameMode .section:not(#play){
+  display:none!important;
+}
+
+body.directGameMode #play{
+  display:block!important;
+}
+
+body.directGameMode #playTop,
+body.directGameMode #roomSetupCard{
+  display:none!important;
+}
+
+body.directGameMode #gameArea{
+  margin-top:0;
+}
+
+body.directGameMode #gameArea h2,
+body.directGameMode #gameHint{
+  display:none;
+}
+
+body.directGameMode iframe{
+  height:96vh;
+  max-height:none;
+  border-radius:24px;
+}
+
+/* ===== MULTIPLAYER GAME MODE ===== */
 body.gameMode .wrap{
   grid-template-columns:1fr;
 }
@@ -583,7 +826,7 @@ body.gameMode .side #roomChatPanel{
 body.gameMode iframe{
   height:92vh;
   max-height:none;
-  border-radius:20px;
+  border-radius:22px;
 }
 
 body.gameMode #gameArea{
@@ -598,10 +841,7 @@ body.gameMode #play{
   display:block!important;
 }
 
-body.gameMode #playTop{
-  display:none;
-}
-
+body.gameMode #playTop,
 body.gameMode #roomSetupCard{
   display:none;
 }
@@ -621,7 +861,26 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
   display:none;
 }
 
-@media(max-width:1050px){
+/* ===== RESPONSIVE ===== */
+@media(max-width:1150px){
+  .wrap{
+    grid-template-columns:220px minmax(0,1fr);
+  }
+
+  .side{
+    display:none;
+  }
+
+  .playLayout,.grid2{
+    grid-template-columns:1fr;
+  }
+
+  .homeGames,.grid3{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:760px){
   .wrap{
     grid-template-columns:1fr;
   }
@@ -630,18 +889,19 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
     position:static;
     height:auto;
     border-right:0;
-    border-bottom:2px solid var(--line);
+    border-bottom:1px solid var(--line);
   }
 
-  .side{
-    position:static;
-    height:auto;
-    border-left:0;
-    border-top:2px solid var(--line);
+  .main{
+    padding:12px;
   }
 
-  .playLayout,.grid2{
-    grid-template-columns:1fr;
+  .hero h2{
+    font-size:26px;
+  }
+
+  iframe{
+    min-height:650px;
   }
 
   body.gameMode .side{
@@ -664,19 +924,23 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
 
   <div class="nav">
     <div class="navBrand">
-      <h1>GameForge</h1>
-      <span>Games, rooms, pets, inventory, and battles.</span>
+      <h1><span class="mark">✦</span>GameForge</h1>
+      <span>Games, rooms, pets, inventory, and account progression.</span>
     </div>
 
-    <button onclick="showSection('home')" id="navHome" class="active">🏠 Home</button>
-    <button onclick="showSection('play')" id="navPlay">🎮 Play</button>
-    <button onclick="showSection('pet')" id="navPet">🐾 Pet</button>
-    <button onclick="showSection('shop')" id="navShop">🛒 Shop</button>
-    <button onclick="showSection('inventory')" id="navInventory">🎒 Inventory</button>
-    <button onclick="openAdmin()" id="navAdmin" class="hidden">🛡 Admin</button>
+    <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
+    <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play</button>
+    <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet</button>
+    <button onclick="showSection('shop')" id="navShop"><span class="navIcon">🛒</span>Shop</button>
+    <button onclick="showSection('inventory')" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
+    <button onclick="openAdmin()" id="navAdmin" class="hidden"><span class="navIcon">🛡</span>Admin</button>
 
     <div class="navUser" id="navUserBox">
       Not logged in
+    </div>
+
+    <div class="navFooter">
+      Solo games open instantly. Multiplayer games use rooms, seats, and chat.
     </div>
   </div>
 
@@ -685,12 +949,19 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
     <div id="home" class="section active">
       <div class="hero">
         <h2>Welcome to GameForge</h2>
-        <p>Your multiplayer game hub with rooms, chat, pets, items, and account progression.</p>
+        <p>A multiplayer browser arcade with persistent pets, rooms, live chat, and account progression.</p>
+        <div class="heroActions">
+          <button class="primary" onclick="showSection('play')">Play a Game</button>
+          <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+        </div>
       </div>
 
       <div class="grid2">
-        <div class="card accountBox" id="auth">
-          <h3>Account</h3>
+        <div class="card accountBox glow" id="auth">
+          <div class="cardHeader">
+            <h3>Account</h3>
+            <span id="accountStatePill" class="pill">Offline</span>
+          </div>
 
           <div class="row" id="loginControls">
             <input id="user" placeholder="username">
@@ -707,29 +978,67 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
           <p id="authStatus" class="muted"></p>
         </div>
 
-        <div class="card">
-          <h3>Your Companion</h3>
+        <div class="card glow">
+          <div class="cardHeader">
+            <h3>Your Companion</h3>
+            <button class="ghost" onclick="openPetWorldDirect()">Open</button>
+          </div>
           <div id="homePet"><p class="muted">Log in to load your pet.</p></div>
         </div>
       </div>
 
+      <div class="grid3">
+        <div class="quickStat">
+          <b id="quickRoomCount">0</b>
+          <span>Open rooms</span>
+        </div>
+        <div class="quickStat">
+          <b id="quickUserCount">0</b>
+          <span>Online users</span>
+        </div>
+        <div class="quickStat">
+          <b id="quickGameCount">0</b>
+          <span>Games available</span>
+        </div>
+      </div>
+
       <div class="card">
-        <h3>Start Playing</h3>
-        <p class="muted">Create a room, select a game, sit at the table, then start.</p>
-        <button class="primary" onclick="showSection('play')">Go to Play</button>
+        <div class="cardHeader">
+          <h3>Featured Games</h3>
+          <button class="ghost" onclick="showSection('play')">View All</button>
+        </div>
+        <div id="homeGames" class="homeGames">
+          <p class="muted">Loading games...</p>
+        </div>
       </div>
     </div>
 
     <div id="play" class="section">
       <div class="hero" id="playTop">
         <h2>Play</h2>
-        <p>Create or join a room, choose a game, sit, and launch — all in one place.</p>
+        <p>Solo games launch immediately. Multiplayer games use rooms, table seats, and live chat.</p>
       </div>
 
       <div class="playLayout" id="roomSetupCard">
         <div class="card">
-          <h3>Create or Join Room</h3>
-          <p class="muted">Public rooms can be joined from the right user panel. Private rooms require the code.</p>
+          <div class="cardHeader">
+            <h3>Game Library</h3>
+            <span class="pill">Solo + Multiplayer</span>
+          </div>
+
+          <input id="gameSearch" class="gameSearch" placeholder="Search games..." oninput="drawGames()">
+          <div id="gameList"></div>
+
+          <div class="soloLaunchCard">
+            <h3>Solo Launch</h3>
+            <p class="muted">Pet World and future 1-player games open instantly without rooms or seats.</p>
+            <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Multiplayer Room</h3>
+          <p class="muted">Use this only for games that need multiple players.</p>
 
           <div class="row">
             <label><input type="checkbox" id="privateRoom"> Private 🔒</label>
@@ -744,21 +1053,13 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
 
           <p>Current room: <b id="roomLabel">None</b> <span id="roomPrivacy"></span></p>
 
-          <hr style="border-color:#334155">
-
-          <h3>Choose Game</h3>
-          <div id="gameList"></div>
-        </div>
-
-        <div class="card">
-          <h3>Room Table</h3>
-          <div id="roomHelp" class="notice">Create or join a room first.</div>
+          <div id="roomHelp" class="notice">Create or join a room for multiplayer games.</div>
           <div id="roomPeople" class="muted" style="margin-top:8px"></div>
           <div id="ownerControls"></div>
 
           <div id="tableArea">
             <h3>Seats</h3>
-            <div id="seats"><i class="muted">Select a game to create seats.</i></div>
+            <div id="seats"><i class="muted">Select a multiplayer game to create seats.</i></div>
             <button id="startBtn" class="good" onclick="startGame()">Start Game</button>
             <p id="startHint" class="muted"></p>
           </div>
@@ -766,8 +1067,11 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
       </div>
 
       <div id="gameArea" class="card hidden">
-        <h2>Game Area</h2>
-        <p id="gameHint" class="muted">The started game appears here for seated players.</p>
+        <div class="cardHeader">
+          <h2 id="gameAreaTitle">Game Area</h2>
+          <button class="danger" onclick="exitGameMode()">Exit Game</button>
+        </div>
+        <p id="gameHint" class="muted">The started game appears here.</p>
         <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
@@ -775,9 +1079,13 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
     <div id="pet" class="section">
       <div class="hero">
         <h2>My Pet</h2>
-        <p>Your account companion. Care, grow, train, and prepare for battles.</p>
+        <p>Your account companion. Care, grow, train, and prepare for future battles.</p>
+        <div class="heroActions">
+          <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+          <button class="primary" onclick="showSection('shop')">Visit Shop</button>
+        </div>
       </div>
-      <div class="card">
+      <div class="card glow">
         <div id="petPanel"><p class="muted">Log in to load your pet.</p></div>
       </div>
     </div>
@@ -785,7 +1093,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
     <div id="shop" class="section">
       <div class="hero">
         <h2>Shop</h2>
-        <p>Buy food, care tools, and training items.</p>
+        <p>Buy food, care tools, and training supplies for your companion.</p>
       </div>
       <div id="shopPanel" class="card"><p class="muted">Log in to load the shop.</p></div>
     </div>
@@ -832,29 +1140,36 @@ let currentRoom=null;
 let room=null;
 let games=[];
 let loadedGameKey='';
+let directGameKey='';
 let overlayChatCollapsed=false;
 let lastChatCount=0;
 let petProfile=null;
 let petShop={};
 let petMoves={};
+let latestPresenceUsers=[];
+let latestPresenceRooms=[];
 
 function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.body.classList.remove('directGameMode');
 
-  let sec=document.getElementById(id);
-  if(sec)sec.classList.add('active');
+  if(!document.body.classList.contains('gameMode')){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
 
-  let map={
-    home:'navHome',
-    play:'navPlay',
-    pet:'navPet',
-    shop:'navShop',
-    inventory:'navInventory'
-  };
+    let sec=document.getElementById(id);
+    if(sec)sec.classList.add('active');
 
-  if(map[id]&&document.getElementById(map[id])){
-    document.getElementById(map[id]).classList.add('active');
+    let map={
+      home:'navHome',
+      play:'navPlay',
+      pet:'navPet',
+      shop:'navShop',
+      inventory:'navInventory'
+    };
+
+    if(map[id]&&document.getElementById(map[id])){
+      document.getElementById(map[id]).classList.add('active');
+    }
   }
 }
 
@@ -863,12 +1178,17 @@ function openAdmin(){
   window.open('/admin','_blank');
 }
 
+/* ===== ACCOUNT ===== */
+
 function drawAuth(){
   if(me){
     loginControls.classList.add('hidden');
     loggedInControls.classList.remove('hidden');
     loggedInLabel.innerText='Logged in as '+me;
     authStatus.innerText='';
+    accountStatePill.innerText='Online';
+    accountStatePill.style.color='#86efac';
+
     navUserBox.innerHTML='<b>'+escapeHtml(me)+'</b><br><span>'+(admin?'Admin':'Player')+'</span>';
 
     if(admin){
@@ -881,6 +1201,9 @@ function drawAuth(){
     loggedInControls.classList.add('hidden');
     loggedInLabel.innerText='';
     authStatus.innerText='Log in to use pets, inventory, rooms, and multiplayer.';
+    accountStatePill.innerText='Offline';
+    accountStatePill.style.color='#cbd5e1';
+
     navUserBox.innerText='Not logged in';
     navAdmin.classList.add('hidden');
   }
@@ -954,7 +1277,7 @@ function logout(){
   if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
 }
 
-/* ===== WEBSOCKET / ROOM LOGIC ===== */
+/* ===== WEBSOCKET / ROOMS ===== */
 
 function connect(){
   if(!me)return;
@@ -969,7 +1292,12 @@ function connect(){
   socket.onmessage=function(e){
     let m=JSON.parse(e.data);
 
-    if(m.type==='presence')drawPresence(m.users||[],m.rooms||[]);
+    if(m.type==='presence'){
+      latestPresenceUsers=m.users||[];
+      latestPresenceRooms=m.rooms||[];
+      drawPresence(latestPresenceUsers,latestPresenceRooms);
+      updateQuickStats();
+    }
 
     if(m.type==='roomJoined'||m.type==='roomUpdate'){
       room=m.room;
@@ -1028,21 +1356,92 @@ function send(obj){
 async function loadGames(){
   games=await (await fetch('/api/games')).json();
   drawGames();
+  drawHomeGames();
+  updateQuickStats();
+}
+
+function gameIsSolo(g){
+  return Number(g.maxPlayers||g.seats||0)<=1 || Number(g.seats||0)<=1 || g.id==='petworld' || g.id==='pixelquest';
 }
 
 function drawGames(){
   let g=document.getElementById('gameList');
   if(!g)return;
 
+  let q=(gameSearch&&gameSearch.value?gameSearch.value:'').toLowerCase().trim();
+
   g.innerHTML='';
 
-  games.forEach(function(x){
-    let b=document.createElement('button');
-    b.className='gameBtn '+(room&&room.selectedGame&&room.selectedGame.id===x.id?'selected':'');
-    b.innerHTML='<b>'+escapeHtml(x.name)+'</b><br><span class="muted">'+x.minPlayers+'-'+x.maxPlayers+' players</span>';
-    b.onclick=function(){selectGame(x.id);};
-    g.appendChild(b);
+  games
+    .filter(x=>!q||String(x.name||'').toLowerCase().includes(q)||String(x.id||'').toLowerCase().includes(q))
+    .forEach(function(x){
+      let solo=gameIsSolo(x);
+
+      let b=document.createElement('button');
+      b.className='gameBtn '+(room&&room.selectedGame&&room.selectedGame.id===x.id?'selected':'');
+      b.innerHTML=
+        '<span class="gameType">'+(solo?'Solo':'Multiplayer')+'</span>'+
+        '<b>'+escapeHtml(x.name)+'</b><br>'+
+        '<span class="muted">'+
+          (solo?'Launches instantly':'Room game · '+x.minPlayers+'-'+x.maxPlayers+' players')+
+        '</span>';
+
+      b.onclick=function(){
+        if(solo){
+          launchSoloGame(x);
+        }else{
+          selectGame(x.id);
+        }
+      };
+
+      g.appendChild(b);
+    });
+
+  if(!g.innerHTML){
+    g.innerHTML='<p class="muted">No games found.</p>';
+  }
+}
+
+function drawHomeGames(){
+  if(!homeGames)return;
+
+  let featured=games.slice(0,3);
+  let pet=games.find(g=>g.id==='petworld');
+  if(pet){
+    featured=[pet].concat(games.filter(g=>g.id!=='petworld').slice(0,2));
+  }
+
+  homeGames.innerHTML='';
+
+  featured.forEach(function(g){
+    let solo=gameIsSolo(g);
+    let d=document.createElement('div');
+    d.className='homeGame';
+    d.innerHTML=
+      '<div>'+
+        '<strong>'+escapeHtml(g.name)+'</strong>'+
+        '<small>'+(solo?'Solo account game':'Multiplayer room game')+'</small>'+
+      '</div>'+
+      '<button class="'+(solo?'gold':'primary')+'" onclick="'+(solo?'launchSoloById':'selectGameFromHome')+'(\''+escapeAttr(g.id)+'\')">'+
+        (solo?'Launch':'Select')+
+      '</button>';
+
+    homeGames.appendChild(d);
   });
+
+  if(!homeGames.innerHTML){
+    homeGames.innerHTML='<p class="muted">No games found.</p>';
+  }
+}
+
+function launchSoloById(id){
+  let g=games.find(x=>x.id===id);
+  if(g)launchSoloGame(g);
+}
+
+function selectGameFromHome(id){
+  showSection('play');
+  selectGame(id);
 }
 
 function createRoom(){
@@ -1071,8 +1470,15 @@ function leaveRoom(){
 }
 
 function selectGame(id){
+  let g=games.find(x=>x.id===id);
+
+  if(g&&gameIsSolo(g)){
+    launchSoloGame(g);
+    return;
+  }
+
   if(!room){
-    alert('Create or join a room first.');
+    alert('Create or join a room first for multiplayer games.');
     showSection('play');
     return;
   }
@@ -1102,7 +1508,7 @@ function closeRoom(){
 
 function drawRoom(){
   roomChatPanel.classList.toggle('hidden',!room);
-  gameArea.classList.toggle('hidden',!room);
+  gameArea.classList.toggle('hidden',!room&&!document.body.classList.contains('directGameMode'));
 
   roomLabel.innerText=room?room.id:'None';
 
@@ -1114,7 +1520,7 @@ function drawRoom(){
 
   roomHelp.innerHTML=room
     ? (room.private?'Private room: share the code <b>'+room.id+'</b> to invite people.':'Public room: people can click your name in the right panel to join.')
-    : 'Create or join a room first.';
+    : 'Create or join a room for multiplayer games.';
 
   drawGames();
 
@@ -1164,7 +1570,7 @@ function drawRoom(){
   }else{
     startBtn.style.display='none';
     startHint.innerText='';
-    seats.innerHTML='<i class="muted">Select a game to create seats.</i>';
+    seats.innerHTML='<i class="muted">Select a multiplayer game to create seats.</i>';
   }
 
   drawChat(room?room.chat:[],false);
@@ -1173,12 +1579,15 @@ function drawRoom(){
 
 async function maybeLoadGame(){
   if(!(room&&room.started&&room.selectedGame)){
-    document.body.classList.remove('gameMode');
-    gameHint.innerText='The started game appears here for seated players.';
-    gameFrame.removeAttribute('srcdoc');
+    if(!document.body.classList.contains('directGameMode')){
+      document.body.classList.remove('gameMode');
+      gameHint.innerText='The started game appears here.';
+      gameFrame.removeAttribute('srcdoc');
+    }
     return;
   }
 
+  document.body.classList.remove('directGameMode');
   document.body.classList.add('gameMode');
   showSection('play');
 
@@ -1186,6 +1595,7 @@ async function maybeLoadGame(){
   let mySeated=seated.some(function(x){return x.name===me;});
 
   gameHint.innerText=mySeated?'You are seated. Play below.':'You are watching this table.';
+  gameAreaTitle.innerText=room.selectedGame.name;
 
   let key=room.id+'|'+room.selectedGame.file+'|'+room.started+'|'+room.seats.map(function(x){return x?x.name:'';}).join(',');
 
@@ -1199,7 +1609,50 @@ async function maybeLoadGame(){
 
   let mySeatIndex=room.seats.findIndex(function(x){return x&&x.name===me;});
 
-  let html=await (await fetch('/games/'+room.selectedGame.file+'?v='+Date.now())).text();
+  await loadGameIntoFrame(room.selectedGame,players,mySeatIndex);
+}
+
+/* ===== SOLO GAME LAUNCH ===== */
+
+function openPetWorldDirect(){
+  let g=games.find(x=>x.id==='petworld');
+
+  if(!g){
+    alert('Pet World is not in games.json yet.');
+    return;
+  }
+
+  launchSoloGame(g);
+}
+
+async function launchSoloGame(g){
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
+    return;
+  }
+
+  document.body.classList.remove('gameMode');
+  document.body.classList.add('directGameMode');
+  showSection('play');
+
+  gameArea.classList.remove('hidden');
+  gameAreaTitle.innerText=g.name;
+  gameHint.innerText='Solo account game. Progress is tied to your username.';
+
+  roomChatPanel.classList.add('hidden');
+
+  let key='solo|'+g.file+'|'+me;
+
+  if(directGameKey===key)return;
+  directGameKey=key;
+
+  let players=[{seat:0,name:me}];
+  await loadGameIntoFrame(g,players,0);
+}
+
+async function loadGameIntoFrame(g,players,mySeatIndex){
+  let html=await (await fetch('/games/'+g.file+'?v='+Date.now())).text();
 
   let inject =
     '<script>'+
@@ -1230,6 +1683,16 @@ async function maybeLoadGame(){
   };
 
   gameFrame.srcdoc=html;
+}
+
+function exitGameMode(){
+  document.body.classList.remove('gameMode');
+  document.body.classList.remove('directGameMode');
+  gameArea.classList.add('hidden');
+  gameFrame.removeAttribute('srcdoc');
+  directGameKey='';
+  loadedGameKey='';
+  showSection('play');
 }
 
 /* ===== CHAT / PRESENCE ===== */
@@ -1316,6 +1779,12 @@ function drawPresence(users,roomsList){
 
     presence.appendChild(d);
   });
+}
+
+function updateQuickStats(){
+  quickUserCount.innerText=latestPresenceUsers.length||0;
+  quickRoomCount.innerText=latestPresenceRooms.length||0;
+  quickGameCount.innerText=games.length||0;
 }
 
 /* ===== PET / SHOP / INVENTORY ===== */
@@ -1405,7 +1874,7 @@ function drawPet(){
     html+='<div>Light: <b>'+Number(t.light||0)+'</b></div>';
     html+='<div>Dark: <b>'+Number(t.dark||0)+'</b></div>';
     html+='</div>';
-    html+='<div class="petActions"><button onclick="careEggRandom()" class="gold">Care Egg</button></div>';
+    html+='<div class="petActions"><button onclick="openPetWorldDirect()" class="gold">Care in Pet World</button></div>';
     html+='</div>';
   }else{
     html+='<div class="card"><h3>Stats</h3>';
@@ -1416,6 +1885,7 @@ function drawPet(){
     html+='<div class="petActions">';
     html+='<button onclick="petUseItem(\'berry\')" class="good">Feed</button>';
     html+='<button onclick="petPlay()" class="primary">Play</button>';
+    html+='<button onclick="openPetWorldDirect()" class="gold">Open Pet World</button>';
     html+='</div>';
     html+='</div>';
 
@@ -1427,8 +1897,6 @@ function drawPet(){
     html+='</div>';
   }
 
-  html+='<div class="card"><button class="primary" onclick="launchPetWorld()">Open Pet World</button></div>';
-
   petPanel.innerHTML=html;
 }
 
@@ -1439,26 +1907,6 @@ function petStat(name,val){
       '<div class="statTop"><span>'+escapeHtml(name)+'</span><b>'+val+'</b></div>'+
       '<div class="statBar"><div class="statFill" style="width:'+Math.max(0,Math.min(100,val))+'%"></div></div>'+
     '</div>';
-}
-
-async function careEggRandom(){
-  let actions=['warm','cold','wet','dry','light','dark'];
-  let action=actions[Math.floor(Math.random()*actions.length)];
-
-  let res=await fetch('/api/pet/care-egg',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({username:me,action:action})
-  });
-
-  let data=await res.json();
-  if(data.error)return alert(data.error);
-
-  petProfile=data.profile;
-  drawPet();
-  drawInventory();
-
-  if(data.message)alert(data.message);
 }
 
 async function petUseItem(itemId){
@@ -1566,24 +2014,6 @@ function drawInventory(){
   inventoryPanel.innerHTML=html;
 }
 
-function launchPetWorld(){
-  if(!room){
-    showSection('play');
-    alert('Create a room, select Pet World, sit, and start. This keeps your username connected.');
-    return;
-  }
-
-  let petGame=games.find(function(g){return g.id==='petworld';});
-
-  if(!petGame){
-    alert('Pet World is not in games.json yet.');
-    return;
-  }
-
-  selectGame('petworld');
-  showSection('play');
-}
-
 /* ===== SAVE BRIDGE ===== */
 
 function handleGameSaveLoad(msg){
@@ -1621,7 +2051,7 @@ function handleGameSaveStore(msg){
 window.addEventListener('message',function(e){
   let msg=e.data||{};
 
-  if(msg.type==='move'&&socket){
+  if(msg.type==='move'&&socket&&!document.body.classList.contains('directGameMode')){
     send({type:'gameMove',data:msg.data});
   }
 
@@ -1667,6 +2097,7 @@ if(me){
 
 loadGames();
 drawRoom();
+updateQuickStats();
 </script>
 </body>
 </html>
