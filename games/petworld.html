@@ -1,1777 +1,573 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Pet World</title>
 
-<!--
-GameForge AI / PetWorld maintainer notes:
-- Keep comments useful. Update comments when gameplay or architecture changes.
-- PetWorld is a direct account companion experience, not a room game.
-- Primary pet actions must remain visible with the pet. Avoid layouts where players scroll away from the companion to act.
-- Server owns profile changes. Do not permanently change pet/profile data without calling the matching API.
-- Pets store only move IDs. Move definitions come from /api/pet/profile.
-- This interface is the "Companion Room / cockpit" layout: center pet stage, left quick status, right action controls, lower drawer for secondary systems.
--->
-
 <style>
-:root{
-  --ink:#172033;
-  --muted:#64748b;
-  --glass:rgba(255,255,255,.76);
-  --glass2:rgba(255,255,255,.58);
-  --line:rgba(255,255,255,.38);
-  --blue:#2563eb;
-  --blue2:#1d4ed8;
-  --green:#16a34a;
-  --gold:#facc15;
-  --red:#dc2626;
-  --purple:#7c3aed;
-  --sky:#38bdf8;
-  --shadow:0 24px 65px rgba(15,23,42,.14);
-}
-
-*{box-sizing:border-box}
+/*
+GameForge PetWorld UI Rules:
+- Keep pet ALWAYS visible (center stage)
+- Actions must be visible WITHOUT scrolling
+- Side panels hold systems (quests, explore, training)
+- Avoid vertical stacking — use horizontal layout
+*/
 
 body{
   margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  color:var(--ink);
+  font-family:Arial, sans-serif;
+  background:linear-gradient(180deg,#0f172a,#020617);
+  color:#fff;
   overflow:hidden;
-  background:
-    radial-gradient(circle at 12% 14%,rgba(56,189,248,.36),transparent 28%),
-    radial-gradient(circle at 88% 14%,rgba(250,204,21,.32),transparent 25%),
-    radial-gradient(circle at 50% 96%,rgba(34,197,94,.26),transparent 36%),
-    linear-gradient(135deg,#dbeafe,#f8fafc 54%,#dcfce7);
 }
 
-button,input{font-family:inherit}
+/* ===== MAIN LAYOUT ===== */
 
-.wrap{
+.wrapper{
+  display:flex;
   height:100vh;
-  min-height:690px;
+}
+
+/* LEFT PANEL */
+.leftPanel{
+  width:260px;
   padding:12px;
-  display:grid;
-  grid-template-rows:auto minmax(0,1fr)176px;
-  gap:10px;
+  background:rgba(0,0,0,0.35);
+  border-right:1px solid rgba(255,255,255,0.05);
+  overflow-y:auto;
 }
 
-.top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  background:var(--glass);
-  backdrop-filter:blur(18px);
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:9px 12px;
-  box-shadow:0 18px 45px rgba(15,23,42,.10);
-}
-
-.brand h1{
-  margin:0;
-  font-size:23px;
-  letter-spacing:-.8px;
-}
-
-.brand span{
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-  margin-top:2px;
-}
-
-.topRight{
-  display:flex;
-  gap:7px;
-  align-items:center;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:6px 10px;
-  border-radius:999px;
-  background:rgba(255,255,255,.74);
-  border:1px solid rgba(148,163,184,.35);
-  font-size:12px;
-  font-weight:900;
-  color:#334155;
-}
-
-.cockpit{
-  min-height:0;
-  display:grid;
-  grid-template-columns:260px minmax(0,1fr)330px;
-  gap:10px;
-}
-
-.panel,.stageShell,.drawer{
-  background:var(--glass);
-  backdrop-filter:blur(18px);
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-}
-
-.panel{
-  border-radius:28px;
-  padding:12px;
-  min-height:0;
-  overflow:auto;
-}
-
-.stageShell{
-  border-radius:32px;
-  overflow:hidden;
-  display:grid;
-  grid-template-rows:minmax(0,1fr)88px;
-  min-height:0;
-}
-
-.petStage{
-  position:relative;
-  overflow:hidden;
-  min-height:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:
-    radial-gradient(circle at 50% 45%,rgba(255,255,255,.96),rgba(255,255,255,.25) 32%,transparent 58%),
-    linear-gradient(180deg,#93c5fd 0%,#bfdbfe 42%,#86efac 100%);
-}
-
-.clouds{
-  position:absolute;
-  inset:0;
-  opacity:.62;
-  pointer-events:none;
-  background:
-    radial-gradient(ellipse at 16% 20%,rgba(255,255,255,.9),transparent 7%),
-    radial-gradient(ellipse at 27% 22%,rgba(255,255,255,.7),transparent 8%),
-    radial-gradient(ellipse at 78% 17%,rgba(255,255,255,.88),transparent 8%),
-    radial-gradient(ellipse at 68% 19%,rgba(255,255,255,.65),transparent 7%);
-}
-
-.sparkles{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 20% 36%,rgba(255,255,255,.9),transparent 1.2%),
-    radial-gradient(circle at 72% 33%,rgba(255,255,255,.85),transparent 1%),
-    radial-gradient(circle at 62% 62%,rgba(255,255,255,.8),transparent 1.2%),
-    radial-gradient(circle at 34% 70%,rgba(255,255,255,.8),transparent 1%);
-  animation:twinkle 2.8s ease-in-out infinite;
-}
-
-@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:.86}}
-
-.ground{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:132px;
-  background:
-    radial-gradient(ellipse at center,rgba(21,128,61,.42),transparent 58%),
-    linear-gradient(180deg,rgba(34,197,94,.18),rgba(22,101,52,.72));
-}
-
-.aura{
-  position:absolute;
-  width:430px;
-  height:430px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.88),rgba(255,255,255,.18) 45%,transparent 70%);
-  filter:blur(2px);
-  animation:auraPulse 4s ease-in-out infinite;
-}
-
-.aura.fire{background:radial-gradient(circle,rgba(254,215,170,.95),rgba(251,146,60,.23) 46%,transparent 70%)}
-.aura.water{background:radial-gradient(circle,rgba(186,230,253,.95),rgba(14,165,233,.26) 46%,transparent 70%)}
-.aura.nature{background:radial-gradient(circle,rgba(187,247,208,.95),rgba(34,197,94,.26) 46%,transparent 70%)}
-.aura.shadow{background:radial-gradient(circle,rgba(221,214,254,.9),rgba(124,58,237,.26) 46%,transparent 70%)}
-.aura.earth{background:radial-gradient(circle,rgba(254,243,199,.95),rgba(120,113,108,.26) 46%,transparent 70%)}
-
-@keyframes auraPulse{
-  0%,100%{transform:scale(.94);opacity:.75}
-  50%{transform:scale(1.06);opacity:1}
-}
-
-.petOrb{
-  position:relative;
-  width:315px;
-  height:315px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.42);
-  box-shadow:0 0 90px rgba(255,255,255,.86), inset 0 0 52px rgba(255,255,255,.64);
-  z-index:2;
-  cursor:pointer;
-  transition:transform .6s ease;
-  animation:floaty 3.3s ease-in-out infinite;
-}
-
-.petOrb.wanderLeft{transform:translateX(-54px)}
-.petOrb.wanderRight{transform:translateX(54px)}
-.petOrb.wanderUp{transform:translateY(-24px)}
-.petOrb.playful{animation:playfulFloat 2.1s ease-in-out infinite}
-.petOrb.lazy,.petOrb.napping{animation:napFloat 4.8s ease-in-out infinite}
-.petOrb.aggressive{animation:sharpFloat 2.2s ease-in-out infinite}
-.petOrb.calm{animation:calmFloat 4s ease-in-out infinite}
-.petOrb.curious{animation:curiousFloat 2.8s ease-in-out infinite}
-.petOrb.moody{animation:moodyFloat 2.9s ease-in-out infinite}
-
-@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-@keyframes playfulFloat{0%,100%{transform:translateY(0) rotate(-2deg)}35%{transform:translateY(-20px) rotate(3deg)}70%{transform:translateY(-6px) rotate(-4deg)}}
-@keyframes napFloat{0%,100%{transform:translateY(3px) scale(.99)}50%{transform:translateY(-5px) scale(1.01)}}
-@keyframes sharpFloat{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-12px) rotate(-2deg)}55%{transform:translateY(-12px) rotate(2deg)}}
-@keyframes calmFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.025)}}
-@keyframes curiousFloat{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-8px) rotate(-4deg)}75%{transform:translateY(-8px) rotate(4deg)}}
-@keyframes moodyFloat{0%,100%{transform:translateY(0) rotate(0)}20%{transform:translateY(-16px) rotate(5deg)}55%{transform:translateY(-3px) rotate(-6deg)}}
-
-.petImg{
-  position:absolute;
-  width:210px;
-  height:210px;
-  object-fit:contain;
-  z-index:2;
-  pointer-events:none;
-  filter:drop-shadow(0 20px 20px rgba(15,23,42,.25));
-  animation:breatheImg 2.4s ease-in-out infinite;
-}
-
-.petImg.hide{display:none}
-
-.petEmoji{
-  font-size:136px;
-  filter:drop-shadow(0 20px 20px rgba(15,23,42,.23));
-  animation:breathe 2.4s ease-in-out infinite;
-  transform-origin:center;
-}
-
-.petEmoji.hide{display:none}
-
-.petEmoji.eggNearHatch,.petImg.eggNearHatch{animation:eggWobble 1.1s ease-in-out infinite}
-.petEmoji.carePulse,.petImg.carePulse{animation:carePop .62s ease}
-.petEmoji.tapPulse,.petImg.tapPulse{animation:tapBounce .44s ease}
-
-@keyframes breathe{0%,100%{transform:scale(1) rotate(-1deg)}50%{transform:scale(1.08) rotate(1deg)}}
-@keyframes breatheImg{0%,100%{transform:scale(1) rotate(-1deg)}50%{transform:scale(1.06) rotate(1deg)}}
-@keyframes eggWobble{0%,100%{transform:rotate(0deg) scale(1.06)}20%{transform:rotate(-7deg) scale(1.07)}40%{transform:rotate(7deg) scale(1.08)}60%{transform:rotate(-5deg) scale(1.07)}80%{transform:rotate(5deg) scale(1.08)}}
-@keyframes carePop{0%{transform:scale(1)}35%{transform:scale(1.28) rotate(-4deg)}70%{transform:scale(.98) rotate(3deg)}100%{transform:scale(1)}}
-@keyframes tapBounce{0%{transform:scale(1)}45%{transform:scale(1.13) translateY(-8px)}100%{transform:scale(1)}}
-
-.floatingFx{
-  position:absolute;
-  left:50%;
-  top:43%;
-  transform:translate(-50%,-50%);
-  font-weight:900;
-  font-size:32px;
-  pointer-events:none;
-  opacity:0;
-  animation:floatUp 1.1s ease forwards;
-  text-shadow:0 3px 10px rgba(15,23,42,.18);
-  z-index:8;
-}
-
-@keyframes floatUp{
-  0%{opacity:0;transform:translate(-50%,-20%) scale(.8)}
-  15%{opacity:1}
-  100%{opacity:0;transform:translate(-50%,-160%) scale(1.22)}
-}
-
-.flyingItem{
-  position:absolute;
-  width:58px;
-  height:58px;
-  object-fit:contain;
-  z-index:6;
-  pointer-events:none;
-  animation:itemFly .85s ease forwards;
-  filter:drop-shadow(0 10px 10px rgba(15,23,42,.22));
-}
-
-@keyframes itemFly{
-  0%{opacity:0;transform:translate(210px,80px) scale(.6) rotate(-18deg)}
-  20%{opacity:1}
-  100%{opacity:0;transform:translate(0,0) scale(1.25) rotate(16deg)}
-}
-
-.speech{
-  position:relative;
-  z-index:3;
-  margin:0;
-  padding:12px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  font-weight:900;
-  color:#334155;
-  background:rgba(255,255,255,.66);
-  border-top:1px solid rgba(255,255,255,.45);
-}
-
-h2,h3{margin:0}
-
-.muted{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.35;
-}
-
-.petCard{
-  background:var(--glass2);
-  border:1px solid rgba(148,163,184,.28);
-  border-radius:22px;
-  padding:12px;
-}
-
-.petCard h2{
-  font-size:22px;
-  margin-bottom:3px;
-}
-
-.renameRow{
-  display:flex;
-  gap:7px;
-  margin-top:10px;
-}
-
-input{
-  min-width:0;
+/* CENTER STAGE */
+.centerStage{
   flex:1;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid #cbd5e1;
-  background:#fff;
-  font-size:14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
 }
 
-button{
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid #cbd5e1;
-  background:#fff;
-  cursor:pointer;
-  font-weight:900;
-  transition:.15s ease;
+/* RIGHT PANEL */
+.rightPanel{
+  width:320px;
+  padding:12px;
+  background:rgba(0,0,0,0.35);
+  border-left:1px solid rgba(255,255,255,0.05);
+  overflow-y:auto;
 }
 
-button:hover{
-  transform:translateY(-1px);
-  box-shadow:0 6px 16px rgba(15,23,42,.12);
+/* ===== PET DISPLAY ===== */
+
+.petContainer{
+  position:relative;
+  text-align:center;
 }
 
-button.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;border-color:var(--blue)}
-button.good{background:linear-gradient(135deg,#16a34a,#22c55e);color:white;border-color:#16a34a}
-button.gold{background:linear-gradient(135deg,#facc15,#f59e0b);color:#111827;border-color:#facc15}
-button.purple{background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;border-color:#7c3aed}
-button.danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:white;border-color:#dc2626}
-button.sky{background:linear-gradient(135deg,#38bdf8,#0284c7);color:white;border-color:#38bdf8}
-button.ghost{background:rgba(255,255,255,.65);color:#334155}
-button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.petImage{
+  width:180px;
+  height:180px;
+  object-fit:contain;
+  transition:transform .2s ease;
+}
 
-.statStack{
-  display:grid;
-  gap:8px;
+.petImage.bounce{
+  transform:translateY(-10px);
+}
+
+.petName{
+  font-size:20px;
+  font-weight:bold;
+  margin-top:8px;
+}
+
+.petMeta{
+  font-size:12px;
+  opacity:.7;
+}
+
+/* ===== QUICK STATS ===== */
+
+.statRow{
+  display:flex;
+  gap:6px;
   margin-top:10px;
 }
 
-.statMini{
-  background:rgba(255,255,255,.70);
-  border:1px solid rgba(148,163,184,.30);
-  border-radius:16px;
-  padding:8px;
-}
-
-.statMiniTop{
-  display:flex;
-  justify-content:space-between;
-  font-size:11px;
-  color:#475569;
-  margin-bottom:5px;
-  font-weight:900;
-}
-
-.statBar{
-  height:9px;
-  border-radius:999px;
-  background:#e5e7eb;
+.stat{
+  flex:1;
+  height:8px;
+  border-radius:4px;
+  background:#111;
   overflow:hidden;
 }
 
 .statFill{
   height:100%;
-  border-radius:999px;
-  background:linear-gradient(90deg,#22c55e,#86efac);
-  transition:width .35s ease;
 }
 
-.statFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
-.statFill.low{background:linear-gradient(90deg,#ef4444,#f97316)}
+/* ===== BUTTONS ===== */
 
-.progressCard{
-  margin-top:10px;
-  background:rgba(255,255,255,.70);
-  border:1px solid rgba(148,163,184,.30);
-  border-radius:16px;
-  padding:9px;
-}
-
-.progress{
-  height:10px;
-  border-radius:999px;
-  background:#e5e7eb;
-  overflow:hidden;
+.btn{
+  background:#1f2937;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+  color:#fff;
+  cursor:pointer;
   margin-top:6px;
+  width:100%;
 }
 
-.progressFill{
-  height:100%;
-  border-radius:999px;
-  background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);
-  transition:width .35s ease;
+.btn:hover{
+  background:#374151;
 }
 
-.actionsTitle{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
+.btn.gold{
+  background:#facc15;
+  color:#000;
+  font-weight:bold;
+}
+
+/* ===== PANELS ===== */
+
+.card{
+  background:rgba(255,255,255,0.04);
+  border-radius:10px;
+  padding:10px;
   margin-bottom:10px;
 }
 
-.actionGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
+/* ===== QUESTS ===== */
+
+.quest{
+  font-size:13px;
+  margin-bottom:6px;
 }
 
-.actionBtn{
-  min-height:94px;
-  text-align:left;
-  padding:11px;
-  border-radius:18px;
+/* ===== EXPLORE ===== */
+
+.zone{
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;
+  padding:8px;
+  margin-bottom:8px;
+  cursor:pointer;
 }
 
-.actionBtn strong{display:block;font-size:14px}
-.actionBtn span{display:block;margin-top:4px;font-size:12px;line-height:1.25;opacity:.88}
-.actionBtn small{display:block;margin-top:7px;font-size:11px;opacity:.82}
-
-.quickTools{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:10px;
+.zone:hover{
+  background:rgba(255,255,255,0.05);
 }
 
-.tabs{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:7px;
-  margin-bottom:9px;
-}
-
-.tabs button{
-  padding:9px 6px;
-  font-size:12px;
-}
-
-.tabs button.active{
-  background:#dbeafe;
-  border-color:#60a5fa;
-  color:#1d4ed8;
-}
-
-.drawer{
-  border-radius:26px;
-  padding:10px;
-  min-height:0;
-  display:grid;
-  grid-template-columns:260px minmax(0,1fr);
-  gap:10px;
-}
-
-.drawerPanel{
-  min-height:0;
-  overflow:auto;
-  background:rgba(255,255,255,.56);
-  border:1px solid rgba(148,163,184,.25);
-  border-radius:20px;
-  padding:10px;
-}
-
-.hidden{display:none!important}
-
-.item,.rosterCard,.detailBox{
-  border:1px solid rgba(148,163,184,.28);
-  background:rgba(255,255,255,.76);
-  border-radius:18px;
-  padding:10px;
-  margin:7px 0;
-}
-
-.itemTop,.rosterTop{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  align-items:center;
-}
-
-.itemName,.rosterName{font-weight:900}
-
-.itemDesc,.rosterDesc{
-  font-size:12px;
-  color:var(--muted);
-  margin:5px 0 8px;
-  line-height:1.3;
-}
-
-.rosterCard.active{
-  border-color:#38bdf8;
-  box-shadow:0 0 0 3px rgba(56,189,248,.14);
-}
-
-.rosterRow{
-  display:grid;
-  grid-template-columns:54px 1fr;
-  gap:10px;
-  align-items:center;
-}
-
-.rosterAvatar{
-  width:54px;
-  height:54px;
-  border-radius:17px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.78);
-  border:1px solid rgba(148,163,184,.30);
-  position:relative;
-  overflow:hidden;
-  font-size:30px;
-}
-
-.rosterAvatar img{
-  width:50px;
-  height:50px;
-  object-fit:contain;
-  position:absolute;
-}
-
-.rosterActions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-top:7px;
-}
-
-.rosterActions button{
-  padding:7px 9px;
-  font-size:12px;
-}
-
-.detailGrid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-}
-
-.detailBox{
-  margin:0;
-}
-
-.detailBox b{display:block}
-.detailBox span{font-size:12px;color:var(--muted)}
-
-.moves{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-
-.movePill{
-  padding:7px 10px;
-  border-radius:999px;
-  background:#eef2ff;
-  border:1px solid #c7d2fe;
-  color:#3730a3;
-  font-size:12px;
-  font-weight:900;
-}
+/* ===== LOG ===== */
 
 .log{
-  height:100%;
-  min-height:126px;
-  overflow:auto;
-  background:#fffbea;
-  border:1px solid #d6bd6b;
-  border-radius:17px;
-  padding:8px;
+  height:120px;
+  overflow-y:auto;
   font-size:12px;
-  color:#1f2937;
-  line-height:1.35;
+  opacity:.85;
 }
 
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:22px;
-  transform:translateX(-50%);
-  background:#111827;
+.logEntry{
+  margin-bottom:4px;
+}
+
+/* ===== FLOAT TEXT ===== */
+
+.floatText{
+  position:absolute;
   color:#fff;
-  border-radius:999px;
-  padding:11px 16px;
-  font-weight:900;
-  box-shadow:0 15px 40px rgba(15,23,42,.35);
-  opacity:0;
+  animation:floatUp 1s ease forwards;
   pointer-events:none;
-  transition:.25s ease;
-  z-index:99;
 }
 
-.toast.show{opacity:1;bottom:32px}
-
-.hatchOverlay,.moveOverlay{
-  position:fixed;
-  inset:0;
-  background:
-    radial-gradient(circle,rgba(255,255,255,.95),rgba(250,204,21,.85) 26%,rgba(37,99,235,.78) 70%);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:98;
-  color:white;
-  text-align:center;
+@keyframes floatUp{
+  0%{opacity:1;transform:translateY(0);}
+  100%{opacity:0;transform:translateY(-40px);}
 }
 
-.moveOverlay{
-  background:
-    radial-gradient(circle,rgba(255,255,255,.92),rgba(124,58,237,.82) 30%,rgba(15,23,42,.86) 76%);
-}
-
-.hatchOverlay.show,.moveOverlay.show{
-  display:flex;
-  animation:overlayFade 2.2s ease forwards;
-}
-
-.overlayBox{
-  background:rgba(15,23,42,.72);
-  border:1px solid rgba(255,255,255,.32);
-  backdrop-filter:blur(14px);
-  border-radius:30px;
-  padding:32px;
-  box-shadow:0 30px 80px rgba(15,23,42,.35);
-}
-
-.overlayBox .bigImg{
-  width:150px;
-  height:150px;
-  object-fit:contain;
-  animation:hatchPop 1.4s ease infinite;
-}
-
-.overlayBox .bigEmoji{
-  font-size:96px;
-  animation:hatchPop 1.4s ease infinite;
-}
-
-.overlayBox h1{margin:10px 0 4px}
-
-@keyframes overlayFade{
-  0%{opacity:0}
-  10%{opacity:1}
-  86%{opacity:1}
-  100%{opacity:0}
-}
-
-@keyframes hatchPop{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}
-
-@media(max-width:1120px){
-  body{overflow:auto}
-  .wrap{height:auto}
-  .cockpit{grid-template-columns:1fr}
-  .panel{overflow:visible}
-  .stageShell{min-height:560px}
-  .petStage{min-height:450px}
-  .drawer{grid-template-columns:1fr}
-}
-
-@media(max-width:640px){
-  .top{align-items:flex-start;flex-direction:column}
-  .actionGrid,.quickTools,.detailGrid{grid-template-columns:1fr}
-  .petOrb{width:260px;height:260px}
-  .petImg{width:175px;height:175px}
-  .petEmoji{font-size:112px}
-}
 </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="top">
-    <div class="brand">
-      <h1>Pet World</h1>
-      <span>Care, train, explore, and collect companions.</span>
+
+<div class="wrapper">
+
+  <!-- LEFT PANEL -->
+  <div class="leftPanel">
+
+    <div class="card">
+      <b>Actions</b>
+      <button class="btn gold" onclick="play()">Play</button>
+      <button class="btn" onclick="train('attack')">Train Attack</button>
+      <button class="btn" onclick="train('defense')">Train Defense</button>
+      <button class="btn" onclick="train('speed')">Train Speed</button>
     </div>
-    <div class="topRight">
-      <span id="userBadge" class="badge">👤 Loading</span>
-      <span id="coinBadge" class="badge">🪙 0</span>
-      <span id="rosterBadge" class="badge">🐾 1/6</span>
-      <span id="moodBadge" class="badge">🙂 Calm</span>
+
+    <div class="card">
+      <b>Inventory</b>
+      <div id="inventory"></div>
     </div>
+
   </div>
 
-  <div class="cockpit">
-    <div class="panel">
-      <div class="petCard">
-        <h2 id="petNameTitle">Mystery Egg</h2>
-        <div id="petSubTitle" class="muted">Loading...</div>
-        <div class="renameRow">
-          <input id="renameInput" placeholder="Pet name">
-          <button class="primary" onclick="renamePet()">Rename</button>
-        </div>
-      </div>
+  <!-- CENTER -->
+  <div class="centerStage">
 
-      <div id="statStack" class="statStack"></div>
-      <div id="progressBox" class="progressCard"></div>
+    <div class="petContainer">
+      <img id="petImage" class="petImage">
+      <div id="petName" class="petName"></div>
+      <div id="petMeta" class="petMeta"></div>
 
-      <div class="quickTools">
-        <button class="ghost" onclick="setTab('roster')">🐾 Roster</button>
-        <button class="ghost" onclick="setTab('items')">🎒 Items</button>
-        <button class="ghost" onclick="setTab('shop')">🛒 Shop</button>
-        <button class="ghost" onclick="setTab('details')">📊 Details</button>
+      <div class="statRow">
+        <div class="stat"><div id="hunger" class="statFill"></div></div>
+        <div class="stat"><div id="happy" class="statFill"></div></div>
+        <div class="stat"><div id="energy" class="statFill"></div></div>
+        <div class="stat"><div id="clean" class="statFill"></div></div>
       </div>
     </div>
 
-    <div class="stageShell">
-      <div class="petStage" id="petStage">
-        <div class="clouds"></div>
-        <div class="sparkles"></div>
-        <div class="ground"></div>
-        <div id="aura" class="aura"></div>
-
-        <div id="petOrb" class="petOrb" onclick="comfortPet()">
-          <img id="petImg" class="petImg hide" src="">
-          <div id="petEmoji" class="petEmoji">🥚</div>
-        </div>
-
-        <div id="floatingFx" class="floatingFx">+1</div>
-      </div>
-
-      <div id="speech" class="speech">Loading your companion...</div>
-    </div>
-
-    <div class="panel">
-      <div class="actionsTitle">
-        <h3 id="actionTitle">Actions</h3>
-        <span id="energyBadge" class="badge">Energy 0</span>
-      </div>
-      <div id="actionPanel"></div>
-    </div>
   </div>
 
-  <div class="drawer">
-    <div>
-      <div class="tabs">
-        <button id="detailsTab" onclick="setTab('details')" class="active">Details</button>
-        <button id="rosterTab" onclick="setTab('roster')">Roster</button>
-        <button id="itemsTab" onclick="setTab('items')">Items</button>
-        <button id="shopTab" onclick="setTab('shop')">Shop</button>
-      </div>
-      <div id="detailsPanel" class="drawerPanel"></div>
-      <div id="rosterPanel" class="drawerPanel hidden"></div>
-      <div id="itemsPanel" class="drawerPanel hidden"></div>
-      <div id="shopPanel" class="drawerPanel hidden"></div>
+  <!-- RIGHT PANEL -->
+  <div class="rightPanel">
+
+    <div class="card">
+      <b>Daily Quests</b>
+      <div id="quests"></div>
     </div>
 
-    <div>
-      <b>Journal</b>
+    <div class="card">
+      <b>Explore</b>
+      <div id="zones"></div>
+    </div>
+
+    <div class="card">
+      <b>Log</b>
       <div id="log" class="log"></div>
     </div>
-  </div>
-</div>
 
-<div id="toast" class="toast"></div>
-
-<div id="hatchOverlay" class="hatchOverlay">
-  <div class="overlayBox">
-    <img id="hatchImg" class="bigImg hidden" src="">
-    <div id="hatchEmoji" class="bigEmoji">🐣</div>
-    <h1 id="hatchTitle">Your egg hatched!</h1>
-    <p id="hatchText">A new companion has joined you.</p>
   </div>
-</div>
 
-<div id="moveOverlay" class="moveOverlay">
-  <div class="overlayBox">
-    <div class="bigEmoji">✨</div>
-    <h1 id="moveTitle">New Move Learned!</h1>
-    <p id="moveText">Your companion discovered a new move.</p>
-  </div>
 </div>
 
 <script>
-var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
-var username='guest';
-var profile=null;
-var shop={};
-var moves={};
-var limits={maxRoster:6,newEggBaseCost:75};
-var currentTab='details';
-var logs=[];
-var localState={
-  lastComfort:0,
-  lastPromptAt:0,
-  lastWanderAt:0,
-  prompt:null
-};
+/*
+PetWorld Script Rules:
+- Always update UI from server state
+- Never assume client is authoritative
+- All rewards come from server responses
+*/
 
-function el(id){return document.getElementById(id);}
+let USER=localStorage.getItem('gf_user');
+let profile=null;
+let zonesData={};
 
-function getPlayerName(){
-  if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
-    var s=window.GAME_MY_SEAT;
-    for(var i=0;i<window.GAME_PLAYERS.length;i++){
-      if(window.GAME_PLAYERS[i].seat===s)return window.GAME_PLAYERS[i].name||'guest';
-    }
-    return window.GAME_PLAYERS[0].name||'guest';
-  }
-
-  try{
-    return localStorage.getItem('gf_user')||'guest';
-  }catch(e){
-    return 'guest';
-  }
+function api(url,data){
+  return fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({...data,username:USER})
+  }).then(r=>r.json());
 }
 
-function boot(){
-  username=getPlayerName();
-  el('userBadge').innerText='👤 '+username;
-  loadProfile();
-  setInterval(tickLocalPrompt,30000);
-  setInterval(tickPetLife,6500);
+function get(url){
+  return fetch(url+'?user='+USER).then(r=>r.json());
 }
 
-async function loadProfile(){
-  try{
-    var res=await fetch('/api/pet/profile?user='+encodeURIComponent(username));
-    var data=await res.json();
+/* ===== INIT ===== */
 
-    if(data.error){
-      speak('Could not load pet: '+data.error);
-      addLog('Load failed: '+data.error);
-      return;
-    }
+async function init(){
+  let res=await get('/api/pet/profile');
 
-    profile=data.profile;
-    shop=data.shop||{};
-    moves=data.moves||{};
-    limits=data.limits||limits;
+  profile=res.profile;
+  zonesData=res.zones;
 
-    addLog('Loaded pet profile.');
-    draw();
-  }catch(err){
-    speak('Server error loading pet profile.');
-    addLog('Error: '+err.message);
-  }
+  draw();
 }
+
+window.onload=init;
+  /* ===== HELPERS ===== */
 
 function activePet(){
-  if(!profile)return null;
+  if(!profile || !profile.pets)return null;
   return profile.pets[profile.activePetId];
 }
 
-function draw(){
-  var pet=activePet();
-  if(!pet)return;
-
-  normalizePet(pet);
-
-  var mood=getMood(pet);
-  var rosterCount=Object.keys(profile.pets||{}).length;
-
-  el('userBadge').innerText='👤 '+username;
-  el('coinBadge').innerText='🪙 '+Number(profile.money||0);
-  el('rosterBadge').innerText='🐾 '+rosterCount+'/'+Number(limits.maxRoster||6);
-  el('moodBadge').innerText=mood.icon+' '+mood.label;
-  el('energyBadge').innerText='Energy '+Number(pet.needs.energy||0);
-
-  el('petNameTitle').innerText=pet.name||'Mystery Egg';
-  el('petSubTitle').innerText=petSubtitle(pet);
-  el('renameInput').value=pet.name||'';
-  el('petEmoji').innerText=pet.emoji||'🥚';
-
-  updatePetVisual(pet);
-
-  var nearHatch=pet.stage==='egg'&&eggProgress(pet)>=80;
-  el('petEmoji').classList.toggle('eggNearHatch',nearHatch);
-  el('petImg').classList.toggle('eggNearHatch',nearHatch);
-
-  setAura(pet);
-  setPetPersonalityMotion(pet,mood);
-
-  if(localState.prompt){
-    speak(localState.prompt.text);
-  }else if(pet.stage==='egg'){
-    var prog=eggProgress(pet);
-    if(prog>=80)speak('The egg trembles. Something inside is ready to meet you soon.');
-    else if(prog>=45)speak('The egg responds to your care. Its personality is beginning to form.');
-    else speak('Your egg is listening. Every care choice nudges what it may become.');
-  }else{
-    speak(idleSpeech(pet,mood));
-  }
-
-  drawActions();
-  drawStats();
-  drawProgress();
-  drawDetails();
-  drawRoster();
-  drawItems();
-  drawShop();
-  drawLog();
-}
-
-function petSubtitle(pet){
-  if((pet.stage||'egg')==='egg'){
-    return 'Mystery egg · Bond '+Number(pet.affection||0)+' · '+eggProgress(pet)+'% hatch progress';
-  }
-
-  return [
-    (pet.type||'pet')+' type',
-    'Lv '+Number((pet.stats&&pet.stats.level)||1),
-    personalityLabel(pet.personality),
-    'Bond '+Number(pet.affection||0)
-  ].join(' · ');
-}
-
-function drawActions(){
-  var pet=activePet();
-  var html='';
-
-  if(pet.stage==='egg'){
-    el('actionTitle').innerText='Egg Care';
-
-    if(localState.prompt){
-      html+='<div class="item" style="border-color:rgba(56,189,248,.38);background:rgba(224,242,254,.72)"><b>'+escapeHtml(localState.prompt.title)+'</b><div class="itemDesc">'+escapeHtml(localState.prompt.help)+'</div></div>';
-    }else{
-      html+='<p class="muted">Care choices influence weighted hatch odds, but never fully guarantee the result.</p>';
-    }
-
-    html+='<div class="actionGrid">';
-    html+=actionButton('🔥 Warm','warm','Fire, boldness, affection.','Good when the egg shivers.','ghost','careEgg');
-    html+=actionButton('❄️ Cool','cold','Water, calm, focus.','Good when the egg feels hot.','ghost','careEgg');
-    html+=actionButton('💧 Mist','wet','Water, nature, softness.','Good when the shell looks dry.','sky','careEgg');
-    html+=actionButton('🌵 Dry','dry','Earth, shadow, toughness.','Good when the shell is damp.','gold','careEgg');
-    html+=actionButton('☀️ Light','light','Bright, brave, social.','Good when the egg seems sleepy.','gold','careEgg');
-    html+=actionButton('🌙 Shade','dark','Mysterious, fast, independent.','Good when the egg hides from light.','purple','careEgg');
-    html+='</div>';
-  }else{
-    el('actionTitle').innerText='Companion Actions';
-    html+='<div class="actionGrid">';
-    html+='<button class="actionBtn good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Restore hunger and build bond.</span><small>Uses Berry</small></button>';
-    html+='<button class="actionBtn primary" onclick="playPet()"><strong>🎾 Play</strong><span>Gain coins, XP, happiness, and bond.</span><small>Best for playful pets</small></button>';
-    html+='<button class="actionBtn sky" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Raise cleanliness and comfort.</span><small>Uses Bubble Soap</small></button>';
-    html+='<button class="actionBtn purple" onclick="useItem(\'nap_blanket\')"><strong>💤 Rest</strong><span>Restore energy for training/explore.</span><small>Uses Nap Blanket</small></button>';
-    html+='<button class="actionBtn gold" onclick="explorePet()"><strong>🧭 Explore</strong><span>Find coins, items, XP, or moves.</span><small>Curious pets are better</small></button>';
-    html+='<button class="actionBtn danger" onclick="trainPet(\'attack\')"><strong>⚔️ Train ATK</strong><span>Increase attack and earn XP.</span><small>Aggressive bonus</small></button>';
-    html+='<button class="actionBtn primary" onclick="trainPet(\'defense\')"><strong>🛡 Train DEF</strong><span>Increase defense and earn XP.</span><small>Calm bonus</small></button>';
-    html+='<button class="actionBtn sky" onclick="trainPet(\'speed\')"><strong>💨 Train SPD</strong><span>Increase speed and earn XP.</span><small>Useful in battles</small></button>';
-    html+='</div>';
-  }
-
-  el('actionPanel').innerHTML=html;
-}
-
-function actionButton(title,arg,desc,tip,cls,fn){
-  return '<button class="actionBtn '+cls+'" onclick="'+fn+'(\''+arg+'\')"><strong>'+title+'</strong><span>'+desc+'</span><small>'+tip+'</small></button>';
-}
-
-function drawStats(){
-  var pet=activePet();
-  var html='';
-
-  if(pet.stage==='egg'){
-    html+=miniStat('Warm',pet.eggTraits.warm,18);
-    html+=miniStat('Cold',pet.eggTraits.cold,18);
-    html+=miniStat('Wet',pet.eggTraits.wet,18);
-    html+=miniStat('Dry',pet.eggTraits.dry,18);
-    html+=miniStat('Light',pet.eggTraits.light,18);
-    html+=miniStat('Dark',pet.eggTraits.dark,18);
-    html+=miniStat('Bond',pet.affection||0,100);
-  }else{
-    html+=miniStat('Hunger',pet.needs.hunger,100);
-    html+=miniStat('Happy',pet.needs.happiness,100);
-    html+=miniStat('Energy',pet.needs.energy,100);
-    html+=miniStat('Clean',pet.needs.cleanliness,100);
-    html+=miniStat('Bond',pet.affection||0,100);
-  }
-
-  el('statStack').innerHTML=html;
-}
-
-function miniStat(name,val,max){
-  val=Number(val||0);
-  max=Number(max||100);
-  var pct=Math.max(0,Math.min(100,Math.floor((val/max)*100)));
-  var cls=pct<30?'low':pct<60?'mid':'';
-
-  return '<div class="statMini"><div class="statMiniTop"><span>'+escapeHtml(name)+'</span><span>'+val+'/'+max+'</span></div><div class="statBar"><div class="statFill '+cls+'" style="width:'+pct+'%"></div></div></div>';
-}
-
-function drawProgress(){
-  var pet=activePet();
-  var html='';
-
-  if(pet.stage==='egg'){
-    var pct=eggProgress(pet);
-    html+='<b>Hatch Progress</b><div class="muted">'+traitTotal(pet.eggTraits||{})+' / 18 care points</div>';
-    html+='<div class="progress"><div class="progressFill" style="width:'+pct+'%"></div></div>';
-  }else{
-    var need=Math.max(20,Number(pet.stats.level||1)*20);
-    var xp=Number(pet.stats.xp||0);
-    var xpPct=Math.max(0,Math.min(100,Math.floor((xp/need)*100)));
-    html+='<b>Level Progress</b><div class="muted">Lv '+Number(pet.stats.level||1)+' · '+xp+' / '+need+' XP</div>';
-    html+='<div class="progress"><div class="progressFill" style="width:'+xpPct+'%"></div></div>';
-  }
-
-  el('progressBox').innerHTML=html;
-}
-
-function drawDetails(){
-  var pet=activePet();
-  var html='<h3>Details</h3><div class="detailGrid">';
-  html+=detailBox('Stage',pet.stage||'egg');
-  html+=detailBox('Type',pet.type||'Mystery');
-  html+=detailBox('Personality',personalityLabel(pet.personality));
-  html+=detailBox('Bond',Number(pet.affection||0));
-  html+=detailBox('HP',Number(pet.stats.hp||0)+' / '+Number(pet.stats.maxHp||0));
-  html+=detailBox('Attack',Number(pet.stats.attack||0));
-  html+=detailBox('Defense',Number(pet.stats.defense||0));
-  html+=detailBox('Speed',Number(pet.stats.speed||0));
-  html+='</div>';
-
-  html+='<h3 style="margin-top:10px">Moves</h3><div class="moves">';
-  (pet.moves||[]).forEach(function(id){
-    var move=moves[id]||{name:id,type:'normal'};
-    html+='<span class="movePill">'+escapeHtml(move.name)+' · '+escapeHtml(move.type)+'</span>';
-  });
-  html+='</div>';
-
-  el('detailsPanel').innerHTML=html;
-}
-
-function detailBox(k,v){
-  return '<div class="detailBox"><b>'+escapeHtml(k)+'</b><span>'+escapeHtml(v)+'</span></div>';
-}
-
-function drawRoster(){
-  var ids=Object.keys(profile.pets||{});
-  var max=Number(limits.maxRoster||6);
-  var cost=Number(limits.newEggBaseCost||75)+Math.max(0,ids.length-1)*25;
-  var html='<h3>Pet Roster</h3><p class="muted">Choose your active companion. PetWorld and Pet Battle use the active pet.</p>';
-  html+='<div class="item"><div class="itemTop"><b>Adopt Mystery Egg</b><span class="badge">'+cost+' coins</span></div><div class="itemDesc">Roster: '+ids.length+'/'+max+'. New eggs create collection goals and future trade value.</div><button class="gold" onclick="adoptEgg()" '+(ids.length>=max?'disabled':'')+'>Adopt Egg</button></div>';
-
-  ids.forEach(function(pid){
-    var pet=profile.pets[pid];
-    normalizePet(pet);
-
-    var active=pid===profile.activePetId;
-    var img=petAssetPath(pet);
-    var sub=(pet.stage||'egg')==='egg'
-      ? 'Egg · '+eggProgress(pet)+'% hatch · Bond '+Number(pet.affection||0)
-      : (pet.type||'pet')+' · Lv '+Number((pet.stats&&pet.stats.level)||1)+' · '+personalityLabel(pet.personality);
-
-    html+='<div class="rosterCard '+(active?'active':'')+'">';
-    html+='<div class="rosterRow">';
-    html+='<div class="rosterAvatar"><img src="'+escapeAttr(img)+'" onerror="this.style.display=\'none\'"><span>'+escapeHtml(pet.emoji||'🥚')+'</span></div>';
-    html+='<div>';
-    html+='<div class="rosterTop"><div class="rosterName">'+escapeHtml(pet.name||'Mystery Egg')+'</div>'+(active?'<span class="badge">Active</span>':'')+'</div>';
-    html+='<div class="rosterDesc">'+escapeHtml(sub)+'</div>';
-    html+='<div class="rosterActions">';
-    html+='<button class="primary" onclick="setActivePet(\''+escapeAttr(pid)+'\')" '+(active?'disabled':'')+'>Set Active</button>';
-    html+='<button class="ghost" disabled>Gift Soon</button>';
-    html+='<button class="ghost" disabled>Trade Soon</button>';
-    html+='</div></div></div></div>';
-  });
-
-  el('rosterPanel').innerHTML=html;
-}
-
-function drawItems(){
-  var inv=profile.inventory||{};
-  var keys=Object.keys(inv).filter(function(k){return inv[k]>0;});
-  var html='<h3>Inventory</h3>';
-
-  if(!keys.length){
-    html+='<p class="muted">No items yet. Explore or visit the shop.</p>';
-  }
-
-  keys.forEach(function(id){
-    var item=shop[id]||{name:id,description:'Item'};
-    html+='<div class="item">';
-    html+='<div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><span class="badge">x'+inv[id]+'</span></div>';
-    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div>';
-    html+='<button class="primary" onclick="useItem(\''+id+'\')">Use Item</button>';
-    html+='</div>';
-  });
-
-  el('itemsPanel').innerHTML=html;
-}
-
-function drawShop(){
-  var html='<h3>Shop</h3><p class="muted">Buy food, care tools, and comfort items.</p>';
-
-  Object.keys(shop).forEach(function(id){
-    var item=shop[id];
-
-    html+='<div class="item">';
-    html+='<div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><div class="badge">🪙 '+Number(item.price||0)+'</div></div>';
-    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div>';
-    html+='<button class="gold" onclick="buyItem(\''+id+'\')">Buy</button>';
-    html+='</div>';
-  });
-
-  el('shopPanel').innerHTML=html;
-}
-
-function setTab(tab){
-  currentTab=tab;
-
-  detailsTab.classList.toggle('active',tab==='details');
-  rosterTab.classList.toggle('active',tab==='roster');
-  itemsTab.classList.toggle('active',tab==='items');
-  shopTab.classList.toggle('active',tab==='shop');
-
-  detailsPanel.classList.toggle('hidden',tab!=='details');
-  rosterPanel.classList.toggle('hidden',tab!=='roster');
-  itemsPanel.classList.toggle('hidden',tab!=='items');
-  shopPanel.classList.toggle('hidden',tab!=='shop');
-}
-
-async function careEgg(action){
-  var before=activePet();
-  var beforeStage=before?before.stage:null;
-
-  try{
-    var res=await fetch('/api/pet/care-egg',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username,action:action})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    var pet=activePet();
-    var line=data.message||careMessage(action);
-
-    addLog(line);
-    notify(line);
-    animateCare(action);
-    localState.prompt=null;
-
-    if(data.hatched||beforeStage==='egg'&&pet.stage!=='egg'){
-      showHatch(pet);
-      addLog('A new companion hatched: '+(pet.name||'New pet')+'!');
-    }
-
-    draw();
-  }catch(err){
-    notify('Care failed: '+err.message);
-  }
-}
-
-async function playPet(){
-  try{
-    var res=await fetch('/api/pet/play',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    addLog(data.message||'You played together.');
-    handleRewardResult(data.reward&&data.reward.xpResult);
-    notify(data.message||'Play complete!');
-    animateCare('play');
-    draw();
-  }catch(err){
-    notify('Play failed: '+err.message);
-  }
-}
-
-async function trainPet(stat){
-  try{
-    var res=await fetch('/api/pet/train',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username,stat:stat})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    addLog(data.message||'Training complete.');
-    handleRewardResult(data.result&&data.result.xpResult);
-    notify(data.message||'Training complete!');
-    animateCare(stat==='attack'?'attack':stat==='defense'?'defense':'speed');
-    draw();
-  }catch(err){
-    notify('Train failed: '+err.message);
-  }
-}
-
-async function explorePet(){
-  try{
-    var res=await fetch('/api/pet/explore',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    addLog(data.message||'Exploration complete.');
-
-    if(data.result&&data.result.bonus&&data.result.bonus.length){
-      data.result.bonus.forEach(function(x){addLog(x);});
-    }
-
-    handleRewardResult(data.result&&data.result.xpResult);
-    if(data.result&&data.result.learnedMove)showMoveLearned(data.result.learnedMove);
-
-    notify(data.message||'Exploration complete!');
-    animateCare('explore');
-    draw();
-  }catch(err){
-    notify('Explore failed: '+err.message);
-  }
-}
-
-function handleRewardResult(xpResult){
-  if(!xpResult)return;
-
-  if(xpResult.leveled){
-    addLog('Level up! Your companion grew stronger.');
-    floatFx('LEVEL!');
-  }
-
-  if(xpResult.learnedMove){
-    showMoveLearned(xpResult.learnedMove);
-  }
-}
-
-async function useItem(itemId){
-  try{
-    var beforeStage=activePet()?activePet().stage:null;
-
-    var res=await fetch('/api/pet/use-item',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username,itemId:itemId})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    var pet=activePet();
-
-    addLog('Used '+itemName(itemId)+'.');
-    notify('Used '+itemName(itemId)+'.');
-    animateItemUse(itemId);
-
-    if((data.hatched||beforeStage==='egg'&&pet.stage!=='egg')){
-      showHatch(pet);
-      addLog('A new companion hatched: '+(pet.name||'New pet')+'!');
-    }
-
-    draw();
-  }catch(err){
-    notify('Use item failed: '+err.message);
-  }
-}
-
-async function buyItem(itemId){
-  try{
-    var res=await fetch('/api/pet/buy',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username,itemId:itemId})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    addLog('Bought '+itemName(itemId)+'.');
-    notify('Bought '+itemName(itemId)+'.');
-    floatFx('🪙');
-    draw();
-  }catch(err){
-    notify('Buy failed: '+err.message);
-  }
-}
-
-async function setActivePet(petId){
-  try{
-    var res=await fetch('/api/pet/set-active',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username,petId:petId})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    var pet=activePet();
-    addLog('Switched active companion to '+(pet.name||'Mystery Egg')+'.');
-    notify('Active companion switched!');
-    floatFx('🐾');
-    draw();
-  }catch(err){
-    notify('Switch failed: '+err.message);
-  }
-}
-
-async function adoptEgg(){
-  try{
-    var res=await fetch('/api/pet/new-egg',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    addLog(data.message||'You adopted a new Mystery Egg.');
-    notify(data.message||'New egg adopted!');
-    setTab('details');
-    floatFx('🥚');
-    draw();
-  }catch(err){
-    notify('Adopt failed: '+err.message);
-  }
-}
-
-async function renamePet(){
-  var name=el('renameInput').value.trim();
-  if(!name)return notify('Enter a pet name.');
-
-  try{
-    var res=await fetch('/api/pet/rename',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username,name:name})
-    });
-
-    var data=await res.json();
-    if(data.error)return notify(data.error);
-
-    profile=data.profile;
-    addLog('Renamed companion to '+name+'.');
-    notify('Renamed!');
-    draw();
-  }catch(err){
-    notify('Rename failed: '+err.message);
-  }
-}
-
-function comfortPet(){
-  var now=Date.now();
-
-  if(now-localState.lastComfort<3000){
-    animateTap();
-    return;
-  }
-
-  localState.lastComfort=now;
-  animateTap();
-
-  var pet=activePet();
-  if(!pet)return;
-
-  if(pet.stage==='egg'){
-    addLog('You gently comforted the egg.');
-    notify('The egg settled.');
-    speak('The egg gives a tiny wiggle. It seems reassured.');
-    floatFx('♡');
-  }else{
-    addLog('You bonded with '+(pet.name||'your pet')+'.');
-    notify('Bond moment.');
-    speak((pet.name||'Your pet')+' leans into your attention.');
-    floatFx('♡');
-  }
-}
-
-function updatePetVisual(pet){
-  var img=el('petImg');
-  var emojiEl=el('petEmoji');
-  var src=petAssetPath(pet);
-
-  img.onload=function(){
-    img.classList.remove('hide');
-    emojiEl.classList.add('hide');
-  };
-
-  img.onerror=function(){
-    img.classList.add('hide');
-    emojiEl.classList.remove('hide');
-  };
-
-  if(img.src.indexOf(src)===-1){
-    img.src=src;
-  }
-}
-
-function petAssetPath(pet){
+function imgPath(pet){
   if(!pet)return '';
-  if((pet.stage||'egg')==='egg'){
-    return eggProgress(pet)>=80?'/assets/pets/egg/egg_cracked.png':'/assets/pets/egg/egg_idle.png';
-  }
-
-  var species=pet.species||'egg';
-  var stage=pet.stage||'baby';
-  var file=stage==='adult'?'adult':stage==='young'||stage==='teen'?'young':'baby';
-  return '/assets/pets/'+species+'/'+file+'.png';
-}
-
-function itemAssetPath(itemId){
-  return '/assets/items/'+itemId+'.png';
-}
-
-function normalizePet(pet){
-  if(!pet.needs)pet.needs={hunger:80,happiness:70,energy:80,cleanliness:90};
-  if(!pet.stats)pet.stats={level:1,xp:0,hp:20,maxHp:20,attack:5,defense:4,speed:5};
-  if(!pet.eggTraits)pet.eggTraits={warm:0,cold:0,wet:0,dry:0,light:0,dark:0};
-  if(!pet.moves)pet.moves=['tackle'];
-  if(pet.affection===undefined)pet.affection=0;
-}
-
-function getMood(pet){
   if(pet.stage==='egg'){
-    var prog=eggProgress(pet);
-    if(prog>=80)return {icon:'✨',label:'Restless'};
-    if(prog>=45)return {icon:'💫',label:'Growing'};
-    return {icon:'😌',label:'Calm'};
+    const total=Object.values(pet.eggTraits||{}).reduce((a,b)=>a+Number(b||0),0);
+    return total>=14?'/assets/pets/egg/egg_cracked.png':'/assets/pets/egg/egg_idle.png';
   }
 
-  var n=pet.needs||{};
-  if(Number(n.energy||0)<25)return {icon:'😴',label:'Tired'};
-  if(Number(n.hunger||0)<25)return {icon:'🍽️',label:'Hungry'};
-
-  var avg=(Number(n.hunger||0)+Number(n.happiness||0)+Number(n.energy||0)+Number(n.cleanliness||0))/4;
-
-  if(avg>=82)return {icon:'😄',label:'Thriving'};
-  if(avg>=62)return {icon:'🙂',label:'Content'};
-  if(avg>=38)return {icon:'😐',label:'Needy'};
-  return {icon:'😟',label:'Struggling'};
+  let stage=pet.stage==='adult'?'adult':(pet.stage==='young'||pet.stage==='teen')?'young':'baby';
+  return '/assets/pets/'+pet.species+'/'+stage+'.png';
 }
 
-function setAura(pet){
-  var a=el('aura');
-  a.className='aura';
-
-  if(pet.stage==='egg'){
-    var strongest=strongestTrait(pet.eggTraits||{});
-    if(strongest==='warm')a.classList.add('fire');
-    else if(strongest==='cold'||strongest==='wet')a.classList.add('water');
-    else if(strongest==='light')a.classList.add('nature');
-    else if(strongest==='dark')a.classList.add('shadow');
-    else if(strongest==='dry')a.classList.add('earth');
-  }else{
-    if(pet.type==='fire')a.classList.add('fire');
-    else if(pet.type==='water')a.classList.add('water');
-    else if(pet.type==='nature')a.classList.add('nature');
-    else if(pet.type==='shadow')a.classList.add('shadow');
-    else if(pet.type==='earth')a.classList.add('earth');
-  }
+function log(msg){
+  let box=document.getElementById('log');
+  let div=document.createElement('div');
+  div.className='logEntry';
+  div.textContent='• '+msg;
+  box.prepend(div);
 }
 
-function setPetPersonalityMotion(pet,mood){
-  var orb=el('petOrb');
-  orb.className='petOrb';
-
-  if(pet.stage==='egg'){
-    if(eggProgress(pet)>=80)orb.classList.add('curious');
-    return;
-  }
-
-  if(mood.label==='Tired'||mood.label==='Struggling')orb.classList.add('napping');
-  else if(pet.personality)orb.classList.add(pet.personality);
+function floatText(text){
+  let wrap=document.querySelector('.petContainer');
+  let div=document.createElement('div');
+  div.className='floatText';
+  div.textContent=text;
+  div.style.left='50%';
+  div.style.top='20px';
+  wrap.appendChild(div);
+  setTimeout(()=>div.remove(),1000);
 }
 
-function idleSpeech(pet,mood){
-  var name=pet.name||'Your pet';
-
-  if(mood.label==='Tired')return name+' curls up and looks ready for a rest.';
-  if(mood.label==='Hungry')return name+' watches your bag very carefully. Snack time?';
-  if(mood.label==='Struggling')return name+' needs a little extra care today.';
-
-  var lines={
-    playful:name+' bounces around, waiting for something fun.',
-    lazy:name+' gives you a slow blink and settles in comfortably.',
-    aggressive:name+' looks fired up and ready to train.',
-    calm:name+' breathes steadily and seems peaceful near you.',
-    curious:name+' studies every corner of the room with bright eyes.',
-    moody:name+' changes expressions like it is deciding what kind of day this is.'
-  };
-
-  return lines[pet.personality]||name+' watches you closely. Consistent care builds a stronger bond.';
+function bounce(){
+  let img=document.getElementById('petImage');
+  img.classList.add('bounce');
+  setTimeout(()=>img.classList.remove('bounce'),220);
 }
 
-function tickPetLife(){
-  var pet=activePet();
-  if(!pet)return;
-
-  maybeWanderPet(pet);
-
-  if(Math.random()<.28&&!localState.prompt){
-    speak(pet.stage==='egg'?'The egg gives a tiny wiggle.':idleSpeech(pet,getMood(pet)));
-  }
+function pct(v){
+  return Math.max(0,Math.min(100,Number(v||0)))+'%';
 }
 
-function maybeWanderPet(pet){
-  var now=Date.now();
-  if(now-localState.lastWanderAt<6500)return;
-  localState.lastWanderAt=now;
-
-  var orb=el('petOrb');
-  ['wanderLeft','wanderRight','wanderUp'].forEach(function(c){orb.classList.remove(c);});
-
-  if(pet.stage==='egg'&&eggProgress(pet)<80)return;
-
-  var choices=['wanderLeft','wanderRight','wanderUp',''];
-  var c=choices[Math.floor(Math.random()*choices.length)];
-  if(c)orb.classList.add(c);
-
-  setTimeout(function(){
-    if(orb){
-      orb.classList.remove('wanderLeft');
-      orb.classList.remove('wanderRight');
-      orb.classList.remove('wanderUp');
-    }
-  },2800);
-}
-
-function tickLocalPrompt(){
-  var pet=activePet();
-  if(!pet||pet.stage!=='egg')return;
-
-  if(localState.prompt&&Date.now()-localState.lastPromptAt<120000)return;
-
-  var prompts=[
-    {title:'The egg feels chilly.',help:'Warm care may help.',text:'The egg shivers gently. Maybe it needs warmth.',suggest:'warm'},
-    {title:'The shell feels warm.',help:'Cooling care may help.',text:'The egg feels a little hot. Cooling it may calm it.',suggest:'cold'},
-    {title:'The shell looks dry.',help:'Misting may help.',text:'The shell has a dry shimmer. Moisture may help.',suggest:'wet'},
-    {title:'The shell looks damp.',help:'Drying may help.',text:'Tiny droplets gather on the shell. Dry care may help.',suggest:'dry'},
-    {title:'The egg seems sleepy.',help:'Light may help.',text:'The egg grows quiet. A little light might wake it.',suggest:'light'},
-    {title:'The egg hides from the glow.',help:'Shade may help.',text:'The egg dims its glow. It may want shade.',suggest:'dark'}
-  ];
-
-  if(Math.random()<.55){
-    localState.prompt=prompts[Math.floor(Math.random()*prompts.length)];
-    localState.lastPromptAt=Date.now();
-    addLog(localState.prompt.title);
-    draw();
-  }
-}
-
-function traitTotal(t){
-  return Number(t.warm||0)+Number(t.cold||0)+Number(t.wet||0)+Number(t.dry||0)+Number(t.light||0)+Number(t.dark||0);
-}
-
-function eggProgress(pet){
-  return Math.min(100,Math.floor(traitTotal(pet.eggTraits||{})/18*100));
-}
-
-function strongestTrait(t){
-  var best='warm';
-  var bestVal=-1;
-
-  ['warm','cold','wet','dry','light','dark'].forEach(function(k){
-    var v=Number(t[k]||0);
-    if(v>bestVal){
-      best=k;
-      bestVal=v;
-    }
-  });
-
-  return best;
-}
-
-function personalityLabel(p){
-  if(!p)return 'Unknown';
-  return String(p).charAt(0).toUpperCase()+String(p).slice(1);
+function setBar(id,val,color){
+  let el=document.getElementById(id);
+  el.style.width=pct(val);
+  el.style.background=color;
 }
 
 function itemName(id){
-  return shop[id]?shop[id].name:id;
-}
-
-function careMessage(action){
-  var map={
-    warm:'You warmed the egg.',
-    cold:'You cooled the egg.',
-    wet:'You misted the egg.',
-    dry:'You dried the egg.',
-    light:'You gave the egg light.',
-    dark:'You shaded the egg.'
+  const names={
+    berry:'Berry',
+    sparkle_treat:'Sparkle Treat',
+    soap:'Bubble Soap',
+    nap_blanket:'Nap Blanket',
+    warm_pad:'Warm Pad',
+    cool_cloth:'Cool Cloth',
+    mist_spray:'Mist Spray',
+    dry_towel:'Dry Towel',
+    sun_lamp:'Sun Lamp',
+    shade_cover:'Shade Cover'
   };
-  return map[action]||'You cared for the egg.';
+  return names[id]||id;
 }
 
-function animateCare(action){
-  var p=visiblePetEl();
-  p.classList.remove('carePulse');
-  void p.offsetWidth;
-  p.classList.add('carePulse');
+/* ===== DRAW ===== */
 
-  var icons={
-    warm:'🔥',
-    cold:'❄️',
-    wet:'💧',
-    dry:'🌵',
-    light:'☀️',
-    dark:'🌙',
-    item:'✨',
-    play:'🎾',
-    explore:'🧭',
-    attack:'⚔️',
-    defense:'🛡',
-    speed:'💨'
-  };
+function draw(){
+  let pet=activePet();
+  if(!pet)return;
 
-  floatFx(icons[action]||'✨');
+  document.getElementById('petImage').src=imgPath(pet);
+  document.getElementById('petName').textContent=pet.name||'Mystery Egg';
+
+  document.getElementById('petMeta').textContent=
+    pet.stage==='egg'
+      ? 'Egg • Hatch progress '+eggProgress(pet)+'%'
+      : `${pet.type||'pet'} • Lv ${pet.stats.level||1} • ${pet.personality||'mystery'}`;
+
+  if(pet.stage==='egg'){
+    setBar('hunger',eggTrait(pet,'warm')*5,'#f97316');
+    setBar('happy',eggTrait(pet,'wet')*5,'#38bdf8');
+    setBar('energy',eggTrait(pet,'light')*5,'#facc15');
+    setBar('clean',eggTrait(pet,'dark')*5,'#a855f7');
+  }else{
+    setBar('hunger',pet.needs.hunger,'#22c55e');
+    setBar('happy',pet.needs.happiness,'#facc15');
+    setBar('energy',pet.needs.energy,'#38bdf8');
+    setBar('clean',pet.needs.cleanliness,'#a855f7');
+  }
+
+  drawInventory();
+  drawQuests();
+  drawZones();
 }
 
-function animateItemUse(itemId){
-  flyItem(itemId);
-  animateCare('item');
-
-  if(itemId==='berry')floatFx('🍓');
-  else if(itemId==='soap')floatFx('🫧');
-  else if(itemId==='nap_blanket')floatFx('💤');
-  else floatFx('✨');
+function eggTrait(pet,k){
+  return Number((pet.eggTraits||{})[k]||0);
 }
 
-function flyItem(itemId){
-  var img=document.createElement('img');
-  img.className='flyingItem';
-  img.src=itemAssetPath(itemId);
-  img.onerror=function(){img.remove();};
-  el('petStage').appendChild(img);
-
-  setTimeout(function(){
-    if(img&&img.parentNode)img.parentNode.removeChild(img);
-  },950);
+function eggProgress(pet){
+  let total=Object.values(pet.eggTraits||{}).reduce((a,b)=>a+Number(b||0),0);
+  return Math.min(100,Math.floor(total/18*100));
 }
 
-function visiblePetEl(){
-  var img=el('petImg');
-  if(img&&!img.classList.contains('hide'))return img;
-  return el('petEmoji');
-}
+function drawInventory(){
+  let inv=profile.inventory||{};
+  let box=document.getElementById('inventory');
+  box.innerHTML='';
 
-function animateTap(){
-  var p=visiblePetEl();
-  p.classList.remove('tapPulse');
-  void p.offsetWidth;
-  p.classList.add('tapPulse');
-}
+  let keys=Object.keys(inv).filter(k=>inv[k]>0);
 
-function floatFx(text){
-  var f=el('floatingFx');
-  f.innerText=text;
-  f.classList.remove('floatingFx');
-  void f.offsetWidth;
-  f.classList.add('floatingFx');
-}
+  if(!keys.length){
+    box.innerHTML='<div style="font-size:12px;opacity:.65">No items yet.</div>';
+    return;
+  }
 
-function showHatch(pet){
-  var img=el('hatchImg');
-  var emoji=el('hatchEmoji');
-  var src=petAssetPath(pet);
-
-  img.onload=function(){
-    img.classList.remove('hidden');
-    emoji.classList.add('hidden');
-  };
-
-  img.onerror=function(){
-    img.classList.add('hidden');
-    emoji.classList.remove('hidden');
-  };
-
-  img.src=src;
-  emoji.innerText=pet.emoji||'🐣';
-
-  hatchTitle.innerText='Your egg hatched!';
-  hatchText.innerText=(pet.name||'A new companion')+' joined you. Personality: '+personalityLabel(pet.personality)+'.';
-  hatchOverlay.classList.add('show');
-
-  setTimeout(function(){
-    hatchOverlay.classList.remove('show');
-  },2200);
-}
-
-function showMoveLearned(move){
-  if(!move)return;
-
-  moveTitle.innerText='New Move Learned!';
-  moveText.innerText='Your companion learned '+(move.name||move.id)+'!';
-  moveOverlay.classList.add('show');
-  addLog('New move learned: '+(move.name||move.id)+'!');
-
-  setTimeout(function(){
-    moveOverlay.classList.remove('show');
-  },2200);
-}
-
-function speak(text){
-  el('speech').innerText=text;
-}
-
-function addLog(text){
-  logs.push(text);
-  if(logs.length>80)logs.shift();
-  drawLog();
-}
-
-function drawLog(){
-  var html='';
-  logs.slice(-8).forEach(function(x){
-    html+='• '+escapeHtml(x)+'<br>';
+  keys.forEach(id=>{
+    let btn=document.createElement('button');
+    btn.className='btn';
+    btn.textContent=itemName(id)+' x'+inv[id];
+    btn.onclick=()=>useItem(id);
+    box.appendChild(btn);
   });
-  el('log').innerHTML=html;
-  el('log').scrollTop=el('log').scrollHeight;
 }
 
-function notify(text){
-  var t=el('toast');
-  t.innerText=text;
-  t.classList.add('show');
-  setTimeout(function(){
-    t.classList.remove('show');
-  },2200);
+function drawQuests(){
+  let daily=profile.daily;
+  let box=document.getElementById('quests');
+  box.innerHTML='';
+
+  if(!daily || !daily.quests || !daily.quests.length){
+    box.innerHTML='<div style="font-size:12px;opacity:.65">No quests loaded.</div>';
+    return;
+  }
+
+  daily.quests.forEach(q=>{
+    let div=document.createElement('div');
+    div.className='quest';
+
+    let complete=Number(q.progress||0)>=Number(q.target||1);
+    let reward=rewardText(q.reward||{});
+
+    div.innerHTML=`
+      <b>${escapeHtml(q.title)}</b><br>
+      <span>${q.progress||0}/${q.target} • ${escapeHtml(reward)}</span>
+    `;
+
+    if(q.claimed){
+      let claimed=document.createElement('div');
+      claimed.style.opacity='.55';
+      claimed.textContent='Claimed';
+      div.appendChild(claimed);
+    }else if(complete){
+      let btn=document.createElement('button');
+      btn.className='btn gold';
+      btn.textContent='Claim Reward';
+      btn.onclick=()=>claimQuest(q.id);
+      div.appendChild(btn);
+    }
+
+    box.appendChild(div);
+  });
 }
+
+function rewardText(r){
+  let parts=[];
+  if(r.coins)parts.push(r.coins+' coins');
+  if(r.xp)parts.push(r.xp+' XP');
+  if(r.item)parts.push((r.quantity||1)+' '+itemName(r.item));
+  return parts.join(', ')||'Reward';
+}
+
+function drawZones(){
+  let box=document.getElementById('zones');
+  box.innerHTML='';
+
+  Object.keys(zonesData||{}).forEach(id=>{
+    let z=zonesData[id];
+    let div=document.createElement('div');
+    div.className='zone';
+    div.innerHTML=`
+      <b>${escapeHtml(z.name)}</b><br>
+      <span style="font-size:12px;opacity:.7">
+        Lv ${z.minLevel} • Energy ${z.energyCost}<br>
+        ${escapeHtml(z.description||'')}
+      </span>
+    `;
+    div.onclick=()=>exploreZone(id);
+    box.appendChild(div);
+  });
+}
+
+/* ===== ACTIONS ===== */
+
+async function play(){
+  let res=await api('/api/pet/play',{});
+  handleResponse(res,'Played together!');
+}
+
+async function train(stat){
+  let res=await api('/api/pet/train',{stat});
+  handleResponse(res,'Training complete!');
+}
+
+async function exploreZone(zoneId){
+  let res=await api('/api/pet/explore-zone',{zoneId});
+  handleResponse(res,'Exploration complete!');
+}
+
+async function useItem(itemId){
+  let res=await api('/api/pet/use-item',{itemId});
+  handleResponse(res,'Used '+itemName(itemId)+'.');
+}
+
+async function claimQuest(id){
+  let res=await api('/api/pet/claim-quest',{questId:id});
+  handleResponse(res,'Quest claimed!');
+}
+
+/* ===== RESPONSE HANDLING ===== */
+
+function handleResponse(res,fallback){
+  if(!res){
+    log('No server response.');
+    return;
+  }
+
+  if(res.error){
+    log(res.error);
+    floatText('!');
+    return;
+  }
+
+  if(res.profile){
+    profile=res.profile;
+  }
+
+  let msg=res.message||fallback;
+  log(msg);
+  floatText(rewardFloat(res));
+  bounce();
+
+  if(res.result && res.result.bonus && res.result.bonus.length){
+    res.result.bonus.forEach(b=>log(b));
+  }
+
+  if(res.result && res.result.learnedMove){
+    log('New move learned: '+res.result.learnedMove.name+'!');
+    floatText('✨ '+res.result.learnedMove.name);
+  }
+
+  if(res.reward && res.reward.xpResult && res.reward.xpResult.learnedMove){
+    log('New move learned: '+res.reward.xpResult.learnedMove.name+'!');
+    floatText('✨ '+res.reward.xpResult.learnedMove.name);
+  }
+
+  draw();
+}
+
+function rewardFloat(res){
+  if(res.result){
+    if(res.result.kind==='coins')return '+'+res.result.amount+' coins';
+    if(res.result.kind==='item')return '+'+(res.result.quantity||1)+' '+itemName(res.result.item);
+    if(res.result.kind==='xp')return '+'+res.result.amount+' XP';
+    if(res.result.kind==='move')return '✨ Move';
+  }
+
+  if(res.reward){
+    if(res.reward.coins)return '+'+res.reward.coins+' coins';
+    if(res.reward.items && res.reward.items.length)return '+ item';
+  }
+
+  return '✨';
+}
+
+/* ===== SAFE TEXT ===== */
 
 function escapeHtml(s){
   return String(s||'').replace(/[&<>"']/g,function(c){
@@ -1779,33 +575,6 @@ function escapeHtml(s){
   });
 }
 
-function escapeAttr(s){
-  return String(s||'').replace(/[&<>"']/g,function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
-}
-
-window.addEventListener('message',function(event){
-  var msg=event.data||{};
-
-  if(msg.type==='gameSetup'){
-    username=getPlayerName();
-    el('userBadge').innerText='👤 '+username;
-    loadProfile();
-  }
-
-  if(msg.type==='petUpdate'&&msg.profile){
-    profile=msg.profile;
-    addLog('Profile updated.');
-    draw();
-  }
-});
-
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',boot);
-}else{
-  boot();
-}
 </script>
 </body>
 </html>
