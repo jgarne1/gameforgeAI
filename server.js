@@ -550,7 +550,7 @@ function requireUser(req,res){
   let p=pets();
   if(!p[username]){
     p[username]=defaultPetProfile(username);
-    writeJSON(PETS_FILE,p);
+    writeJSON(petsFile,p);
   }
 
   return username;
