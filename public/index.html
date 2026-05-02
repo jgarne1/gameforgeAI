@@ -3,6 +3,15 @@
 <head>
 <title>GameForge AI</title>
 
+<!--
+GameForge AI maintainer notes for future AI chats:
+- Keep comments useful and update/remove them when behavior changes. Do not add noisy comments that just repeat the code.
+- This file is intentionally still one copy-paste-ready index.html while the layout is actively changing.
+- Preserve the wrapper contract for games: iframe games receive GAME_PLAYERS/GAME_MY_SEAT and send parent.postMessage({type:'move', data}, '*').
+- Room/game/chat/pet systems are intentionally separated in the UI: room controls stay compact at the top, the right sidebar is for useful live info, and session game cards stay clean/clickable.
+- Pet World belongs in Companion Hub, not the normal game library. Pet Battle is currently a room game and should not be direct-launched unless architecture changes.
+-->
+
 <style>
 :root{
   --bg:#070b18;
@@ -422,30 +431,44 @@ button:disabled{
 }
 
 /* ===== PLAY PAGE ===== */
+/* PLAY LAYOUT RULE: keep room controls compact at the top. The main screen should feel like browsing/playing games, not filling out room forms. */
 .roomSetupStack{
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
 }
 
 .roomControlBar{
-  padding:16px;
+  padding:12px 13px;
+}
+
+.roomControlBar .cardHeader{
+  align-items:flex-start;
+  margin-bottom:8px;
+}
+
+.roomControlBar .cardHeader h3{
+  margin-bottom:3px;
+}
+
+.roomControlBar .cardHeader p{
+  margin:0;
 }
 
 .roomControlGrid{
   display:grid;
-  grid-template-columns:minmax(220px,1.2fr) minmax(280px,1.6fr);
-  gap:14px;
-  align-items:start;
+  grid-template-columns:minmax(190px,.8fr) minmax(320px,1.4fr);
+  gap:10px;
+  align-items:stretch;
 }
 
 .roomStatusPanel{
   border:1px solid rgba(255,255,255,.10);
   background:
-    radial-gradient(circle at top left,rgba(56,189,248,.12),transparent 36%),
-    rgba(2,6,23,.48);
-  border-radius:20px;
-  padding:14px;
+    radial-gradient(circle at top left,rgba(56,189,248,.10),transparent 36%),
+    rgba(2,6,23,.42);
+  border-radius:17px;
+  padding:10px;
   min-height:100%;
 }
 
@@ -454,12 +477,12 @@ button:disabled{
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  margin-bottom:8px;
+  margin-bottom:5px;
 }
 
 .roomCodeBig{
   display:block;
-  font-size:26px;
+  font-size:22px;
   letter-spacing:.5px;
   line-height:1;
   color:#fff;
@@ -467,32 +490,32 @@ button:disabled{
 
 .roomActionsPanel{
   border:1px solid rgba(255,255,255,.10);
-  background:rgba(15,23,42,.44);
-  border-radius:20px;
-  padding:14px;
-}
-
-.roomActionRows{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.roomActionBox{
-  background:rgba(2,6,23,.52);
-  border:1px solid rgba(148,163,184,.20);
+  background:rgba(15,23,42,.38);
   border-radius:17px;
   padding:10px;
 }
 
+.roomActionRows{
+  display:grid;
+  grid-template-columns:1fr 1.25fr;
+  gap:8px;
+}
+
+.roomActionBox{
+  background:rgba(2,6,23,.46);
+  border:1px solid rgba(148,163,184,.18);
+  border-radius:15px;
+  padding:8px;
+}
+
 .roomActionBox h4{
-  margin:0 0 7px;
-  font-size:13px;
+  margin:0 0 5px;
+  font-size:12px;
   color:#e5e7eb;
 }
 
 .roomActionBox .row{
-  gap:6px;
+  gap:5px;
 }
 
 .roomActionBox input{
@@ -500,8 +523,20 @@ button:disabled{
   flex:1;
 }
 
+.roomActionBox button,
+.roomActionBox input,
+.roomActionBox label{
+  font-size:12px;
+}
+
+.roomActionBox button,
+.roomActionBox input{
+  padding:8px 9px;
+}
+
 .tablePanel{
   display:none;
+  padding:13px;
   background:
     radial-gradient(circle at 90% 0%,rgba(34,197,94,.10),transparent 32%),
     linear-gradient(180deg,rgba(15,23,42,.92),rgba(2,6,23,.90));
@@ -511,8 +546,28 @@ button:disabled{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
-  gap:12px;
-  margin-bottom:10px;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.selectedGameName{
+  display:inline-flex;
+  margin-top:5px;
+  color:#facc15;
+  font-size:13px;
+  font-weight:900;
+}
+
+.tableHeaderActions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:6px;
+}
+
+.tableHeaderActions button{
+  margin:0;
+  padding:8px 10px;
 }
 
 .seatGrid{
@@ -531,8 +586,9 @@ button:disabled{
   margin:6px 0 12px;
 }
 
+/* GAME LIBRARY RULE: cards are full-card buttons. Do not add inner Select buttons; keep them compact, themed, and mobile-friendly. */
 .gameCategory{
-  margin:14px 0 18px;
+  margin:12px 0 16px;
 }
 
 .gameCategoryHeader{
@@ -540,12 +596,12 @@ button:disabled{
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  margin:0 2px 9px;
+  margin:0 2px 8px;
 }
 
 .gameCategoryHeader h3{
   margin:0;
-  font-size:15px;
+  font-size:14px;
   letter-spacing:.2px;
   color:#e5e7eb;
 }
@@ -557,82 +613,113 @@ button:disabled{
 
 .gameGrid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
-  gap:14px;
+  grid-template-columns:repeat(auto-fit,minmax(138px,1fr));
+  gap:10px;
   padding:2px;
 }
 
 @media(min-width:1350px){
   .gameGrid{
-    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
   }
 }
 
 .gameCardBtn{
   width:100%;
-  aspect-ratio:1/1;
-  min-height:150px;
+  min-height:116px;
   margin:0;
-  padding:16px;
-  border-radius:24px;
+  padding:12px;
+  border-radius:20px;
   background:
-    radial-gradient(circle at 16% 10%,rgba(56,189,248,.13),transparent 35%),
+    radial-gradient(circle at 90% 10%,rgba(255,255,255,.08),transparent 28%),
     linear-gradient(180deg,rgba(15,23,42,.96),rgba(2,6,23,.96));
-  border:1px solid rgba(148,163,184,.36);
+  border:1px solid rgba(148,163,184,.30);
   color:var(--text);
   text-align:left;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-  gap:10px;
+  gap:8px;
   overflow:hidden;
   position:relative;
 }
 
+.gameCardBtn:before{
+  content:attr(data-icon);
+  position:absolute;
+  right:10px;
+  bottom:4px;
+  font-size:46px;
+  line-height:1;
+  opacity:.13;
+  pointer-events:none;
+  transform:rotate(-8deg);
+}
+
+.gameCardBtn:after{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:5px;
+  background:linear-gradient(180deg,rgba(56,189,248,.85),rgba(37,99,235,.35));
+  opacity:.8;
+}
+
 .gameCardBtn:hover{
+  transform:translateY(-2px);
   background:
-    radial-gradient(circle at 20% 8%,rgba(56,189,248,.20),transparent 36%),
+    radial-gradient(circle at 86% 10%,rgba(255,255,255,.11),transparent 30%),
     linear-gradient(180deg,#1e293b,#020617);
   border-color:rgba(56,189,248,.50);
 }
 
 .gameCardBtn.selected{
   background:
-    radial-gradient(circle at 80% 15%,rgba(250,204,21,.16),transparent 34%),
+    radial-gradient(circle at 82% 16%,rgba(250,204,21,.16),transparent 34%),
     linear-gradient(135deg,#1d4ed8,#2563eb)!important;
   border-color:#60a5fa!important;
   color:white;
 }
 
+.gameCardBtn.theme-card:after{background:linear-gradient(180deg,#ef4444,#facc15,#22c55e,#3b82f6)}
+.gameCardBtn.theme-strategy:after{background:linear-gradient(180deg,#a855f7,#38bdf8)}
+.gameCardBtn.theme-classic:after{background:linear-gradient(180deg,#38bdf8,#2563eb)}
+.gameCardBtn.theme-arcade:after{background:linear-gradient(180deg,#22c55e,#facc15)}
+.gameCardBtn.theme-battle:after{background:linear-gradient(180deg,#f97316,#dc2626)}
+
 .gameCardTop{
   min-width:0;
+  position:relative;
+  z-index:1;
 }
 
 .gameCardTitle{
   display:block;
-  font-size:17px;
+  font-size:15px;
   line-height:1.12;
-  letter-spacing:-.25px;
-  margin-bottom:8px;
-  padding-right:2px;
+  letter-spacing:-.2px;
+  margin-bottom:6px;
+  padding-right:18px;
 }
 
 .gameCardMeta{
   color:#cbd5e1;
-  font-size:12px;
+  font-size:11px;
   line-height:1.25;
 }
 
 .gameCardAction{
   display:inline-flex;
   align-self:flex-start;
-  padding:7px 10px;
+  padding:5px 8px;
   border-radius:999px;
-  background:rgba(56,189,248,.13);
-  border:1px solid rgba(56,189,248,.28);
+  background:rgba(56,189,248,.12);
+  border:1px solid rgba(56,189,248,.24);
   color:#bae6fd;
-  font-size:12px;
+  font-size:10px;
   font-weight:900;
+  position:relative;
+  z-index:1;
 }
 
 .gameCardBtn.selected .gameCardAction{
@@ -1166,17 +1253,21 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
 
   .gameGrid{
     grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
+    gap:9px;
   }
 
   .gameCardBtn{
-    min-height:138px;
-    padding:13px;
-    border-radius:20px;
+    min-height:108px;
+    padding:11px;
+    border-radius:18px;
+  }
+
+  .gameCardBtn:before{
+    font-size:38px;
   }
 
   .gameCardTitle{
-    font-size:15px;
+    font-size:14px;
   }
 
   body.gameMode .side{
@@ -1198,234 +1289,7 @@ body.gameMode #roomChatPanel.chatCollapsed .chatInput{
 
   .gameCardBtn{
     aspect-ratio:auto;
-    min-height:118px;
-  }
-}
-
-
-
-/* ===== CLEAN PLAY LAYOUT: MAIN LIBRARY + SIDE LOBBY ===== */
-.focusLibraryCard{
-  margin-bottom:18px;
-}
-
-.libraryHeaderClean{
-  align-items:flex-start;
-}
-
-.compactCompanionHub{
-  margin-top:0;
-  margin-bottom:14px;
-}
-
-.sideLobbyPanel{
-  border-color:rgba(56,189,248,.30);
-  background:
-    radial-gradient(circle at top right,rgba(56,189,248,.12),transparent 38%),
-    rgba(2,6,23,.74);
-}
-
-.sideRoomStatus{
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(15,23,42,.52);
-  border-radius:17px;
-  padding:12px;
-  margin:10px 0;
-}
-
-.sideRoomActions{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-  margin:10px 0;
-}
-
-.compactRow{
-  gap:6px;
-}
-
-.compactRow input#roomCode{
-  flex:1;
-  min-width:0;
-}
-
-.compactRow button,
-.compactRow label{
-  margin:0;
-}
-
-.sideTableArea{
-  margin-top:12px;
-  border-top:1px solid rgba(148,163,184,.20);
-  padding-top:12px;
-}
-
-.sideTableTitle{
-  margin-bottom:8px;
-}
-
-.sideTableTitle h3{
-  margin:0;
-}
-
-.sideLobbyPanel .ownerControlsCard,
-#ownerControls .card{
-  padding:10px;
-  border-radius:16px;
-  margin:10px 0;
-  background:rgba(15,23,42,.58);
-}
-
-.seatGrid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:8px;
-}
-
-.seat{
-  display:block;
-  min-width:0;
-  margin:0;
-  padding:10px 8px;
-  border-radius:15px;
-  font-size:13px;
-}
-
-.seat button{
-  width:100%;
-  padding:7px 8px;
-  font-size:12px;
-  margin:7px 0 0;
-}
-
-.gameGrid{
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:16px;
-}
-
-.gameCardBtn{
-  aspect-ratio:auto;
-  min-height:132px;
-  padding:16px;
-}
-
-.gameCardTitle{
-  font-size:18px;
-}
-
-.gameCardMeta{
-  font-size:12px;
-}
-
-.gameFocusHeader{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:10px;
-}
-
-.gameFocusHeader h2{
-  margin:0 0 4px;
-}
-
-body.gameMode .side .sideCard{
-  display:none;
-}
-
-body.gameMode .side #sideRoomPanel,
-body.gameMode .side #roomChatPanel{
-  display:block!important;
-  pointer-events:auto;
-  background:rgba(2,6,23,.94);
-  border:2px solid #334155;
-  box-shadow:0 18px 45px rgba(0,0,0,.45);
-}
-
-body.gameMode .side #sideRoomPanel{
-  margin-bottom:10px;
-}
-
-body.gameMode .side #sideRoomPanel .sideRoomActions,
-body.gameMode .side #sideRoomPanel #ownerControls,
-body.gameMode .side #sideRoomPanel #roomHelp{
-  display:none;
-}
-
-body.gameMode .side #sideRoomPanel .sideRoomStatus{
-  padding:10px;
-  margin:8px 0;
-}
-
-body.gameMode .side #sideRoomPanel .roomCodeBig{
-  font-size:20px;
-}
-
-body.gameMode .side #sideRoomPanel .seatGrid{
-  grid-template-columns:repeat(2,minmax(0,1fr));
-}
-
-@media(max-width:1150px){
-  .wrap{
-    grid-template-columns:220px minmax(0,1fr);
-  }
-
-  .side{
-    display:block;
-    grid-column:1 / -1;
-    position:static;
-    height:auto;
-    border-left:0;
-    border-top:1px solid var(--line);
-  }
-
-  .sideLobbyPanel{
-    display:block;
-  }
-}
-
-@media(max-width:760px){
-  .gameGrid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:11px;
-  }
-
-  .gameCardBtn{
-    min-height:118px;
-    padding:12px;
-    border-radius:18px;
-  }
-
-  .gameCardTitle{
-    font-size:15px;
-  }
-
-  .gameCardMeta,
-  .gameCardAction{
-    font-size:11px;
-  }
-
-  .gameFocusHeader{
-    align-items:stretch;
-    flex-direction:column;
-  }
-
-  .gameFocusHeader .danger{
-    width:100%;
-  }
-
-  .side{
-    padding:12px;
-  }
-}
-
-@media(max-width:430px){
-  .gameGrid{
-    grid-template-columns:1fr;
-  }
-
-  .gameCardBtn{
-    min-height:105px;
+    min-height:102px;
   }
 }
 
@@ -1529,15 +1393,79 @@ body.gameMode .side #sideRoomPanel .seatGrid{
     <div id="play" class="section">
       <div class="hero" id="playTop">
         <h2>Play</h2>
-        <p>Choose a game in the main library. Room controls, seats, chat, and companion info stay in the side lobby so the game window can stay the focus.</p>
+        <p>Choose a session game, create a room, or jump into your companion systems from the hub below.</p>
       </div>
 
       <div class="roomSetupStack" id="roomSetupCard">
-        <div class="soloLaunchCard compactCompanionHub">
+        <div class="card roomControlBar glow">
+          <div class="cardHeader">
+            <div>
+              <h3>Multiplayer Room</h3>
+              <p class="muted">Create, join, and manage rooms without taking over the play screen.</p>
+            </div>
+            <span class="pill">Lobby Control</span>
+          </div>
+
+          <div class="roomControlGrid">
+            <div class="roomStatusPanel">
+              <div class="roomStatusTop">
+                <span class="muted">Current Room</span>
+                <span id="roomPrivacy"></span>
+              </div>
+              <b id="roomLabel" class="roomCodeBig">None</b>
+              <div id="roomHelp" class="notice" style="margin-top:12px">Create or join a room for multiplayer games.</div>
+              <div id="roomPeople" class="muted" style="margin-top:9px"></div>
+            </div>
+
+            <div class="roomActionsPanel">
+              <div class="roomActionRows">
+                <div class="roomActionBox">
+                  <h4>Create Room</h4>
+                  <div class="row">
+                    <label><input type="checkbox" id="privateRoom"> Private 🔒</label>
+                    <button onclick="createRoom()" class="primary">Create</button>
+                  </div>
+                </div>
+
+                <div class="roomActionBox">
+                  <h4>Join / Leave</h4>
+                  <div class="row">
+                    <input id="roomCode" placeholder="room code">
+                    <button onclick="joinRoom()">Join</button>
+                    <button onclick="leaveRoom()">Leave</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="ownerControls" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card tablePanel" id="tablePanelCard">
+          <div class="tableHeaderLine">
+            <div>
+              <h3>Table Seats</h3>
+              <p class="muted">Sit at the table, then the room owner can start.</p>
+              <span id="selectedGameLabel" class="selectedGameName"></span>
+            </div>
+            <div class="tableHeaderActions">
+              <button id="changeGameBtn" class="ghost" onclick="changeGame()">Change Game</button>
+              <button id="startBtn" class="good" onclick="startGame()">Start Game</button>
+            </div>
+          </div>
+
+          <div id="tableArea">
+            <div id="seats" class="seatGrid"><i class="muted">Select a multiplayer game to create seats.</i></div>
+            <p id="startHint" class="muted"></p>
+          </div>
+        </div>
+
+        <div class="soloLaunchCard" id="companionHubCard">
           <div class="cardHeader">
             <div>
               <h3>Companion Hub</h3>
-              <p class="muted">Care, train, and battle with your companion. Pet World opens instantly; Pet Battle uses a room.</p>
+              <p class="muted">Care, train, and battle with your companion. Pet World opens instantly; battles can create a room.</p>
             </div>
             <span class="pill">Persistent Pet</span>
           </div>
@@ -1548,11 +1476,11 @@ body.gameMode .side #sideRoomPanel .seatGrid{
           </div>
         </div>
 
-        <div class="card libraryCard focusLibraryCard">
-          <div class="cardHeader libraryHeaderClean">
+        <div class="card libraryCard" id="gameLibraryCard">
+          <div class="cardHeader">
             <div>
               <h3>Game Library</h3>
-              <p class="muted">Pick a session game. Room games will use the lobby panel on the side.</p>
+              <p class="muted">Choose a session game. Cards are grouped to keep the library easy to browse on desktop and mobile.</p>
             </div>
             <span class="pill">Session Games</span>
           </div>
@@ -1563,13 +1491,11 @@ body.gameMode .side #sideRoomPanel .seatGrid{
       </div>
 
       <div id="gameArea" class="card hidden">
-        <div class="gameFocusHeader">
-          <div>
-            <h2 id="gameAreaTitle">Game Area</h2>
-            <p id="gameHint" class="muted">The started game appears here.</p>
-          </div>
+        <div class="cardHeader">
+          <h2 id="gameAreaTitle">Game Area</h2>
           <button class="danger" onclick="exitGameMode()">Exit Game</button>
         </div>
+        <p id="gameHint" class="muted">The started game appears here.</p>
         <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
@@ -1607,41 +1533,19 @@ body.gameMode .side #sideRoomPanel .seatGrid{
   </div>
 
   <div class="side">
-    <div class="sideCard sideLobbyPanel" id="sideRoomPanel">
+    <div class="sideCard" id="presencePanel">
       <div class="sidebarTitle">
-        <h3>Lobby</h3>
-        <span id="roomPrivacy"></span>
+        <h3>Online Users</h3>
       </div>
+      <p class="muted">Click a user in a public room to join them.</p>
+      <div id="presence"></div>
+    </div>
 
-      <div class="sideRoomStatus">
-        <span class="muted">Current Room</span>
-        <b id="roomLabel" class="roomCodeBig">None</b>
-        <div id="roomHelp" class="notice">Create or join a room for multiplayer games.</div>
-        <div id="roomPeople" class="muted" style="margin-top:8px"></div>
+    <div class="sideCard" id="sideCompanionPanel">
+      <div class="sidebarTitle">
+        <h3>Companion</h3>
       </div>
-
-      <div class="sideRoomActions">
-        <div class="row compactRow">
-          <label><input type="checkbox" id="privateRoom"> Private</label>
-          <button onclick="createRoom()" class="primary">Create</button>
-        </div>
-        <div class="row compactRow">
-          <input id="roomCode" placeholder="room code">
-          <button onclick="joinRoom()">Join</button>
-          <button onclick="leaveRoom()">Leave</button>
-        </div>
-      </div>
-
-      <div id="ownerControls"></div>
-
-      <div id="tableArea" class="sideTableArea">
-        <div class="sidebarTitle sideTableTitle">
-          <h3>Seats</h3>
-          <button id="startBtn" class="good" onclick="startGame()">Start</button>
-        </div>
-        <div id="seats" class="seatGrid"><i class="muted">Select a multiplayer game to create seats.</i></div>
-        <p id="startHint" class="muted"></p>
-      </div>
+      <div id="sideCompanion" class="sideCompanionMini"><p class="muted">Log in to load your companion.</p></div>
     </div>
 
     <div class="sideCard hidden" id="roomChatPanel">
@@ -1656,26 +1560,17 @@ body.gameMode .side #sideRoomPanel .seatGrid{
         <button onclick="sendChat()" class="primary">Send</button>
       </div>
     </div>
-
-    <div class="sideCard" id="presencePanel">
-      <div class="sidebarTitle">
-        <h3>Online Users</h3>
-      </div>
-      <p class="muted">Click a user in a public room to join them.</p>
-      <div id="presence"></div>
-    </div>
-
-    <div class="sideCard" id="sideCompanionPanel">
-      <div class="sidebarTitle">
-        <h3>Companion</h3>
-        <button class="ghost" onclick="openPetWorldDirect()">Open</button>
-      </div>
-      <div id="sidePet"><p class="muted">Log in to load your pet.</p></div>
-    </div>
   </div>
+
 </div>
 
 <script>
+/*
+Runtime notes for future AI chats:
+- Multiplayer rooms are server-relayed, but individual games still own their own state unless you intentionally move state to the server.
+- The Play page hides the game library after a room game is selected to keep the game window and table controls focused.
+- Whole game cards are clickable; avoid adding duplicate Select buttons inside cards.
+*/
 let me=localStorage.getItem('gf_user')||'';
 let admin=localStorage.getItem('gf_admin')==='true';
 let socket=null;
@@ -1692,6 +1587,7 @@ let petMoves={};
 let latestPresenceUsers=[];
 let latestPresenceRooms=[];
 let pendingGameToSelect='';
+let gameLibraryForcedOpen=false; // Keeps the library open only when the user explicitly chooses Change Game after selecting a room game.
 
 function showSection(id){
   document.body.classList.remove('directGameMode');
@@ -1925,10 +1821,10 @@ function drawGames(){
 
   const companionIds=['petworld','petbattle'];
   const groups=[
-    {title:'Classic Tables',hint:'Fast competitive favorites',ids:['tictactoe','connect4','battleship','battleship2','hangman','trouble']},
-    {title:'Cards & Dice',hint:'Tabletop game night',ids:['uno','gofish','yahtzee']},
-    {title:'Strategy',hint:'Think several moves ahead',ids:['chess','othello','mancala','squares']},
-    {title:'Arcade & Adventure',hint:'Action and experiments',ids:['miner','shadowtrace','doomlike','pixelquest']}
+    {key:'classic',title:'Classic Tables',hint:'Fast competitive favorites',ids:['tictactoe','connect4','battleship','battleship2','hangman','trouble']},
+    {key:'card',title:'Cards & Dice',hint:'Tabletop game night',ids:['uno','gofish','yahtzee']},
+    {key:'strategy',title:'Strategy',hint:'Think several moves ahead',ids:['chess','othello','mancala','squares']},
+    {key:'arcade',title:'Arcade & Adventure',hint:'Action and experiments',ids:['miner','shadowtrace','doomlike','pixelquest']}
   ];
 
   let sessionGames=games.filter(function(x){
@@ -1936,23 +1832,25 @@ function drawGames(){
     return !q||String(x.name||'').toLowerCase().includes(q)||String(x.id||'').toLowerCase().includes(q);
   });
 
-  function gameCard(x){
+  function gameCard(x,groupKey){
     let solo=gameIsSolo(x);
     let selected=room&&room.selectedGame&&room.selectedGame.id===x.id;
     let playerText=Number(x.minPlayers||1)===Number(x.maxPlayers||1)
       ? Number(x.minPlayers||1)+' Player'+(Number(x.minPlayers||1)===1?'':'s')
       : Number(x.minPlayers||1)+'–'+Number(x.maxPlayers||1)+' Players';
+    let icon=gameIcon(x.id);
+    let actionText=selected?'Selected':(solo?'Quick Play':'Room Game');
 
     let b=document.createElement('button');
-    b.className='gameCardBtn '+(selected?'selected':'');
+    b.className='gameCardBtn theme-'+groupKey+' '+(selected?'selected':'');
+    b.setAttribute('data-icon',icon);
+    b.title=solo?'Launch '+x.name:'Select '+x.name+' for a room';
     b.innerHTML=
       '<div class="gameCardTop">'+
         '<strong class="gameCardTitle">'+escapeHtml(x.name)+'</strong>'+
         '<div class="gameCardMeta">'+playerText+'</div>'+
       '</div>'+
-      '<span class="gameCardAction">'+
-        (solo?'Launch':(room?'Select':'Create Room'))+
-      '</span>';
+      '<span class="gameCardAction">'+actionText+'</span>';
 
     b.onclick=function(){
       if(solo){
@@ -1963,6 +1861,16 @@ function drawGames(){
     };
 
     return b;
+  }
+
+  function gameIcon(id){
+    const icons={
+      tictactoe:'✕',connect4:'●',battleship:'⌖',battleship2:'⌖',hangman:'?',trouble:'★',
+      uno:'◑',gofish:'🐟',yahtzee:'⚂',
+      chess:'♞',othello:'◐',mancala:'●',squares:'□',
+      miner:'⛏',shadowtrace:'◈',doomlike:'✦',pixelquest:'◆'
+    };
+    return icons[id]||'🎮';
   }
 
   groups.forEach(function(group){
@@ -1979,7 +1887,7 @@ function drawGames(){
       '<div class="gameGrid"></div>';
 
     let grid=section.querySelector('.gameGrid');
-    list.forEach(function(x){grid.appendChild(gameCard(x));});
+    list.forEach(function(x){grid.appendChild(gameCard(x,group.key));});
     container.appendChild(section);
   });
 
@@ -1994,7 +1902,7 @@ function drawGames(){
       '<div class="gameCategoryHeader"><h3>More Games</h3><span>Extra sessions</span></div>'+
       '<div class="gameGrid"></div>';
     let grid=section.querySelector('.gameGrid');
-    other.forEach(function(x){grid.appendChild(gameCard(x));});
+    other.forEach(function(x){grid.appendChild(gameCard(x,'classic'));});
     container.appendChild(section);
   }
 
@@ -2066,6 +1974,7 @@ function joinRoom(code){
 }
 
 function leaveRoom(){
+  gameLibraryForcedOpen=false;
   send({type:'leaveRoom'});
   room=null;
   currentRoom=null;
@@ -2077,6 +1986,7 @@ function leaveRoom(){
 }
 
 function selectGame(id){
+  gameLibraryForcedOpen=false;
   let g=games.find(x=>x.id===id);
 
   if(!g){
@@ -2097,6 +2007,12 @@ function selectGame(id){
   }
 
   send({type:'selectGame',gameId:id});
+}
+
+function changeGame(){
+  gameLibraryForcedOpen=true;
+  drawRoom();
+  showSection('play');
 }
 
 function sit(i){
@@ -2121,8 +2037,7 @@ function closeRoom(){
 
 function drawRoom(){
   roomChatPanel.classList.toggle('hidden',!room);
-  let hasActiveGame=document.body.classList.contains('directGameMode') || !!(room&&room.started&&room.selectedGame);
-  gameArea.classList.toggle('hidden',!hasActiveGame);
+  gameArea.classList.toggle('hidden',!room&&!document.body.classList.contains('directGameMode'));
 
   roomLabel.innerText=room?room.id:'None';
 
@@ -2137,6 +2052,21 @@ function drawRoom(){
     : 'Create or join a room for multiplayer games.';
 
   drawGames();
+
+  // UI rule: after a room game is selected, collapse the game library so the player focuses on seats/start. Change Game opens it back up.
+  let hasSelectedGame=!!(room&&room.selectedGame);
+  let hideLibrary=hasSelectedGame&&!gameLibraryForcedOpen;
+  let library=document.getElementById('gameLibraryCard');
+  let companionHub=document.getElementById('companionHubCard');
+  let tablePanel=document.getElementById('tablePanelCard');
+  let selectedLabel=document.getElementById('selectedGameLabel');
+  let changeBtn=document.getElementById('changeGameBtn');
+
+  if(library)library.classList.toggle('hidden',hideLibrary);
+  if(companionHub)companionHub.classList.toggle('hidden',hideLibrary);
+  if(tablePanel)tablePanel.style.display=hasSelectedGame?'block':'none';
+  if(selectedLabel)selectedLabel.innerText=hasSelectedGame?'Selected: '+room.selectedGame.name:'';
+  if(changeBtn)changeBtn.style.display=hasSelectedGame?'inline-block':'none';
 
   roomPeople.innerHTML=room
     ? '<b>People in room:</b> '+room.players.map(escapeHtml).join(', ')
