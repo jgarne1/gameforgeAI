@@ -42,64 +42,20 @@ function admins(){
 }
 
 const DEFAULT_MOVES={
-  tackle:{
-    name:'Tackle',
-    type:'normal',
-    category:'physical',
-    power:30,
-    accuracy:95,
-    crit:5,
-    description:'A reliable basic attack.'
-  },
-  ember_nip:{
-    name:'Ember Nip',
-    type:'fire',
-    category:'special',
-    power:42,
-    accuracy:90,
-    crit:8,
-    status:{effect:'burn',chance:25,duration:3},
-    description:'A fiery bite that may burn.'
-  },
-  bubble_snap:{
-    name:'Bubble Snap',
-    type:'water',
-    category:'special',
-    power:40,
-    accuracy:92,
-    crit:6,
-    status:{effect:'slow',chance:20,duration:2},
-    description:'A snapping water burst that may slow.'
-  },
-  vine_bop:{
-    name:'Vine Bop',
-    type:'nature',
-    category:'physical',
-    power:38,
-    accuracy:95,
-    crit:7,
-    status:{effect:'snare',chance:18,duration:2},
-    description:'A vine strike that may snare.'
-  },
-  shadow_pounce:{
-    name:'Shadow Pounce',
-    type:'shadow',
-    category:'physical',
-    power:46,
-    accuracy:86,
-    crit:18,
-    description:'A risky shadow attack with high critical chance.'
-  },
-  stone_bump:{
-    name:'Stone Bump',
-    type:'earth',
-    category:'physical',
-    power:44,
-    accuracy:88,
-    crit:5,
-    status:{effect:'stun',chance:12,duration:1},
-    description:'A heavy impact that may stun.'
-  }
+  tackle:{name:'Tackle',type:'normal',category:'physical',power:30,accuracy:95,crit:5,description:'A reliable basic attack.'},
+  quick_jab:{name:'Quick Jab',type:'normal',category:'physical',power:24,accuracy:100,crit:12,description:'A fast strike with a higher critical chance.'},
+  guard_up:{name:'Guard Up',type:'earth',category:'status',power:0,accuracy:100,crit:0,status:{effect:'defense_up',chance:100,amount:2,duration:3},description:'Raises defense for a few turns.'},
+
+  ember_nip:{name:'Ember Nip',type:'fire',category:'special',power:42,accuracy:90,crit:8,status:{effect:'burn',chance:25,duration:3},description:'A fiery bite that may burn.'},
+  bubble_snap:{name:'Bubble Snap',type:'water',category:'special',power:40,accuracy:92,crit:6,status:{effect:'slow',chance:20,duration:2},description:'A snapping water burst that may slow.'},
+  vine_bop:{name:'Vine Bop',type:'nature',category:'physical',power:38,accuracy:95,crit:7,status:{effect:'snare',chance:18,duration:2},description:'A vine strike that may snare.'},
+  shadow_pounce:{name:'Shadow Pounce',type:'shadow',category:'physical',power:46,accuracy:86,crit:18,description:'A risky shadow attack with high critical chance.'},
+  stone_bump:{name:'Stone Bump',type:'earth',category:'physical',power:44,accuracy:88,crit:5,status:{effect:'stun',chance:12,duration:1},description:'A heavy impact that may stun.'},
+
+  dino_chomp:{name:'Dino Chomp',type:'earth',category:'physical',power:48,accuracy:88,crit:10,status:{effect:'defense_down',chance:18,amount:2,duration:3},description:'A heavy prehistoric bite that may lower defense.'},
+  tail_thump:{name:'Tail Thump',type:'normal',category:'physical',power:36,accuracy:95,crit:5,status:{effect:'stun',chance:10,duration:1},description:'A solid tail hit with a small chance to stun.'},
+  wing_gust:{name:'Wing Gust',type:'fire',category:'special',power:34,accuracy:96,crit:7,status:{effect:'slow',chance:18,duration:2},description:'A heated gust that may slow the target.'},
+  flame_breath:{name:'Flame Breath',type:'fire',category:'special',power:52,accuracy:84,crit:9,status:{effect:'burn',chance:30,duration:3},description:'A powerful breath attack that may burn.'}
 };
 
 function safeUser(u){
@@ -145,148 +101,46 @@ function defaultPetProfile(username){
         species:null,
         createdAt:Date.now(),
         lastUpdated:Date.now(),
-        eggTraits:{
-          warm:0,
-          cold:0,
-          wet:0,
-          dry:0,
-          light:0,
-          dark:0
-        },
-        stats:{
-          level:1,
-          xp:0,
-          hp:20,
-          maxHp:20,
-          attack:5,
-          defense:4,
-          speed:5
-        },
-        needs:{
-          hunger:80,
-          happiness:70,
-          energy:80,
-          cleanliness:90
-        },
+        eggTraits:{warm:0,cold:0,wet:0,dry:0,light:0,dark:0},
+        stats:{level:1,xp:0,hp:20,maxHp:20,attack:5,defense:4,speed:5},
+        needs:{hunger:80,happiness:70,energy:80,cleanliness:90},
         moves:['tackle'],
-        battle:{
-          wins:0,
-          losses:0
-        }
+        battle:{wins:0,losses:0}
       }
     }
   };
 }
 
 const PET_SPECIES={
-  flarecub:{
-    name:'Flarecub',
-    type:'fire',
-    emoji:'🔥',
-    base:{hp:24,attack:7,defense:4,speed:5},
-    moves:['tackle','ember_nip']
-  },
-  frostfin:{
-    name:'Frostfin',
-    type:'water',
-    emoji:'💧',
-    base:{hp:22,attack:5,defense:6,speed:6},
-    moves:['tackle','bubble_snap']
-  },
-  leafbun:{
-    name:'Leafbun',
-    type:'nature',
-    emoji:'🌿',
-    base:{hp:26,attack:5,defense:6,speed:4},
-    moves:['tackle','vine_bop']
-  },
-  shadepup:{
-    name:'Shadepup',
-    type:'shadow',
-    emoji:'🌙',
-    base:{hp:20,attack:7,defense:4,speed:7},
-    moves:['tackle','shadow_pounce']
-  },
-  pebblet:{
-    name:'Pebblet',
-    type:'earth',
-    emoji:'🪨',
-    base:{hp:28,attack:5,defense:8,speed:3},
-    moves:['tackle','stone_bump']
-  }
+  flarecub:{name:'Flarecub',type:'fire',emoji:'🔥',base:{hp:24,attack:7,defense:4,speed:5},moves:['tackle','ember_nip']},
+  frostfin:{name:'Frostfin',type:'water',emoji:'💧',base:{hp:22,attack:5,defense:6,speed:6},moves:['tackle','bubble_snap']},
+  leafbun:{name:'Leafbun',type:'nature',emoji:'🌿',base:{hp:26,attack:5,defense:6,speed:4},moves:['tackle','vine_bop']},
+  shadepup:{name:'Shadepup',type:'shadow',emoji:'🌙',base:{hp:20,attack:7,defense:4,speed:7},moves:['tackle','shadow_pounce']},
+  pebblet:{name:'Pebblet',type:'earth',emoji:'🪨',base:{hp:28,attack:5,defense:8,speed:3},moves:['tackle','stone_bump']},
+
+  chompasaur:{name:'Chompasaur',type:'earth',emoji:'🦖',base:{hp:30,attack:8,defense:7,speed:3},moves:['tackle','dino_chomp']},
+  emberwing:{name:'Emberwing',type:'fire',emoji:'🐉',base:{hp:24,attack:7,defense:5,speed:7},moves:['tackle','ember_nip','wing_gust']}
 };
 
 const SHOP_ITEMS={
-  berry:{
-    name:'Berry',
-    price:10,
-    description:'Restores hunger.',
-    effect:{hunger:18}
-  },
-  sparkle_treat:{
-    name:'Sparkle Treat',
-    price:25,
-    description:'Boosts happiness.',
-    effect:{happiness:18}
-  },
-  soap:{
-    name:'Bubble Soap',
-    price:20,
-    description:'Improves cleanliness.',
-    effect:{cleanliness:25}
-  },
-  nap_blanket:{
-    name:'Nap Blanket',
-    price:30,
-    description:'Restores energy.',
-    effect:{energy:22}
-  },
-  warm_pad:{
-    name:'Warm Pad',
-    price:20,
-    description:'Egg care: increases warmth.',
-    eggTrait:{warm:3}
-  },
-  cool_cloth:{
-    name:'Cool Cloth',
-    price:20,
-    description:'Egg care: increases cold.',
-    eggTrait:{cold:3}
-  },
-  mist_spray:{
-    name:'Mist Spray',
-    price:20,
-    description:'Egg care: increases wet.',
-    eggTrait:{wet:3}
-  },
-  dry_towel:{
-    name:'Dry Towel',
-    price:20,
-    description:'Egg care: increases dry.',
-    eggTrait:{dry:3}
-  },
-  sun_lamp:{
-    name:'Sun Lamp',
-    price:35,
-    description:'Egg care: increases light.',
-    eggTrait:{light:4}
-  },
-  shade_cover:{
-    name:'Shade Cover',
-    price:35,
-    description:'Egg care: increases dark.',
-    eggTrait:{dark:4}
-  }
+  berry:{name:'Berry',price:10,description:'Restores hunger.',effect:{hunger:18}},
+  sparkle_treat:{name:'Sparkle Treat',price:25,description:'Boosts happiness.',effect:{happiness:18}},
+  soap:{name:'Bubble Soap',price:20,description:'Improves cleanliness.',effect:{cleanliness:25}},
+  nap_blanket:{name:'Nap Blanket',price:30,description:'Restores energy.',effect:{energy:22}},
+  warm_pad:{name:'Warm Pad',price:20,description:'Egg care: increases warmth.',eggTrait:{warm:3}},
+  cool_cloth:{name:'Cool Cloth',price:20,description:'Egg care: increases cold.',eggTrait:{cold:3}},
+  mist_spray:{name:'Mist Spray',price:20,description:'Egg care: increases wet.',eggTrait:{wet:3}},
+  dry_towel:{name:'Dry Towel',price:20,description:'Egg care: increases dry.',eggTrait:{dry:3}},
+  sun_lamp:{name:'Sun Lamp',price:35,description:'Egg care: increases light.',eggTrait:{light:4}},
+  shade_cover:{name:'Shade Cover',price:35,description:'Egg care: increases dark.',eggTrait:{dark:4}}
 };
 
 function getPetProfile(username){
   let all=pets();
-
   if(!all[username]){
     all[username]=defaultPetProfile(username);
     writeJSON(petsFile,all);
   }
-
   return all[username];
 }
 
@@ -312,6 +166,14 @@ function hatchSpecies(traits){
   let light=traits.light||0;
   let dark=traits.dark||0;
 
+  let total=warm+cold+wet+dry+light+dark;
+  let rareRoll=Math.random();
+
+  if(total>=18){
+    if(warm>=7&&light>=5&&rareRoll<0.45)return 'emberwing';
+    if(dry>=7&&warm>=4&&rareRoll<0.45)return 'chompasaur';
+  }
+
   if(warm>=cold&&warm>=wet&&light>=dark)return 'flarecub';
   if(cold>warm&&wet>=dry)return 'frostfin';
   if(wet>=dry&&light>=dark)return 'leafbun';
@@ -333,7 +195,7 @@ function hatchPet(pet){
   pet.stats.attack=species.base.attack;
   pet.stats.defense=species.base.defense;
   pet.stats.speed=species.base.speed;
-  pet.moves=species.moves.slice(0,2);
+  pet.moves=species.moves.slice(0,3);
   pet.lastUpdated=Date.now();
 
   return pet;
@@ -341,7 +203,6 @@ function hatchPet(pet){
 
 function requireUser(req,res){
   let username=String(req.query.user||req.body.username||'').trim();
-
   if(!username){
     res.status(400).json({error:'Missing user'});
     return null;
@@ -361,10 +222,7 @@ function requireUser(req,res){
 app.get('/api/games',(req,res)=>res.json(games()));
 
 app.get('/api/pet/moves',(req,res)=>{
-  res.json({
-    ok:true,
-    moves:moves()
-  });
+  res.json({ok:true,moves:moves()});
 });
 
 app.post('/api/register',(req,res)=>{
@@ -496,7 +354,7 @@ app.post('/api/pet/care-egg',(req,res)=>{
 
   res.json({
     ok:true,
-    message:hatched?'Your egg hatched!':'You '+a.label+'.',
+    message:hatched?'Your egg hatched into '+pet.name+'!':'You '+a.label+'.',
     hatched,
     profile
   });
