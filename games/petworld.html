@@ -12,6 +12,7 @@ GameForge AI / PetWorld maintainer notes:
 - Server owns profile changes. Do not permanently mutate pet/profile client-side without calling the matching API.
 - Pets store only move IDs. Move data comes from /api/pet/profile.
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
+- Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 */
 
 :root{
@@ -162,22 +163,37 @@ button,input,select{font-family:inherit}
   position:relative;
   width:315px;height:315px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.42);
-  box-shadow:0 0 90px rgba(255,255,255,.86), inset 0 0 52px rgba(255,255,255,.64);
+  background:rgba(255,255,255,.36);
+  box-shadow:0 0 90px rgba(255,255,255,.72), inset 0 0 52px rgba(255,255,255,.54);
   z-index:2;
   cursor:pointer;
-  transition:transform .6s ease;
+  transition:transform .8s cubic-bezier(.25,.8,.25,1), box-shadow .35s ease, background .35s ease;
   animation:floaty 3.3s ease-in-out infinite;
 }
-.petOrb.wanderLeft{transform:translateX(-54px)}
-.petOrb.wanderRight{transform:translateX(54px)}
-.petOrb.wanderUp{transform:translateY(-24px)}
+
+/* Hatched pets wander; eggs stay centered except for wobble/hop near hatch. */
+.petOrb.wanderLeft{transform:translateX(-165px) translateY(18px) rotate(-3deg)}
+.petOrb.wanderRight{transform:translateX(165px) translateY(18px) rotate(3deg)}
+.petOrb.wanderNearLeft{transform:translateX(-90px) translateY(10px) rotate(-2deg)}
+.petOrb.wanderNearRight{transform:translateX(90px) translateY(10px) rotate(2deg)}
+.petOrb.hop{transform:translateY(-42px) scale(1.04)}
+.petOrb.walking{transition:transform 2.4s cubic-bezier(.25,.8,.25,1)}
+.petOrb.eggStill{transition:transform .35s ease}
+
+.petOrb.eggWarm{box-shadow:0 0 90px rgba(251,146,60,.9), inset 0 0 52px rgba(254,215,170,.72)}
+.petOrb.eggCold{box-shadow:0 0 90px rgba(125,211,252,.9), inset 0 0 52px rgba(186,230,253,.72)}
+.petOrb.eggWet{box-shadow:0 0 90px rgba(14,165,233,.75), inset 0 0 52px rgba(186,230,253,.75)}
+.petOrb.eggDry{box-shadow:0 0 90px rgba(217,119,6,.55), inset 0 0 52px rgba(254,243,199,.75)}
+.petOrb.eggLight{box-shadow:0 0 100px rgba(250,204,21,.95), inset 0 0 56px rgba(254,249,195,.8)}
+.petOrb.eggDark{box-shadow:0 0 95px rgba(124,58,237,.85), inset 0 0 52px rgba(221,214,254,.75)}
+
 .petOrb.playful{animation:playfulFloat 2.1s ease-in-out infinite}
 .petOrb.lazy,.petOrb.napping{animation:napFloat 4.8s ease-in-out infinite}
 .petOrb.aggressive{animation:sharpFloat 2.2s ease-in-out infinite}
 .petOrb.calm{animation:calmFloat 4s ease-in-out infinite}
 .petOrb.curious{animation:curiousFloat 2.8s ease-in-out infinite}
 .petOrb.moody{animation:moodyFloat 2.9s ease-in-out infinite}
+
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes playfulFloat{0%,100%{transform:translateY(0) rotate(-2deg)}35%{transform:translateY(-20px) rotate(3deg)}70%{transform:translateY(-6px) rotate(-4deg)}}
 @keyframes napFloat{0%,100%{transform:translateY(3px) scale(.99)}50%{transform:translateY(-5px) scale(1.01)}}
@@ -625,12 +641,8 @@ function draw(){
   drawLog();
 
   if(localState.prompt)speak(localState.prompt.text);
-  else if(pet.stage==='egg'){
-    var prog=eggProgress(pet);
-    if(prog>=80)speak('The egg trembles. Something inside is ready to meet you soon.');
-    else if(prog>=45)speak('The egg responds to your care. Its personality is beginning to form.');
-    else speak('Your egg is listening. Every care choice nudges what it may become.');
-  }else speak(idleSpeech(pet,mood));
+  else if(pet.stage==='egg')speak(idleSpeech(pet,mood));
+  else speak(idleSpeech(pet,mood));
 }
 
 function drawDock(){
@@ -1099,28 +1111,58 @@ function setAura(pet){
 
 function setPetPersonalityMotion(pet,mood){
   var orb=el('petOrb');
+  clearWanderClasses(orb);
   orb.className='petOrb';
+
   if(pet.stage==='egg'){
+    orb.classList.add('eggStill');
+
+    var strongest=strongestTrait(pet.eggTraits||{});
+    if(strongest){
+      orb.classList.add('egg'+strongest.charAt(0).toUpperCase()+strongest.slice(1));
+    }
+
     if(eggProgress(pet)>=80)orb.classList.add('curious');
+    else orb.classList.add('calm');
+
     return;
   }
+
   if(mood.label==='Tired'||mood.label==='Struggling')orb.classList.add('napping');
   else if(pet.personality)orb.classList.add(pet.personality);
+  else orb.classList.add('calm');
 }
 
 function idleSpeech(pet,mood){
   var name=pet.name||'Your pet';
+
+  if(pet.stage==='egg'){
+    var strongest=strongestTrait(pet.eggTraits||{});
+    var traitLines={
+      warm:'The egg gives off a soft warmth. Something fiery may be stirring.',
+      cold:'A cool mist clings to the shell. It feels calm and quiet.',
+      wet:'Tiny droplets bead across the shell. It seems to enjoy the moisture.',
+      dry:'The shell feels sturdy and dry, like sun-warmed stone.',
+      light:'A golden shimmer moves across the egg. It seems hopeful.',
+      dark:'A faint shadowy glow pulses under the shell.'
+    };
+    if(eggProgress(pet)>=80)return 'The egg trembles. Your care has shaped what waits inside.';
+    return traitLines[strongest]||'Your egg is listening. Every care choice shapes what it may become.';
+  }
+
   if(mood.label==='Tired')return name+' curls up and looks ready for a rest.';
   if(mood.label==='Hungry')return name+' watches your bag very carefully. Snack time?';
   if(mood.label==='Struggling')return name+' needs a little extra care today.';
+
   var lines={
-    playful:name+' bounces around, waiting for something fun.',
-    lazy:name+' gives you a slow blink and settles in comfortably.',
-    aggressive:name+' looks fired up and ready to train.',
-    calm:name+' breathes steadily and seems peaceful near you.',
-    curious:name+' studies every corner of the room with bright eyes.',
-    moody:name+' changes expressions like it is deciding what kind of day this is.'
+    playful:name+' trots around happily, looking for something fun.',
+    lazy:name+' wanders a few steps, then decides that was enough effort.',
+    aggressive:name+' paces with focused energy, ready to train.',
+    calm:name+' strolls peacefully through the grass.',
+    curious:name+' explores the stage, inspecting every little detail.',
+    moody:name+' moves around unpredictably, like it has plans of its own.'
   };
+
   return lines[pet.personality]||name+' watches you closely. Consistent care builds a stronger bond.';
 }
 
@@ -1128,26 +1170,63 @@ function tickPetLife(){
   var pet=activePet();
   if(!pet)return;
   maybeWanderPet(pet);
-  if(Math.random()<.28&&!localState.prompt)speak(pet.stage==='egg'?'The egg gives a tiny wiggle.':idleSpeech(pet,getMood(pet)));
+  if(Math.random()<.28&&!localState.prompt)speak(idleSpeech(pet,getMood(pet)));
 }
 
 function maybeWanderPet(pet){
   var now=Date.now();
-  if(now-localState.lastWanderAt<6500)return;
+  if(now-localState.lastWanderAt<5200)return;
+
   localState.lastWanderAt=now;
   var orb=el('petOrb');
-  ['wanderLeft','wanderRight','wanderUp'].forEach(function(c){orb.classList.remove(c)});
-  if(pet.stage==='egg'&&eggProgress(pet)<80)return;
-  var choices=['wanderLeft','wanderRight','wanderUp',''];
-  var c=choices[Math.floor(Math.random()*choices.length)];
-  if(c)orb.classList.add(c);
-  setTimeout(function(){
-    if(orb){
-      orb.classList.remove('wanderLeft');
-      orb.classList.remove('wanderRight');
-      orb.classList.remove('wanderUp');
+
+  clearWanderClasses(orb);
+
+  if(pet.stage==='egg'){
+    if(eggProgress(pet)>=80){
+      orb.classList.add('hop');
+      setTimeout(function(){clearWanderClasses(orb)},700);
     }
-  },2800);
+    return;
+  }
+
+  var personality=pet.personality||'calm';
+
+  var choices=['wanderNearLeft','wanderNearRight','wanderLeft','wanderRight','hop',''];
+  if(personality==='lazy')choices=['wanderNearLeft','wanderNearRight','','',''];
+  if(personality==='playful')choices=['wanderLeft','wanderRight','hop','wanderNearLeft','wanderNearRight'];
+  if(personality==='curious')choices=['wanderLeft','wanderRight','wanderNearLeft','wanderNearRight','hop'];
+  if(personality==='calm')choices=['wanderNearLeft','wanderNearRight','','wanderLeft','wanderRight'];
+  if(personality==='aggressive')choices=['wanderLeft','wanderRight','wanderLeft','wanderRight','hop'];
+  if(personality==='moody')choices=['wanderLeft','wanderRight','hop','','wanderNearLeft','wanderNearRight'];
+
+  var c=choices[Math.floor(Math.random()*choices.length)];
+
+  if(c){
+    orb.classList.add('walking');
+    orb.classList.add(c);
+  }
+
+  var duration=c==='hop'?800:2600;
+
+  setTimeout(function(){
+    if(orb)clearWanderClasses(orb);
+  },duration);
+}
+
+function clearWanderClasses(orb){
+  if(!orb)return;
+  [
+    'wanderLeft',
+    'wanderRight',
+    'wanderNearLeft',
+    'wanderNearRight',
+    'wanderUp',
+    'hop',
+    'walking'
+  ].forEach(function(c){
+    orb.classList.remove(c);
+  });
 }
 
 function tickLocalPrompt(){
@@ -1244,7 +1323,7 @@ function showHatch(pet){
   img.src=src;
   emoji.innerText=pet.emoji||'🐣';
   hatchTitle.innerText='Your egg hatched!';
-  hatchText.innerText=(pet.name||'A new companion')+' joined you. Personality: '+personalityLabel(pet.personality)+'.';
+  hatchText.innerText=(pet.name||'A new companion')+' joined you. Your care shaped its path. Personality: '+personalityLabel(pet.personality)+'.';
   hatchOverlay.classList.add('show');
   setTimeout(function(){hatchOverlay.classList.remove('show')},2200);
 }
