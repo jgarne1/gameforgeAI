@@ -8,14 +8,12 @@
   --muted:#64748b;
   --line:rgba(255,255,255,.34);
   --glass:rgba(255,255,255,.76);
-  --glass2:rgba(255,255,255,.50);
   --blue:#2563eb;
   --blue2:#1d4ed8;
   --green:#16a34a;
   --gold:#facc15;
   --red:#dc2626;
   --purple:#7c3aed;
-  --pink:#ec4899;
   --sky:#38bdf8;
 }
 
@@ -33,9 +31,7 @@ body{
     linear-gradient(135deg,#dbeafe,#f8fafc 54%,#dcfce7);
 }
 
-button,input{
-  font-family:inherit;
-}
+button,input{font-family:inherit}
 
 .wrap{
   height:100vh;
@@ -59,23 +55,10 @@ button,input{
   box-shadow:0 20px 50px rgba(15,23,42,.12);
 }
 
-.brand h1{
-  margin:0;
-  font-size:30px;
-  letter-spacing:-1px;
-}
+.brand h1{margin:0;font-size:30px;letter-spacing:-1px}
+.brand span{color:var(--muted);font-size:13px}
 
-.brand span{
-  color:var(--muted);
-  font-size:13px;
-}
-
-.topStats{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
+.topStats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 
 .badge{
   display:inline-flex;
@@ -108,15 +91,9 @@ button,input{
   box-shadow:0 20px 55px rgba(15,23,42,.13);
 }
 
-.panel h2,.panel h3{
-  margin:0 0 10px;
-}
+.panel h2,.panel h3{margin:0 0 10px}
 
-.muted{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.35;
-}
+.muted{color:var(--muted);font-size:13px;line-height:1.35}
 
 .stage{
   position:relative;
@@ -156,10 +133,7 @@ button,input{
   animation:twinkle 2.8s ease-in-out infinite;
 }
 
-@keyframes twinkle{
-  0%,100%{opacity:.25}
-  50%{opacity:.85}
-}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:.85}}
 
 .petZone{
   position:relative;
@@ -220,6 +194,20 @@ button,input{
   50%{transform:translateY(-14px)}
 }
 
+.petImg{
+  position:absolute;
+  width:190px;
+  height:190px;
+  object-fit:contain;
+  z-index:2;
+  pointer-events:none;
+  filter:drop-shadow(0 18px 18px rgba(15,23,42,.25));
+  transition:.25s ease;
+  animation:breatheImg 2.4s ease-in-out infinite;
+}
+
+.petImg.hide{display:none}
+
 .petEmoji{
   font-size:124px;
   filter:drop-shadow(0 18px 18px rgba(15,23,42,.23));
@@ -227,21 +215,20 @@ button,input{
   transform-origin:center;
 }
 
-.petEmoji.eggNearHatch{
-  animation:eggWobble 1.1s ease-in-out infinite;
-}
+.petEmoji.hide{display:none}
 
-.petEmoji.carePulse{
-  animation:carePop .62s ease;
-}
-
-.petEmoji.tapPulse{
-  animation:tapBounce .44s ease;
-}
+.petEmoji.eggNearHatch,.petImg.eggNearHatch{animation:eggWobble 1.1s ease-in-out infinite}
+.petEmoji.carePulse,.petImg.carePulse{animation:carePop .62s ease}
+.petEmoji.tapPulse,.petImg.tapPulse{animation:tapBounce .44s ease}
 
 @keyframes breathe{
   0%,100%{transform:scale(1) rotate(-1deg)}
   50%{transform:scale(1.08) rotate(1deg)}
+}
+
+@keyframes breatheImg{
+  0%,100%{transform:scale(1) rotate(-1deg)}
+  50%{transform:scale(1.06) rotate(1deg)}
 }
 
 @keyframes eggWobble{
@@ -265,6 +252,23 @@ button,input{
   100%{transform:scale(1)}
 }
 
+.flyingItem{
+  position:absolute;
+  width:56px;
+  height:56px;
+  object-fit:contain;
+  z-index:6;
+  pointer-events:none;
+  animation:itemFly .85s ease forwards;
+  filter:drop-shadow(0 10px 10px rgba(15,23,42,.22));
+}
+
+@keyframes itemFly{
+  0%{opacity:0;transform:translate(210px,70px) scale(.6) rotate(-18deg)}
+  20%{opacity:1}
+  100%{opacity:0;transform:translate(0,0) scale(1.25) rotate(16deg)}
+}
+
 .floatingFx{
   position:absolute;
   left:50%;
@@ -276,6 +280,7 @@ button,input{
   opacity:0;
   animation:floatUp 1.1s ease forwards;
   text-shadow:0 3px 10px rgba(15,23,42,.18);
+  z-index:8;
 }
 
 @keyframes floatUp{
@@ -340,9 +345,7 @@ button.danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:white;bor
 button.sky{background:linear-gradient(135deg,#38bdf8,#0284c7);color:white;border-color:#38bdf8}
 button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
-.statLine{
-  margin:10px 0;
-}
+.statLine{margin:10px 0}
 
 .statTop{
   display:flex;
@@ -386,24 +389,9 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   transition:width .35s ease;
 }
 
-.tabs{
-  display:flex;
-  gap:7px;
-  margin-bottom:12px;
-}
-
-.tabs button{
-  flex:1;
-  padding:9px 6px;
-  font-size:12px;
-}
-
-.tabs button.active{
-  background:#dbeafe;
-  border-color:#60a5fa;
-  color:#1d4ed8;
-}
-
+.tabs{display:flex;gap:7px;margin-bottom:12px}
+.tabs button{flex:1;padding:9px 6px;font-size:12px}
+.tabs button.active{background:#dbeafe;border-color:#60a5fa;color:#1d4ed8}
 .hidden{display:none!important}
 
 .grid2{
@@ -421,26 +409,9 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   min-height:92px;
 }
 
-.actionTile strong{
-  display:block;
-  font-size:14px;
-}
-
-.actionTile span{
-  display:block;
-  margin-top:3px;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.28;
-}
-
-.actionTile small{
-  display:block;
-  margin-top:7px;
-  font-size:11px;
-  color:#475569;
-  font-weight:900;
-}
+.actionTile strong{display:block;font-size:14px}
+.actionTile span{display:block;margin-top:3px;color:var(--muted);font-size:12px;line-height:1.28}
+.actionTile small{display:block;margin-top:7px;font-size:11px;color:#475569;font-weight:900}
 
 .promptCard{
   border:1px solid rgba(56,189,248,.38);
@@ -450,10 +421,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   margin-bottom:12px;
 }
 
-.promptCard strong{
-  display:block;
-  margin-bottom:4px;
-}
+.promptCard strong{display:block;margin-bottom:4px}
 
 .item{
   border:1px solid rgba(148,163,184,.28);
@@ -470,9 +438,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   align-items:center;
 }
 
-.itemName{
-  font-weight:900;
-}
+.itemName{font-weight:900}
 
 .itemDesc{
   font-size:12px;
@@ -481,16 +447,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   line-height:1.3;
 }
 
-.coin{
-  font-weight:900;
-  color:#92400e;
-}
-
-.moves{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-}
+.coin{font-weight:900;color:#92400e}
+.moves{display:flex;flex-wrap:wrap;gap:7px}
 
 .movePill{
   padding:7px 10px;
@@ -554,10 +512,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   z-index:99;
 }
 
-.toast.show{
-  opacity:1;
-  bottom:32px;
-}
+.toast.show{opacity:1;bottom:32px}
 
 .hatchOverlay{
   position:fixed;
@@ -586,14 +541,19 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   box-shadow:0 30px 80px rgba(15,23,42,.35);
 }
 
-.hatchBox .big{
+.hatchBox .bigImg{
+  width:150px;
+  height:150px;
+  object-fit:contain;
+  animation:hatchPop 1.4s ease infinite;
+}
+
+.hatchBox .bigEmoji{
   font-size:96px;
   animation:hatchPop 1.4s ease infinite;
 }
 
-.hatchBox h1{
-  margin:10px 0 4px;
-}
+.hatchBox h1{margin:10px 0 4px}
 
 @keyframes hatchFlash{
   0%{opacity:0}
@@ -636,7 +596,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
     <div class="panel">
       <h2>Companion</h2>
       <p id="profileSub" class="muted">Loading pet profile...</p>
-
       <div id="statsBox"></div>
 
       <h3 style="margin-top:16px">Growth Path</h3>
@@ -653,10 +612,11 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <div class="clouds"></div>
       <div class="sparkles"></div>
 
-      <div class="petZone">
+      <div class="petZone" id="petZone">
         <div class="ground"></div>
         <div id="aura" class="aura"></div>
         <div class="petOrb" onclick="comfortPet()">
+          <img id="petImg" class="petImg hide" src="">
           <div id="petEmoji" class="petEmoji">🥚</div>
         </div>
         <div id="floatingFx" class="floatingFx">+1</div>
@@ -688,7 +648,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
 <div id="hatchOverlay" class="hatchOverlay">
   <div class="hatchBox">
-    <div id="hatchEmoji" class="big">🐣</div>
+    <img id="hatchImg" class="bigImg hidden" src="">
+    <div id="hatchEmoji" class="bigEmoji">🐣</div>
     <h1 id="hatchTitle">Your egg hatched!</h1>
     <p id="hatchText">A new companion has joined you.</p>
   </div>
@@ -773,12 +734,16 @@ function draw(){
   var mood=getMood(pet);
 
   el('petEmoji').innerText=emoji;
+  updatePetVisual(pet);
+
   el('coinBadge').innerText='🪙 '+Number(profile.money||0);
   el('stageBadge').innerText=(stage==='egg'?'🥚 ':'🐾 ')+stage;
   el('moodBadge').innerText=mood.icon+' '+mood.label;
   el('renameInput').value=pet.name||'';
 
-  el('petEmoji').classList.toggle('eggNearHatch',stage==='egg'&&eggProgress(pet)>=80);
+  var nearHatch=stage==='egg'&&eggProgress(pet)>=80;
+  el('petEmoji').classList.toggle('eggNearHatch',nearHatch);
+  el('petImg').classList.toggle('eggNearHatch',nearHatch);
 
   setAura(pet);
 
@@ -804,6 +769,67 @@ function draw(){
   drawShop();
   drawTimeline();
   drawLog();
+}
+
+function updatePetVisual(pet){
+  var img=el('petImg');
+  var emojiEl=el('petEmoji');
+
+  if(!pet){
+    img.classList.add('hide');
+    emojiEl.classList.remove('hide');
+    return;
+  }
+
+  var stage=pet.stage||'egg';
+  var species=pet.species||'egg';
+  var src='';
+
+  if(stage==='egg'){
+    src=eggProgress(pet)>=80
+      ? '/assets/pets/egg/egg_cracked.png'
+      : '/assets/pets/egg/egg_idle.png';
+  }else{
+    var stageMap={
+      baby:'baby',
+      young:'young',
+      teen:'young',
+      adult:'adult'
+    };
+
+    var file=stageMap[stage]||'baby';
+    src='/assets/pets/'+species+'/'+file+'.png';
+  }
+
+  img.onload=function(){
+    img.classList.remove('hide');
+    emojiEl.classList.add('hide');
+  };
+
+  img.onerror=function(){
+    img.classList.add('hide');
+    emojiEl.classList.remove('hide');
+  };
+
+  if(img.src.indexOf(src)===-1){
+    img.src=src;
+  }
+}
+
+function petAssetPath(pet){
+  if(!pet)return '';
+  if((pet.stage||'egg')==='egg'){
+    return eggProgress(pet)>=80?'/assets/pets/egg/egg_cracked.png':'/assets/pets/egg/egg_idle.png';
+  }
+
+  var species=pet.species||'egg';
+  var stage=pet.stage||'baby';
+  var file=stage==='adult'?'adult':stage==='young'||stage==='teen'?'young':'baby';
+  return '/assets/pets/'+species+'/'+file+'.png';
+}
+
+function itemAssetPath(itemId){
+  return '/assets/items/'+itemId+'.png';
 }
 
 function normalizePet(pet){
@@ -1076,7 +1102,7 @@ async function useItem(itemId){
     profile=data.profile;
     addLog('Used '+itemName(itemId)+'.');
     notify('Used '+itemName(itemId)+'.');
-    animateCare('item');
+    animateItemUse(itemId);
     draw();
   }catch(err){
     notify('Use item failed: '+err.message);
@@ -1239,7 +1265,7 @@ function careMessage(action){
 }
 
 function animateCare(action){
-  var p=el('petEmoji');
+  var p=visiblePetEl();
   p.classList.remove('carePulse');
   void p.offsetWidth;
   p.classList.add('carePulse');
@@ -1258,8 +1284,37 @@ function animateCare(action){
   floatFx(icons[action]||'✨');
 }
 
+function animateItemUse(itemId){
+  flyItem(itemId);
+  animateCare('item');
+
+  if(itemId==='berry')floatFx('🍓');
+  else if(itemId==='soap')floatFx('🫧');
+  else if(itemId==='nap_blanket')floatFx('💤');
+  else floatFx('✨');
+}
+
+function flyItem(itemId){
+  var img=document.createElement('img');
+  img.className='flyingItem';
+  img.src=itemAssetPath(itemId);
+  img.onerror=function(){img.remove();};
+  img.onload=function(){};
+  el('petZone').appendChild(img);
+
+  setTimeout(function(){
+    if(img&&img.parentNode)img.parentNode.removeChild(img);
+  },950);
+}
+
+function visiblePetEl(){
+  var img=el('petImg');
+  if(img&&!img.classList.contains('hide'))return img;
+  return el('petEmoji');
+}
+
 function animateTap(){
-  var p=el('petEmoji');
+  var p=visiblePetEl();
   p.classList.remove('tapPulse');
   void p.offsetWidth;
   p.classList.add('tapPulse');
@@ -1274,7 +1329,23 @@ function floatFx(text){
 }
 
 function showHatch(pet){
-  hatchEmoji.innerText=pet.emoji||'🐣';
+  var img=el('hatchImg');
+  var emoji=el('hatchEmoji');
+  var src=petAssetPath(pet);
+
+  img.onload=function(){
+    img.classList.remove('hidden');
+    emoji.classList.add('hidden');
+  };
+
+  img.onerror=function(){
+    img.classList.add('hidden');
+    emoji.classList.remove('hidden');
+  };
+
+  img.src=src;
+  emoji.innerText=pet.emoji||'🐣';
+
   hatchTitle.innerText='Your egg hatched!';
   hatchText.innerText=(pet.name||'A new companion')+' has joined you.';
   hatchOverlay.classList.add('show');
