@@ -820,7 +820,7 @@ async function uploadAssetPreview(){
         '</div>'+
         '<div class="actions">'+
           '<button class="good" onclick="approveAssetFromUpload()">Approve</button>'+
-          '<button class="danger" onclick="rejectAsset(\\''+escAttr(data.type)+'\\',\\''+escAttr(data.tempFile)+'\\')">Reject</button>'+
+          '<button class="danger" onclick="rejectAsset(&quot;'+escAttr(data.type)+'&quot;,&quot;'+escAttr(data.tempFile)+'&quot;)">Reject</button>'+
         '</div>'+
       '</div>';
 
@@ -890,9 +890,9 @@ function drawPendingAssets(){
           '</div>'+
         '</div>'+
         '<div class="actions">'+
-          '<button onclick="window.open(\\''+escAttr(a.previewUrl)+'\\',\\'_blank\\')">Open</button>'+
-          '<button class="good" onclick="approveAsset(\\''+escAttr(a.type)+'\\',\\''+escAttr(a.tempFile)+'\\',\\''+escAttr(target)+'\\',\\''+escAttr(slot)+'\\')">Approve</button>'+
-          '<button class="danger" onclick="rejectAsset(\\''+escAttr(a.type)+'\\',\\''+escAttr(a.tempFile)+'\\')">Reject</button>'+
+          '<button onclick="window.open(&quot;'+escAttr(a.previewUrl)+'&quot;,&quot;_blank&quot;)">Open</button>'+
+          '<button class="good" onclick="approveAsset(&quot;'+escAttr(a.type)+'&quot;,&quot;'+escAttr(a.tempFile)+'&quot;,&quot;'+escAttr(target)+'&quot;,&quot;'+escAttr(slot)+'&quot;)">Approve</button>'+
+          '<button class="danger" onclick="rejectAsset(&quot;'+escAttr(a.type)+'&quot;,&quot;'+escAttr(a.tempFile)+'&quot;)">Reject</button>'+
         '</div>'+
       '</div>'+
     '</div>';
