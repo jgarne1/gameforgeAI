@@ -217,6 +217,78 @@ code{color:#bae6fd}
   .assetControlGrid{grid-template-columns:1fr}
 }
 
+
+.editorLayout{
+  display:grid;
+  grid-template-columns:minmax(260px,.8fr) minmax(320px,1fr) minmax(320px,1.1fr);
+  gap:14px;
+}
+.editorStack{display:grid;gap:10px}
+.editorPreviewCard{
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:rgba(2,6,23,.55);
+  overflow:hidden;
+}
+.editorPreviewImage{
+  height:240px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at center,rgba(56,189,248,.14),rgba(2,6,23,.9));
+  border-bottom:1px solid var(--line);
+}
+.editorPreviewImage img{max-width:100%;max-height:100%;object-fit:contain}
+.editorPreviewBody{padding:14px}
+.editorPreviewBody h3{margin:0 0 6px;font-size:24px}
+.editorPreviewBody p{margin:0 0 10px;color:var(--muted);line-height:1.45}
+.editorFormGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.editorFormGrid input,.editorFormGrid select,.editorFormGrid textarea{width:100%}
+textarea.adminTextArea{
+  min-height:96px;
+  resize:vertical;
+  border-radius:13px;
+  border:1px solid #475569;
+  padding:10px 12px;
+  font-size:14px;
+  font-family:inherit;
+  background:#020617;
+  color:var(--text);
+}
+.effectsBox{min-height:150px;font-family:Consolas,monospace;font-size:12px}
+.stageGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.stageCard{
+  border:1px solid var(--line);
+  background:rgba(2,6,23,.54);
+  border-radius:22px;
+  padding:12px;
+}
+.stageCard h3{margin:0 0 10px}
+.stageImageBox{
+  height:180px;
+  border:1px solid rgba(148,163,184,.22);
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:rgba(15,23,42,.7);
+  margin-bottom:10px;
+}
+.stageImageBox img{max-width:100%;max-height:100%;object-fit:contain}
+.stageFile{width:100%;margin-bottom:8px}
+.miniLabel{color:var(--muted);font-size:12px;font-weight:900;margin:8px 0 5px}
+@media(max-width:1180px){.editorLayout{grid-template-columns:1fr}.stageGrid{grid-template-columns:1fr}}
+@media(max-width:760px){.editorFormGrid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -230,7 +302,9 @@ code{color:#bae6fd}
     <button id="navPlayers" onclick="showSection('players')"><span class="navIcon">👤</span>Players</button>
     <button id="navRooms" onclick="showSection('rooms')"><span class="navIcon">🎮</span>Rooms</button>
     <button id="navMarket" onclick="showSection('market')"><span class="navIcon">🏪</span>Marketplace</button>
-    <button id="navAssets" onclick="showSection('assets')"><span class="navIcon">🖼️</span>Asset Manager</button>
+    <button id="navItems" onclick="showSection('items')"><span class="navIcon">🎁</span>Item Editor</button>
+    <button id="navPets" onclick="showSection('pets')"><span class="navIcon">🐾</span>Pet Editor</button>
+    <button id="navAssets" onclick="showSection('assets')"><span class="navIcon">🖼️</span>Media Uploads</button>
     <button onclick="location.href='/'"><span class="navIcon">🏠</span>Back to GameForge</button>
     <div class="navUser" id="navUserBox"></div>
   </div>
@@ -354,6 +428,108 @@ code{color:#bae6fd}
           <label class="pill"><input id="returnEscrow" type="checkbox" checked> Return escrow</label>
         </div>
         <div id="marketList" class="list"></div>
+      </div>
+    </div>
+
+
+    <div id="items" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Item Editor</h3>
+            <p class="muted">Select an item, preview how it appears, replace its image, and edit its game data without touching JSON.</p>
+          </div>
+          <button class="primary" onclick="refreshAll()">Refresh Items</button>
+        </div>
+
+        <div class="editorLayout">
+          <div class="editorStack">
+            <div class="toolBox">
+              <h4>Select Item</h4>
+              <div class="row">
+                <select id="itemEditorCategory" onchange="filterItemEditorTargets()"></select>
+                <select id="itemEditorSelect" onchange="selectItemEditorTarget()"></select>
+              </div>
+              <p class="muted">Items are grouped by category. Change the category in the edit form to move the item later.</p>
+            </div>
+
+            <div class="toolBox">
+              <h4>Replace Image</h4>
+              <div class="miniLabel">Current file</div>
+              <code id="itemEditorImagePath">/assets/items/item.png</code>
+              <div class="miniLabel">New image preview</div>
+              <div class="stageImageBox" id="itemEditorNewPreview"><span class="muted">Choose an image</span></div>
+              <input id="itemEditorFile" class="fileInput stageFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewItemEditorFile()">
+              <div class="row">
+                <button class="gold" onclick="uploadItemEditorImage()">Upload Preview</button>
+                <button class="good" id="itemEditorApproveBtn" onclick="approveItemEditorImage()" disabled>Approve Image</button>
+                <button class="danger" id="itemEditorRejectBtn" onclick="rejectItemEditorImage()" disabled>Reject</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="editorPreviewCard">
+            <div class="editorPreviewImage" id="itemEditorCurrentImage"><span class="muted">Current Image</span></div>
+            <div class="editorPreviewBody">
+              <h3 id="itemPreviewName">Item</h3>
+              <p id="itemPreviewDescription">Description</p>
+              <div class="row">
+                <span class="pill" id="itemPreviewPrice">0 coins</span>
+                <span class="pill" id="itemPreviewCategory">category</span>
+                <span class="pill" id="itemPreviewType">type</span>
+                <span class="pill" id="itemPreviewRarity">common</span>
+              </div>
+              <p class="muted" id="itemPreviewEffects" style="margin-top:10px"></p>
+            </div>
+          </div>
+
+          <div class="editorStack">
+            <div class="toolBox">
+              <h4>Edit Item Data</h4>
+              <div class="editorFormGrid">
+                <input id="itemEditName" placeholder="Name" oninput="drawItemEditorPreview()">
+                <input id="itemEditPrice" type="number" min="0" placeholder="Price" oninput="drawItemEditorPreview()">
+                <input id="itemEditCategory" placeholder="Category, ex: food, care, egg_tool" oninput="drawItemEditorPreview()">
+                <input id="itemEditType" placeholder="Item type, ex: treat, tool, toy" oninput="drawItemEditorPreview()">
+                <select id="itemEditRarity" onchange="drawItemEditorPreview()">
+                  <option value="common">common</option>
+                  <option value="uncommon">uncommon</option>
+                  <option value="rare">rare</option>
+                  <option value="epic">epic</option>
+                  <option value="legendary">legendary</option>
+                </select>
+                <label class="pill"><input id="itemEditUsable" type="checkbox" checked onchange="drawItemEditorPreview()"> Usable</label>
+              </div>
+              <p class="miniLabel">Description</p>
+              <textarea id="itemEditDescription" class="adminTextArea" placeholder="Player-facing description" oninput="drawItemEditorPreview()"></textarea>
+              <p class="miniLabel">Effects JSON</p>
+              <textarea id="itemEditEffects" class="adminTextArea effectsBox" placeholder="[]" oninput="drawItemEditorPreview()"></textarea>
+              <div class="row" style="margin-top:10px">
+                <button class="good" onclick="saveItemEditorMetadata()">Save Item Data</button>
+                <button class="ghost" onclick="loadItemEditorSelection()">Reload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pets" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Pet Species Editor</h3>
+            <p class="muted">Each species has three lifecycle images. Upload and approve Baby, Young, and Adult separately.</p>
+          </div>
+          <button class="primary" onclick="drawPetEditor()">Reload Pet Images</button>
+        </div>
+
+        <div class="row" style="margin-bottom:14px">
+          <select id="petEditorSpecies" onchange="drawPetEditor()"></select>
+          <span class="pill">Standard path: /assets/pets/{species}/{stage}.png</span>
+        </div>
+
+        <div class="stageGrid" id="petStageGrid"></div>
       </div>
     </div>
 
@@ -481,6 +657,8 @@ function showSection(id){
   let nav=$('nav'+id.charAt(0).toUpperCase()+id.slice(1)); if(nav)nav.classList.add('active');
   if(id==='rooms')loadRooms();
   if(id==='market')loadMarket();
+  if(id==='items')drawItemEditor();
+  if(id==='pets')drawPetEditor();
   if(id==='assets')loadPendingAssets();
 }
 
@@ -502,6 +680,7 @@ async function refreshAll(){
     drawRooms();
     await loadMarket(false);
     buildAssetDropdowns();
+    initEditorDropdowns();
     toast('Admin data loaded.');
   }catch(err){
     console.error(err);
@@ -703,6 +882,7 @@ async function loadMarket(show=true){
     marketData=await api('/api/admin/market?user='+encodeURIComponent(adminUser));
     drawMarket();
     if($('assetType'))buildAssetDropdowns();
+    if($('itemEditorCategory'))initEditorDropdowns();
     if(show)toast('Market loaded.');
   }catch(err){if(show)toast(err.message||'Market load failed.')}
 }
@@ -789,6 +969,331 @@ async function removeListing(id){
   }catch(err){toast(err.message||'Remove listing failed.')}
 }
 
+
+
+
+const PET_EDITOR_SPECIES=[
+  {id:'flarecub',name:'Flarecub'},
+  {id:'frostfin',name:'Frostfin'},
+  {id:'leafbun',name:'Leafbun'},
+  {id:'shadepup',name:'Shadepup'},
+  {id:'pebblet',name:'Pebblet'},
+  {id:'chompasaur',name:'Chompasaur'},
+  {id:'emberwing',name:'Emberwing'}
+];
+
+const PET_EDITOR_STAGES=['baby','young','adult'];
+let itemEditorPending=null;
+let petEditorPending={};
+
+function initEditorDropdowns(){
+  initItemEditorDropdowns();
+  initPetEditorDropdowns();
+}
+
+function itemEditorCategoryMap(){
+  let map={};
+  (itemCatalog||[]).forEach(item=>{
+    let cat=String(item.category||'other').trim()||'other';
+    if(!map[cat])map[cat]=[];
+    map[cat].push(item);
+  });
+  Object.keys(map).forEach(cat=>{
+    map[cat].sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));
+  });
+  return map;
+}
+
+function initItemEditorDropdowns(){
+  if(!$('itemEditorCategory'))return;
+  let map=itemEditorCategoryMap();
+  let cats=Object.keys(map).sort();
+  let previousCat=$('itemEditorCategory').value;
+  $('itemEditorCategory').innerHTML=cats.map(c=>'<option value="'+escAttr(c)+'">'+esc(prettyAssetCategory(c))+'</option>').join('');
+  if(previousCat&&map[previousCat])$('itemEditorCategory').value=previousCat;
+  filterItemEditorTargets();
+}
+
+function filterItemEditorTargets(){
+  if(!$('itemEditorSelect'))return;
+  let map=itemEditorCategoryMap();
+  let cat=$('itemEditorCategory').value;
+  let items=map[cat]||[];
+  let previous=$('itemEditorSelect').value;
+  $('itemEditorSelect').innerHTML=items.map(item=>'<option value="'+escAttr(item.id)+'">'+esc((item.name||item.id)+' ('+item.id+')')+'</option>').join('');
+  if(previous&&items.some(x=>x.id===previous))$('itemEditorSelect').value=previous;
+  selectItemEditorTarget();
+}
+
+function selectedItemEditorId(){
+  return $('itemEditorSelect')?$('itemEditorSelect').value:'';
+}
+
+function selectedItemEditor(){
+  let id=selectedItemEditorId();
+  return (itemCatalog||[]).find(x=>x.id===id)||null;
+}
+
+function selectItemEditorTarget(){
+  itemEditorPending=null;
+  if($('itemEditorApproveBtn'))$('itemEditorApproveBtn').disabled=true;
+  if($('itemEditorRejectBtn'))$('itemEditorRejectBtn').disabled=true;
+  if($('itemEditorFile'))$('itemEditorFile').value='';
+  if($('itemEditorNewPreview'))$('itemEditorNewPreview').innerHTML='<span class="muted">Choose an image</span>';
+  loadItemEditorSelection();
+}
+
+function loadItemEditorSelection(){
+  let item=selectedItemEditor();
+  if(!item)return;
+
+  $('itemEditName').value=item.name||item.id||'';
+  $('itemEditPrice').value=Number(item.price||0);
+  $('itemEditCategory').value=item.category||'other';
+  $('itemEditType').value=item.itemType||item.type||'general';
+  $('itemEditRarity').value=item.rarity||'common';
+  $('itemEditUsable').checked=item.usable!==false;
+  $('itemEditDescription').value=item.description||'';
+  $('itemEditEffects').value=JSON.stringify(item.effects||[],null,2);
+
+  drawItemEditorPreview();
+}
+
+function drawItemEditor(){
+  initItemEditorDropdowns();
+  loadItemEditorSelection();
+}
+
+function drawItemEditorPreview(){
+  let id=selectedItemEditorId();
+  if(!id)return;
+
+  let name=$('itemEditName').value||id;
+  let price=Number($('itemEditPrice').value||0);
+  let category=$('itemEditCategory').value||'other';
+  let itemType=$('itemEditType').value||'general';
+  let rarity=$('itemEditRarity').value||'common';
+  let description=$('itemEditDescription').value||'No description yet.';
+  let effectsRaw=$('itemEditEffects').value||'[]';
+  let imagePath='/assets/items/'+id+'.png';
+
+  $('itemEditorImagePath').innerText=imagePath;
+  $('itemEditorCurrentImage').innerHTML='<img src="'+escAttr(imagePath)+'?v='+Date.now()+'" onerror="this.onerror=null;this.src=&quot;/assets/items/generic_item.png?v='+Date.now()+'&quot;">';
+  $('itemPreviewName').innerText=name;
+  $('itemPreviewDescription').innerText=description;
+  $('itemPreviewPrice').innerText=price+' coins';
+  $('itemPreviewCategory').innerText='Category: '+category;
+  $('itemPreviewType').innerText='Type: '+itemType;
+  $('itemPreviewRarity').innerText='Rarity: '+rarity;
+
+  try{
+    let effects=JSON.parse(effectsRaw||'[]');
+    $('itemPreviewEffects').innerText=Array.isArray(effects)&&effects.length ? ('Effects: '+effects.map(e=>e.type+':'+(e.target||'')+' '+(e.value!==undefined?e.value:'')).join(', ')) : 'Effects: none';
+  }catch(err){
+    $('itemPreviewEffects').innerText='Effects JSON is invalid.';
+  }
+}
+
+async function previewItemEditorFile(){
+  try{
+    let file=$('itemEditorFile').files&&$('itemEditorFile').files[0];
+    if(!file){
+      $('itemEditorNewPreview').innerHTML='<span class="muted">Choose an image</span>';
+      return;
+    }
+    let dataUrl=await imageFileToPngDataUrl(file);
+    $('itemEditorNewPreview').innerHTML='<img src="'+dataUrl+'">';
+  }catch(err){
+    $('itemEditorFile').value='';
+    $('itemEditorNewPreview').innerHTML='<span class="muted">Choose an image</span>';
+    toast(err.message||'Preview failed.');
+  }
+}
+
+async function uploadItemEditorImage(){
+  try{
+    let id=selectedItemEditorId();
+    if(!id)return toast('Choose an item first.');
+    let file=$('itemEditorFile').files&&$('itemEditorFile').files[0];
+    let dataUrl=await imageFileToPngDataUrl(file);
+
+    let data=await api('/api/admin/assets/upload-preview',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:adminUser,type:'items',slot:'image',targetId:id,dataUrl})
+    });
+
+    itemEditorPending=data;
+    $('itemEditorApproveBtn').disabled=false;
+    $('itemEditorRejectBtn').disabled=false;
+    await loadPendingAssets(false);
+    toast('Item image preview uploaded.');
+  }catch(err){
+    toast(err.message||'Item image upload failed.');
+  }
+}
+
+async function approveItemEditorImage(){
+  if(!itemEditorPending)return toast('Upload a preview first.');
+  await approveAsset(itemEditorPending.type,itemEditorPending.tempFile,itemEditorPending.targetId,itemEditorPending.slot);
+  itemEditorPending=null;
+  $('itemEditorApproveBtn').disabled=true;
+  $('itemEditorRejectBtn').disabled=true;
+  drawItemEditorPreview();
+}
+
+async function rejectItemEditorImage(){
+  if(!itemEditorPending)return toast('No pending item image.');
+  await rejectAsset(itemEditorPending.type,itemEditorPending.tempFile);
+  itemEditorPending=null;
+  $('itemEditorApproveBtn').disabled=true;
+  $('itemEditorRejectBtn').disabled=true;
+}
+
+async function saveItemEditorMetadata(){
+  let id=selectedItemEditorId();
+  if(!id)return toast('Choose an item first.');
+
+  let effectsRaw=$('itemEditEffects').value||'[]';
+  try{JSON.parse(effectsRaw||'[]');}
+  catch(err){return toast('Effects JSON is invalid.');}
+
+  try{
+    let data=await api('/api/admin/items/update',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username:adminUser,
+        itemId:id,
+        name:$('itemEditName').value,
+        price:$('itemEditPrice').value,
+        category:$('itemEditCategory').value,
+        itemType:$('itemEditType').value,
+        rarity:$('itemEditRarity').value,
+        usable:$('itemEditUsable').checked,
+        description:$('itemEditDescription').value,
+        effectsRaw
+      })
+    });
+
+    itemCatalog=data.items||itemCatalog;
+    if(data.npcShops)marketData.npcShops=data.npcShops;
+    initItemEditorDropdowns();
+    // Re-select updated item after category may have changed.
+    let cat=$('itemEditCategory').value||'other';
+    if([...$('itemEditorCategory').options].some(o=>o.value===cat))$('itemEditorCategory').value=cat;
+    filterItemEditorTargets();
+    if([...$('itemEditorSelect').options].some(o=>o.value===id))$('itemEditorSelect').value=id;
+    loadItemEditorSelection();
+    toast(data.message||'Item saved.');
+  }catch(err){
+    toast(err.message||'Item save failed.');
+  }
+}
+
+function initPetEditorDropdowns(){
+  if(!$('petEditorSpecies'))return;
+  let previous=$('petEditorSpecies').value;
+  $('petEditorSpecies').innerHTML=PET_EDITOR_SPECIES.map(p=>'<option value="'+escAttr(p.id)+'">'+esc(p.name+' ('+p.id+')')+'</option>').join('');
+  if(previous&&PET_EDITOR_SPECIES.some(p=>p.id===previous))$('petEditorSpecies').value=previous;
+  drawPetEditor();
+}
+
+function petEditorPath(species,stage){
+  return '/assets/pets/'+species+'/'+stage+'.png';
+}
+
+function drawPetEditor(){
+  if(!$('petStageGrid'))return;
+  if(!$('petEditorSpecies')||!$('petEditorSpecies').options.length)initPetEditorDropdowns();
+
+  let species=$('petEditorSpecies').value||'emberwing';
+  $('petStageGrid').innerHTML=PET_EDITOR_STAGES.map(stage=>{
+    let currentId='petCurrent_'+stage;
+    let previewId='petPreview_'+stage;
+    let fileId='petFile_'+stage;
+    let uploadId='petUpload_'+stage;
+    let approveId='petApprove_'+stage;
+    let rejectId='petReject_'+stage;
+    let path=petEditorPath(species,stage);
+
+    return '<div class="stageCard">'+
+      '<h3>'+esc(prettyAssetCategory(stage))+'</h3>'+
+      '<div class="miniLabel">Current</div>'+
+      '<div class="stageImageBox" id="'+currentId+'"><img src="'+escAttr(path)+'?v='+Date.now()+'" onerror="this.onerror=null;this.src=&quot;/assets/pets/generic_pet.png?v='+Date.now()+'&quot;"></div>'+
+      '<div class="miniLabel">New Preview</div>'+
+      '<div class="stageImageBox" id="'+previewId+'"><span class="muted">Choose image</span></div>'+
+      '<input id="'+fileId+'" class="fileInput stageFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewPetStageFile(&quot;'+stage+'&quot;)">'+
+      '<div class="row">'+
+        '<button id="'+uploadId+'" class="gold" onclick="uploadPetStageImage(&quot;'+stage+'&quot;)">Upload</button>'+
+        '<button id="'+approveId+'" class="good" onclick="approvePetStageImage(&quot;'+stage+'&quot;)" disabled>Approve</button>'+
+        '<button id="'+rejectId+'" class="danger" onclick="rejectPetStageImage(&quot;'+stage+'&quot;)" disabled>Reject</button>'+
+      '</div>'+
+      '<p class="muted">'+esc(path)+'</p>'+
+    '</div>';
+  }).join('');
+
+  petEditorPending={};
+}
+
+async function previewPetStageFile(stage){
+  try{
+    let file=$('petFile_'+stage).files&&$('petFile_'+stage).files[0];
+    if(!file){
+      $('petPreview_'+stage).innerHTML='<span class="muted">Choose image</span>';
+      return;
+    }
+    let dataUrl=await imageFileToPngDataUrl(file);
+    $('petPreview_'+stage).innerHTML='<img src="'+dataUrl+'">';
+  }catch(err){
+    $('petFile_'+stage).value='';
+    $('petPreview_'+stage).innerHTML='<span class="muted">Choose image</span>';
+    toast(err.message||'Preview failed.');
+  }
+}
+
+async function uploadPetStageImage(stage){
+  try{
+    let species=$('petEditorSpecies').value;
+    let file=$('petFile_'+stage).files&&$('petFile_'+stage).files[0];
+    let dataUrl=await imageFileToPngDataUrl(file);
+
+    let data=await api('/api/admin/assets/upload-preview',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:adminUser,type:'pets',slot:stage,targetId:species,dataUrl})
+    });
+
+    petEditorPending[stage]=data;
+    $('petApprove_'+stage).disabled=false;
+    $('petReject_'+stage).disabled=false;
+    await loadPendingAssets(false);
+    toast(prettyAssetCategory(stage)+' preview uploaded.');
+  }catch(err){
+    toast(err.message||'Pet image upload failed.');
+  }
+}
+
+async function approvePetStageImage(stage){
+  let pending=petEditorPending[stage];
+  if(!pending)return toast('Upload '+stage+' preview first.');
+
+  await approveAsset(pending.type,pending.tempFile,pending.targetId,pending.slot);
+  delete petEditorPending[stage];
+  $('petApprove_'+stage).disabled=true;
+  $('petReject_'+stage).disabled=true;
+  let species=$('petEditorSpecies').value;
+  $('petCurrent_'+stage).innerHTML='<img src="'+escAttr(petEditorPath(species,stage))+'?v='+Date.now()+'" onerror="this.onerror=null;this.src=&quot;/assets/pets/generic_pet.png?v='+Date.now()+'&quot;">';
+}
+
+async function rejectPetStageImage(stage){
+  let pending=petEditorPending[stage];
+  if(!pending)return toast('No pending '+stage+' image.');
+  await rejectAsset(pending.type,pending.tempFile);
+  delete petEditorPending[stage];
+  $('petApprove_'+stage).disabled=true;
+  $('petReject_'+stage).disabled=true;
+}
 
 
 const ASSET_SLOTS={
