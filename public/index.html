@@ -1521,96 +1521,72 @@ body.gameMode #gameArea .danger{
 
 
 
-/* ===== GAME MODE DESKTOP ROOM SIDE PANEL (SCALABLE v2) =====
-   Keeps the started game focused while giving room chat and online users
-   their own scalable right rail. This is CSS-only and does not change
-   launcher, pet, server, or game logic. */
+/* ===== GAME MODE DESKTOP ROOM SIDE PANEL PATCH =====
+   Surgical patch: keeps game iframe visible while reserving a clean right rail
+   for room chat + online users. Does not change launcher/server/game logic. */
 @media (min-width:1051px){
-
-  /* Game gets more width because the rail is narrower than before. */
   body.gameMode #gameArea{
-    inset:8px 330px 8px 8px!important;
+    inset:8px 390px 8px 8px!important;
     z-index:5000!important;
   }
 
-  /* Right rail: about 15% narrower than the prior 366px panel. */
   body.gameMode .side{
     display:flex!important;
     flex-direction:column!important;
-    gap:10px!important;
+    gap:12px!important;
     position:fixed!important;
     top:8px!important;
     right:8px!important;
     bottom:8px!important;
-    width:310px!important;
+    width:366px!important;
     height:auto!important;
     max-height:none!important;
     padding:10px!important;
     z-index:6500!important;
     overflow:hidden!important;
     pointer-events:auto!important;
-    border-radius:22px!important;
+    border-radius:24px!important;
     border:1px solid rgba(148,163,184,.28)!important;
     background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98))!important;
-    box-shadow:0 25px 70px rgba(0,0,0,.45)!important;
+    box-shadow:0 30px 90px rgba(0,0,0,.45)!important;
   }
 
-  /* Hide unrelated side cards while a room game is running. */
   body.gameMode .side .sideCard{
     display:none!important;
   }
 
-  /* Online users: capped so it cannot eat the chat area. */
-  body.gameMode .side #presencePanel{
+  body.gameMode .side #presencePanel,
+  body.gameMode .side #roomChatPanel{
     display:flex!important;
     flex-direction:column!important;
-    flex:0 0 auto!important;
-    max-height:145px!important;
-    min-height:88px!important;
-    overflow-y:auto!important;
     margin:0!important;
+    min-height:0!important;
     pointer-events:auto!important;
     background:rgba(2,6,23,.72)!important;
     border:1px solid rgba(148,163,184,.25)!important;
-    border-radius:16px!important;
-    padding:10px!important;
+    border-radius:20px!important;
     box-shadow:none!important;
+  }
+
+  body.gameMode .side #presencePanel{
+    flex:0 0 auto!important;
+    max-height:30vh!important;
+    overflow:auto!important;
   }
 
   body.gameMode .side #presencePanel .muted{
     display:none!important;
   }
 
-  body.gameMode .side #presence{
-    min-height:0!important;
-  }
-
-  body.gameMode .side .userItem{
-    padding:7px 8px!important;
-    font-size:12px!important;
-  }
-
-  /* Room chat: fills the rest of the rail and scrolls internally. */
   body.gameMode .side #roomChatPanel{
-    display:flex!important;
-    flex-direction:column!important;
     flex:1 1 auto!important;
-    min-height:0!important;
-    margin:0!important;
-    pointer-events:auto!important;
-    background:rgba(2,6,23,.72)!important;
-    border:1px solid rgba(148,163,184,.25)!important;
-    border-radius:16px!important;
-    padding:10px!important;
-    box-shadow:none!important;
   }
 
   body.gameMode .chatBox{
     flex:1 1 auto!important;
     height:auto!important;
-    min-height:120px!important;
+    min-height:180px!important;
     max-height:none!important;
-    overflow-y:auto!important;
   }
 
   body.gameMode .chatInput{
@@ -1620,22 +1596,6 @@ body.gameMode #gameArea .danger{
   body.gameMode #roomChatPanel.chatCollapsed{
     flex:0 0 auto!important;
     width:auto!important;
-  }
-
-  body.gameMode #roomChatPanel.chatCollapsed .chatBox,
-  body.gameMode #roomChatPanel.chatCollapsed .chatInput{
-    display:none!important;
-  }
-
-  body.gameMode #presencePanel::-webkit-scrollbar,
-  body.gameMode .chatBox::-webkit-scrollbar{
-    width:6px;
-  }
-
-  body.gameMode #presencePanel::-webkit-scrollbar-thumb,
-  body.gameMode .chatBox::-webkit-scrollbar-thumb{
-    background:rgba(148,163,184,.4);
-    border-radius:6px;
   }
 }
 
@@ -2031,7 +1991,6 @@ function connect(){
       }
       room=m.room;
       currentRoom=room.id;
-      if(socket)socket._gfJoinedRoomId=room.id;
       pruneReadyStatus();
       drawRoom();
 
@@ -2057,7 +2016,6 @@ function connect(){
       alert('Room closed');
       room=null;
       currentRoom=null;
-      if(socket)socket._gfJoinedRoomId='';
       loadedGameKey='';
       roomReadyStatus={};
       readyRoomId='';
@@ -2289,7 +2247,6 @@ function leaveRoom(){
   send({type:'leaveRoom'});
   room=null;
   currentRoom=null;
-  if(socket)socket._gfJoinedRoomId='';
   pendingGameToSelect='';
   roomReadyStatus={};
   readyRoomId='';
@@ -2653,19 +2610,16 @@ async function launchSoloGame(g){
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
-  let gameContext=await buildGameContext(players,mySeatIndex);
   let html=await (await fetch('/games/'+g.file+'?v='+Date.now())).text();
 
   let inject =
-    '<script>'+ 
+    '<script>'+
     'window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';'+
     'window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';'+
-    'window.GAME_CONTEXT='+JSON.stringify(gameContext).replace(/</g,'\\u003c')+';'+
     'window.addEventListener("message",function(event){'+
       'var msg=event.data||{};'+
       'if(msg.type==="gameMove"&&window.onMove){window.onMove(msg.data);}'+
       'if(msg.type==="gameSetup"&&window.onMove){window.onMove(msg);}'+
-      'if(msg.type==="GAME_CONTEXT"&&window.onMove){window.onMove(msg);}'+
       'if(msg.type==="gameSaveData"&&window.onSaveData){window.onSaveData(msg.data);}'+
     '});'+
     '<\/script>';
@@ -2679,17 +2633,9 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
   gameFrame.onload=function(){
     if(gameFrame.contentWindow){
       gameFrame.contentWindow.postMessage({
-        type:'GAME_CONTEXT',
-        data:gameContext
-      },'*');
-
-      gameFrame.contentWindow.postMessage({
         type:'gameSetup',
         players:players,
-        mySeat:mySeatIndex>=0?mySeatIndex:null,
-        activePets:gameContext.activePets,
-        roomId:gameContext.roomId,
-        username:gameContext.username
+        mySeat:mySeatIndex>=0?mySeatIndex:null
       },'*');
     }
   };
@@ -2709,63 +2655,23 @@ function exitGameMode(){
 
 /* ===== CHAT / PRESENCE ===== */
 
-
-function ensureIndexSocketJoinedToRoom(roomId,callback){
-  roomId=String(roomId||'').trim().toUpperCase();
-
-  if(!roomId){
-    alert('No active room for chat.');
-    return;
-  }
-
-  connect();
-
-  function finishJoin(){
-    if(socket&&socket.readyState===1){
-      if(socket._gfJoinedRoomId!==roomId){
-        socket.send(JSON.stringify({type:'joinRoom',roomId:roomId}));
-        socket._gfJoinedRoomId=roomId;
-        setTimeout(function(){ if(callback)callback(); },140);
-      }else{
-        if(callback)callback();
-      }
-    }else{
-      setTimeout(finishJoin,120);
-    }
-  }
-
-  finishJoin();
-}
-
-
-function wireRoomChatEnterKey(){
-  let input=document.getElementById('chatText');
-  if(!input||input._gfEnterWired)return;
-  input._gfEnterWired=true;
-  input.addEventListener('keydown',function(e){
-    if(e.key==='Enter'){
-      e.preventDefault();
-      sendChat();
-    }
-  });
-}
-
 function sendChat(){
   let t=chatText.value.trim();
-  let targetRoom=(room&&room.id)||currentRoom||'';
 
   if(!t)return;
 
-  if(!targetRoom){
+  // If the visible game was launched by the iframe launcher, currentRoom may be known
+  // before this parent websocket has received its roomJoined echo. Rejoin once, then send.
+  if(currentRoom){
+    send({type:'joinRoom',roomId:currentRoom});
+    setTimeout(function(){send({type:'chat',text:t});},80);
+  }else{
     alert('Join a room before chatting.');
     return;
   }
 
-  ensureIndexSocketJoinedToRoom(targetRoom,function(){
-    send({type:'chat',text:t});
-    chatText.value='';
-    clearChatUnread();
-  });
+  chatText.value='';
+  clearChatUnread();
 }
 
 function toggleOverlayChat(){
@@ -2911,69 +2817,6 @@ function petImagePath(pet){
 
   return '/assets/pets/'+species+'/'+file+'.png';
 }
-let activePetCache={};
-
-function publicActivePetFromProfile(profile){
-  if(!profile||!profile.pets||!profile.activePetId)return null;
-  let pet=profile.pets[profile.activePetId];
-  if(!pet)return null;
-
-  return {
-    id:profile.activePetId,
-    name:pet.name||'Mystery Egg',
-    species:pet.species||'',
-    type:pet.type||'',
-    stage:pet.stage||'egg',
-    level:Number((pet.stats&&pet.stats.level)||pet.level||1),
-    emoji:pet.emoji||'🥚',
-    image:petImagePath(pet)
-  };
-}
-
-async function getPublicActivePet(username){
-  if(!username)return null;
-
-  if(username===me&&petProfile){
-    let mine=publicActivePetFromProfile(petProfile);
-    if(mine)activePetCache[username]=mine;
-    return mine;
-  }
-
-  if(activePetCache[username]!==undefined)return activePetCache[username];
-
-  try{
-    let res=await fetch('/api/pet/profile?user='+encodeURIComponent(username));
-    let data=await res.json();
-    if(data&&data.ok){
-      activePetCache[username]=publicActivePetFromProfile(data.profile);
-    }else{
-      activePetCache[username]=null;
-    }
-  }catch(err){
-    activePetCache[username]=null;
-  }
-
-  return activePetCache[username];
-}
-
-async function buildGameContext(players,mySeatIndex){
-  let activePets={};
-
-  await Promise.all((players||[]).map(async function(p){
-    let pet=await getPublicActivePet(p.name);
-    if(pet)activePets[p.name]=pet;
-  }));
-
-  return {
-    username:me||'',
-    roomId:room?room.id:'',
-    players:players||[],
-    seats:room&&Array.isArray(room.seats)?room.seats:[],
-    mySeat:mySeatIndex>=0?mySeatIndex:null,
-    activePets:activePets
-  };
-}
-
 
 function petAvatarHtml(pet,emoji){
   let imgPath=petImagePath(pet);
@@ -3215,15 +3058,31 @@ function handleGameSaveStore(msg){
   }
 }
 
+function ensureParentJoinedToLauncherRoom(roomId){
+  // The launcher iframe has its own websocket connection. The parent shell also needs to join
+  // the same server room so the right-side room chat can send/receive through this socket.
+  roomId=String(roomId||'').toUpperCase();
+  if(!roomId)return;
+
+  currentRoom=roomId;
+  if(chatRoomLabel)chatRoomLabel.innerText=roomId;
+  if(roomChatPanel)roomChatPanel.classList.remove('hidden');
+
+  // Ask the server to attach this parent websocket to the room. The server prevents duplicate
+  // player names in the room players array, so this is safe even if we already joined.
+  send({type:'joinRoom',roomId:roomId});
+}
+
 function handleLauncherStartGame(msg){
   let startedRoom=msg.room||null;
+  let launcherRoomId=(startedRoom&&startedRoom.id)||msg.roomId||'';
   let game=msg.game||(startedRoom&&startedRoom.selectedGame)||null;
 
   if(startedRoom){
     room=startedRoom;
     currentRoom=startedRoom.id;
-    drawChat(startedRoom.chat||[],false);
-    ensureIndexSocketJoinedToRoom(startedRoom.id);
+  }else if(launcherRoomId){
+    ensureParentJoinedToLauncherRoom(launcherRoomId);
   }
 
   if(!game){
@@ -3278,6 +3137,17 @@ window.addEventListener('message',function(e){
 
   if(msg.type==='petUpdated'||msg.type==='marketUpdated'){
     refreshPetUI();
+  }
+});
+
+
+// Standard chat UX: Enter sends the visible room chat message.
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  let input=document.getElementById('chatText');
+  if(input&&document.activeElement===input){
+    e.preventDefault();
+    sendChat();
   }
 });
 
