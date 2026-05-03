@@ -519,14 +519,75 @@ textarea.adminTextArea{
         <div class="cardHeader">
           <div>
             <h3>Pet Species Editor</h3>
-            <p class="muted">Each species has three lifecycle images. Upload and approve Baby, Young, and Adult separately.</p>
+            <p class="muted">Create or edit pet species data in data/pet_species.json, then upload Baby, Young, and Adult images for that species.</p>
           </div>
-          <button class="primary" onclick="drawPetEditor()">Reload Pet Images</button>
+          <button class="primary" onclick="refreshPetSpeciesEditor()">Reload Pets</button>
         </div>
 
         <div class="row" style="margin-bottom:14px">
-          <select id="petEditorSpecies" onchange="drawPetEditor()"></select>
-          <span class="pill">Standard path: /assets/pets/{species}/{stage}.png</span>
+          <select id="petEditorSpecies" onchange="selectPetSpeciesEditor()"></select>
+          <button class="ghost" onclick="newPetSpeciesEditor()">New Species</button>
+          <span class="pill">Data: data/pet_species.json</span>
+          <span class="pill">Images: /assets/pets/{species}/{stage}.png</span>
+        </div>
+
+        <div class="editorLayout" style="margin-bottom:16px">
+          <div class="editorStack">
+            <div class="toolBox">
+              <h4>Identity</h4>
+              <div class="editorFormGrid">
+                <input id="petSpeciesId" placeholder="id, ex: emberwing">
+                <input id="petSpeciesName" placeholder="Name">
+                <input id="petSpeciesType" placeholder="type, ex: fire">
+                <input id="petSpeciesEmoji" placeholder="emoji" style="max-width:90px">
+                <select id="petSpeciesRarity">
+                  <option value="common">common</option>
+                  <option value="uncommon">uncommon</option>
+                  <option value="rare">rare</option>
+                  <option value="epic">epic</option>
+                  <option value="legendary">legendary</option>
+                </select>
+                <input id="petSpeciesHatchWeight" type="number" min="0" max="9999" placeholder="hatch weight">
+                <label class="pill"><input id="petSpeciesEnabled" type="checkbox" checked> Enabled</label>
+                <label class="pill"><input id="petSpeciesHatchable" type="checkbox" checked> Hatchable</label>
+              </div>
+              <p class="miniLabel">Description</p>
+              <textarea id="petSpeciesDescription" class="adminTextArea" placeholder="Short player-facing description"></textarea>
+            </div>
+          </div>
+
+          <div class="editorStack">
+            <div class="toolBox">
+              <h4>Base Stats</h4>
+              <div class="editorFormGrid">
+                <input id="petBaseHp" type="number" min="1" max="999" placeholder="HP">
+                <input id="petBaseAttack" type="number" min="1" max="999" placeholder="Attack">
+                <input id="petBaseDefense" type="number" min="1" max="999" placeholder="Defense">
+                <input id="petBaseSpeed" type="number" min="1" max="999" placeholder="Speed">
+              </div>
+              <p class="miniLabel">Move IDs</p>
+              <textarea id="petSpeciesMoves" class="adminTextArea effectsBox" placeholder="tackle, ember_nip"></textarea>
+              <div class="row" style="margin-top:10px">
+                <button class="good" onclick="savePetSpeciesData()">Save Pet Data</button>
+                <button class="ghost" onclick="loadPetSpeciesForm()">Reload Selected</button>
+              </div>
+              <p class="muted">Save commits the JSON to GitHub and writes the live persistent data file.</p>
+            </div>
+          </div>
+
+          <div class="editorPreviewCard">
+            <div class="editorPreviewImage" id="petSpeciesPreviewImage"><span class="muted">Current Image</span></div>
+            <div class="editorPreviewBody">
+              <h3 id="petSpeciesPreviewName">Pet</h3>
+              <p id="petSpeciesPreviewDescription">Species data preview</p>
+              <div class="row">
+                <span class="pill" id="petSpeciesPreviewType">type</span>
+                <span class="pill" id="petSpeciesPreviewRarity">common</span>
+                <span class="pill" id="petSpeciesPreviewWeight">weight</span>
+              </div>
+              <p class="muted" id="petSpeciesPreviewStats" style="margin-top:10px"></p>
+            </div>
+          </div>
         </div>
 
         <div class="stageGrid" id="petStageGrid"></div>
@@ -676,6 +737,8 @@ async function refreshAll(){
     dashboard=await api('/api/admin/dashboard?user='+encodeURIComponent(adminUser));
     rooms=dashboard.rooms||[];
     itemCatalog=dashboard.items||[];
+    petSpeciesCatalog=dashboard.petSpecies||petSpeciesCatalog||[];
+    if(petSpeciesCatalog.length)PET_EDITOR_SPECIES=petSpeciesCatalog;
     drawOverview();
     drawRooms();
     await loadMarket(false);
@@ -972,7 +1035,7 @@ async function removeListing(id){
 
 
 
-const PET_EDITOR_SPECIES=[
+let PET_EDITOR_SPECIES=[
   {id:'flarecub',name:'Flarecub'},
   {id:'frostfin',name:'Frostfin'},
   {id:'leafbun',name:'Leafbun'},
@@ -981,6 +1044,7 @@ const PET_EDITOR_SPECIES=[
   {id:'chompasaur',name:'Chompasaur'},
   {id:'emberwing',name:'Emberwing'}
 ];
+let petSpeciesCatalog=[];
 
 const PET_EDITOR_STAGES=['baby','young','adult'];
 let itemEditorPending=null;
@@ -1191,12 +1255,141 @@ async function saveItemEditorMetadata(){
   }
 }
 
+
+function petSpeciesById(id){
+  return (petSpeciesCatalog||PET_EDITOR_SPECIES||[]).find(p=>p.id===id)||null;
+}
+
 function initPetEditorDropdowns(){
   if(!$('petEditorSpecies'))return;
+  if(petSpeciesCatalog&&petSpeciesCatalog.length)PET_EDITOR_SPECIES=petSpeciesCatalog;
+
   let previous=$('petEditorSpecies').value;
-  $('petEditorSpecies').innerHTML=PET_EDITOR_SPECIES.map(p=>'<option value="'+escAttr(p.id)+'">'+esc(p.name+' ('+p.id+')')+'</option>').join('');
+  $('petEditorSpecies').innerHTML=PET_EDITOR_SPECIES.map(p=>'<option value="'+escAttr(p.id)+'">'+esc((p.name||p.id)+' ('+p.id+')')+'</option>').join('');
   if(previous&&PET_EDITOR_SPECIES.some(p=>p.id===previous))$('petEditorSpecies').value=previous;
+  if(!$('petEditorSpecies').value&&PET_EDITOR_SPECIES[0])$('petEditorSpecies').value=PET_EDITOR_SPECIES[0].id;
+}
+
+async function refreshPetSpeciesEditor(){
+  try{
+    let data=await api('/api/admin/pet-species?user='+encodeURIComponent(adminUser));
+    petSpeciesCatalog=data.petSpecies||[];
+    PET_EDITOR_SPECIES=petSpeciesCatalog;
+    initPetEditorDropdowns();
+    loadPetSpeciesForm();
+    drawPetEditor();
+    buildAssetDropdowns();
+    toast('Pet species reloaded.');
+  }catch(err){
+    toast(err.message||'Pet species load failed.');
+  }
+}
+
+function selectPetSpeciesEditor(){
+  loadPetSpeciesForm();
   drawPetEditor();
+}
+
+function newPetSpeciesEditor(){
+  let id='new_pet_'+Date.now().toString().slice(-4);
+  $('petSpeciesId').value=id;
+  $('petSpeciesName').value='New Pet';
+  $('petSpeciesType').value='fire';
+  $('petSpeciesEmoji').value='🐾';
+  $('petSpeciesRarity').value='common';
+  $('petSpeciesHatchWeight').value=100;
+  $('petSpeciesEnabled').checked=true;
+  $('petSpeciesHatchable').checked=true;
+  $('petBaseHp').value=24;
+  $('petBaseAttack').value=5;
+  $('petBaseDefense').value=5;
+  $('petBaseSpeed').value=5;
+  $('petSpeciesMoves').value='tackle';
+  $('petSpeciesDescription').value='A newly discovered companion.';
+  drawPetSpeciesPreview();
+}
+
+function loadPetSpeciesForm(){
+  if(!$('petEditorSpecies'))return;
+  let id=$('petEditorSpecies').value;
+  let species=petSpeciesById(id)||PET_EDITOR_SPECIES[0]||{};
+  let base=species.base||{};
+
+  $('petSpeciesId').value=species.id||'';
+  $('petSpeciesName').value=species.name||species.id||'';
+  $('petSpeciesType').value=species.type||'neutral';
+  $('petSpeciesEmoji').value=species.emoji||'🐾';
+  $('petSpeciesRarity').value=species.rarity||'common';
+  $('petSpeciesHatchWeight').value=Number(species.hatchWeight!==undefined?species.hatchWeight:100);
+  $('petSpeciesEnabled').checked=species.enabled!==false;
+  $('petSpeciesHatchable').checked=species.hatchable!==false;
+  $('petBaseHp').value=Number(base.hp||24);
+  $('petBaseAttack').value=Number(base.attack||5);
+  $('petBaseDefense').value=Number(base.defense||5);
+  $('petBaseSpeed').value=Number(base.speed||5);
+  $('petSpeciesMoves').value=(species.moves||[]).join(', ');
+  $('petSpeciesDescription').value=species.description||'';
+  drawPetSpeciesPreview();
+}
+
+function currentPetSpeciesForm(){
+  return {
+    id:$('petSpeciesId').value,
+    name:$('petSpeciesName').value,
+    type:$('petSpeciesType').value,
+    emoji:$('petSpeciesEmoji').value,
+    rarity:$('petSpeciesRarity').value,
+    hatchWeight:$('petSpeciesHatchWeight').value,
+    enabled:$('petSpeciesEnabled').checked,
+    hatchable:$('petSpeciesHatchable').checked,
+    base:{
+      hp:$('petBaseHp').value,
+      attack:$('petBaseAttack').value,
+      defense:$('petBaseDefense').value,
+      speed:$('petBaseSpeed').value
+    },
+    movesRaw:$('petSpeciesMoves').value,
+    description:$('petSpeciesDescription').value
+  };
+}
+
+function drawPetSpeciesPreview(){
+  if(!$('petSpeciesPreviewName'))return;
+  let species=currentPetSpeciesForm();
+  let id=String(species.id||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_')||($('petEditorSpecies')&&$('petEditorSpecies').value)||'emberwing';
+  let name=species.name||id;
+  let path=petEditorPath(id,'baby');
+
+  $('petSpeciesPreviewImage').innerHTML='<img src="'+escAttr(path)+'?v='+Date.now()+'" onerror="this.onerror=null;this.src=&quot;/assets/pets/generic_pet.png?v='+Date.now()+'&quot;">';
+  $('petSpeciesPreviewName').innerText=(species.emoji||'🐾')+' '+name;
+  $('petSpeciesPreviewDescription').innerText=species.description||'No description yet.';
+  $('petSpeciesPreviewType').innerText='Type: '+(species.type||'neutral');
+  $('petSpeciesPreviewRarity').innerText='Rarity: '+(species.rarity||'common');
+  $('petSpeciesPreviewWeight').innerText='Hatch weight: '+(species.hatchWeight||0);
+  $('petSpeciesPreviewStats').innerText='Base HP '+(species.base.hp||0)+' · ATK '+(species.base.attack||0)+' · DEF '+(species.base.defense||0)+' · SPD '+(species.base.speed||0)+' · Moves: '+(species.movesRaw||'none');
+}
+
+async function savePetSpeciesData(){
+  try{
+    let payload=currentPetSpeciesForm();
+    if(!payload.id||!String(payload.id).trim())return toast('Species id is required.');
+    let data=await api('/api/admin/pet-species/update',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:adminUser,...payload})
+    });
+
+    petSpeciesCatalog=data.petSpecies||[];
+    PET_EDITOR_SPECIES=petSpeciesCatalog;
+    initPetEditorDropdowns();
+    if([...$('petEditorSpecies').options].some(o=>o.value===data.species.id))$('petEditorSpecies').value=data.species.id;
+    loadPetSpeciesForm();
+    drawPetEditor();
+    buildAssetDropdowns();
+    toast(data.message||'Pet species saved.');
+  }catch(err){
+    toast(err.message||'Pet species save failed.');
+  }
 }
 
 function petEditorPath(species,stage){
@@ -1206,6 +1399,7 @@ function petEditorPath(species,stage){
 function drawPetEditor(){
   if(!$('petStageGrid'))return;
   if(!$('petEditorSpecies')||!$('petEditorSpecies').options.length)initPetEditorDropdowns();
+  if($('petSpeciesId')&&!$('petSpeciesId').value)loadPetSpeciesForm();
 
   let species=$('petEditorSpecies').value||'emberwing';
   $('petStageGrid').innerHTML=PET_EDITOR_STAGES.map(stage=>{
@@ -1234,6 +1428,7 @@ function drawPetEditor(){
   }).join('');
 
   petEditorPending={};
+  drawPetSpeciesPreview();
 }
 
 async function previewPetStageFile(stage){
@@ -1284,6 +1479,7 @@ async function approvePetStageImage(stage){
   $('petReject_'+stage).disabled=true;
   let species=$('petEditorSpecies').value;
   $('petCurrent_'+stage).innerHTML='<img src="'+escAttr(petEditorPath(species,stage))+'?v='+Date.now()+'" onerror="this.onerror=null;this.src=&quot;/assets/pets/generic_pet.png?v='+Date.now()+'&quot;">';
+  drawPetSpeciesPreview();
 }
 
 async function rejectPetStageImage(stage){
