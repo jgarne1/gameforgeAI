@@ -14,7 +14,7 @@ GameForge AI / PetWorld maintainer notes:
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
 - Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
 - Top-level duplicate tab buttons and duplicate progress panels were intentionally removed; utility systems live in the right-side tabs and progression lives on the stage.
-- Rename is a small title-bar utility so the left panel stays focused on companion identity and journal.
+- Rename is a small title-bar utility; the left panel stays focused on next goals and the journal.
 - Exploration now uses a short client-side adventure animation and reward reveal, while rewards remain server-authoritative.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 - Pet reactions are client-only animations; profile changes still come from server APIs.
@@ -131,6 +131,29 @@ button,input,select{font-family:inherit}
   overflow:auto;
 }
 .panel{padding:12px}
+.leftPanel{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.leftTop{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.journalWrap{
+  margin-top:auto;
+}
+.journalTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:6px;
+  font-size:13px;
+  font-weight:1000;
+  color:#334155;
+}
 
 .stageShell{
   overflow:hidden;
@@ -360,6 +383,54 @@ button,input,select{font-family:inherit}
 .petOrb.walking{
   animation:none!important;
 }
+
+.goalCard,.eggIdentityCard{
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(148,163,184,.28);
+  border-radius:20px;
+  padding:11px;
+  box-shadow:0 10px 26px rgba(15,23,42,.07);
+}
+.goalCard h3,.eggIdentityCard h3{font-size:15px;margin:0 0 5px;color:#172033}
+.goalKicker{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:rgba(37,99,235,.08);
+  border:1px solid rgba(37,99,235,.14);
+  color:#1d4ed8;
+  font-size:10px;
+  font-weight:1000;
+  margin-bottom:7px;
+}
+.goalText{font-size:12px;color:var(--muted);line-height:1.35;font-weight:800}
+.goalAction{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.goalAction button{padding:7px 9px;font-size:11px;border-radius:999px}
+.tinyMeter{
+  height:5px;
+  border-radius:999px;
+  background:rgba(148,163,184,.22);
+  overflow:hidden;
+  margin-top:8px;
+}
+.tinyMeterFill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);
+}
+.eggMiniGrid{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.eggMiniGrid span{
+  font-size:10px;
+  font-weight:1000;
+  padding:4px 6px;
+  border-radius:999px;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  color:#3730a3;
+}
+
 .petOverview{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -596,9 +667,10 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .eggInfluence .tags span{font-size:11px;font-weight:900;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:5px 8px}
 
 .log{
-  height:160px;
+  height:190px;
+  max-height:32vh;
   overflow:auto;
-  background:#fffbea;
+  background:rgba(255,251,234,.82);
   border:1px solid #d6bd6b;
   border-radius:17px;
   padding:8px;
@@ -805,16 +877,14 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   </div>
 
   <div class="hud">
-    <div class="panel">
-      <div class="petCard">
-        <h2 id="petNameTitle">Mystery Egg</h2>
-        <div id="petSubTitle" class="muted">Loading...</div>
+    <div class="panel leftPanel">
+      <div class="leftTop">
+        <div id="leftGoalBox" class="goalCard"></div>
+        <div id="statStack" class="statStack"></div>
       </div>
 
-      <div id="statStack" class="statStack"></div>
-
-      <div style="margin-top:10px">
-        <b>Journal</b>
+      <div class="journalWrap">
+        <div class="journalTitle"><span>Journal</span><span class="muted">Recent</span></div>
         <div id="log" class="log"></div>
       </div>
     </div>
@@ -966,8 +1036,8 @@ function draw(){
   el('rosterBadge').innerText='🐾 '+rosterCount+'/'+Number(limits.maxRoster||6);
   el('moodBadge').innerText=mood.icon+' '+mood.label;
 
-  el('petNameTitle').innerText=pet.name||'Mystery Egg';
-  el('petSubTitle').innerText=petSubtitle(pet);
+  if(el('petNameTitle'))el('petNameTitle').innerText=pet.name||'Mystery Egg';
+  if(el('petSubTitle'))el('petSubTitle').innerText=petSubtitle(pet);
   el('renameInput').value=pet.name||'';
   el('petEmoji').innerText=pet.emoji||'🥚';
 
@@ -980,6 +1050,7 @@ function draw(){
   setAura(pet);
   setPetPersonalityMotion(pet,mood);
   drawDock();
+  drawGoalBox();
   drawStats();
   drawStageHud();
   drawEggIdentityPanel();
@@ -1053,31 +1124,69 @@ function petSubtitle(pet){
   return [(pet.type||'pet')+' type','Lv '+Number((pet.stats&&pet.stats.level)||1),personalityLabel(pet.personality),'Bond '+Number(pet.affection||0)].join(' · ');
 }
 
+
+function drawGoalBox(){
+  var box=el('leftGoalBox');
+  var pet=activePet();
+  if(!box||!pet)return;
+
+  var html='';
+
+  if(pet.stage==='egg'){
+    var pct=eggProgress(pet);
+    var remaining=Math.max(0,18-traitTotal(pet.eggTraits||{}));
+    html+='<span class="goalKicker">Next Goal</span>';
+    html+='<h3>Hatch the egg</h3>';
+    html+='<div class="goalText">'+(remaining>0?('Add '+remaining+' more care point'+(remaining===1?'':'s')+' to trigger hatching.'):'The egg is ready to hatch on the next care update.')+'</div>';
+    html+='<div class="tinyMeter"><div class="tinyMeterFill" style="width:'+pct+'%"></div></div>';
+    html+='<div class="goalAction"><button class="gold" onclick="careEgg(\'bond\')">Bond</button><button class="ghost" onclick="setTab(\'details\')">Details</button></div>';
+  }else{
+    var n=pet.needs||{};
+    var level=Number((pet.stats&&pet.stats.level)||1);
+    var need=Math.max(20,level*20);
+    var xp=Number((pet.stats&&pet.stats.xp)||0);
+    var xpPct=Math.max(0,Math.min(100,Math.floor((xp/need)*100)));
+    var next=nextUnlockHint();
+    var actionText='Adventure';
+    var action='exploreSelectedZone()';
+
+    if(Number(n.energy||0)<25){ actionText='Rest'; action="useItem('nap_blanket')"; }
+    else if(Number(n.hunger||0)<30){ actionText='Feed'; action="useItem('berry')"; }
+
+    html+='<span class="goalKicker">Next Goal</span>';
+    html+='<h3>Grow stronger</h3>';
+    html+='<div class="goalText">Lv '+level+' · '+xp+' / '+need+' XP. '+escapeHtml(next)+'</div>';
+    html+='<div class="tinyMeter"><div class="tinyMeterFill" style="width:'+xpPct+'%"></div></div>';
+    html+='<div class="goalAction"><button class="gold" onclick="'+action+'">'+actionText+'</button><button class="ghost" onclick="setTab(\'zones\')">Zones</button></div>';
+  }
+
+  box.innerHTML=html;
+}
+
 function drawStats(){
   var pet=activePet();
   var html='';
 
   if(pet.stage==='egg'){
+    var info=eggInfluenceSummary(pet);
     var strongest=strongestTrait(pet.eggTraits||{});
     var pct=eggProgress(pet);
     var labels={warm:'Warmth',cold:'Cold',wet:'Moisture',dry:'Dryness',light:'Light',dark:'Shadow'};
+    var traitLabels={warm:'🔥 Warm',cold:'❄️ Cold',wet:'💧 Wet',dry:'🌵 Dry',light:'☀️ Light',dark:'🌙 Dark'};
 
-    html+='<div class="eggSignal">';
-    html+='<h3>Egg Signal</h3>';
-    html+='<div class="muted">'+escapeHtml(labels[strongest]||'Mystery')+' is shaping this egg. '+pct+'% hatch progress.</div>';
-    html+='<div class="eggTraitChips">';
+    html+='<div class="eggIdentityCard">';
+    html+='<span class="goalKicker">🥚 Egg Identity</span>';
+    html+='<h3>Mystery Egg</h3>';
+    html+='<div class="goalText">Bond '+Number(pet.affection||0)+' · Hatch '+pct+'% · Signal: '+escapeHtml(labels[strongest]||'Mystery')+'</div>';
+    html+='<div class="tinyMeter"><div class="tinyMeterFill" style="width:'+pct+'%"></div></div>';
+    html+='<div class="goalText" style="margin-top:7px">'+escapeHtml(info.hint||'Your care is shaping what this egg may become.')+'</div>';
+    html+='<div class="eggMiniGrid">';
     ['warm','cold','wet','dry','light','dark'].forEach(function(k){
       var v=Number((pet.eggTraits||{})[k]||0);
-      if(v>0)html+='<span class="eggTraitChip">'+escapeHtml(labels[k]||k)+' '+v+'</span>';
+      if(v>0)html+='<span>'+escapeHtml(traitLabels[k]||k)+' '+v+'</span>';
     });
+    if(traitTotal(pet.eggTraits||{})<=0)html+='<span>No signal yet</span>';
     html+='</div>';
-    html+='</div>';
-  }else{
-    html+='<div class="petOverview">';
-    html+=overviewTile('Level','Lv '+Number((pet.stats&&pet.stats.level)||1));
-    html+=overviewTile('Type',personalityLabel(pet.type||'pet'));
-    html+=overviewTile('Personality',personalityLabel(pet.personality));
-    html+=overviewTile('Bond',Number(pet.affection||0));
     html+='</div>';
   }
 
@@ -1114,11 +1223,10 @@ function drawStageHud(){
   if(!vitals||!progress)return;
 
   if(pet.stage==='egg'){
-    var pct=eggProgress(pet);
-    vitals.classList.remove('hidden');
-    vitals.innerHTML='<span class="stageVital '+vitalClass(pct)+'">🥚 '+pct+'%</span><span class="stageVital '+vitalClass(pet.affection||0)+'">♡ '+Number(pet.affection||0)+'</span>';
-    progress.classList.remove('hidden');
-    progress.innerHTML=stageProgressHtml('Hatch Progress',traitTotal(pet.eggTraits||{})+' / 18 care',pct);
+    vitals.classList.add('hidden');
+    vitals.innerHTML='';
+    progress.classList.add('hidden');
+    progress.innerHTML='';
     return;
   }
 
@@ -1711,46 +1819,12 @@ function eggInfluenceCard(pet){
 }
 
 function drawEggIdentityPanel(){
+  // Egg identity now lives in the left panel so the pet stage stays visually clean.
   var panel=el('eggIdentityPanel');
-  var pet=activePet();
-  if(!panel||!pet)return;
-
-  if(pet.stage!=='egg'){
+  if(panel){
     panel.classList.add('hidden');
     panel.innerHTML='';
-    return;
   }
-
-  var info=eggInfluenceSummary(pet);
-  var labels={fire:'🔥 Fire',water:'💧 Water',nature:'🌿 Nature',shadow:'🌙 Shadow',earth:'🪨 Earth'};
-  var ranked=info.ranked||[];
-  var top=ranked[0]||{type:'fire',score:1};
-  var second=ranked[1]||{type:'water',score:1};
-  var max=Math.max(1,Number(top.score||1));
-  var progress=eggProgress(pet);
-
-  var html='';
-  html+='<div class="eggIdentityTitle"><span>Egg Identity</span><span>'+progress+'%</span></div>';
-  html+='<div class="eggIdentityMain">'+escapeHtml(info.balanced?'⚖️ Balanced aura':(labels[top.type]||top.type)+' energy')+'</div>';
-  html+='<div class="eggIdentitySub">Secondary: '+escapeHtml(labels[second.type]||second.type)+'. Your care shifts probabilities, not guarantees.</div>';
-  html+='<div class="eggIdentityBars">';
-
-  ranked.slice(0,3).forEach(function(row){
-    var pct=Math.max(8,Math.min(100,Math.floor(Number(row.score||0)/max*100)));
-    html+='<div class="eggIdentityBar">'+
-      '<span>'+escapeHtml(labels[row.type]||row.type)+'</span>'+
-      '<div class="eggIdentityTrack"><div class="eggIdentityFill" style="width:'+pct+'%"></div></div>'+
-      '<span>'+Number(row.score||0)+'</span>'+
-    '</div>';
-  });
-
-  html+='</div>';
-  html+='<div class="eggIdentityChips">';
-  (info.species||[]).slice(0,3).forEach(function(x){html+='<span>'+escapeHtml(x)+'</span>'});
-  html+='</div>';
-
-  panel.innerHTML=html;
-  panel.classList.remove('hidden');
 }
 
 function triggerPetReaction(type){
