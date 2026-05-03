@@ -1,0 +1,41 @@
+{
+  "flarecub": {
+    "id": "flarecub",
+    "name": "Flarecub",
+    "type": "fire",
+    "emoji": "🔥",
+    "rarity": "common",
+    "hatchWeight": 100,
+    "enabled": true,
+    "hatchable": true,
+    "base": { "hp": 24, "attack": 7, "defense": 4, "speed": 5 },
+    "moves": ["tackle", "ember_nip"],
+    "description": "A fiery cub."
+  },
+  "frostfin": {
+    "id": "frostfin",
+    "name": "Frostfin",
+    "type": "water",
+    "emoji": "💧",
+    "rarity": "common",
+    "hatchWeight": 100,
+    "enabled": true,
+    "hatchable": true,
+    "base": { "hp": 22, "attack": 5, "defense": 6, "speed": 6 },
+    "moves": ["tackle", "bubble_snap"],
+    "description": "A cool aquatic pet."
+  },
+  "emberwing": {
+    "id": "emberwing",
+    "name": "Emberwing",
+    "type": "fire",
+    "emoji": "🐉",
+    "rarity": "rare",
+    "hatchWeight": 24,
+    "enabled": true,
+    "hatchable": true,
+    "base": { "hp": 24, "attack": 7, "defense": 5, "speed": 7 },
+    "moves": ["tackle", "ember_nip", "wing_gust"],
+    "description": "A rare flying fire dragon."
+  }
+}
