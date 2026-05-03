@@ -488,6 +488,11 @@ input,select{
   line-height:1.35;
 }
 
+.shopStatus{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:1000;border:1px solid rgba(15,23,42,.14);background:rgba(255,255,255,.65);color:#334155}
+.shopStatus.closed{background:rgba(254,226,226,.80);color:#991b1b}
+.shopHero{border:1px solid var(--line);background:rgba(255,255,255,.60);border-radius:18px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.shopHero b{display:block;font-size:16px}.shopHero span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+
 .price{
   font-weight:1000;
   color:#b45309;
@@ -777,7 +782,7 @@ let activeNpcShop='all';
 let buyingNow=false;
 
 const SHOP_FALLBACK={
-  all:{id:'all',name:'All Items',icon:'🛒',description:'Everything currently available.',items:{}},
+  all:{id:'all',name:'All Items',icon:'🛒',description:'Everything currently available.',openHour:0,closeHour:24,isOpen:true,items:{}},
   snack_shack:{id:'snack_shack',name:'Snack Shack',icon:'🍓',description:'Food and treats.',items:{}},
   care_clinic:{id:'care_clinic',name:'Care Clinic',icon:'🧼',description:'Care and rest supplies.',items:{}},
   egg_lab:{id:'egg_lab',name:'Egg Lab',icon:'🥚',description:'Egg influence tools.',items:{}},
@@ -992,6 +997,18 @@ function normalizedNpcShops(){
     };
   });
 
+  Object.keys(result).forEach(id=>{
+    let s=result[id];
+    s.openHour=s.openHour===undefined?0:Number(s.openHour);
+    s.closeHour=s.closeHour===undefined?24:Number(s.closeHour);
+    if(s.isOpen===undefined){
+      let h=new Date().getHours();
+      s.isOpen=s.openHour<s.closeHour ? (h>=s.openHour&&h<s.closeHour) : (s.openHour===s.closeHour ? true : (h>=s.openHour||h<s.closeHour));
+    }
+    s.bannerImage=s.bannerImage||('/assets/shops/'+id+'_banner.png');
+    s.keeperImage=s.keeperImage||('/assets/shops/'+id+'_keeper.png');
+  });
+
   return result;
 }
 
@@ -1012,13 +1029,16 @@ function drawNpc(){
 
   el('shopTabs').innerHTML=visibleShopIds.map(id=>{
     let s=catalog[id];
-    return '<button class="shopTab '+(activeNpcShop===id?'active':'')+'" onclick="setNpcShop(\''+escAttr(id)+'\')">'+esc((s.icon||'🏪')+' '+(s.name||id))+'</button>';
+    let closed=id!=='all'&&s.isOpen===false;
+    return '<button class="shopTab '+(activeNpcShop===id?'active':'')+'" onclick="setNpcShop(\''+escAttr(id)+'\')">'+esc((s.icon||'🏪')+' '+(s.name||id)+(closed?' · Closed':''))+'</button>';
   }).join('');
 
   let shop=catalog[activeNpcShop]||catalog.all;
   let saleItems=Object.keys(shop.items||{});
 
-  let html='';
+  let status=activeNpcShop==='all'?'All shop items':(shop.isOpen===false?'Closed':'Open');
+  let statusClass=shop.isOpen===false&&activeNpcShop!=='all'?'shopStatus closed':'shopStatus';
+  let html='<div class="shopHero"><div><b>'+esc((shop.icon||'🏪')+' '+(shop.name||activeNpcShop))+'</b><span>'+esc(shop.description||'Shop catalog')+'</span></div><div><span class="'+statusClass+'">'+esc(status)+'</span><span style="text-align:right">'+Number(shop.openHour||0)+':00 - '+Number(shop.closeHour===undefined?24:shop.closeHour)+':00</span></div></div>';
 
   saleItems.forEach(id=>{
     let it=itemDef(id);
@@ -1030,7 +1050,7 @@ function drawNpc(){
       it.name||id,
       (it.description||'Companion supply')+(sale.requiresUnlock?' · Locked: '+sale.requiresUnlock:''),
       price+' coins',
-      '<button class="gold" onclick="buyNpc(\''+escAttr(id)+'\')">Buy</button>'
+      (shop.isOpen===false&&activeNpcShop!=='all')?'<button disabled>Closed</button>':'<button class="gold" onclick="buyNpc(\''+escAttr(id)+'\')">Buy</button>'
     );
   });
 
@@ -1043,6 +1063,13 @@ async function buyNpc(itemId){
 
   try{
     let item=itemDef(itemId);
+    let catalog=normalizedNpcShops();
+    let activeShop=catalog[activeNpcShop]||catalog.all;
+    if(activeNpcShop!=='all'&&activeShop&&activeShop.isOpen===false){
+      showToast((activeShop.name||'This shop')+' is closed.');
+      buyingNow=false;
+      return;
+    }
     let price=itemPrice(itemId,activeNpcShop);
 
     if(price&&money()<price){
