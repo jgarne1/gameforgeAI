@@ -481,48 +481,84 @@ button,input,select{font-family:inherit}
 
 .actionDock{
   position:absolute;
-  left:16px;
-  right:16px;
+  left:18px;
+  right:18px;
   bottom:14px;
   z-index:10;
-  background:rgba(15,23,42,.55);
-  border:1px solid rgba(255,255,255,.32);
+  background:rgba(15,23,42,.46);
+  border:1px solid rgba(255,255,255,.24);
   backdrop-filter:blur(16px);
-  border-radius:26px;
-  padding:10px;
-  box-shadow:0 22px 70px rgba(15,23,42,.28);
+  border-radius:24px;
+  padding:8px;
+  box-shadow:0 16px 46px rgba(15,23,42,.22);
 }
 .dockTop{
-  display:flex;
-  gap:8px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr)118px 108px;
+  gap:7px;
   align-items:center;
-  margin-bottom:8px;
+  margin-bottom:7px;
 }
 .dockTop select{
-  flex:1;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.35);
-  background:rgba(255,255,255,.88);
-  padding:9px;
-  font-weight:900;
+  min-width:0;
+  border-radius:15px;
+  border:1px solid rgba(255,255,255,.30);
+  background:rgba(255,255,255,.86);
+  padding:8px 10px;
+  font-weight:1000;
+  font-size:13px;
+}
+.dockTop button{
+  min-height:42px;
+  padding:8px 10px;
+  border-radius:15px;
+  font-size:13px;
 }
 .dockActions{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:8px;
+  gap:7px;
 }
+.dockActions.compact{grid-template-columns:repeat(5,minmax(0,1fr))}
 .dockActions.egg{grid-template-columns:repeat(4,1fr)}
 .dockBtn{
-  min-height:58px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.28);
+  min-height:46px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.24);
   color:white;
   text-align:left;
-  padding:9px;
-  background:rgba(255,255,255,.16);
+  padding:7px 8px;
+  background:rgba(255,255,255,.15);
 }
-.dockBtn strong{display:block;font-size:13px}
-.dockBtn span{display:block;font-size:11px;opacity:.82;margin-top:2px}
+.dockBtn strong{display:block;font-size:12px;line-height:1.05}
+.dockBtn span{display:block;font-size:10px;opacity:.82;margin-top:2px;line-height:1.1}
+.trainMini{
+  min-height:46px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.24);
+  background:rgba(255,255,255,.15);
+  padding:5px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:5px;
+  align-items:center;
+}
+.trainMini select{
+  width:100%;
+  min-width:0;
+  padding:7px 6px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:1000;
+  border:1px solid rgba(255,255,255,.24);
+  background:rgba(255,255,255,.88);
+}
+.trainMini button{
+  padding:7px 8px;
+  border-radius:12px;
+  min-height:34px;
+  font-size:11px;
+}
 .dockBtn.gold{background:linear-gradient(135deg,#facc15,#f59e0b);color:#111827}
 .dockBtn.good{background:linear-gradient(135deg,#16a34a,#22c55e)}
 .dockBtn.blue{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
@@ -850,7 +886,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   .top{align-items:flex-start;flex-direction:column}
   .topRight{justify-content:flex-start}
   .topRename input{width:120px}
-  .dockActions,.dockActions.egg,.detailGrid{grid-template-columns:1fr 1fr}
+  .dockActions,.dockActions.egg,.dockActions.compact,.detailGrid{grid-template-columns:1fr 1fr}
   .tabs{grid-template-columns:1fr 1fr}
   .petOrb{width:260px;height:260px}
   .petImg{width:175px;height:175px}
@@ -885,8 +921,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   <div class="hud">
     <div class="panel leftPanel">
       <div class="leftTop">
-        <div id="leftGoalBox" class="goalCard"></div>
         <div id="statStack" class="statStack"></div>
+        <div id="leftGoalBox" class="goalCard"></div>
       </div>
     </div>
 
@@ -1098,16 +1134,13 @@ function drawDock(){
       var z=zones[id];
       html+='<option value="'+escapeAttr(id)+'" '+(id===selectedZoneId?'selected':'')+'>'+escapeHtml(z.name)+' · Lv '+Number(z.minLevel||1)+' · ⚡ '+Number(z.energyCost||0)+'</option>';
     });
-    html+='</select><button class="gold" onclick="exploreSelectedZone()">Adventure</button></div>';
-    html+='<div class="dockActions">';
-    html+='<button class="dockBtn good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Hunger + bond</span></button>';
+    html+='</select><button class="gold" onclick="exploreSelectedZone()">Adventure</button><button class="gold" onclick="openPetBattle()">Battle</button></div>';
+    html+='<div class="dockActions compact">';
+    html+='<button class="dockBtn good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Hunger</span></button>';
     html+='<button class="dockBtn blue" onclick="playPet()"><strong>🎾 Play</strong><span>Coins + XP</span></button>';
-    html+='<button class="dockBtn sky" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Cleanliness</span></button>';
+    html+='<button class="dockBtn sky" onclick="useItem(\'soap\')"><strong>🫧 Clean</strong><span>Comfort</span></button>';
     html+='<button class="dockBtn purple" onclick="useItem(\'nap_blanket\')"><strong>💤 Rest</strong><span>Energy</span></button>';
-    html+='<button class="dockBtn red" onclick="trainPet(\'attack\')"><strong>⚔️ ATK</strong><span>Train attack</span></button>';
-    html+='<button class="dockBtn blue" onclick="trainPet(\'defense\')"><strong>🛡 DEF</strong><span>Train defense</span></button>';
-    html+='<button class="dockBtn sky" onclick="trainPet(\'speed\')"><strong>💨 SPD</strong><span>Train speed</span></button>';
-    html+='<button class="dockBtn gold" onclick="openPetBattle()"><strong>⚔️ Battle</strong><span>Test your pet</span></button>';
+    html+='<div class="trainMini"><select id="trainStatSelect"><option value="attack">ATK</option><option value="defense">DEF</option><option value="speed">SPD</option></select><button class="danger" onclick="trainSelectedStat()">Train</button></div>';
     html+='</div>';
   }
 
@@ -1117,6 +1150,11 @@ function drawDock(){
   if(select){
     select.onchange=function(){selectedZoneId=select.value;};
   }
+}
+
+function trainSelectedStat(){
+  var sel=el('trainStatSelect');
+  trainPet(sel?sel.value:'attack');
 }
 
 function dockBtn(title,arg,sub,cls,fn){
