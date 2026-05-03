@@ -600,18 +600,39 @@ function hatchPet(pet){
   let speciesKey=hatchSpecies(pet.eggTraits||{});
   let species=PET_SPECIES[speciesKey];
 
+  let traits=pet.eggTraits||{};
+  let totalTraits=Object.values(traits).reduce((a,b)=>a+b,0)||1;
+
+  function traitBias(trait){
+    return (traits[trait]||0)/totalTraits;
+  }
+
+  function roll(base,variance=2){
+    return base + randInt(-variance,variance);
+  }
+
+  let careBonus=Math.floor((pet.affection||0)/10);
+
+  let hp = roll(species.base.hp + Math.floor(traitBias('wet')*4) + careBonus,3);
+  let atk= roll(species.base.attack + Math.floor(traitBias('warm')*3),2);
+  let def= roll(species.base.defense + Math.floor(traitBias('dry')*3),2);
+  let spd= roll(species.base.speed + Math.floor(traitBias('light')*3),2);
+
   pet.stage='baby';
   pet.species=speciesKey;
   pet.name=species.name;
   pet.emoji=species.emoji;
   pet.type=species.type;
-  pet.personality=pet.personality||hatchPersonality(pet.eggTraits||{},pet.affection||0);
+
+  pet.personality=pet.personality||hatchPersonality(traits,pet.affection||0);
   pet.affection=Number(pet.affection||5);
-  pet.stats.hp=species.base.hp;
-  pet.stats.maxHp=species.base.hp;
-  pet.stats.attack=species.base.attack;
-  pet.stats.defense=species.base.defense;
-  pet.stats.speed=species.base.speed;
+
+  pet.stats.hp=hp;
+  pet.stats.maxHp=hp;
+  pet.stats.attack=atk;
+  pet.stats.defense=def;
+  pet.stats.speed=spd;
+
   pet.moves=species.moves.slice(0,3);
   pet.lastUpdated=Date.now();
 
@@ -649,12 +670,38 @@ function addPetXp(pet,amount){
   let result={xpGained:amount,leveled:false,levelsGained:0,learnedMove:null};
   pet.stats.xp=Number(pet.stats.xp||0)+amount;
 
+  function careScore(p){
+    let n=p.needs||{};
+    return ((n.hunger||0)+(n.happiness||0)+(n.energy||0)+(n.cleanliness||0))/4;
+  }
+
   while(pet.stats.xp>=xpToNextLevel(pet)){
     pet.stats.xp-=xpToNextLevel(pet);
     pet.stats.level=Number(pet.stats.level||1)+1;
-    pet.stats.maxHp=Number(pet.stats.maxHp||20)+2;
+
+    let care=careScore(pet);
+
+    let hpGain=3 + Math.floor(care/40);
+    let atkGain=1;
+    let defGain=1;
+    let spdGain=1;
+
+    if(pet.personality==='aggressive') atkGain+=1;
+    if(pet.personality==='calm') defGain+=1;
+    if(pet.personality==='playful') spdGain+=1;
+    if(pet.personality==='lazy') hpGain+=1;
+
+    if(care>80){
+      hpGain+=1;
+      atkGain+=1;
+    }
+
+    pet.stats.maxHp+=hpGain;
     pet.stats.hp=pet.stats.maxHp;
-    pet.stats.attack=Number(pet.stats.attack||5)+1;
+    pet.stats.attack+=atkGain;
+    pet.stats.defense+=defGain;
+    pet.stats.speed+=spdGain;
+
     result.leveled=true;
     result.levelsGained++;
   }
