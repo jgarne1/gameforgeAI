@@ -1031,6 +1031,7 @@ var username='guest';
 var profile=null;
 var shop={};
 var moves={};
+var speciesCatalog={};
 var zones={};
 var limits={maxRoster:6,newEggBaseCost:75};
 var currentTab='quests';
@@ -1071,6 +1072,7 @@ async function loadProfile(){
     profile=data.profile;
     shop=data.shop||{};
     moves=data.moves||{};
+    speciesCatalog=data.species||{};
     zones=data.zones||{};
     limits=data.limits||limits;
     if(!zones[selectedZoneId])selectedZoneId=Object.keys(zones)[0]||'meadow';
@@ -1922,6 +1924,29 @@ function setAura(pet){
   }
 }
 
+function hatchableSpeciesList(){
+  var list=[];
+  Object.keys(speciesCatalog||{}).forEach(function(id){
+    var p=speciesCatalog[id]||{};
+    if(p.enabled===false||p.hatchable===false)return;
+    list.push({
+      id:p.id||id,
+      name:p.name||p.id||id,
+      type:String(p.type||'normal').toLowerCase(),
+      hatchWeight:Math.max(1,Number(p.hatchWeight!==undefined?p.hatchWeight:(p.weight!==undefined?p.weight:100))),
+      rarity:p.rarity||'common'
+    });
+  });
+  return list;
+}
+
+function speciesNamesForType(type,limit){
+  var list=hatchableSpeciesList().filter(function(p){return p.type===type});
+  list.sort(function(a,b){return b.hatchWeight-a.hatchWeight||String(a.name).localeCompare(String(b.name))});
+  if(limit)list=list.slice(0,limit);
+  return list.map(function(p){return p.name});
+}
+
 function eggInfluenceSummary(pet){
   var traits=pet.eggTraits||{};
   var influence={
@@ -1940,13 +1965,7 @@ function eggInfluenceSummary(pet){
     shadow:'A quiet pulse hides under the shell. Shadow-leaning companions are more likely.',
     earth:'The shell feels sturdy and ancient. Earth-leaning companions are more likely.'
   };
-  var speciesByType={
-    fire:['Flarecub','Emberwing'],
-    water:['Frostfin'],
-    nature:['Leafbun'],
-    shadow:['Shadepup'],
-    earth:['Pebblet','Chompasaur']
-  };
+
   var scores={fire:1,water:1,nature:1,shadow:1,earth:1};
   Object.keys(influence).forEach(function(trait){
     var amount=Number(traits[trait]||0);
@@ -1954,21 +1973,27 @@ function eggInfluenceSummary(pet){
       scores[type]+=amount*Number(influence[trait][type]||0);
     });
   });
+
   var ranked=Object.keys(scores).map(function(type){return {type:type,score:scores[type]}}).sort(function(a,b){return b.score-a.score});
   var total=traitTotal(traits);
   var balanced=total>=8&&ranked.length>1&&(ranked[0].score-ranked[1].score)<=4;
   var top=ranked[0]||{type:'fire',score:1};
   var second=ranked[1]||{type:'water',score:1};
-  var label=balanced?'Balanced aura':labels[top.type]+'-leaning';
+  var label=balanced?'Balanced aura':(labels[top.type]||top.type)+'-leaning';
   var hint=balanced
     ? 'Several energies are close together. The hatch pool becomes less predictable and may pull from multiple types.'
-    : hints[top.type];
-  var species=balanced
-    ? ['Mixed hatch pool',labels[top.type]+' energy',labels[second.type]+' energy']
-    : (speciesByType[top.type]||['Unknown species']);
+    : (hints[top.type]||'This egg is leaning toward a custom companion type.');
+
+  var species=[];
+  if(balanced){
+    species=['Mixed hatch pool',(labels[top.type]||top.type)+' energy',(labels[second.type]||second.type)+' energy'];
+  }else{
+    species=speciesNamesForType(top.type,6);
+    if(!species.length)species=['No hatchable '+(labels[top.type]||top.type)+' pets found'];
+  }
+
   return {strongest:top.type,label:label,hint:hint,species:species,total:total,ranked:ranked,balanced:balanced};
 }
-
 function eggInfluenceCard(pet){
   var info=eggInfluenceSummary(pet);
   var html='<div class="eggInfluence"><b>Egg Influence: '+escapeHtml(info.label)+'</b>';
