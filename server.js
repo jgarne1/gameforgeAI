@@ -35,7 +35,8 @@ function ensurePersistentStorage(){
     'market.json',
     'items.json',
     'shops.json',
-    'pet_moves.json'
+    'pet_moves.json',
+    'pet_species.json'
   ];
 
   seedFiles.forEach(file=>{
@@ -644,6 +645,83 @@ function mergedPetSpecies(){
   return {
     ...PET_SPECIES,
     ...petSpeciesCatalog()
+  };
+}
+
+function adminPetSpeciesCatalog(){
+  let catalog=mergedPetSpecies();
+
+  return Object.keys(catalog).map(id=>{
+    let species=catalog[id]||{};
+    let base=species.base||{};
+
+    return {
+      id,
+      name:species.name||id,
+      type:species.type||'neutral',
+      emoji:species.emoji||'🐾',
+      rarity:species.rarity||'common',
+      hatchWeight:Number(species.hatchWeight!==undefined?species.hatchWeight:(species.weight!==undefined?species.weight:100)),
+      enabled:species.enabled!==false,
+      hatchable:species.hatchable!==false,
+      base:{
+        hp:Number(base.hp||24),
+        attack:Number(base.attack||5),
+        defense:Number(base.defense||5),
+        speed:Number(base.speed||5)
+      },
+      moves:Array.isArray(species.moves)?species.moves.map(String):[],
+      description:String(species.description||'')
+    };
+  }).sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));
+}
+
+function normalizeAdminPetSpeciesPayload(body){
+  let id=safeAssetId(body.id||body.speciesId);
+  if(!id)throw new Error('Missing species id.');
+
+  let name=String(body.name||id).trim().slice(0,64)||id;
+  let type=String(body.type||'neutral').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,32)||'neutral';
+  let emoji=String(body.emoji||'🐾').trim().slice(0,8)||'🐾';
+  let rarity=String(body.rarity||'common').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,32)||'common';
+
+  let hatchWeight=Math.floor(Number(body.hatchWeight));
+  if(!Number.isFinite(hatchWeight)||hatchWeight<0)throw new Error('Invalid hatch weight.');
+  if(hatchWeight>9999)throw new Error('Hatch weight is too high.');
+
+  let baseIn=body.base||{};
+  function stat(name,fallback){
+    let value=Math.floor(Number(baseIn[name]!==undefined?baseIn[name]:body[name]));
+    if(!Number.isFinite(value))value=fallback;
+    if(value<1||value>999)throw new Error('Invalid '+name+' stat.');
+    return value;
+  }
+
+  let moves=[];
+  if(Array.isArray(body.moves)){
+    moves=body.moves;
+  }else if(body.movesRaw!==undefined){
+    moves=String(body.movesRaw||'').split(/[\n,]+/);
+  }
+  moves=[...new Set(moves.map(x=>String(x||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_')).filter(Boolean))].slice(0,12);
+
+  return {
+    id,
+    name,
+    type,
+    emoji,
+    rarity,
+    hatchWeight,
+    enabled:body.enabled===false?false:true,
+    hatchable:body.hatchable===false?false:true,
+    base:{
+      hp:stat('hp',24),
+      attack:stat('attack',5),
+      defense:stat('defense',5),
+      speed:stat('speed',5)
+    },
+    moves,
+    description:String(body.description||'').trim().slice(0,700)
   };
 }
 const PET_SPECIES={
@@ -1567,6 +1645,37 @@ app.post('/api/admin/assets/approve',async (req,res)=>{
 });
 
 
+
+app.get('/api/admin/pet-species',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+  res.json({ok:true,petSpecies:adminPetSpeciesCatalog()});
+});
+
+app.post('/api/admin/pet-species/update',async (req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  try{
+    let species=normalizeAdminPetSpeciesPayload(req.body||{});
+    let catalog=petSpeciesCatalog();
+    catalog[species.id]=species;
+
+    writeJSON(petSpeciesFile,catalog);
+    await commitFileToGithub('data/pet_species.json',Buffer.from(JSON.stringify(catalog,null,2)),`Admin pet species update: ${species.id}`);
+
+    res.json({
+      ok:true,
+      message:'Pet species saved.',
+      species,
+      petSpecies:adminPetSpeciesCatalog()
+    });
+  }catch(err){
+    console.error(err);
+    res.status(400).json({error:err.message||'Pet species update failed'});
+  }
+});
+
 app.post('/api/admin/items/update',async (req,res)=>{
   let adminUser=requireAdmin(req,res);
   if(!adminUser)return;
@@ -1774,7 +1883,8 @@ app.get('/api/admin/dashboard',(req,res)=>{
     onlineUsers:presence(),
     rooms:openRooms,
     recentListings:listings.slice(0,20),
-    items:adminItemCatalog()
+    items:adminItemCatalog(),
+    petSpecies:adminPetSpeciesCatalog()
   });
 });
 
