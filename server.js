@@ -617,6 +617,32 @@ function petCount(profile){
   return Object.keys(profile.pets||{}).length;
 }
 
+function petSellValue(pet){
+  pet=pet||{};
+  let stage=String(pet.stage||'egg');
+  let level=Number((pet.stats&&pet.stats.level)||1);
+  let stageValue={
+    egg:5,
+    baby:20,
+    young:40,
+    teen:40,
+    adult:75
+  }[stage]||20;
+
+  let catalog=mergedPetSpecies();
+  let species=pet.species&&catalog[pet.species] ? catalog[pet.species] : {};
+  let rarity=String(species.rarity||pet.rarity||'common').toLowerCase();
+  let rarityMult={
+    common:1,
+    uncommon:1.25,
+    rare:1.75,
+    epic:3,
+    legendary:6
+  }[rarity]||1;
+
+  return Math.max(1,Math.floor((stageValue+(level*2))*rarityMult));
+}
+
 function defaultPetProfile(username){
   let pet=createEggPet(username);
 
@@ -642,40 +668,43 @@ function petSpeciesCatalog(){
 }
 
 function mergedPetSpecies(){
-  let raw = {
+  let raw={
     ...PET_SPECIES,
     ...petSpeciesCatalog()
   };
 
-  let out = {};
+  let out={};
 
   Object.keys(raw).forEach(id=>{
-    let p = raw[id] || {};
+    let species=raw[id]||{};
+    let base=species.base||{};
 
-    out[id] = {
+    out[id]={
       id,
-      name: p.name || id,
-      type: p.type || 'neutral',
-      emoji: p.emoji || '🐾',
-      rarity: p.rarity || 'common',
-
-      // 🔥 CRITICAL FIXES
-      hatchWeight: Number(
-        p.hatchWeight !== undefined ? p.hatchWeight :
-        p.weight !== undefined ? p.weight : 100
+      name:species.name||id,
+      type:species.type||'normal',
+      emoji:species.emoji||'🐾',
+      rarity:species.rarity||'common',
+      hatchWeight:Number(
+        species.hatchWeight!==undefined ? species.hatchWeight :
+        species.weight!==undefined ? species.weight : 100
       ),
-
-      hatchable: p.hatchable !== false,
-      enabled: p.enabled !== false,
-
-      base: p.base || { hp:24, attack:5, defense:5, speed:5 },
-      moves: Array.isArray(p.moves) ? p.moves : [],
-      description: p.description || ''
+      enabled:species.enabled!==false,
+      hatchable:species.hatchable!==false,
+      base:{
+        hp:Number(base.hp||24),
+        attack:Number(base.attack||5),
+        defense:Number(base.defense||5),
+        speed:Number(base.speed||5)
+      },
+      moves:Array.isArray(species.moves)&&species.moves.length?species.moves.map(String):['tackle'],
+      description:String(species.description||'')
     };
   });
 
   return out;
 }
+
 function adminPetSpeciesCatalog(){
   let catalog=mergedPetSpecies();
 
@@ -957,41 +986,39 @@ function chooseSpeciesForType(type,traits){
 }
 
 function hatchSpecies(traits){
-  // 🔥 Step 1: determine type from egg care
-  let type = chooseHatchType(traits);
+  traits=traits||{};
+  let catalog=mergedPetSpecies();
+  let hatchProfile=buildHatchProfile(traits);
 
-  // 🔥 Step 2: use your rarity system (BEST PATH)
-  let fromRegistry = chooseSpeciesForType(type, traits);
-
-  if(fromRegistry){
-    return fromRegistry;
-  }
-
-  // 🔥 Step 3: fallback to JSON system (future-proof)
-  let catalog = mergedPetSpecies();
-
-  let available = Object.values(catalog).filter(p => p.hatchable);
+  let available=Object.values(catalog).filter(p=>{
+    return p&&p.enabled!==false&&p.hatchable!==false;
+  });
 
   if(!available.length){
     return 'flarecub';
   }
 
-  let weighted = available.map(p => {
-    let weight = Number(p.hatchWeight || 10);
+  let weighted=available.map(p=>{
+    let weight=Math.max(1,Number(p.hatchWeight||10));
+    let typeScore=Number((hatchProfile.typeScores&&hatchProfile.typeScores[p.type])||1);
 
-    // small type bias
-    if(p.type === type){
-      weight *= 1.5;
+    // Egg care should matter, but it should not completely lock out other pets.
+    weight*=Math.max(1,typeScore);
+
+    // Balanced eggs get a small chance to favor anything, which keeps rare surprises possible.
+    if(hatchProfile.balanced){
+      weight*=1.12;
     }
 
     return {
-      key: p.id,
+      key:p.id,
       weight
     };
   });
 
   return weightedPick(weighted).key;
 }
+
 function hatchPersonality(traits,affection){
   traits=traits||{};
   let weights={playful:10,lazy:10,aggressive:10,calm:10,curious:10,moody:10};
@@ -2695,6 +2722,46 @@ app.post('/api/pet/convert-to-egg',(req,res)=>{
     profile
   });
 });
+
+app.post('/api/pet/sell',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let petIdToSell=String(req.body.petId||'');
+  let profile=getPetProfile(username);
+  let targetPet=profile.pets&&profile.pets[petIdToSell];
+
+  if(!targetPet){
+    return res.json({error:'Pet not found'});
+  }
+
+  let ids=Object.keys(profile.pets||{});
+
+  if(ids.length<=1){
+    return res.json({error:'You cannot sell your last pet.'});
+  }
+
+  let oldName=targetPet.name||'your pet';
+  let value=petSellValue(targetPet);
+
+  delete profile.pets[petIdToSell];
+  profile.money=Number(profile.money||0)+value;
+
+  if(profile.activePetId===petIdToSell){
+    profile.activePetId=Object.keys(profile.pets||{})[0]||null;
+  }
+
+  savePetProfile(username,profile);
+
+  res.json({
+    ok:true,
+    message:oldName+' was released for '+value+' coins.',
+    coins:value,
+    profile
+  });
+});
+
+
 /* ===== MARKETPLACE API ===== */
 
 function marketListingsArray(){
