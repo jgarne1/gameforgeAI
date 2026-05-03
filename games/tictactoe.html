@@ -1,520 +1,265 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
 <title>Tic Tac Toe</title>
+
 <style>
 :root{
-  --bg1:#1e293b;
-  --bg2:#020617;
-  --panel:rgba(15,23,42,.88);
-  --border:rgba(148,163,184,.25);
-  --text:#e5e7eb;
-  --muted:#94a3b8;
+  --bg1:#020617;
+  --bg2:#0f172a;
+  --panel:#0f172acc;
+  --border:#38bdf855;
   --accent:#38bdf8;
   --accent2:#a78bfa;
-  --danger:#fb7185;
-  --good:#34d399;
+  --good:#22c55e;
+  --danger:#ef4444;
 }
-*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:Arial,sans-serif;
-  background:radial-gradient(circle at top,var(--bg1),var(--bg2));
-  color:var(--text);
+  font-family:Arial, sans-serif;
+  background:radial-gradient(circle at top, var(--bg2), var(--bg1));
+  color:#e5e7eb;
   overflow:hidden;
 }
+
 .gameShell{
   height:100vh;
   display:grid;
   grid-template-rows:auto 1fr auto;
-  padding:12px;
   gap:10px;
+  padding:10px;
 }
-.gameHeader,.gameLog,.gamePanel{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:18px;
-  box-shadow:0 18px 50px rgba(0,0,0,.25);
-}
+
 .gameHeader{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  padding:12px 14px;
-}
-h1{margin:0;font-size:clamp(20px,4vw,30px);line-height:1.1}
-#gameStatus{margin:6px 0 0;color:var(--muted);font-size:clamp(13px,2.7vw,15px)}
-.meta{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  gap:6px;
-  max-width:52%;
-}
-.pill{
-  border:1px solid var(--border);
-  background:rgba(2,6,23,.45);
-  border-radius:999px;
-  padding:6px 9px;
-  font-size:12px;
-  color:#dbeafe;
-  white-space:nowrap;
-}
-.gamePanel{
-  min-height:0;
-  padding:12px;
-  display:grid;
-  grid-template-rows:auto 1fr auto;
   gap:10px;
-  overflow:hidden;
-}
-.scoreBar{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:8px;
-}
-.scoreCard{
-  min-width:110px;
-  text-align:center;
+  background:var(--panel);
   border:1px solid var(--border);
-  border-radius:14px;
-  padding:8px 10px;
-  background:rgba(2,6,23,.35);
+  border-radius:16px;
+  padding:10px;
 }
-.scoreName{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
-.scoreValue{font-size:20px;font-weight:900;margin-top:2px}
-.boardWrap{
-  min-height:0;
+
+.playerCard{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:1;
+  padding:8px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid transparent;
+}
+
+.playerCard.active{
+  border:1px solid var(--accent);
+  box-shadow:0 0 10px var(--accent);
+}
+
+.petImg{
+  width:40px;
+  height:40px;
+  object-fit:contain;
+}
+
+.playerInfo{
+  display:flex;
+  flex-direction:column;
+  font-size:12px;
+}
+
+.playerName{
+  font-weight:bold;
+}
+
+.gamePanel{
   display:flex;
   align-items:center;
   justify-content:center;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:10px;
 }
-#board{
+
+.board{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:clamp(7px,1.8vw,12px);
-  width:min(72vh,92vw,430px);
-  aspect-ratio:1/1;
+  grid-template-columns:repeat(3, minmax(80px, 120px));
+  gap:10px;
 }
+
 .cell{
-  border:1px solid rgba(226,232,240,.26);
-  border-radius:clamp(14px,3vw,22px);
-  background:linear-gradient(180deg,rgba(30,41,59,.95),rgba(15,23,42,.95));
-  color:var(--text);
-  font-size:clamp(42px,13vw,88px);
-  font-weight:900;
+  aspect-ratio:1/1;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:40px;
+  font-weight:bold;
   cursor:pointer;
-  user-select:none;
-  touch-action:manipulation;
-  min-width:0;
-  min-height:0;
+  border-radius:12px;
+  background:linear-gradient(145deg,#1e293b,#020617);
+  box-shadow:inset 0 0 10px #000, 0 0 6px #000;
+  transition:0.15s;
 }
-.cell:hover{border-color:rgba(56,189,248,.7);transform:translateY(-1px)}
-.cell.disabled{cursor:not-allowed;opacity:.72;transform:none}
-.cell.x{color:var(--accent)}
-.cell.o{color:var(--accent2)}
-.actions{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:8px;
+
+.cell:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 10px var(--accent);
 }
-button{
-  min-height:42px;
-  border:0;
-  border-radius:14px;
-  padding:10px 14px;
-  font-weight:800;
-  cursor:pointer;
-  color:#06111f;
-  background:linear-gradient(135deg,#38bdf8,#a78bfa);
-}
-button.secondary{
-  color:var(--text);
-  background:rgba(15,23,42,.9);
-  border:1px solid var(--border);
-}
+
 .gameLog{
-  max-height:82px;
-  min-height:48px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:8px;
+  font-size:12px;
+  max-height:60px;
   overflow:auto;
-  padding:9px 12px;
-  font-size:13px;
-  color:#cbd5e1;
-}
-.logLine{margin:2px 0}.logLine:first-child{color:#fff;font-weight:700}
-@media(max-width:620px){
-  .gameShell{padding:8px;gap:8px}
-  .gameHeader{padding:10px;align-items:stretch;flex-direction:column}
-  .meta{max-width:none;justify-content:flex-start}
-  .gamePanel{padding:9px;gap:8px}
-  .scoreCard{min-width:88px;padding:7px 8px}
-  .gameLog{max-height:64px}
 }
 </style>
 </head>
+
 <body>
 <div class="gameShell">
+
   <header class="gameHeader">
-    <div>
-      <h1>Tic Tac Toe</h1>
-      <p id="gameStatus">Waiting for players...</p>
-    </div>
-    <div class="meta">
-      <span class="pill" id="roomCode">Room: —</span>
-      <span class="pill" id="playerSeat">Seat: —</span>
-      <span class="pill" id="turnPill">Turn: —</span>
-    </div>
+    <div id="p1" class="playerCard"></div>
+    <div id="p2" class="playerCard"></div>
   </header>
 
   <main class="gamePanel">
-    <section class="scoreBar">
-      <div class="scoreCard"><div class="scoreName" id="p0Name">Player 1</div><div class="scoreValue" id="p0Score">0</div></div>
-      <div class="scoreCard"><div class="scoreName" id="p1Name">Player 2</div><div class="scoreValue" id="p1Score">0</div></div>
-      <div class="scoreCard"><div class="scoreName">Ties</div><div class="scoreValue" id="tieScore">0</div></div>
-    </section>
-
-    <section class="boardWrap">
-      <div id="board" aria-label="Tic Tac Toe board"></div>
-    </section>
-
-    <section class="actions">
-      <button id="newGameBtn" type="button">New Round</button>
-      <button id="resetScoreBtn" class="secondary" type="button">Reset Score</button>
-    </section>
+    <div id="board" class="board"></div>
   </main>
 
-  <footer class="gameLog" id="gameLog"><div class="logLine">Game loaded.</div></footer>
+  <footer class="gameLog" id="log">
+    Game loaded.
+  </footer>
+
 </div>
 
 <script>
-const GAME_ID='tictactoe';
-const GAME_TITLE='Tic Tac Toe';
+const GAME_ID = 'tictactoe';
 
-let GAME_CONTEXT={
+let GAME_CONTEXT = {
   username:'',
   roomId:'',
   players:[],
   seats:[],
-  mySeat:-1
+  mySeat:-1,
+  activePets:{}
 };
 
-let players=[
-  {seat:0,name:'Player 1'},
-  {seat:1,name:'Player 2'}
-];
+let board = Array(9).fill(null);
+let turn = 0;
+let mySymbol = null;
 
-let state=freshState();
-let logLines=['Game loaded.'];
-let contextReceived=false;
+const boardEl = document.getElementById('board');
 
-function freshState(keepScores){
-  const scores=keepScores&&state&&state.scores?state.scores:{};
-  const ties=keepScores&&state?state.ties||0:0;
-  return {
-    board:['','','','','','','','',''],
-    turn:players[0]?players[0].seat:0,
-    marks:{},
-    scores:scores,
-    ties:ties,
-    gameOver:false,
-    message:'New round. '+nameOf(players[0]?players[0].seat:0)+' goes first.'
-  };
+for(let i=0;i<9;i++){
+  const cell = document.createElement('div');
+  cell.className='cell';
+  cell.onclick=()=>handleMove(i);
+  boardEl.appendChild(cell);
 }
 
-function normalizePlayers(inputPlayers,inputSeats){
-  let list=[];
+function handleMove(i){
+  if(board[i]) return;
+  if(turn !== GAME_CONTEXT.mySeat) return;
 
-  if(Array.isArray(inputPlayers)&&inputPlayers.length){
-    list=inputPlayers.map((p,i)=>({
-      seat:Number(p.seat!==undefined?p.seat:i),
-      name:String(p.name||p.username||('Seat '+(Number(p.seat!==undefined?p.seat:i)+1)))
-    }));
-  }else if(Array.isArray(inputSeats)&&inputSeats.length){
-    list=inputSeats.map((s,i)=>s?({
-      seat:i,
-      name:String(s.name||s.username||('Seat '+(i+1)))
-    }):null).filter(Boolean);
+  sendMove({index:i});
+}
+
+function applyMove(index){
+  if(board[index]) return;
+
+  const symbol = turn===0 ? 'X':'O';
+  board[index]=symbol;
+  boardEl.children[index].textContent=symbol;
+
+  log(symbol+" played "+index);
+
+  if(checkWin(symbol)){
+    log(symbol+" wins!");
+    return;
   }
 
-  list=list.filter(p=>Number.isFinite(p.seat)).sort((a,b)=>a.seat-b.seat).slice(0,2);
-
-  while(list.length<2){
-    list.push({seat:list.length,name:'Player '+(list.length+1)});
-  }
-
-  return list;
+  turn = turn===0?1:0;
+  updateUI();
 }
 
-function applyContext(ctx){
-  ctx=ctx||{};
-  contextReceived=true;
-
-  GAME_CONTEXT={
-    username:String(ctx.username||GAME_CONTEXT.username||''),
-    roomId:String(ctx.roomId||ctx.room||GAME_CONTEXT.roomId||''),
-    players:Array.isArray(ctx.players)?ctx.players:GAME_CONTEXT.players,
-    seats:Array.isArray(ctx.seats)?ctx.seats:GAME_CONTEXT.seats,
-    mySeat:Number.isFinite(Number(ctx.mySeat))?Number(ctx.mySeat):GAME_CONTEXT.mySeat
-  };
-
-  players=normalizePlayers(GAME_CONTEXT.players,GAME_CONTEXT.seats);
-
-  if(GAME_CONTEXT.mySeat<0&&GAME_CONTEXT.username){
-    const mine=players.find(p=>p.name===GAME_CONTEXT.username);
-    if(mine) GAME_CONTEXT.mySeat=mine.seat;
-  }
-
-  ensureStateShape();
-  if(!players.some(p=>p.seat===state.turn)) state.turn=players[0].seat;
-  addLog('Context received. '+playerSummary());
-  draw();
-}
-
-function receiveLegacySetup(msg){
-  applyContext({
-    username:GAME_CONTEXT.username,
-    roomId:GAME_CONTEXT.roomId,
-    players:msg.players||window.GAME_PLAYERS||[],
-    seats:msg.seats||[],
-    mySeat:msg.mySeat!==undefined?msg.mySeat:window.GAME_MY_SEAT
-  });
-}
-
-function ensureStateShape(){
-  if(!state) state=freshState();
-  if(!Array.isArray(state.board)||state.board.length!==9) state.board=['','','','','','','','',''];
-  if(!state.marks) state.marks={};
-  if(!state.scores) state.scores={};
-  if(state.ties===undefined) state.ties=0;
-
-  if(players[0]){
-    state.marks[players[0].seat]='X';
-    if(state.scores[players[0].seat]===undefined) state.scores[players[0].seat]=0;
-  }
-  if(players[1]){
-    state.marks[players[1].seat]='O';
-    if(state.scores[players[1].seat]===undefined) state.scores[players[1].seat]=0;
-  }
-}
-
-function draw(){
-  ensureStateShape();
-
-  const mySeat=GAME_CONTEXT.mySeat;
-  const meLabel=mySeat>=0?nameOf(mySeat):'Spectator';
-  const turnName=nameOf(state.turn);
-  const myTurn=mySeat===state.turn&&!state.gameOver;
-  const enoughRealPlayers=players.filter(p=>p.name&&!/^Player \d$/.test(p.name)).length>=2 || contextReceived;
-
-  document.getElementById('roomCode').innerText='Room: '+(GAME_CONTEXT.roomId||'—');
-  document.getElementById('playerSeat').innerText='You: '+meLabel+(mySeat>=0?' / Seat '+(mySeat+1):'');
-  document.getElementById('turnPill').innerText='Turn: '+turnName;
-
-  document.getElementById('p0Name').innerText=(players[0]?players[0].name:'Player 1')+' (X)';
-  document.getElementById('p1Name').innerText=(players[1]?players[1].name:'Player 2')+' (O)';
-  document.getElementById('p0Score').innerText=players[0]?(state.scores[players[0].seat]||0):0;
-  document.getElementById('p1Score').innerText=players[1]?(state.scores[players[1].seat]||0):0;
-  document.getElementById('tieScore').innerText=state.ties||0;
-
-  if(state.gameOver){
-    setStatus(state.message);
-  }else if(!enoughRealPlayers){
-    setStatus('Waiting for players. This game also works in direct test mode.');
-  }else if(myTurn){
-    setStatus('Your turn. Place your mark.');
-  }else if(mySeat<0){
-    setStatus(turnName+"'s turn. You are spectating.");
-  }else{
-    setStatus(turnName+"'s turn. Watching live.");
-  }
-
-  const board=document.getElementById('board');
-  board.innerHTML='';
-  state.board.forEach((value,index)=>{
-    const cell=document.createElement('button');
-    cell.type='button';
-    cell.className='cell'+(value?' '+value.toLowerCase():'');
-    cell.textContent=value;
-    cell.setAttribute('aria-label','Cell '+(index+1)+(value?' '+value:' empty'));
-
-    if(value||!myTurn||state.gameOver){
-      cell.className+=' disabled';
-      cell.disabled=true;
-    }else{
-      cell.onclick=()=>makeMove(index);
-    }
-    board.appendChild(cell);
-  });
-
-  drawLog();
-}
-
-function setStatus(text){
-  document.getElementById('gameStatus').innerText=text||'';
-}
-
-function makeMove(index){
-  ensureStateShape();
-  const mySeat=GAME_CONTEXT.mySeat;
-  if(state.gameOver) return addLog('Round is over. Start a new round.');
-  if(mySeat!==state.turn) return addLog('Not your turn yet.');
-  if(state.board[index]) return addLog('That space is already taken.');
-
-  const mark=state.marks[mySeat];
-  state.board[index]=mark;
-  addLog(nameOf(mySeat)+' placed '+mark+' in cell '+(index+1)+'.');
-
-  if(checkWin(mark)){
-    state.gameOver=true;
-    state.scores[mySeat]=(state.scores[mySeat]||0)+1;
-    state.message=nameOf(mySeat)+' wins the round!';
-    addLog(state.message);
-  }else if(state.board.every(Boolean)){
-    state.gameOver=true;
-    state.ties=(state.ties||0)+1;
-    state.message='Tie game.';
-    addLog(state.message);
-  }else{
-    nextTurn();
-    state.message=nameOf(state.turn)+' is next.';
-  }
-
-  draw();
-  sendState('place', {index, mark});
-}
-
-function nextTurn(){
-  const idx=players.findIndex(p=>p.seat===state.turn);
-  state.turn=players[((idx>=0?idx:0)+1)%players.length].seat;
-}
-
-function checkWin(mark){
-  const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  return wins.some(combo=>combo.every(i=>state.board[i]===mark));
-}
-
-function newRound(sendIt){
-  state=freshState(true);
-  ensureStateShape();
-  addLog('New round started. '+nameOf(state.turn)+' goes first.');
-  draw();
-  if(sendIt) sendState('new_round',{});
-}
-
-function resetScore(){
-  state=freshState(false);
-  ensureStateShape();
-  addLog('Score reset. New round started.');
-  draw();
-  sendState('reset_score',{});
-}
-
-function nameOf(seat){
-  const p=players.find(x=>x.seat===Number(seat));
-  return p?p.name:'Seat '+(Number(seat)+1);
-}
-
-function playerSummary(){
-  return players.map(p=>'Seat '+(p.seat+1)+': '+p.name).join(' | ');
-}
-
-function addLog(text){
-  if(!text) return;
-  logLines.unshift(String(text));
-  logLines=logLines.slice(0,8);
-}
-
-function drawLog(){
-  document.getElementById('gameLog').innerHTML=logLines.map(x=>'<div class="logLine">'+escapeHtml(x)+'</div>').join('');
-}
-
-function escapeHtml(value){
-  return String(value).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-}
-
-function sendState(action,payload){
+function sendMove(payload){
   parent.postMessage({
     type:'move',
     data:{
       game:GAME_ID,
-      action:action,
-      payload:payload||{},
-      state:state,
-      log:logLines[0]||''
+      action:'place',
+      payload
     }
   },'*');
 }
 
-function receiveMove(data){
-  const move=data||{};
+window.addEventListener('message', e=>{
+  const msg = e.data || {};
 
-  // New contract: ignore other games.
-  if(move.game&&move.game!==GAME_ID) return;
+  if(msg.type === 'GAME_CONTEXT' || msg.type === 'gameSetup'){
+    Object.assign(GAME_CONTEXT, msg.data || msg);
 
-  // Legacy compatibility: older games sent {type:'state', state} without game id.
-  if(move.type==='state'&&move.state){
-    state=move.state;
-    ensureStateShape();
-    addLog(state.message||'Board updated.');
-    draw();
-    return;
+    mySymbol = GAME_CONTEXT.mySeat===0 ? 'X':'O';
+    updateUI();
   }
 
-  if(move.state){
-    state=move.state;
-    ensureStateShape();
-    if(move.log) addLog(move.log);
-    else if(state.message) addLog(state.message);
-    draw();
-    return;
-  }
-}
+  if(msg.type === 'gameMove'){
+    const move = msg.data || {};
+    if(move.game !== GAME_ID) return;
 
-window.onMove=function(data){
-  if(data&&data.type==='gameSetup') receiveLegacySetup(data);
-  else receiveMove(data);
-};
-
-window.addEventListener('message',e=>{
-  const msg=e.data||{};
-
-  if(msg.type==='GAME_CONTEXT'){
-    applyContext(msg.context||msg.data||msg);
-    return;
-  }
-
-  if(msg.type==='gameSetup'){
-    receiveLegacySetup(msg);
-    return;
-  }
-
-  if(msg.type==='gameMove'){
-    receiveMove(msg.data||{});
-    return;
+    applyMove(move.payload.index);
   }
 });
 
-document.getElementById('newGameBtn').onclick=()=>newRound(true);
-document.getElementById('resetScoreBtn').onclick=resetScore;
+function updateUI(){
+  renderPlayers();
+}
 
-parent.postMessage({type:'gameReady',game:GAME_ID},'*');
+function renderPlayers(){
+  const p1 = document.getElementById('p1');
+  const p2 = document.getElementById('p2');
 
-setTimeout(()=>{
-  if(!contextReceived){
-    receiveLegacySetup({
-      players:window.GAME_PLAYERS||[],
-      mySeat:window.GAME_MY_SEAT
-    });
-  }
-},80);
+  const players = GAME_CONTEXT.players || [];
+
+  [p1,p2].forEach((el,i)=>{
+    const name = players[i] || "Waiting...";
+    const pet = GAME_CONTEXT.activePets?.[name];
+
+    el.className = 'playerCard ' + (turn===i ? 'active':'');
+
+    el.innerHTML = `
+      ${pet ? `<img class="petImg" src="${pet.image}">` : ''}
+      <div class="playerInfo">
+        <div class="playerName">${name}</div>
+        <div>Seat ${i+1} · ${i===0?'X':'O'}</div>
+        ${pet ? `<div>${pet.name} Lv.${pet.level}</div>`:''}
+      </div>
+    `;
+  });
+}
+
+function log(text){
+  const el=document.getElementById('log');
+  el.innerHTML += "<br>"+text;
+  el.scrollTop=el.scrollHeight;
+}
+
+function checkWin(s){
+  const w=[
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  return w.some(c=>c.every(i=>board[i]===s));
+}
 </script>
+
 </body>
 </html>
