@@ -2031,6 +2031,7 @@ function connect(){
       }
       room=m.room;
       currentRoom=room.id;
+      if(socket)socket._gfJoinedRoomId=room.id;
       pruneReadyStatus();
       drawRoom();
 
@@ -2056,6 +2057,7 @@ function connect(){
       alert('Room closed');
       room=null;
       currentRoom=null;
+      if(socket)socket._gfJoinedRoomId='';
       loadedGameKey='';
       roomReadyStatus={};
       readyRoomId='';
@@ -2287,6 +2289,7 @@ function leaveRoom(){
   send({type:'leaveRoom'});
   room=null;
   currentRoom=null;
+  if(socket)socket._gfJoinedRoomId='';
   pendingGameToSelect='';
   roomReadyStatus={};
   readyRoomId='';
@@ -2706,14 +2709,63 @@ function exitGameMode(){
 
 /* ===== CHAT / PRESENCE ===== */
 
+
+function ensureIndexSocketJoinedToRoom(roomId,callback){
+  roomId=String(roomId||'').trim().toUpperCase();
+
+  if(!roomId){
+    alert('No active room for chat.');
+    return;
+  }
+
+  connect();
+
+  function finishJoin(){
+    if(socket&&socket.readyState===1){
+      if(socket._gfJoinedRoomId!==roomId){
+        socket.send(JSON.stringify({type:'joinRoom',roomId:roomId}));
+        socket._gfJoinedRoomId=roomId;
+        setTimeout(function(){ if(callback)callback(); },140);
+      }else{
+        if(callback)callback();
+      }
+    }else{
+      setTimeout(finishJoin,120);
+    }
+  }
+
+  finishJoin();
+}
+
+
+function wireRoomChatEnterKey(){
+  let input=document.getElementById('chatText');
+  if(!input||input._gfEnterWired)return;
+  input._gfEnterWired=true;
+  input.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      sendChat();
+    }
+  });
+}
+
 function sendChat(){
   let t=chatText.value.trim();
+  let targetRoom=(room&&room.id)||currentRoom||'';
 
-  if(t){
+  if(!t)return;
+
+  if(!targetRoom){
+    alert('Join a room before chatting.');
+    return;
+  }
+
+  ensureIndexSocketJoinedToRoom(targetRoom,function(){
     send({type:'chat',text:t});
     chatText.value='';
     clearChatUnread();
-  }
+  });
 }
 
 function toggleOverlayChat(){
@@ -3170,6 +3222,8 @@ function handleLauncherStartGame(msg){
   if(startedRoom){
     room=startedRoom;
     currentRoom=startedRoom.id;
+    drawChat(startedRoom.chat||[],false);
+    ensureIndexSocketJoinedToRoom(startedRoom.id);
   }
 
   if(!game){
