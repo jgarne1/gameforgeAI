@@ -1220,6 +1220,8 @@ function addPetXp(pet,amount){
 
     result.leveled=true;
     result.levelsGained++;
+    let growth = checkPetGrowth(pet);
+    result.growth = growth;
   }
 
   if(result.leveled){
@@ -1270,7 +1272,6 @@ function trainPetStat(pet,stat){
   pet.affection=clamp(Number(pet.affection||0)+1,0,100);
 
   let xpResult=addPetXp(pet,xpGain);
-
   return {stat,gain,energyCost,xp:xpGain,xpResult};
 }
 
