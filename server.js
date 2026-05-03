@@ -642,12 +642,40 @@ function petSpeciesCatalog(){
 }
 
 function mergedPetSpecies(){
-  return {
+  let raw = {
     ...PET_SPECIES,
     ...petSpeciesCatalog()
   };
-}
 
+  let out = {};
+
+  Object.keys(raw).forEach(id=>{
+    let p = raw[id] || {};
+
+    out[id] = {
+      id,
+      name: p.name || id,
+      type: p.type || 'neutral',
+      emoji: p.emoji || '🐾',
+      rarity: p.rarity || 'common',
+
+      // 🔥 CRITICAL FIXES
+      hatchWeight: Number(
+        p.hatchWeight !== undefined ? p.hatchWeight :
+        p.weight !== undefined ? p.weight : 100
+      ),
+
+      hatchable: p.hatchable !== false,
+      enabled: p.enabled !== false,
+
+      base: p.base || { hp:24, attack:5, defense:5, speed:5 },
+      moves: Array.isArray(p.moves) ? p.moves : [],
+      description: p.description || ''
+    };
+  });
+
+  return out;
+}
 function adminPetSpeciesCatalog(){
   let catalog=mergedPetSpecies();
 
