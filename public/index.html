@@ -1164,8 +1164,7 @@ body.directGameMode #play{
 }
 
 body.directGameMode #playTop,
-body.directGameMode #roomSetupCard,
-body.directGameMode #launcherShell{
+body.directGameMode #roomSetupCard{
   display:none!important;
 }
 
@@ -1186,9 +1185,7 @@ body.directGameMode iframe{
 
 /* ===== MULTIPLAYER GAME MODE ===== */
 body.gameMode .wrap{
-  grid-template-columns:minmax(0,1fr) 360px;
-  height:100vh;
-  overflow:hidden;
+  grid-template-columns:1fr;
 }
 
 body.gameMode .nav{
@@ -1197,23 +1194,23 @@ body.gameMode .nav{
 
 body.gameMode .main{
   width:100%;
-  min-width:0;
   padding:10px;
-  overflow:hidden;
 }
 
 body.gameMode .side{
-  display:block;
-  position:relative;
+  position:fixed;
+  right:14px;
+  bottom:14px;
   top:auto;
-  width:auto;
-  height:100vh;
-  max-height:none;
-  background:rgba(2,6,23,.72);
-  border-left:1px solid rgba(148,163,184,.22);
-  padding:10px;
-  z-index:20;
-  overflow:hidden;
+  width:350px;
+  height:auto;
+  max-height:70vh;
+  background:transparent;
+  border:0;
+  padding:0;
+  z-index:999;
+  overflow:visible;
+  pointer-events:none;
 }
 
 body.gameMode .side .sideCard{
@@ -1221,27 +1218,15 @@ body.gameMode .side .sideCard{
 }
 
 body.gameMode .side #roomChatPanel{
-  display:grid!important;
-  grid-template-rows:auto 1fr auto;
-  height:calc(100vh - 20px);
+  display:block!important;
   pointer-events:auto;
   background:rgba(2,6,23,.94);
-  border:2px solid rgba(56,189,248,.42);
-  box-shadow:0 18px 45px rgba(0,0,0,.45), inset 0 0 22px rgba(56,189,248,.06);
-}
-
-body.gameMode .side #roomChatPanel.hidden{
-  display:none!important;
-}
-
-body.gameMode #roomChatPanel .chatBox{
-  min-height:0;
-  max-height:none;
-  overflow:auto;
+  border:2px solid #334155;
+  box-shadow:0 18px 45px rgba(0,0,0,.45);
 }
 
 body.gameMode iframe{
-  height:calc(100vh - 20px);
+  height:92vh;
   max-height:none;
   border-radius:22px;
 }
@@ -1259,9 +1244,8 @@ body.gameMode #play{
 }
 
 body.gameMode #playTop,
-body.gameMode #roomSetupCard,
-body.gameMode #launcherShell{
-  display:none!important;
+body.gameMode #roomSetupCard{
+  display:none;
 }
 
 body.gameMode #gameArea h2,
@@ -1271,54 +1255,12 @@ body.gameMode #gameHint{
 
 body.gameMode #roomChatPanel.chatCollapsed{
   width:auto;
+  padding:8px 10px;
 }
 
 body.gameMode #roomChatPanel.chatCollapsed .chatBox,
 body.gameMode #roomChatPanel.chatCollapsed .chatInput{
-  display:block;
-}
-
-body.gameMode #roomChatPanel .chatToggle{
   display:none;
-}
-
-@media(max-width:1150px){
-  body.gameMode .wrap{
-    grid-template-columns:1fr;
-  }
-
-  body.gameMode .side{
-    position:fixed;
-    right:12px;
-    bottom:12px;
-    top:auto;
-    width:min(360px,calc(100vw - 24px));
-    height:auto;
-    max-height:70vh;
-    background:transparent;
-    border:0;
-    padding:0;
-    z-index:999;
-    overflow:visible;
-  }
-
-  body.gameMode .side #roomChatPanel{
-    height:auto;
-    max-height:70vh;
-  }
-
-  body.gameMode #roomChatPanel .chatToggle{
-    display:inline-block;
-  }
-
-  body.gameMode #roomChatPanel.chatCollapsed{
-    padding:8px 10px;
-  }
-
-  body.gameMode #roomChatPanel.chatCollapsed .chatBox,
-  body.gameMode #roomChatPanel.chatCollapsed .chatInput{
-    display:none;
-  }
 }
 
 /* ===== RESPONSIVE ===== */
@@ -1575,6 +1517,96 @@ body.directGameMode #gameArea .danger,
 body.gameMode #gameArea .danger{
   border-radius:999px;
   padding:9px 13px;
+}
+
+
+
+/* ===== GAME MODE DESKTOP ROOM SIDE PANEL PATCH =====
+   Surgical patch: keeps game iframe visible while reserving a clean right rail
+   for room chat + online users. Does not change launcher/server/game logic. */
+@media (min-width:1051px){
+  body.gameMode #gameArea{
+    inset:8px 390px 8px 8px!important;
+    z-index:5000!important;
+  }
+
+  body.gameMode .side{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:12px!important;
+    position:fixed!important;
+    top:8px!important;
+    right:8px!important;
+    bottom:8px!important;
+    width:366px!important;
+    height:auto!important;
+    max-height:none!important;
+    padding:10px!important;
+    z-index:6500!important;
+    overflow:hidden!important;
+    pointer-events:auto!important;
+    border-radius:24px!important;
+    border:1px solid rgba(148,163,184,.28)!important;
+    background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98))!important;
+    box-shadow:0 30px 90px rgba(0,0,0,.45)!important;
+  }
+
+  body.gameMode .side .sideCard{
+    display:none!important;
+  }
+
+  body.gameMode .side #presencePanel,
+  body.gameMode .side #roomChatPanel{
+    display:flex!important;
+    flex-direction:column!important;
+    margin:0!important;
+    min-height:0!important;
+    pointer-events:auto!important;
+    background:rgba(2,6,23,.72)!important;
+    border:1px solid rgba(148,163,184,.25)!important;
+    border-radius:20px!important;
+    box-shadow:none!important;
+  }
+
+  body.gameMode .side #presencePanel{
+    flex:0 0 auto!important;
+    max-height:30vh!important;
+    overflow:auto!important;
+  }
+
+  body.gameMode .side #presencePanel .muted{
+    display:none!important;
+  }
+
+  body.gameMode .side #roomChatPanel{
+    flex:1 1 auto!important;
+  }
+
+  body.gameMode .chatBox{
+    flex:1 1 auto!important;
+    height:auto!important;
+    min-height:180px!important;
+    max-height:none!important;
+  }
+
+  body.gameMode .chatInput{
+    flex:0 0 auto!important;
+  }
+
+  body.gameMode #roomChatPanel.chatCollapsed{
+    flex:0 0 auto!important;
+    width:auto!important;
+  }
+}
+
+@media (max-width:1050px){
+  body.gameMode #gameArea{
+    inset:8px!important;
+  }
+
+  body.gameMode .side{
+    z-index:6500!important;
+  }
 }
 
 </style>
@@ -2578,19 +2610,16 @@ async function launchSoloGame(g){
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
-  let gameContext=await buildGameContext(players,mySeatIndex);
   let html=await (await fetch('/games/'+g.file+'?v='+Date.now())).text();
 
   let inject =
-    '<script>'+ 
+    '<script>'+
     'window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';'+
     'window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';'+
-    'window.GAME_CONTEXT='+JSON.stringify(gameContext).replace(/</g,'\\u003c')+';'+
     'window.addEventListener("message",function(event){'+
       'var msg=event.data||{};'+
       'if(msg.type==="gameMove"&&window.onMove){window.onMove(msg.data);}'+
       'if(msg.type==="gameSetup"&&window.onMove){window.onMove(msg);}'+
-      'if(msg.type==="GAME_CONTEXT"&&window.onMove){window.onMove(msg);}'+
       'if(msg.type==="gameSaveData"&&window.onSaveData){window.onSaveData(msg.data);}'+
     '});'+
     '<\/script>';
@@ -2604,17 +2633,9 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
   gameFrame.onload=function(){
     if(gameFrame.contentWindow){
       gameFrame.contentWindow.postMessage({
-        type:'GAME_CONTEXT',
-        data:gameContext
-      },'*');
-
-      gameFrame.contentWindow.postMessage({
         type:'gameSetup',
         players:players,
-        mySeat:mySeatIndex>=0?mySeatIndex:null,
-        activePets:gameContext.activePets,
-        roomId:gameContext.roomId,
-        username:gameContext.username
+        mySeat:mySeatIndex>=0?mySeatIndex:null
       },'*');
     }
   };
@@ -2751,7 +2772,6 @@ async function loadPet(){
     }
 
     petProfile=data.profile;
-    activePetCache[me]=publicActivePetFromProfile(petProfile);
     petShop=data.shop||{};
     petMoves=data.moves||{};
 
@@ -2787,69 +2807,6 @@ function petImagePath(pet){
   let file=stage==='adult'?'adult':(stage==='young'||stage==='teen')?'young':'baby';
 
   return '/assets/pets/'+species+'/'+file+'.png';
-}
-
-let activePetCache={};
-
-function publicActivePetFromProfile(profile){
-  if(!profile||!profile.pets||!profile.activePetId)return null;
-  let pet=profile.pets[profile.activePetId];
-  if(!pet)return null;
-
-  return {
-    id:profile.activePetId,
-    name:pet.name||'Mystery Egg',
-    species:pet.species||'',
-    type:pet.type||'',
-    stage:pet.stage||'egg',
-    level:Number((pet.stats&&pet.stats.level)||pet.level||1),
-    emoji:pet.emoji||'🥚',
-    image:petImagePath(pet)
-  };
-}
-
-async function getPublicActivePet(username){
-  if(!username)return null;
-
-  if(username===me&&petProfile){
-    let mine=publicActivePetFromProfile(petProfile);
-    if(mine)activePetCache[username]=mine;
-    return mine;
-  }
-
-  if(activePetCache[username]!==undefined)return activePetCache[username];
-
-  try{
-    let res=await fetch('/api/pet/profile?user='+encodeURIComponent(username));
-    let data=await res.json();
-    if(data&&data.ok){
-      activePetCache[username]=publicActivePetFromProfile(data.profile);
-    }else{
-      activePetCache[username]=null;
-    }
-  }catch(err){
-    activePetCache[username]=null;
-  }
-
-  return activePetCache[username];
-}
-
-async function buildGameContext(players,mySeatIndex){
-  let activePets={};
-
-  await Promise.all((players||[]).map(async function(p){
-    let pet=await getPublicActivePet(p.name);
-    if(pet)activePets[p.name]=pet;
-  }));
-
-  return {
-    username:me||'',
-    roomId:room?room.id:'',
-    players:players||[],
-    seats:room&&Array.isArray(room.seats)?room.seats:[],
-    mySeat:mySeatIndex>=0?mySeatIndex:null,
-    activePets:activePets
-  };
 }
 
 function petAvatarHtml(pet,emoji){
@@ -3151,12 +3108,6 @@ window.addEventListener('message',function(e){
     handleLauncherStartGame(msg);
   }
 
-  if(msg.type==='gameResult'){
-    // For now the individual game owns its local scoreboard.
-    // This hook lets the platform/server persist stats later without changing every game again.
-    console.log('Game result:',msg.data||{});
-  }
-
   if(msg.type==='petUpdated'||msg.type==='marketUpdated'){
     refreshPetUI();
   }
@@ -3263,59 +3214,6 @@ if(me){
 loadGames();
 drawRoom();
 updateQuickStats();
-</script>
-  <script>
-/*
-GameForge Chat + Player Visibility Patch
-SAFE: does not override layout, only unhides panels in game mode
-*/
-
-(function(){
-
-  function forceChatVisible(){
-    const body = document.body;
-
-    // Only apply when in game mode
-    if(!body.classList.contains('gameMode')) return;
-
-    // Try common containers
-    const sidePanels = document.querySelectorAll('.side, .sidePanel, .rightPanel');
-
-    sidePanels.forEach(panel=>{
-      panel.style.display = 'flex';
-      panel.style.visibility = 'visible';
-      panel.style.opacity = '1';
-    });
-
-    // Unhide chat specifically
-    const chat = document.querySelector('#roomChatPanel, .chatPanel');
-    if(chat){
-      chat.classList.remove('hidden');
-      chat.style.display = 'flex';
-    }
-
-    // Unhide player list
-    const players = document.querySelector('#roomPlayers, .playerList');
-    if(players){
-      players.style.display = 'block';
-      players.style.visibility = 'visible';
-    }
-  }
-
-  // Run when game loads
-  const observer = new MutationObserver(()=>{
-    forceChatVisible();
-  });
-
-  observer.observe(document.body, {
-    attributes:true,
-    attributeFilter:['class']
-  });
-
-  // Also try periodically (covers async loads)
-  setInterval(forceChatVisible, 1000);
-
-})();
 </script>
 </body>
 </html>
