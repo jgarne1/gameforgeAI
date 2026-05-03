@@ -134,6 +134,44 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 code{color:#bae6fd}
 @media(max-width:1150px){.wrap{grid-template-columns:220px minmax(0,1fr)}.grid5{grid-template-columns:repeat(2,1fr)}.playerPanel,.grid2{grid-template-columns:1fr}}
 @media(max-width:760px){.wrap{grid-template-columns:1fr}.nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}.main{padding:12px}.hero h2{font-size:26px}.grid3,.grid5{grid-template-columns:1fr}.itemTop{flex-direction:column}.actions{justify-content:flex-start}}
+
+.assetPreviewBox{
+  display:grid;
+  grid-template-columns:180px minmax(0,1fr);
+  gap:14px;
+  align-items:start;
+}
+.assetPreview{
+  width:180px;
+  height:180px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:rgba(2,6,23,.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.assetPreview img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+}
+.assetThumb{
+  width:72px;
+  height:72px;
+  border-radius:16px;
+  background:rgba(2,6,23,.65);
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.assetThumb img{width:100%;height:100%;object-fit:contain}
+.fileInput{background:#020617;color:var(--text);border:1px solid #475569}
+@media(max-width:760px){.assetPreviewBox{grid-template-columns:1fr}.assetPreview{width:100%;height:220px}}
+
 </style>
 </head>
 <body>
@@ -147,6 +185,7 @@ code{color:#bae6fd}
     <button id="navPlayers" onclick="showSection('players')"><span class="navIcon">👤</span>Players</button>
     <button id="navRooms" onclick="showSection('rooms')"><span class="navIcon">🎮</span>Rooms</button>
     <button id="navMarket" onclick="showSection('market')"><span class="navIcon">🏪</span>Marketplace</button>
+    <button id="navAssets" onclick="showSection('assets')"><span class="navIcon">🖼️</span>Asset Manager</button>
     <button onclick="location.href='/'"><span class="navIcon">🏠</span>Back to GameForge</button>
     <div class="navUser" id="navUserBox"></div>
   </div>
@@ -272,6 +311,62 @@ code{color:#bae6fd}
         <div id="marketList" class="list"></div>
       </div>
     </div>
+
+    <div id="assets" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Admin Asset Manager</h3>
+            <p class="muted">Upload images without touching code. The server previews first, then approval saves the image with the correct filename and commits it to GitHub.</p>
+          </div>
+          <button class="primary" onclick="loadPendingAssets()">Refresh Pending</button>
+        </div>
+
+        <div class="assetPreviewBox">
+          <div class="assetPreview" id="assetPreviewBox">
+            <span class="muted">Preview</span>
+          </div>
+
+          <div>
+            <div class="row" style="margin-bottom:10px">
+              <select id="assetType" onchange="updateAssetSlotOptions()">
+                <option value="items">Item</option>
+                <option value="pets">Pet</option>
+                <option value="eggs">Egg</option>
+                <option value="shops">Shop</option>
+                <option value="backgrounds">Background</option>
+              </select>
+
+              <select id="assetSlot"></select>
+
+              <input id="assetTargetId" placeholder="target id, ex: berry, emberwing, snack_shack">
+            </div>
+
+            <div class="row" style="margin-bottom:10px">
+              <input id="assetFile" class="fileInput" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewSelectedAsset()">
+              <button class="gold" onclick="uploadAssetPreview()">Upload Preview</button>
+            </div>
+
+            <p class="muted">
+              Naming is automatic. Example: uploading any file for item <code>berry</code> saves as <code>/assets/items/berry.png</code> after approval.
+            </p>
+
+            <div id="assetUploadResult" class="item hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Pending Asset Approvals</h3>
+            <p class="muted">Approve only after the preview looks right. Rejected assets are deleted from pending storage.</p>
+          </div>
+        </div>
+        <div id="pendingAssetsList" class="list"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -289,6 +384,8 @@ let isAdmin=localStorage.getItem('gf_admin')==='true';
 let dashboard=null;
 let rooms=[];
 let marketData={listings:[],items:{},shops:[]};
+let pendingAssets=[];
+let lastAssetUpload=null;
 let selectedPlayer=null;
 let itemCatalog=[];
 let ws=null;
@@ -303,6 +400,7 @@ function init(){
 
   $('app').classList.remove('hidden');
   $('navUserBox').innerHTML='<b>'+esc(adminUser)+'</b><br><span>Admin session active</span>';
+  updateAssetSlotOptions();
   refreshAll();
   connectAdminSocket();
 }
@@ -317,6 +415,7 @@ function showSection(id){
   let nav=$('nav'+id.charAt(0).toUpperCase()+id.slice(1)); if(nav)nav.classList.add('active');
   if(id==='rooms')loadRooms();
   if(id==='market')loadMarket();
+  if(id==='assets')loadPendingAssets();
 }
 
 async function api(url,opts){
@@ -621,6 +720,237 @@ async function removeListing(id){
     toast('Listing removed.');
   }catch(err){toast(err.message||'Remove listing failed.')}
 }
+
+
+const ASSET_SLOTS={
+  items:['image'],
+  pets:['idle','battle','portrait','egg','baby','young','adult'],
+  eggs:['idle','cracked','hatch'],
+  shops:['banner','keeper','background'],
+  backgrounds:['image']
+};
+
+function updateAssetSlotOptions(){
+  let type=$('assetType').value;
+  let slots=ASSET_SLOTS[type]||['image'];
+  $('assetSlot').innerHTML=slots.map(s=>'<option value="'+escAttr(s)+'">'+esc(s)+'</option>').join('');
+}
+
+function assetTargetSuggestion(){
+  let type=$('assetType').value;
+  if(type==='items'){
+    let first=(itemCatalog&&itemCatalog[0]&&itemCatalog[0].id)||'berry';
+    return first;
+  }
+  if(type==='shops'){
+    let shops=shopMap();
+    return Object.keys(shops)[0]||'snack_shack';
+  }
+  if(type==='pets')return 'emberwing';
+  if(type==='eggs')return 'egg';
+  return 'petworld_bg';
+}
+
+function previewSelectedAsset(){
+  let file=$('assetFile').files&&$('assetFile').files[0];
+  if(!file){
+    $('assetPreviewBox').innerHTML='<span class="muted">Preview</span>';
+    return;
+  }
+
+  if(file.size>5*1024*1024){
+    $('assetFile').value='';
+    $('assetPreviewBox').innerHTML='<span class="muted">Preview</span>';
+    return toast('Image must be under 5MB.');
+  }
+
+  let reader=new FileReader();
+  reader.onload=()=>{
+    $('assetPreviewBox').innerHTML='<img src="'+reader.result+'">';
+  };
+  reader.readAsDataURL(file);
+}
+
+function readAssetFileAsDataUrl(){
+  return new Promise((resolve,reject)=>{
+    let file=$('assetFile').files&&$('assetFile').files[0];
+    if(!file)return reject(new Error('Choose an image first.'));
+    if(file.size>5*1024*1024)return reject(new Error('Image must be under 5MB.'));
+
+    let reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(new Error('Could not read image.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadAssetPreview(){
+  try{
+    let type=$('assetType').value;
+    let slot=$('assetSlot').value;
+    let targetId=($('assetTargetId').value||'').trim();
+
+    if(!targetId){
+      $('assetTargetId').value=assetTargetSuggestion();
+      return toast('Enter a target id first. I filled an example.');
+    }
+
+    let dataUrl=await readAssetFileAsDataUrl();
+
+    let data=await api('/api/admin/assets/upload-preview',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username:adminUser,
+        type,
+        slot,
+        targetId,
+        dataUrl
+      })
+    });
+
+    lastAssetUpload=data;
+
+    $('assetUploadResult').classList.remove('hidden');
+    $('assetUploadResult').innerHTML=
+      '<div class="itemTop">'+
+        '<div>'+
+          '<div class="itemTitle">Preview uploaded</div>'+
+          '<div class="itemMeta">Type: '+esc(data.type)+' · Target: '+esc(data.targetId)+' · Slot: '+esc(data.slot)+'<br>Temp: '+esc(data.tempFile||'')+'</div>'+
+        '</div>'+
+        '<div class="actions">'+
+          '<button class="good" onclick="approveAssetFromUpload()">Approve</button>'+
+          '<button class="danger" onclick="rejectAsset(\\''+escAttr(data.type)+'\\',\\''+escAttr(data.tempFile)+'\\')">Reject</button>'+
+        '</div>'+
+      '</div>';
+
+    await loadPendingAssets(false);
+    toast('Preview uploaded.');
+  }catch(err){
+    toast(err.message||'Upload failed.');
+  }
+}
+
+async function approveAssetFromUpload(){
+  if(!lastAssetUpload)return toast('No uploaded preview to approve.');
+  await approveAsset(lastAssetUpload.type,lastAssetUpload.tempFile,lastAssetUpload.targetId,lastAssetUpload.slot);
+}
+
+async function loadPendingAssets(showToast){
+  try{
+    let data=await api('/api/admin/assets/pending?user='+encodeURIComponent(adminUser));
+    pendingAssets=data.pending||[];
+    drawPendingAssets();
+    if(showToast!==false)toast('Pending assets loaded.');
+  }catch(err){
+    $('pendingAssetsList').innerHTML='<div class="empty">'+esc(err.message||'Could not load pending assets.')+'</div>';
+  }
+}
+
+function inferPendingTarget(file){
+  file=String(file||'');
+  let base=file.replace(/\.[^.]+$/,'');
+  let parts=base.split('_');
+  if(parts.length>=3){
+    parts.pop(); // timestamp
+    parts.pop(); // slot
+    return parts.join('_');
+  }
+  return base;
+}
+
+function inferPendingSlot(file,type){
+  file=String(file||'');
+  let base=file.replace(/\.[^.]+$/,'');
+  let parts=base.split('_');
+  if(parts.length>=2){
+    let slot=parts[parts.length-2];
+    if((ASSET_SLOTS[type]||[]).includes(slot))return slot;
+  }
+  return (ASSET_SLOTS[type]||['image'])[0];
+}
+
+function drawPendingAssets(){
+  if(!pendingAssets.length){
+    $('pendingAssetsList').innerHTML='<div class="empty">No pending assets.</div>';
+    return;
+  }
+
+  $('pendingAssetsList').innerHTML=pendingAssets.map(a=>{
+    let target=inferPendingTarget(a.tempFile);
+    let slot=inferPendingSlot(a.tempFile,a.type);
+
+    return '<div class="item">'+
+      '<div class="itemTop">'+
+        '<div style="display:flex;gap:12px;align-items:center">'+
+          '<div class="assetThumb"><img src="'+escAttr(a.previewUrl)+'"></div>'+
+          '<div>'+
+            '<div class="itemTitle">'+esc(a.type)+' · '+esc(target)+' · '+esc(slot)+'</div>'+
+            '<div class="itemMeta">File: '+esc(a.tempFile)+'<br>Size: '+Math.round(Number(a.size||0)/1024)+' KB</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="actions">'+
+          '<button onclick="window.open(\\''+escAttr(a.previewUrl)+'\\',\\'_blank\\')">Open</button>'+
+          '<button class="good" onclick="approveAsset(\\''+escAttr(a.type)+'\\',\\''+escAttr(a.tempFile)+'\\',\\''+escAttr(target)+'\\',\\''+escAttr(slot)+'\\')">Approve</button>'+
+          '<button class="danger" onclick="rejectAsset(\\''+escAttr(a.type)+'\\',\\''+escAttr(a.tempFile)+'\\')">Reject</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+async function approveAsset(type,tempFile,targetId,slot){
+  if(!confirm('Approve this asset and commit it to GitHub?'))return;
+
+  try{
+    let data=await api('/api/admin/assets/approve',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username:adminUser,
+        type,
+        tempFile,
+        targetId,
+        slot
+      })
+    });
+
+    lastAssetUpload=null;
+    $('assetUploadResult').classList.add('hidden');
+    await loadPendingAssets(false);
+    await loadMarket(false);
+    toast(data.message||'Asset approved.');
+  }catch(err){
+    toast(err.message||'Approval failed.');
+  }
+}
+
+async function rejectAsset(type,tempFile){
+  if(!confirm('Reject and delete this pending asset?'))return;
+
+  try{
+    await api('/api/admin/assets/reject',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username:adminUser,
+        type,
+        tempFile
+      })
+    });
+
+    if(lastAssetUpload&&lastAssetUpload.tempFile===tempFile){
+      lastAssetUpload=null;
+      $('assetUploadResult').classList.add('hidden');
+    }
+
+    await loadPendingAssets(false);
+    toast('Asset rejected.');
+  }catch(err){
+    toast(err.message||'Reject failed.');
+  }
+}
+
 
 function listingCard(l){
   return cardHtml(
