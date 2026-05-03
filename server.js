@@ -2487,6 +2487,57 @@ app.post('/api/pet/new-egg',(req,res)=>{
     profile
   });
 });
+
+app.post('/api/pet/convert-to-egg',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let petIdToConvert=String(req.body.petId||'');
+  let profile=getPetProfile(username);
+  let targetPet=profile.pets&&profile.pets[petIdToConvert];
+
+  if(!targetPet){
+    return res.json({error:'Pet not found'});
+  }
+
+  if((targetPet.stage||'egg')==='egg'){
+    return res.json({error:'Eggs cannot be converted into eggs.'});
+  }
+
+  let nonEggIds=Object.keys(profile.pets||{}).filter(pid=>{
+    let pet=profile.pets[pid];
+    return pet&&(pet.stage||'egg')!=='egg';
+  });
+
+  if(nonEggIds.length<=1){
+    return res.json({error:'You cannot convert your last hatched pet.'});
+  }
+
+  let oldName=targetPet.name||'your pet';
+
+  delete profile.pets[petIdToConvert];
+
+  let newPet=createEggPet(username);
+  profile.pets[newPet.id]=newPet;
+
+  if(profile.activePetId===petIdToConvert){
+    let nextActiveId=Object.keys(profile.pets).find(pid=>{
+      let pet=profile.pets[pid];
+      return pet&&(pet.stage||'egg')!=='egg';
+    })||newPet.id;
+
+    profile.activePetId=nextActiveId;
+  }
+
+  savePetProfile(username,profile);
+
+  res.json({
+    ok:true,
+    message:oldName+' was rescued and you received a fresh Mystery Egg.',
+    egg:newPet,
+    profile
+  });
+});
 /* ===== MARKETPLACE API ===== */
 
 function marketListingsArray(){
