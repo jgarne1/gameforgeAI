@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GameForge Table Launcher</title>
+<style>
+:root{
+  --bg:#08111f;
+  --panel:rgba(15,23,42,.88);
+  --panel2:rgba(2,6,23,.72);
+  --line:rgba(148,163,184,.22);
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --gold:#fbbf24;
+  --green:#22c55e;
+  --blue:#38bdf8;
+  --red:#fb7185;
+  --violet:#a78bfa;
+  --shadow:0 18px 50px rgba(0,0,0,.38);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(circle at 25% 10%,rgba(56,189,248,.16),transparent 28%),radial-gradient(circle at 80% 5%,rgba(167,139,250,.16),transparent 30%),linear-gradient(180deg,#0f172a,#020617)}
+button,input{font-family:inherit}
+button{border:0;border-radius:13px;background:rgba(30,41,59,.95);color:var(--text);padding:10px 12px;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.18);transition:.15s transform,.15s background,.15s opacity}
+button:hover:not(:disabled){transform:translateY(-1px);background:rgba(51,65,85,.98)}
+button:disabled{cursor:not-allowed;opacity:.42;transform:none}
+.hidden{display:none!important}.muted{color:var(--muted)}.good{color:#86efac}.bad{color:#fecdd3}.gold{color:#fde68a}
+.launcher{height:100%;display:grid;grid-template-rows:58px 1fr 126px;gap:10px;padding:10px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.72));border-radius:22px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}.brandBadge{height:36px;width:36px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#fbbf24,#fb7185);color:#111827;font-weight:900}.brand h1{font-size:18px;margin:0;white-space:nowrap}.brand span{font-size:12px;color:var(--muted)}
+.roomTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}.roomCode{font-size:13px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.1);border-radius:999px;padding:9px 12px}.roomCode b{color:#fde68a;letter-spacing:1px}.toggle{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#cbd5e1;user-select:none}.toggle input{width:16px;height:16px;accent-color:#38bdf8}.smallBtn{padding:8px 10px;border-radius:999px;font-size:12px}.danger{background:rgba(127,29,29,.8)}.primary{background:linear-gradient(135deg,#2563eb,#7c3aed)}.start{background:linear-gradient(135deg,#16a34a,#22c55e);color:#052e16}.ghost{background:rgba(15,23,42,.72);border:1px solid var(--line)}
+.main{min-height:0;display:grid;grid-template-columns:236px 1fr 236px;gap:10px}.panel{min-height:0;border:1px solid var(--line);background:var(--panel);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.panelHead{padding:13px 14px;border-bottom:1px solid var(--line);background:rgba(2,6,23,.35)}.panelHead h2{font-size:15px;margin:0}.panelHead p{font-size:12px;margin:4px 0 0;color:var(--muted);line-height:1.25}
+.gameRail{display:grid;grid-template-rows:46px 1fr 46px;height:calc(100% - 62px);padding:10px;gap:8px}.arrowBtn{font-size:18px;background:rgba(15,23,42,.85);border:1px solid var(--line)}.gameList{overflow:hidden;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}.gameCard{position:relative;text-align:left;min-height:76px;padding:12px;border-radius:18px;border:1px solid rgba(148,163,184,.18);background:linear-gradient(135deg,rgba(30,41,59,.96),rgba(15,23,42,.88));box-shadow:none}.gameCard.selected{border-color:rgba(56,189,248,.75);box-shadow:0 0 0 2px rgba(56,189,248,.12) inset}.gameCard.locked{filter:grayscale(.9);opacity:.48}.gameCard.locked:hover{transform:none;background:linear-gradient(135deg,rgba(30,41,59,.96),rgba(15,23,42,.88))}.gameName{font-size:15px;font-weight:900}.gameMeta{font-size:12px;color:var(--muted);margin-top:5px}.lockLine{font-size:11px;color:#fcd34d;margin-top:6px}.gameIcon{position:absolute;right:12px;top:10px;font-size:25px;opacity:.72}
+.tablePanel{position:relative;display:grid;grid-template-rows:78px 1fr 82px;height:100%;background:radial-gradient(circle at center,rgba(56,189,248,.1),transparent 44%),var(--panel)}.tableTitle{padding:16px 18px;text-align:center;border-bottom:1px solid var(--line)}.tableTitle h2{font-size:22px;margin:0}.tableTitle p{font-size:12px;margin:7px 0 0;color:var(--muted)}.tableStage{position:relative;display:grid;place-items:center;min-height:0;padding:14px}.felt{width:min(620px,80%);height:min(340px,62%);min-height:220px;border-radius:46%;background:radial-gradient(circle at 50% 42%,rgba(34,197,94,.28),rgba(15,118,110,.25) 40%,rgba(15,23,42,.94) 75%);border:2px solid rgba(251,191,36,.38);box-shadow:inset 0 0 70px rgba(0,0,0,.45),0 24px 70px rgba(0,0,0,.35);display:grid;place-items:center;text-align:center;padding:26px}.felt b{font-size:19px}.felt span{display:block;color:var(--muted);font-size:13px;margin-top:8px;max-width:380px;line-height:1.4}.seat{position:absolute;width:150px;min-height:74px;border-radius:20px;border:1px solid var(--line);background:rgba(15,23,42,.94);box-shadow:0 14px 32px rgba(0,0,0,.28);padding:10px;text-align:center}.seat.filled{border-color:rgba(34,197,94,.45)}.seat.me{box-shadow:0 0 0 2px rgba(56,189,248,.25),0 14px 32px rgba(0,0,0,.28)}.seatName{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.seatLabel{font-size:11px;color:var(--muted);margin-bottom:4px}.seat button{font-size:11px;padding:6px 8px;margin-top:7px;border-radius:999px}.readyBadge{display:inline-block;margin-top:5px;padding:4px 7px;border-radius:999px;background:rgba(148,163,184,.14);font-size:11px;color:#cbd5e1}.readyBadge.ready{background:rgba(34,197,94,.18);color:#86efac}.seat0{top:20px;left:50%;transform:translateX(-50%)}.seat1{right:22px;top:50%;transform:translateY(-50%)}.seat2{bottom:20px;left:50%;transform:translateX(-50%)}.seat3{left:22px;top:50%;transform:translateY(-50%)}.seat5{right:22px;bottom:20px}.seat4{left:22px;bottom:20px}.tableActions{display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-top:1px solid var(--line);background:rgba(2,6,23,.35)}.statusText{font-size:12px;color:var(--muted);max-width:440px;line-height:1.3}
+.playersList{padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto;height:calc(100% - 62px)}.playerRow{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:11px;border-radius:16px;background:rgba(15,23,42,.78);border:1px solid rgba(148,163,184,.12)}.playerName{font-weight:900;overflow:hidden;text-overflow:ellipsis}.playerRole{font-size:11px;color:var(--muted)}
+.chatPanel{border:1px solid var(--line);background:var(--panel);border-radius:22px;box-shadow:var(--shadow);display:grid;grid-template-rows:1fr 40px;overflow:hidden}.log{padding:10px 12px;overflow:auto;font-size:13px;line-height:1.35}.logLine{margin-bottom:5px}.logLine b{color:#bfdbfe}.chatInput{display:grid;grid-template-columns:1fr 80px;gap:8px;border-top:1px solid var(--line);padding:8px;background:rgba(2,6,23,.38)}.chatInput input{border:1px solid var(--line);background:rgba(15,23,42,.95);color:var(--text);border-radius:13px;padding:9px 11px;outline:none}.chatInput button{padding:8px 10px}
+@media(max-width:900px){.main{grid-template-columns:190px 1fr}.players{display:none}.launcher{grid-template-rows:74px 1fr 126px}.header{align-items:flex-start}.roomTop{font-size:12px}.seat{width:128px}.main{gap:8px}.gameCard{min-height:70px}.tableTitle h2{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="launcher">
+  <header class="header">
+    <div class="brand">
+      <div class="brandBadge">GF</div>
+      <div><h1>GameForge Table</h1><span id="hostLabel">Creating private room...</span></div>
+    </div>
+    <div class="roomTop">
+      <div class="roomCode">Room Code: <b id="roomCodeText">----</b></div>
+      <button class="smallBtn ghost" id="copyBtn">Copy</button>
+      <label class="toggle" title="Private rooms stay hidden from the public join list."><input type="checkbox" id="publicToggle"> Public Room</label>
+      <button class="smallBtn danger" id="leaveBtn">Leave</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="panel games">
+      <div class="panelHead"><h2>Games</h2><p>Hostable games appear here. Locked games are greyed out until you own the matching game item.</p></div>
+      <div class="gameRail">
+        <button class="arrowBtn" id="scrollUp">⌃</button>
+        <div class="gameList" id="gameList"></div>
+        <button class="arrowBtn" id="scrollDown">⌄</button>
+      </div>
+    </section>
+
+    <section class="panel tablePanel">
+      <div class="tableTitle">
+        <h2 id="selectedTitle">Gaming Table</h2>
+        <p id="selectedSub">Choose a game on the left. The table is private until the host makes it public.</p>
+      </div>
+      <div class="tableStage" id="tableStage">
+        <div class="felt"><div><b>Awaiting game selection</b><span>Pick a hostable game from the left rail. Players can sit once seats appear.</span></div></div>
+      </div>
+      <div class="tableActions">
+        <button class="start" id="startBtn">Start Game</button>
+        <button class="ghost" id="standBtn">Stand</button>
+        <button class="ghost" id="readyBtn">Ready</button>
+        <div class="statusText" id="tableStatus">Ready buttons are near the table, but only host can start.</div>
+      </div>
+    </section>
+
+    <section class="panel players">
+      <div class="panelHead"><h2>Players</h2><p>Everyone currently in this room.</p></div>
+      <div class="playersList" id="playersList"></div>
+    </section>
+  </main>
+
+  <section class="chatPanel">
+    <div class="log" id="log"></div>
+    <div class="chatInput"><input id="chatText" placeholder="Room chat..."><button id="sendChat">Send</button></div>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+const EXCLUDED_GAME_IDS=new Set(['petworld','petbattle','market','inventory']);
+const MASTER_KEYS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
+const GAME_ICONS={tictactoe:'✕',connect4:'●',battleship:'⌖',battleship2:'⌖',hangman:'?',trouble:'★',uno:'◑',gofish:'🐟',yahtzee:'⚂',chess:'♞',othello:'◐',mancala:'●',squares:'□',miner:'⛏',shadowtrace:'◈',doomlike:'✦',pixelquest:'◆'};
+let me=localStorage.getItem('gf_user')||'';
+let admin=localStorage.getItem('gf_admin')==='true';
+let socket=null;
+let room=null;
+let games=[];
+let profile=null;
+let itemCatalog={};
+let selectedGameId='';
+let readyByUser={};
+let publicDesired=false;
+
+const el=id=>document.getElementById(id);
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function log(text,user){let d=document.createElement('div');d.className='logLine';d.innerHTML=user?'<b>'+esc(user)+':</b> '+esc(text):esc(text);el('log').appendChild(d);el('log').scrollTop=el('log').scrollHeight;}
+function send(obj){if(!socket||socket.readyState!==1){setTimeout(()=>send(obj),150);return;}socket.send(JSON.stringify(obj));}
+function isHost(){return room&&room.owner===me;}
+function seatedCount(){return room&&Array.isArray(room.seats)?room.seats.filter(Boolean).length:0;}
+function mySeatIndex(){return room&&Array.isArray(room.seats)?room.seats.findIndex(s=>s&&s.name===me):-1;}
+function getInventory(){return (profile&&profile.inventory)||{};}
+function itemUnlocksGame(itemId,gameId){let item=itemCatalog[itemId]||{};return item.unlocksGame===gameId||item.gameId===gameId||item.hostsGame===gameId;}
+function itemUnlocksAll(itemId){let item=itemCatalog[itemId]||{};return MASTER_KEYS.has(itemId)||item.unlocksAllGames===true||item.masterGameKey===true;}
+function canHostGame(gameId){
+  if(admin)return true;
+  const inv=getInventory();
+  return Object.keys(inv).some(id=>Number(inv[id]||0)>0&&(itemUnlocksAll(id)||itemUnlocksGame(id,gameId)));
+}
+function playerText(g){let min=Number(g.minPlayers||1),max=Number(g.maxPlayers||g.seats||1);return min===max?min+' player'+(min===1?'':'s'):min+'–'+max+' players';}
+function normalizedGames(){return games.filter(g=>g&&!EXCLUDED_GAME_IDS.has(g.id));}
+
+async function loadData(){
+  try{games=await (await fetch('/api/games')).json();}catch(e){games=[];log('Could not load games.json from /api/games.');}
+  if(me){
+    try{
+      let d=await (await fetch('/api/pet/profile?username='+encodeURIComponent(me))).json();
+      profile=d.profile||null;
+      itemCatalog=d.shop||{};
+    }catch(e){log('Could not load inventory. Games will appear locked until server data is available.');}
+  }
+  drawGames();drawPlayers();drawTable();
+}
+
+function connect(){
+  if(!me){log('Log in from the main GameForge page first.');return;}
+  socket=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);
+  socket.onopen=()=>{send({type:'hello',username:me});send({type:'createRoom',private:true});log('Private table room created for '+me+'.');};
+  socket.onmessage=e=>{
+    let m;try{m=JSON.parse(e.data);}catch(_){return;}
+    if(m.type==='roomJoined'||m.type==='roomUpdate'){
+      room=m.room;selectedGameId=room.selectedGame?room.selectedGame.id:selectedGameId;
+      publicDesired=!room.private;
+      el('publicToggle').checked=publicDesired;
+      drawAll();
+      if(room.started&&room.selectedGame){
+        window.parent&&window.parent.postMessage({type:'launcherStartGame',roomId:room.id,game:room.selectedGame},'*');
+      }
+    }
+    if(m.type==='chat')drawChat(m.chat||[]);
+    if(m.type==='gameMove'&&m.data&&m.data.type==='lobbyReady'){
+      readyByUser[m.data.username]=!!m.data.ready;drawTable();
+    }
+    if(m.type==='roomClosed'){room=null;log('Room closed.');drawAll();}
+    if(m.type==='error'){log(m.message||m.error||'Server error');}
+  };
+  socket.onclose=()=>{socket=null;log('Disconnected from table server.');};
+}
+
+function drawAll(){drawHeader();drawGames();drawPlayers();drawTable();}
+function drawHeader(){
+  el('roomCodeText').innerText=room?room.id:'----';
+  el('hostLabel').innerText=room?'Host: '+(room.owner||'')+(room.private?' · Private':' · Public'):'Creating private room...';
+}
+function drawGames(){
+  const list=el('gameList');list.innerHTML='';
+  normalizedGames().forEach(g=>{
+    let unlocked=canHostGame(g.id);
+    let selected=selectedGameId===g.id;
+    let b=document.createElement('button');
+    b.className='gameCard '+(selected?'selected ':'')+(unlocked?'':'locked');
+    b.innerHTML='<div class="gameIcon">'+esc(GAME_ICONS[g.id]||'🎮')+'</div><div class="gameName">'+esc(g.name||g.id)+'</div><div class="gameMeta">'+esc(playerText(g))+'</div>'+(unlocked?'<div class="lockLine good">Hostable</div>':'<div class="lockLine">Locked · game item required</div>');
+    b.onclick=()=>{
+      selectedGameId=g.id;
+      if(!unlocked){drawGames();drawTable('You do not own the host item for '+(g.name||g.id)+'.');return;}
+      if(!room){log('Room is not ready yet.');return;}
+      if(!isHost()){drawTable('Only the host can select the game.');return;}
+      send({type:'selectGame',gameId:g.id});
+      drawGames();
+    };
+    list.appendChild(b);
+  });
+  if(!list.innerHTML)list.innerHTML='<div class="muted" style="padding:12px">No table games found.</div>';
+}
+function drawPlayers(){
+  const box=el('playersList');box.innerHTML='';
+  const players=room&&room.players?room.players:me?[me]:[];
+  players.forEach(p=>{
+    let d=document.createElement('div');d.className='playerRow';
+    let role=room&&room.owner===p?'Host':(room&&room.seats&&room.seats.some(s=>s&&s.name===p)?'Seated':'In room');
+    d.innerHTML='<div><div class="playerName">'+esc(p)+'</div><div class="playerRole">'+esc(role)+'</div></div>'+(readyByUser[p]?'<span class="readyBadge ready">Ready</span>':'');
+    box.appendChild(d);
+  });
+}
+function seatClass(i,total){if(total<=1)return 'seat0';if(total===2)return i===0?'seat0':'seat2';if(total===3)return ['seat0','seat1','seat2'][i]||'seat3';if(total===4)return 'seat'+i;return 'seat'+i;}
+function drawTable(note){
+  let g=(room&&room.selectedGame)||games.find(x=>x.id===selectedGameId);
+  el('selectedTitle').innerText=g?g.name:'Gaming Table';
+  el('selectedSub').innerText=g?(playerText(g)+' · '+(canHostGame(g.id)?'You can host this game':'Locked for hosting')):'Choose a game on the left. The room starts private.';
+  let stage=el('tableStage');stage.innerHTML='<div class="felt"><div><b>'+(g?esc(g.name):'Awaiting game selection')+'</b><span>'+(g?'Choose a seat when the host selects this game. Guests can play without owning the game item.':'Pick a hostable game from the left rail. Players can sit once seats appear.')+'</span></div></div>';
+  if(room&&room.selectedGame&&Array.isArray(room.seats)){
+    room.seats.forEach((seat,i)=>{
+      let d=document.createElement('div');
+      let isMe=seat&&seat.name===me;
+      d.className='seat '+seatClass(i,room.seats.length)+' '+(seat?'filled':'empty')+' '+(isMe?'me':'');
+      let ready=seat&&readyByUser[seat.name];
+      d.innerHTML='<div class="seatLabel">Seat '+(i+1)+'</div><div class="seatName">'+(seat?esc(seat.name):'Open')+'</div>'+(seat?'<span class="readyBadge '+(ready?'ready':'')+'">'+(ready?'Ready':'Not Ready')+'</span>':'')+'<br><button '+(seat&&!isMe?'disabled':'')+'> '+(seat?(isMe?'Your Seat':'Taken'):'Sit Here')+'</button>';
+      let btn=d.querySelector('button');if(btn&&!seat)btn.onclick=()=>send({type:'sit',seat:i});
+      stage.appendChild(d);
+    });
+  }
+  let host=isHost();let hasGame=!!(room&&room.selectedGame);let seated=seatedCount();let min=room&&room.selectedGame?Number(room.selectedGame.minPlayers||1):0;
+  el('startBtn').disabled=!(host&&hasGame&&seated>=min);
+  el('readyBtn').disabled=!(room&&hasGame&&mySeatIndex()>=0);
+  el('standBtn').disabled=!(room&&mySeatIndex()>=0);
+  el('tableStatus').innerText=note||(hasGame?(host?'Host controls: start when enough players are seated.':'Sit, ready up, and wait for the host.')+' Seated '+seated+'/'+(room.seats?room.seats.length:0)+'. Minimum '+min+'.':'Select a game to prepare the table.');
+}
+function drawChat(chat){el('log').innerHTML='';(chat||[]).slice(-50).forEach(c=>log(c.text,c.user));}
+
+el('scrollUp').onclick=()=>el('gameList').scrollBy({top:-180,behavior:'smooth'});
+el('scrollDown').onclick=()=>el('gameList').scrollBy({top:180,behavior:'smooth'});
+el('copyBtn').onclick=async()=>{if(!room)return;try{await navigator.clipboard.writeText(room.id);log('Room code copied.');}catch(e){log('Room code: '+room.id);}};
+el('leaveBtn').onclick=()=>{if(room)send({type:'leaveRoom'});room=null;drawAll();};
+el('publicToggle').onchange=()=>{
+  publicDesired=el('publicToggle').checked;
+  // Server support will be added next. This message is intentionally harmless on the old server.
+  send({type:'setRoomPrivacy',private:!publicDesired});
+  if(room){room.private=!publicDesired;drawHeader();}
+  log(publicDesired?'Requested public room.':'Requested private room.');
+};
+el('startBtn').onclick=()=>send({type:'startGame'});
+el('standBtn').onclick=()=>send({type:'stand'});
+el('readyBtn').onclick=()=>{if(!room)return;let next=!readyByUser[me];readyByUser[me]=next;send({type:'gameMove',data:{type:'lobbyReady',username:me,ready:next,roomId:room.id}});drawTable();};
+el('sendChat').onclick=()=>{let t=el('chatText').value.trim();if(!t)return;send({type:'chat',text:t});el('chatText').value='';};
+el('chatText').addEventListener('keydown',e=>{if(e.key==='Enter')el('sendChat').click();});
+
+loadData().then(connect);
+})();
+</script>
+</body>
+</html>
