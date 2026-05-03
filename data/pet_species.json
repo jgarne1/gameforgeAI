@@ -8,8 +8,16 @@
     "hatchWeight": 100,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 24, "attack": 7, "defense": 4, "speed": 5 },
-    "moves": ["tackle", "ember_nip"],
+    "base": {
+      "hp": 24,
+      "attack": 7,
+      "defense": 4,
+      "speed": 5
+    },
+    "moves": [
+      "tackle",
+      "ember_nip"
+    ],
     "description": "A fiery cub with a warm heart and quick temper."
   },
   "frostfin": {
@@ -21,8 +29,16 @@
     "hatchWeight": 100,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 22, "attack": 5, "defense": 6, "speed": 6 },
-    "moves": ["tackle", "bubble_snap"],
+    "base": {
+      "hp": 22,
+      "attack": 5,
+      "defense": 6,
+      "speed": 6
+    },
+    "moves": [
+      "tackle",
+      "bubble_snap"
+    ],
     "description": "A cool aquatic pet that glides through mist and shallow pools."
   },
   "leafbun": {
@@ -34,8 +50,16 @@
     "hatchWeight": 100,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 26, "attack": 5, "defense": 6, "speed": 4 },
-    "moves": ["tackle", "vine_bop"],
+    "base": {
+      "hp": 26,
+      "attack": 5,
+      "defense": 6,
+      "speed": 4
+    },
+    "moves": [
+      "tackle",
+      "vine_bop"
+    ],
     "description": "A gentle forest companion with leafy ears and steady growth."
   },
   "shadepup": {
@@ -47,8 +71,16 @@
     "hatchWeight": 100,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 20, "attack": 7, "defense": 4, "speed": 7 },
-    "moves": ["tackle", "shadow_pounce"],
+    "base": {
+      "hp": 20,
+      "attack": 7,
+      "defense": 4,
+      "speed": 7
+    },
+    "moves": [
+      "tackle",
+      "shadow_pounce"
+    ],
     "description": "A swift shadow pup that likes moonlight and surprise attacks."
   },
   "pebblet": {
@@ -60,8 +92,16 @@
     "hatchWeight": 100,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 28, "attack": 5, "defense": 8, "speed": 3 },
-    "moves": ["tackle", "stone_bump"],
+    "base": {
+      "hp": 28,
+      "attack": 5,
+      "defense": 8,
+      "speed": 3
+    },
+    "moves": [
+      "tackle",
+      "stone_bump"
+    ],
     "description": "A sturdy little rock pet with high defense and loyal instincts."
   },
   "chompasaur": {
@@ -73,8 +113,16 @@
     "hatchWeight": 24,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 30, "attack": 8, "defense": 7, "speed": 3 },
-    "moves": ["tackle", "dino_chomp"],
+    "base": {
+      "hp": 30,
+      "attack": 8,
+      "defense": 7,
+      "speed": 3
+    },
+    "moves": [
+      "tackle",
+      "dino_chomp"
+    ],
     "description": "A prehistoric bite-sized powerhouse with massive jaws."
   },
   "emberwing": {
@@ -86,8 +134,17 @@
     "hatchWeight": 24,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 24, "attack": 7, "defense": 5, "speed": 7 },
-    "moves": ["tackle", "ember_nip", "wing_gust"],
+    "base": {
+      "hp": 24,
+      "attack": 7,
+      "defense": 5,
+      "speed": 7
+    },
+    "moves": [
+      "tackle",
+      "ember_nip",
+      "wing_gust"
+    ],
     "description": "A rare flying fire dragon with glowing wings and fierce loyalty."
   },
   "gptling": {
@@ -99,8 +156,37 @@
     "hatchWeight": 35,
     "enabled": true,
     "hatchable": true,
-    "base": { "hp": 25, "attack": 6, "defense": 6, "speed": 6 },
-    "moves": ["tackle", "quick_jab", "aura_boost"],
+    "base": {
+      "hp": 25,
+      "attack": 6,
+      "defense": 6,
+      "speed": 6
+    },
+    "moves": [
+      "tackle",
+      "quick_jab",
+      "aura_boost"
+    ],
     "description": "A curious little companion that learns quickly and analyzes every battle."
+  },
+  "myrarepet": {
+    "id": "myrarepet",
+    "name": "RareSkill",
+    "type": "rareskills",
+    "emoji": "🐾",
+    "rarity": "common",
+    "hatchWeight": 100,
+    "enabled": true,
+    "hatchable": true,
+    "base": {
+      "hp": 24,
+      "attack": 5,
+      "defense": 5,
+      "speed": 5
+    },
+    "moves": [
+      "tackle"
+    ],
+    "description": "A newly discovered companion. Likes Icecream"
   }
 }
