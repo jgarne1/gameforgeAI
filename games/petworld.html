@@ -1031,8 +1031,8 @@ var username='guest';
 var profile=null;
 var shop={};
 var moves={};
-var speciesCatalog={};
 var zones={};
+var speciesCatalog={};
 var limits={maxRoster:6,newEggBaseCost:75};
 var currentTab='quests';
 var selectedZoneId='meadow';
@@ -1072,8 +1072,8 @@ async function loadProfile(){
     profile=data.profile;
     shop=data.shop||{};
     moves=data.moves||{};
-    speciesCatalog=data.species||{};
     zones=data.zones||{};
+    speciesCatalog=data.species||{};
     limits=data.limits||limits;
     if(!zones[selectedZoneId])selectedZoneId=Object.keys(zones)[0]||'meadow';
     addLog('Loaded pet profile.');
@@ -1460,8 +1460,13 @@ function drawShop(){
   var html='<h3>Shop</h3><p class="muted">Buy food, care tools, and comfort items.</p>';
   Object.keys(shop).forEach(function(id){
     var item=shop[id];
-    html+='<div class="item"><div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><div class="badge">🪙 '+Number(item.price||0)+'</div></div>';
-    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div><button class="gold" onclick="buyItem(\''+id+'\')">Buy</button></div>';
+    html+='<div class="item"><div class="itemRow">';
+    html+='<div class="itemThumb"><img src="'+escapeAttr(itemAssetPath(id))+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'"><span style="display:none">🎁</span></div>';
+    html+='<div>';
+    html+='<div class="itemTop"><div class="itemName">'+escapeHtml(item.name)+'</div><div class="badge">🪙 '+Number(item.price||0)+'</div></div>';
+    html+='<div class="itemDesc">'+escapeHtml(item.description||'')+'</div>';
+    html+='<div class="itemActionRow"><button class="gold" onclick="buyItem(\''+id+'\')">Buy</button></div>';
+    html+='</div></div></div>';
   });
   el('shopPanel').innerHTML=html;
 }
@@ -1878,7 +1883,10 @@ function petAssetPath(pet){
   return '/assets/pets/'+species+'/'+file+'.png';
 }
 
-function itemAssetPath(itemId){return '/assets/items/'+itemId+'.png'}
+function itemAssetPath(itemId){
+  var item=(shop&&shop[itemId])?shop[itemId]:{};
+  return item.image||('/assets/items/'+itemId+'.png');
+}
 
 function normalizePet(pet){
   if(!pet.needs)pet.needs={hunger:80,happiness:70,energy:80,cleanliness:90};
@@ -1924,27 +1932,19 @@ function setAura(pet){
   }
 }
 
-function hatchableSpeciesList(){
-  var list=[];
+function speciesNamesByType(){
+  var byType={};
   Object.keys(speciesCatalog||{}).forEach(function(id){
     var p=speciesCatalog[id]||{};
     if(p.enabled===false||p.hatchable===false)return;
-    list.push({
-      id:p.id||id,
-      name:p.name||p.id||id,
-      type:String(p.type||'normal').toLowerCase(),
-      hatchWeight:Math.max(1,Number(p.hatchWeight!==undefined?p.hatchWeight:(p.weight!==undefined?p.weight:100))),
-      rarity:p.rarity||'common'
-    });
+    var type=String(p.type||'normal').toLowerCase();
+    if(!byType[type])byType[type]=[];
+    byType[type].push(p.name||p.id||id);
   });
-  return list;
-}
-
-function speciesNamesForType(type,limit){
-  var list=hatchableSpeciesList().filter(function(p){return p.type===type});
-  list.sort(function(a,b){return b.hatchWeight-a.hatchWeight||String(a.name).localeCompare(String(b.name))});
-  if(limit)list=list.slice(0,limit);
-  return list.map(function(p){return p.name});
+  Object.keys(byType).forEach(function(type){
+    byType[type].sort(function(a,b){return String(a).localeCompare(String(b));});
+  });
+  return byType;
 }
 
 function eggInfluenceSummary(pet){
@@ -1965,7 +1965,7 @@ function eggInfluenceSummary(pet){
     shadow:'A quiet pulse hides under the shell. Shadow-leaning companions are more likely.',
     earth:'The shell feels sturdy and ancient. Earth-leaning companions are more likely.'
   };
-
+  var speciesByType=speciesNamesByType();
   var scores={fire:1,water:1,nature:1,shadow:1,earth:1};
   Object.keys(influence).forEach(function(trait){
     var amount=Number(traits[trait]||0);
@@ -1973,27 +1973,21 @@ function eggInfluenceSummary(pet){
       scores[type]+=amount*Number(influence[trait][type]||0);
     });
   });
-
   var ranked=Object.keys(scores).map(function(type){return {type:type,score:scores[type]}}).sort(function(a,b){return b.score-a.score});
   var total=traitTotal(traits);
   var balanced=total>=8&&ranked.length>1&&(ranked[0].score-ranked[1].score)<=4;
   var top=ranked[0]||{type:'fire',score:1};
   var second=ranked[1]||{type:'water',score:1};
-  var label=balanced?'Balanced aura':(labels[top.type]||top.type)+'-leaning';
+  var label=balanced?'Balanced aura':labels[top.type]+'-leaning';
   var hint=balanced
     ? 'Several energies are close together. The hatch pool becomes less predictable and may pull from multiple types.'
-    : (hints[top.type]||'This egg is leaning toward a custom companion type.');
-
-  var species=[];
-  if(balanced){
-    species=['Mixed hatch pool',(labels[top.type]||top.type)+' energy',(labels[second.type]||second.type)+' energy'];
-  }else{
-    species=speciesNamesForType(top.type,6);
-    if(!species.length)species=['No hatchable '+(labels[top.type]||top.type)+' pets found'];
-  }
-
+    : hints[top.type];
+  var species=balanced
+    ? ['Mixed hatch pool',labels[top.type]+' energy',labels[second.type]+' energy']
+    : (speciesByType[top.type]||['Unknown species']);
   return {strongest:top.type,label:label,hint:hint,species:species,total:total,ranked:ranked,balanced:balanced};
 }
+
 function eggInfluenceCard(pet){
   var info=eggInfluenceSummary(pet);
   var html='<div class="eggInfluence"><b>Egg Influence: '+escapeHtml(info.label)+'</b>';
