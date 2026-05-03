@@ -498,5 +498,243 @@ setTimeout(function(){
   }
 },150);
 </script>
+
+
+<!-- ===== GameForge Standard Compatibility HUD v1 =====
+     Safe overlay: does not own chat and does not change gameplay logic.
+     Reads GAME_CONTEXT/gameSetup payloads from parent and displays room, players, seats, and active pets when provided.
+-->
+<style id="gfStandardHudStyle">
+  :root{
+    --gf-hud-bg:rgba(2,6,23,.72);
+    --gf-hud-panel:rgba(15,23,42,.82);
+    --gf-hud-line:rgba(56,189,248,.30);
+    --gf-hud-text:#e5e7eb;
+    --gf-hud-muted:#94a3b8;
+    --gf-hud-accent:#38bdf8;
+    --gf-hud-gold:#facc15;
+  }
+  #gfStandardHud{
+    position:fixed;
+    left:10px;
+    right:10px;
+    top:8px;
+    z-index:99990;
+    pointer-events:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:8px 10px;
+    border:1px solid var(--gf-hud-line);
+    border-radius:18px;
+    color:var(--gf-hud-text);
+    background:linear-gradient(135deg,rgba(15,23,42,.78),rgba(2,6,23,.70));
+    box-shadow:0 14px 38px rgba(0,0,0,.24);
+    backdrop-filter:blur(8px);
+    font-family:Arial,Helvetica,sans-serif;
+  }
+  #gfStandardHud .gfHudTitle{
+    display:flex;
+    flex-direction:column;
+    min-width:120px;
+    max-width:210px;
+  }
+  #gfStandardHud .gfHudTitle b{
+    font-size:14px;
+    letter-spacing:.2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  #gfStandardHud .gfHudTitle span{
+    color:var(--gf-hud-muted);
+    font-size:11px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  #gfStandardHud .gfHudPlayers{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
+    min-width:0;
+    overflow:hidden;
+  }
+  #gfStandardHud .gfHudPlayer{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    min-width:0;
+    max-width:210px;
+    padding:6px 8px;
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,.22);
+    background:rgba(2,6,23,.55);
+  }
+  #gfStandardHud .gfHudPlayer.me{
+    border-color:rgba(56,189,248,.65);
+    box-shadow:0 0 16px rgba(56,189,248,.14);
+  }
+  #gfStandardHud .gfHudPet{
+    width:28px;
+    height:28px;
+    border-radius:10px;
+    object-fit:contain;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    flex:0 0 auto;
+  }
+  #gfStandardHud .gfHudAvatar{
+    width:28px;
+    height:28px;
+    border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(124,58,237,.20));
+    border:1px solid rgba(255,255,255,.08);
+    flex:0 0 auto;
+  }
+  #gfStandardHud .gfHudInfo{
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    line-height:1.1;
+  }
+  #gfStandardHud .gfHudName{
+    font-size:12px;
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  #gfStandardHud .gfHudSub{
+    color:var(--gf-hud-muted);
+    font-size:10px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  @media(max-width:700px){
+    #gfStandardHud{left:6px;right:6px;top:6px;padding:7px;border-radius:15px;gap:6px}
+    #gfStandardHud .gfHudTitle{min-width:88px;max-width:120px}
+    #gfStandardHud .gfHudPlayer{max-width:120px;padding:5px 6px;gap:5px}
+    #gfStandardHud .gfHudPet,#gfStandardHud .gfHudAvatar{width:24px;height:24px;border-radius:8px}
+    #gfStandardHud .gfHudName{font-size:11px}
+    #gfStandardHud .gfHudSub{font-size:9px}
+  }
+</style>
+<script id="gfStandardHudScript">
+(function(){
+  var GAME_TITLE = 'Battleship';
+  window.GAME_CONTEXT = window.GAME_CONTEXT || {username:'',roomId:'',players:[],seats:[],mySeat:-1,activePets:{}};
+
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});
+  }
+
+  function normPlayers(input){
+    var list = input || window.GAME_PLAYERS || [];
+    return (Array.isArray(list)?list:[]).map(function(p,i){
+      if(typeof p==='string')return {name:p,seat:i};
+      return {name:p&&p.name?p.name:('Seat '+(i+1)), seat:(p&&p.seat!=null?p.seat:i)};
+    });
+  }
+
+  function absorbContext(raw){
+    var data = raw || {};
+    if(data.data) data = data.data;
+    var ctx = window.GAME_CONTEXT || {};
+    ctx.username = data.username || data.me || ctx.username || '';
+    ctx.roomId = data.roomId || data.room || data.roomCode || ctx.roomId || '';
+    ctx.players = normPlayers(data.players || ctx.players);
+    ctx.seats = data.seats || ctx.seats || [];
+    ctx.mySeat = data.mySeat!=null ? Number(data.mySeat) : (window.GAME_MY_SEAT!=null ? Number(window.GAME_MY_SEAT) : (ctx.mySeat!=null?ctx.mySeat:-1));
+    ctx.activePets = data.activePets || ctx.activePets || {};
+    window.GAME_CONTEXT = ctx;
+    render();
+  }
+
+  function normalizePetMap(raw){
+    var map={};
+    if(!raw)return map;
+    if(Array.isArray(raw)){
+      raw.forEach(function(item){
+        if(!item)return;
+        var name=item.username||item.user||item.owner||item.player||item.name;
+        if(name){ map[name]=item; map[String(name).toLowerCase()]=item; }
+        if(item.seat!=null)map['seat:'+item.seat]=item;
+      });
+      return map;
+    }
+    Object.keys(raw).forEach(function(k){
+      map[k]=raw[k];
+      map[String(k).toLowerCase()]=raw[k];
+    });
+    return map;
+  }
+
+  function playerPet(player){
+    var ctx=window.GAME_CONTEXT||{};
+    var name=typeof player==='string'?player:(player&&player.name)||'';
+    var seat=typeof player==='object'&&player?player.seat:null;
+    var pets=normalizePetMap(ctx.activePets || ctx.pets || ctx.playerPets || {});
+    return pets[name] || pets[String(name||'').toLowerCase()] || (seat!=null?pets['seat:'+seat]:null) || ctx.activePet || ctx.pet || null;
+  }
+
+  function petImage(pet){
+    if(!pet)return '';
+    if(typeof pet==='string')return pet;
+    return pet.image || pet.img || pet.sprite || pet.photo || pet.icon || pet.src || pet.imageUrl || pet.url || '';
+  }
+
+  function render(){
+    var hud=document.getElementById('gfStandardHud');
+    if(!hud){
+      hud=document.createElement('div');
+      hud.id='gfStandardHud';
+      document.body.appendChild(hud);
+    }
+    var ctx=window.GAME_CONTEXT||{};
+    var players=normPlayers(ctx.players);
+    if(!players.length && window.GAME_PLAYERS) players=normPlayers(window.GAME_PLAYERS);
+    var room=ctx.roomId || '';
+    var mySeat=ctx.mySeat;
+    var playerHtml=players.slice(0,4).map(function(p){
+      var pet=playerPet(p);
+      var img=petImage(pet);
+      var petName=pet && pet.name ? pet.name : '';
+      var seatText='Seat '+(Number(p.seat)+1);
+      var isMe=(Number(p.seat)===Number(mySeat)) || (ctx.username && p.name===ctx.username);
+      return '<div class="gfHudPlayer '+(isMe?'me':'')+'">'+
+        (img?'<img class="gfHudPet" src="'+esc(img)+'" alt="">':'<span class="gfHudAvatar">🎮</span>')+
+        '<span class="gfHudInfo"><span class="gfHudName">'+esc(p.name||'Player')+'</span><span class="gfHudSub">'+esc(seatText+(petName?' · '+petName:''))+'</span></span>'+ 
+      '</div>';
+    }).join('');
+    if(!playerHtml){
+      playerHtml='<div class="gfHudPlayer"><span class="gfHudAvatar">🎮</span><span class="gfHudInfo"><span class="gfHudName">Solo / Local</span><span class="gfHudSub">Waiting for room context</span></span></div>';
+    }
+    hud.innerHTML='<div class="gfHudTitle"><b>'+esc(GAME_TITLE)+'</b><span>'+(room?'Room '+esc(room):'GameForge table')+'</span></div><div class="gfHudPlayers">'+playerHtml+'</div>';
+  }
+
+  window.addEventListener('message',function(e){
+    var msg=e.data||{};
+    if(msg.type==='GAME_CONTEXT' || msg.type==='gameSetup' || msg.type==='gameContext'){
+      absorbContext(msg);
+    }
+  });
+
+  window.addEventListener('load',function(){
+    absorbContext({});
+    try{ parent.postMessage({type:'gameReady'},'*'); }catch(e){}
+  });
+
+  setTimeout(function(){absorbContext({});},250);
+  setTimeout(function(){absorbContext({});},900);
+})();
+</script>
+
 </body>
 </html>
