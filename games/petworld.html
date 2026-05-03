@@ -1387,7 +1387,7 @@ function drawRoster(){
 
   var html='<h3>Pet Roster</h3><p class="muted">Choose your active companion.</p>';
   html+='<div class="item"><div class="itemTop"><b>Adopt Mystery Egg</b><span class="badge">'+cost+' coins</span></div><div class="itemDesc">Roster: '+ids.length+'/'+max+'</div><button class="gold" onclick="adoptEgg()" '+(ids.length>=max?'disabled':'')+'>Adopt Egg</button></div>';
-  html+='<div class="item"><div class="itemTop"><b>Pet Rescue</b><span class="badge">Pet → Egg</span></div><div class="itemDesc">Convert a hatched pet into a fresh random Mystery Egg. Your last hatched pet cannot be converted.</div></div>';
+  html+='<div class="item"><div class="itemTop"><b>Pet Rescue & Testing</b><span class="badge">Pet → Egg / Sell</span></div><div class="itemDesc">Convert hatched pets into fresh eggs, or sell/release pets to make room while testing hatches. Your last pet cannot be sold.</div></div>';
 
   ids.forEach(function(pid){
     var pet=profile.pets[pid];
@@ -1406,8 +1406,9 @@ function drawRoster(){
     if((pet.stage||'egg')==='egg'){
       html+='<button class="ghost" disabled>Egg</button>';
     }else{
-      html+='<button class="ghost" onclick="convertPetToEgg(\''+escapeAttr(pid)+'\')">Rescue → Egg</button>';
+      html+='<button class="ghost" onclick="convertPetToEgg(\''+escapeAttr(pid)+'\')" '+(nonEggIds.length<=1?'disabled':'')+'>Rescue → Egg</button>';
     }
+    html+='<button class="ghost" onclick="sellPet(\''+escapeAttr(pid)+'\')" '+(ids.length<=1?'disabled':'')+'>Sell / Release</button>';
     html+='<button class="ghost" disabled>Gift Soon</button><button class="ghost" disabled>Trade Soon</button>';
     html+='</div></div></div></div>';
   });
@@ -1721,62 +1722,54 @@ async function adoptEgg(){
 
 async function convertPetToEgg(petId){
   var pet=profile&&profile.pets?profile.pets[petId]:null;
-  if(!pet){
-    notify('Pet not found. Refresh PetWorld and try again.');
-    return;
-  }
+  if(!pet)return notify('Pet not found.');
 
   var name=pet.name||'this pet';
-  var ok=window.confirm('Rescue '+name+' and receive a fresh Mystery Egg? This cannot be undone.');
+  var ok=confirm('Rescue '+name+' and receive a fresh Mystery Egg? This cannot be undone.');
   if(!ok)return;
 
-  notify('Sending rescue request...');
-
   try{
-    var res=await fetch('/api/pet/convert-to-egg',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      credentials:'same-origin',
-      body:JSON.stringify({username:username,petId:petId})
-    });
-
-    var raw=await res.text();
-    var data={};
-
-    try{
-      data=raw?JSON.parse(raw):{};
-    }catch(parseErr){
-      console.error('Pet rescue returned non-JSON:',raw);
-      notify('Rescue failed: server returned an invalid response.');
-      alert('Rescue failed. Server response was not JSON. Check Render deploy or server.js endpoint.');
-      return;
-    }
-
-    if(!res.ok||data.error){
-      var msg=data.error||('Rescue failed with HTTP '+res.status);
-      console.warn('Pet rescue failed:',data);
-      notify(msg);
-      alert(msg);
-      return;
-    }
-
-    if(!data.profile){
-      console.warn('Pet rescue response missing profile:',data);
-      notify('Rescue failed: missing updated profile.');
-      alert('Rescue failed: server did not return the updated profile.');
-      return;
-    }
-
+    var res=await fetch('/api/pet/convert-to-egg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,petId:petId})});
+    var data=await res.json();
+    if(data.error)return notify(data.error);
     profile=data.profile;
     addLog(data.message||'Pet rescued. You received a fresh Mystery Egg.');
     notify(data.message||'Pet rescued!');
     setTab('roster');
     floatFx('🥚');
     draw();
+  }catch(err){notify('Rescue failed: '+err.message)}
+}
+
+async function sellPet(petId){
+  var pet=profile&&profile.pets?profile.pets[petId]:null;
+  if(!pet)return notify('Pet not found.');
+
+  var ids=Object.keys(profile.pets||{});
+  if(ids.length<=1)return notify('You cannot sell your last pet.');
+
+  var name=pet.name||'this pet';
+  var ok=confirm('Sell / release '+name+' for coins? This cannot be undone.');
+  if(!ok)return;
+
+  try{
+    var res=await fetch('/api/pet/sell',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,petId:petId})});
+    var text=await res.text();
+    var data;
+    try{data=JSON.parse(text)}catch(parseErr){
+      console.error('Sell pet bad response:',text);
+      return notify('Sell failed: server returned a bad response.');
+    }
+    if(!res.ok||data.error)return notify((data&&data.error)||('Sell failed with status '+res.status));
+    profile=data.profile;
+    addLog(data.message||'Pet released.');
+    notify(data.message||'Pet sold!');
+    setTab('roster');
+    floatFx('🪙');
+    draw();
   }catch(err){
-    console.error('Pet rescue request failed:',err);
-    notify('Rescue failed: '+err.message);
-    alert('Rescue failed: '+err.message);
+    console.error(err);
+    notify('Sell failed: '+err.message);
   }
 }
 
