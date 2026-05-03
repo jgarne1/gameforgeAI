@@ -188,5 +188,25 @@
       "tackle"
     ],
     "description": "A newly discovered companion. Likes Icecream"
+  },
+  "amanda": {
+    "id": "amanda",
+    "name": "New Pet",
+    "type": "fire",
+    "emoji": "🐾",
+    "rarity": "common",
+    "hatchWeight": 1000,
+    "enabled": true,
+    "hatchable": true,
+    "base": {
+      "hp": 24,
+      "attack": 5,
+      "defense": 5,
+      "speed": 5
+    },
+    "moves": [
+      "tackle"
+    ],
+    "description": "A newly discovered companion. Amanda"
   }
 }
