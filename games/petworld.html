@@ -1380,8 +1380,14 @@ function drawRoster(){
   var ids=Object.keys(profile.pets||{});
   var max=Number(limits.maxRoster||6);
   var cost=Number(limits.newEggBaseCost||75)+Math.max(0,ids.length-1)*25;
+  var nonEggIds=ids.filter(function(pid){
+    var pet=profile.pets[pid];
+    return pet&&(pet.stage||'egg')!=='egg';
+  });
+
   var html='<h3>Pet Roster</h3><p class="muted">Choose your active companion.</p>';
   html+='<div class="item"><div class="itemTop"><b>Adopt Mystery Egg</b><span class="badge">'+cost+' coins</span></div><div class="itemDesc">Roster: '+ids.length+'/'+max+'</div><button class="gold" onclick="adoptEgg()" '+(ids.length>=max?'disabled':'')+'>Adopt Egg</button></div>';
+  html+='<div class="item"><div class="itemTop"><b>Pet Rescue</b><span class="badge">Pet → Egg</span></div><div class="itemDesc">Convert a hatched pet into a fresh random Mystery Egg. Your last hatched pet cannot be converted.</div></div>';
 
   ids.forEach(function(pid){
     var pet=profile.pets[pid];
@@ -1397,6 +1403,11 @@ function drawRoster(){
     html+='<div><div class="rosterTop"><div class="rosterName">'+escapeHtml(pet.name||'Mystery Egg')+'</div>'+(active?'<span class="badge">Active</span>':'')+'</div>';
     html+='<div class="rosterDesc">'+escapeHtml(sub)+'</div><div class="rosterActions">';
     html+='<button class="primary" onclick="setActivePet(\''+escapeAttr(pid)+'\')" '+(active?'disabled':'')+'>Set Active</button>';
+    if((pet.stage||'egg')==='egg'){
+      html+='<button class="ghost" disabled>Egg</button>';
+    }else{
+      html+='<button class="ghost" onclick="convertPetToEgg(\''+escapeAttr(pid)+'\')" '+(nonEggIds.length<=1?'disabled':'')+'>Rescue → Egg</button>';
+    }
     html+='<button class="ghost" disabled>Gift Soon</button><button class="ghost" disabled>Trade Soon</button>';
     html+='</div></div></div></div>';
   });
@@ -1706,6 +1717,27 @@ async function adoptEgg(){
     floatFx('🥚');
     draw();
   }catch(err){notify('Adopt failed: '+err.message)}
+}
+
+async function convertPetToEgg(petId){
+  var pet=profile&&profile.pets?profile.pets[petId]:null;
+  if(!pet)return notify('Pet not found.');
+
+  var name=pet.name||'this pet';
+  var ok=confirm('Rescue '+name+' and receive a fresh Mystery Egg? This cannot be undone.');
+  if(!ok)return;
+
+  try{
+    var res=await fetch('/api/pet/convert-to-egg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,petId:petId})});
+    var data=await res.json();
+    if(data.error)return notify(data.error);
+    profile=data.profile;
+    addLog(data.message||'Pet rescued. You received a fresh Mystery Egg.');
+    notify(data.message||'Pet rescued!');
+    setTab('roster');
+    floatFx('🥚');
+    draw();
+  }catch(err){notify('Rescue failed: '+err.message)}
 }
 
 async function renamePet(){
