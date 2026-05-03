@@ -36,6 +36,127 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
 .playersList{padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto;height:calc(100% - 62px)}.playerRow{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:11px;border-radius:16px;background:rgba(15,23,42,.78);border:1px solid rgba(148,163,184,.12)}.playerName{font-weight:900;overflow:hidden;text-overflow:ellipsis}.playerRole{font-size:11px;color:var(--muted)}
 .chatPanel{border:1px solid var(--line);background:var(--panel);border-radius:22px;box-shadow:var(--shadow);display:grid;grid-template-rows:1fr 40px;overflow:hidden}.log{padding:10px 12px;overflow:auto;font-size:13px;line-height:1.35}.logLine{margin-bottom:5px}.logLine b{color:#bfdbfe}.chatInput{display:grid;grid-template-columns:1fr 80px;gap:8px;border-top:1px solid var(--line);padding:8px;background:rgba(2,6,23,.38)}.chatInput input{border:1px solid var(--line);background:rgba(15,23,42,.95);color:var(--text);border-radius:13px;padding:9px 11px;outline:none}.chatInput button{padding:8px 10px}
 @media(max-width:900px){.main{grid-template-columns:190px 1fr}.players{display:none}.launcher{grid-template-rows:74px 1fr 126px}.header{align-items:flex-start}.roomTop{font-size:12px}.seat{width:128px}.main{gap:8px}.gameCard{min-height:70px}.tableTitle h2{font-size:18px}}
+
+
+/* ===== MOBILE FIT PATCH =====
+   Keeps the left game rail arrows inside the visible iframe on phones. */
+.games{
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
+}
+.gameRail{
+  height:auto;
+  min-height:0;
+  grid-template-rows:42px minmax(0,1fr) 42px;
+}
+.gameList{
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding-bottom:4px;
+}
+@media(max-width:640px){
+  html,body{overflow:hidden;}
+  .launcher{
+    grid-template-rows:auto minmax(0,1fr) 104px;
+    gap:7px;
+    padding:7px;
+  }
+  .header{
+    border-radius:18px;
+    padding:8px;
+    gap:6px;
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .brandBadge{height:30px;width:30px;border-radius:11px;font-size:12px;}
+  .brand h1{font-size:15px;}
+  .brand span{font-size:11px;}
+  .roomTop{
+    justify-content:space-between;
+    gap:5px;
+  }
+  .roomCode{font-size:11px;padding:6px 8px;}
+  .smallBtn{font-size:11px;padding:6px 8px;}
+  .toggle{font-size:11px;gap:5px;}
+  .toggle input{width:14px;height:14px;}
+  .main{
+    min-height:0;
+    grid-template-columns:132px minmax(0,1fr);
+    gap:7px;
+  }
+  .panel{border-radius:18px;min-height:0;}
+  .panelHead{padding:9px;}
+  .panelHead h2{font-size:13px;}
+  .panelHead p{font-size:10px;line-height:1.18;}
+  .gameRail{
+    grid-template-rows:34px minmax(0,1fr) 34px;
+    padding:6px;
+    gap:5px;
+  }
+  .arrowBtn{
+    min-height:34px;
+    padding:4px;
+    font-size:16px;
+    border-radius:12px;
+  }
+  .gameList{gap:6px;padding-bottom:2px;}
+  .gameCard{
+    min-height:62px;
+    padding:9px;
+    border-radius:14px;
+  }
+  .gameName{font-size:12px;padding-right:20px;}
+  .gameMeta{font-size:10px;margin-top:3px;}
+  .lockLine{font-size:9px;margin-top:4px;}
+  .gameIcon{right:7px;top:7px;font-size:18px;}
+  .tablePanel{grid-template-rows:auto minmax(0,1fr) auto;}
+  .tableTitle{padding:10px;}
+  .tableTitle h2{font-size:15px;}
+  .tableTitle p{font-size:10px;margin-top:4px;}
+  .tableStage{padding:8px;overflow:hidden;}
+  .felt{
+    width:86%;
+    height:48%;
+    min-height:138px;
+    padding:14px;
+    border-radius:34%;
+  }
+  .felt b{font-size:14px;}
+  .felt span{font-size:10px;line-height:1.25;}
+  .seat{
+    width:96px;
+    min-height:58px;
+    border-radius:14px;
+    padding:6px;
+  }
+  .seatName{font-size:11px;}
+  .seatLabel{font-size:9px;}
+  .seat button{font-size:9px;padding:4px 6px;margin-top:4px;}
+  .readyBadge{font-size:9px;padding:3px 5px;margin-top:3px;}
+  .seat0{top:7px;}
+  .seat1{right:5px;}
+  .seat2{bottom:7px;}
+  .seat3{left:5px;}
+  .seat4{left:5px;bottom:7px;}
+  .seat5{right:5px;bottom:7px;}
+  .tableActions{
+    gap:5px;
+    padding:7px;
+    flex-wrap:wrap;
+  }
+  .tableActions button{font-size:11px;padding:7px 8px;}
+  .statusText{font-size:10px;line-height:1.2;max-width:100%;}
+  .chatPanel{
+    border-radius:16px;
+    grid-template-rows:minmax(0,1fr) 36px;
+  }
+  .log{font-size:11px;padding:7px 9px;}
+  .chatInput{grid-template-columns:1fr 62px;gap:5px;padding:5px;}
+  .chatInput input{font-size:12px;padding:7px 8px;border-radius:10px;}
+  .chatInput button{font-size:11px;padding:7px 8px;border-radius:10px;}
+}
+
 </style>
 </head>
 <body>
