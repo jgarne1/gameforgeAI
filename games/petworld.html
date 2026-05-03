@@ -14,7 +14,7 @@ GameForge AI / PetWorld maintainer notes:
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
 - Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
 - Top-level duplicate tab buttons and duplicate progress panels were intentionally removed; utility systems live in the right-side tabs and progression lives on the stage.
-- Rename is a small title-bar utility; the left panel stays focused on next goals and the journal.
+- Rename is a small title-bar utility; the left panel stays focused on next goals while the journal is pinned to the iframe bottom.
 - Exploration now uses a short client-side adventure animation and reward reveal, while rewards remain server-authoritative.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 - Pet reactions are client-only animations; profile changes still come from server APIs.
@@ -59,7 +59,7 @@ button,input,select{font-family:inherit}
   min-height:700px;
   padding:12px;
   display:grid;
-  grid-template-rows:auto minmax(0,1fr);
+  grid-template-rows:auto minmax(0,1fr) auto;
   gap:10px;
 }
 
@@ -141,16 +141,22 @@ button,input,select{font-family:inherit}
   flex-direction:column;
   gap:10px;
 }
-.journalWrap{
-  margin-top:auto;
+.journalDock{
+  min-height:0;
+  background:rgba(255,255,255,.68);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  box-shadow:0 16px 42px rgba(15,23,42,.11);
+  border-radius:22px;
+  padding:8px 10px;
 }
 .journalTitle{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  margin-bottom:6px;
-  font-size:13px;
+  margin-bottom:5px;
+  font-size:12px;
   font-weight:1000;
   color:#334155;
 }
@@ -882,11 +888,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
         <div id="leftGoalBox" class="goalCard"></div>
         <div id="statStack" class="statStack"></div>
       </div>
-
-      <div class="journalWrap">
-        <div class="journalTitle"><span>Journal</span><span class="muted">Recent</span></div>
-        <div id="log" class="log"></div>
-      </div>
     </div>
 
     <div class="stageShell">
@@ -929,6 +930,11 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <div id="shopPanel" class="hidden"></div>
       <div id="zonesPanel" class="hidden"></div>
     </div>
+  </div>
+
+  <div class="journalDock">
+    <div class="journalTitle"><span>Journal</span><span class="muted">Recent companion activity</span></div>
+    <div id="log" class="log"></div>
   </div>
 </div>
 
