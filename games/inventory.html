@@ -7,80 +7,84 @@
 <style>
 /*
 GameForge Inventory notes:
-- Single-file inventory page. No shared JS/CSS dependencies.
+- Single-file inventory page.
 - Loads profile from /api/pet/profile.
-- Uses items through /api/pet/use-item.
+- Uses /api/pet/use-item.
 - Lists marketplace items through /api/market/list.
 - Item images load from /assets/items/<itemId>.png.
-- Use transparent PNGs for best results.
 */
 
 :root{
-  --bg:#05090f;
-  --panel:#0b1117;
-  --panel2:#101922;
-  --panel3:#14222b;
-  --ink:#e5f0f2;
-  --muted:#91a9ad;
-  --soft:#c8dce1;
-  --teal:#8abfc0;
-  --gold:#facc15;
+  --bg:#070b18;
+  --panel:#101827;
+  --panel2:#0b1120;
+  --panel3:#020617;
+  --card:#111827;
+  --line:rgba(148,163,184,.24);
+  --line2:rgba(255,255,255,.10);
+  --blue:#3b82f6;
+  --blue2:#2563eb;
+  --cyan:#38bdf8;
   --green:#22c55e;
-  --blue:#60a5fa;
-  --purple:#a78bfa;
   --red:#ef4444;
-  --line:#1d3035;
-  --line2:#28424a;
+  --gold:#facc15;
+  --purple:#7c3aed;
+  --pink:#ec4899;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --soft:#cbd5e1;
+  --shadow:0 24px 70px rgba(0,0,0,.38);
 }
 
 *{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:Arial, sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:
-    radial-gradient(circle at 12% 0%,rgba(138,191,192,.13),transparent 25%),
-    radial-gradient(circle at 82% 9%,rgba(96,165,250,.10),transparent 28%),
-    linear-gradient(135deg,#020304,#070d12 58%,#040609);
-  color:var(--ink);
+    radial-gradient(circle at 12% 8%,rgba(56,189,248,.18),transparent 26%),
+    radial-gradient(circle at 80% 16%,rgba(124,58,237,.15),transparent 28%),
+    radial-gradient(circle at 50% 100%,rgba(34,197,94,.10),transparent 32%),
+    linear-gradient(135deg,#020617,#0f172a 55%,#111827);
+  color:var(--text);
   overflow:hidden;
 }
 
-button,input,select{
-  font-family:inherit;
-}
+button,input,select{font-family:inherit}
 
 .wrap{
   height:650px;
   min-height:650px;
   display:grid;
-  grid-template-columns:230px minmax(0,1fr);
+  grid-template-columns:235px minmax(0,1fr);
   overflow:hidden;
 }
 
-/* LEFT PANEL */
-
 .left{
   background:
-    linear-gradient(180deg,rgba(14,21,27,.98),rgba(5,9,15,.98)),
-    radial-gradient(circle at top,rgba(138,191,192,.08),transparent 34%);
+    linear-gradient(180deg,rgba(2,6,23,.98),rgba(15,23,42,.96)),
+    radial-gradient(circle at top,rgba(56,189,248,.12),transparent 30%);
   border-right:1px solid var(--line);
-  padding:16px 14px;
+  padding:16px;
   overflow:auto;
 }
 
 .profile{
-  padding:13px;
-  border:1px solid rgba(138,191,192,.18);
-  border-radius:18px;
-  background:rgba(255,255,255,.035);
+  padding:14px;
+  border:1px solid rgba(56,189,248,.24);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at top right,rgba(250,204,21,.12),transparent 35%),
+    rgba(15,23,42,.72);
   margin-bottom:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.22);
 }
 
 .profile h2{
   margin:0;
-  font-size:18px;
   color:#fff;
+  font-size:20px;
+  letter-spacing:-.4px;
 }
 
 .profile p{
@@ -90,19 +94,24 @@ button,input,select{
 }
 
 .coins{
-  font-size:17px;
-  color:var(--gold);
+  display:inline-flex;
+  margin-top:10px;
+  padding:6px 10px;
+  border-radius:999px;
+  color:#fde68a;
+  background:rgba(250,204,21,.12);
+  border:1px solid rgba(250,204,21,.28);
+  font-size:12px;
   font-weight:1000;
-  margin-top:9px;
 }
 
 .navTitle{
-  color:var(--teal);
-  letter-spacing:3px;
-  font-family:Georgia,serif;
-  text-transform:uppercase;
   margin:16px 0 7px;
-  font-size:14px;
+  color:var(--cyan);
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
 }
 
 .navBtn{
@@ -110,11 +119,11 @@ button,input,select{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border:0;
-  border-radius:10px;
+  border:1px solid transparent;
+  border-radius:14px;
   background:transparent;
   color:var(--muted);
-  padding:8px 8px;
+  padding:10px;
   text-align:left;
   cursor:pointer;
   font-weight:900;
@@ -122,36 +131,37 @@ button,input,select{
 
 .navBtn:hover{
   color:#fff;
-  background:rgba(138,191,192,.06);
+  background:rgba(56,189,248,.08);
+  border-color:rgba(56,189,248,.20);
 }
 
 .navBtn.active{
   color:#fff;
-  background:rgba(138,191,192,.12);
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border-color:#60a5fa;
+  box-shadow:0 10px 24px rgba(37,99,235,.25);
 }
 
 .count{
   color:#fff;
-  background:rgba(138,191,192,.12);
-  border:1px solid rgba(138,191,192,.24);
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
   border-radius:999px;
   padding:3px 8px;
   font-size:11px;
 }
-
-/* MAIN */
 
 .main{
   min-width:0;
   display:grid;
   grid-template-rows:auto auto minmax(0,1fr);
   background:
-    linear-gradient(180deg,rgba(8,13,17,.97),rgba(0,0,0,.97)),
-    radial-gradient(circle at center,rgba(138,191,192,.05),transparent 45%);
+    radial-gradient(circle at 90% 0%,rgba(56,189,248,.10),transparent 30%),
+    linear-gradient(180deg,rgba(15,23,42,.96),rgba(2,6,23,.96));
 }
 
 .top{
-  padding:20px 26px 10px;
+  padding:20px 24px 10px;
 }
 
 .titleRow{
@@ -163,67 +173,69 @@ button,input,select{
 
 .title h1{
   margin:0;
-  font-family:Georgia,serif;
-  color:var(--teal);
-  letter-spacing:8px;
-  font-size:39px;
-  font-weight:400;
-  text-transform:uppercase;
+  font-size:38px;
+  line-height:1;
+  letter-spacing:-1.4px;
+  color:#fff;
+}
+
+.title h1 span{
+  color:var(--cyan);
 }
 
 .title p{
-  margin:4px 0 0;
+  margin:7px 0 0;
   color:var(--muted);
   font-size:13px;
 }
 
 .capacity{
   text-align:right;
-  color:#fff;
   font-weight:900;
-  font-size:15px;
+  color:#fff;
+  font-size:14px;
 }
 
 .capacity span{
-  color:var(--teal);
+  color:var(--gold);
 }
 
 .rule{
-  border-top:3px dotted rgba(138,191,192,.22);
-  margin-top:11px;
+  height:1px;
+  margin-top:13px;
+  background:linear-gradient(90deg,rgba(56,189,248,.45),rgba(124,58,237,.20),transparent);
 }
 
 .tabbar{
-  padding:10px 26px 12px;
+  padding:10px 24px 12px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  border-bottom:1px solid rgba(138,191,192,.12);
+  border-bottom:1px solid var(--line);
 }
 
 .tabs{
   display:flex;
-  gap:21px;
+  gap:8px;
   flex-wrap:wrap;
 }
 
 .tab{
-  border:0;
-  background:transparent;
-  box-shadow:none;
-  border-radius:0;
-  padding:0;
-  font-family:Georgia,serif;
-  letter-spacing:2px;
-  color:var(--teal);
-  text-transform:uppercase;
-  font-size:15px;
+  border:1px solid rgba(148,163,184,.24);
+  background:rgba(15,23,42,.72);
+  color:var(--soft);
+  border-radius:999px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:1000;
   cursor:pointer;
 }
 
 .tab:hover,
 .tab.active{
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border-color:#60a5fa;
   color:#fff;
 }
 
@@ -233,23 +245,21 @@ button,input,select{
   align-items:center;
 }
 
-.search{
-  width:220px;
-}
+.search{width:220px}
 
 input,select{
-  border:1px solid var(--line2);
-  background:#070c10;
-  color:var(--ink);
-  border-radius:12px;
-  padding:11px 12px;
+  border:1px solid #475569;
+  background:#020617;
+  color:var(--text);
+  border-radius:13px;
+  padding:10px 12px;
   min-width:0;
 }
 
 .content{
   min-height:0;
   overflow:auto;
-  padding:15px 26px 26px;
+  padding:15px 24px 24px;
 }
 
 .sectionTitle{
@@ -262,12 +272,9 @@ input,select{
 
 .sectionTitle h2{
   margin:0;
-  font-family:Georgia,serif;
-  color:var(--teal);
-  letter-spacing:5px;
-  font-size:29px;
-  font-weight:400;
-  text-transform:uppercase;
+  color:#fff;
+  font-size:24px;
+  letter-spacing:-.8px;
 }
 
 .hint{
@@ -275,79 +282,66 @@ input,select{
   font-size:12px;
 }
 
-/* CARDS */
-
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(176px,1fr));
-  border-top:1px solid var(--line);
-  border-left:1px solid var(--line);
+  gap:12px;
 }
 
 .itemCell{
-  min-height:178px;
-  padding:14px 12px 12px;
-  border-right:1px solid var(--line);
-  border-bottom:1px solid var(--line);
+  min-height:185px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:22px;
   background:
-    radial-gradient(circle at 80% 12%,rgba(138,191,192,.06),transparent 35%),
-    rgba(0,0,0,.34);
+    radial-gradient(circle at 80% 12%,rgba(56,189,248,.10),transparent 34%),
+    linear-gradient(180deg,rgba(15,23,42,.90),rgba(2,6,23,.90));
   cursor:pointer;
   position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
-  transition:.12s ease;
+  transition:.15s ease;
+  box-shadow:0 10px 28px rgba(0,0,0,.18);
 }
 
 .itemCell:hover{
-  background:
-    radial-gradient(circle at 80% 12%,rgba(138,191,192,.11),transparent 35%),
-    rgba(138,191,192,.055);
-  outline:1px solid rgba(138,191,192,.32);
-  z-index:1;
+  transform:translateY(-2px);
+  border-color:rgba(56,189,248,.42);
+  box-shadow:0 16px 38px rgba(0,0,0,.28),0 0 24px rgba(56,189,248,.10);
 }
 
 .itemQty{
   position:absolute;
-  top:8px;
-  right:8px;
+  top:10px;
+  right:10px;
   padding:4px 8px;
   border-radius:999px;
-  background:rgba(250,204,21,.12);
-  border:1px solid rgba(250,204,21,.24);
+  background:rgba(250,204,21,.14);
+  border:1px solid rgba(250,204,21,.28);
   color:#fde68a;
   font-size:12px;
   font-weight:1000;
 }
 
 .iconShell{
-  width:80px;
-  height:80px;
-  border-radius:23px;
+  width:82px;
+  height:82px;
+  border-radius:24px;
   display:flex;
   align-items:center;
   justify-content:center;
   background:
     radial-gradient(circle at 35% 25%,rgba(255,255,255,.16),transparent 35%),
     linear-gradient(135deg,rgba(30,41,59,.95),rgba(2,6,23,.95));
-  border:1px solid rgba(148,163,184,.24);
+  border:1px solid rgba(148,163,184,.26);
   overflow:hidden;
   position:relative;
 }
 
-.iconShell:after{
-  content:"";
-  position:absolute;
-  inset:8px;
-  border-radius:18px;
-  background:radial-gradient(circle,rgba(255,255,255,.08),transparent 60%);
-  pointer-events:none;
-}
-
 .iconShell img{
-  width:72px;
-  height:72px;
+  width:74px;
+  height:74px;
   object-fit:contain;
   position:relative;
   z-index:2;
@@ -361,14 +355,14 @@ input,select{
 }
 
 .iconShell.common{box-shadow:0 0 0 1px rgba(148,163,184,.10)}
-.iconShell.uncommon{box-shadow:0 0 16px rgba(34,197,94,.16)}
-.iconShell.rare{box-shadow:0 0 18px rgba(59,130,246,.22)}
-.iconShell.epic{box-shadow:0 0 20px rgba(168,85,247,.25)}
-.iconShell.legendary{box-shadow:0 0 24px rgba(250,204,21,.28)}
+.iconShell.uncommon{box-shadow:0 0 18px rgba(34,197,94,.18)}
+.iconShell.rare{box-shadow:0 0 20px rgba(59,130,246,.25)}
+.iconShell.epic{box-shadow:0 0 22px rgba(168,85,247,.28)}
+.iconShell.legendary{box-shadow:0 0 26px rgba(250,204,21,.32)}
 
 .itemName{
-  margin-top:10px;
-  color:#e5f0f2;
+  margin-top:11px;
+  color:#fff;
   font-weight:1000;
   text-align:center;
   line-height:1.18;
@@ -396,15 +390,13 @@ input,select{
 .rarity.legendary{color:#fde68a}
 
 .empty{
-  border:1px dashed rgba(138,191,192,.28);
-  background:rgba(255,255,255,.035);
-  border-radius:18px;
+  border:1px dashed rgba(148,163,184,.35);
+  background:rgba(255,255,255,.04);
+  border-radius:20px;
   padding:28px;
   color:var(--muted);
   text-align:center;
 }
-
-/* PETS */
 
 .petGrid{
   display:grid;
@@ -413,9 +405,11 @@ input,select{
 }
 
 .petCard{
-  background:rgba(0,0,0,.34);
+  background:
+    radial-gradient(circle at top right,rgba(56,189,248,.08),transparent 32%),
+    rgba(15,23,42,.82);
   border:1px solid var(--line);
-  border-radius:18px;
+  border-radius:20px;
   padding:14px;
   display:grid;
   grid-template-columns:82px 1fr;
@@ -423,16 +417,16 @@ input,select{
 }
 
 .petCard.active{
-  border-color:var(--teal);
-  box-shadow:0 0 0 2px rgba(138,191,192,.12);
+  border-color:var(--cyan);
+  box-shadow:0 0 0 2px rgba(56,189,248,.16);
 }
 
 .petAvatar{
   width:82px;
   height:82px;
-  border-radius:21px;
-  background:#060b0f;
-  border:1px solid var(--line2);
+  border-radius:24px;
+  background:#020617;
+  border:1px solid var(--line);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -460,43 +454,37 @@ input,select{
   line-height:1.35;
 }
 
-/* BUTTONS */
-
 button{
   padding:10px 13px;
-  border-radius:12px;
-  border:1px solid var(--line2);
-  background:#142026;
+  border-radius:13px;
+  border:1px solid #475569;
+  background:#0f172a;
   color:white;
   cursor:pointer;
   font-weight:900;
+  transition:.15s ease;
 }
 
 button:hover{
-  border-color:var(--teal);
+  transform:translateY(-1px);
+  border-color:rgba(56,189,248,.45);
+  box-shadow:0 8px 18px rgba(0,0,0,.22);
 }
 
 button.primary{
-  background:#2d5961;
-  border-color:#8abfc0;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border-color:#60a5fa;
 }
 
 button.gold{
-  background:#d97706;
+  background:linear-gradient(135deg,#facc15,#f59e0b);
   border-color:#facc15;
-  color:#111;
-}
-
-button.danger{
-  background:#991b1b;
-  border-color:#ef4444;
+  color:#111827;
 }
 
 button.ghost{
-  background:rgba(255,255,255,.045);
+  background:rgba(15,23,42,.55);
 }
-
-/* MODAL */
 
 .modalBG{
   position:fixed;
@@ -508,18 +496,17 @@ button.ghost{
   z-index:50;
 }
 
-.modalBG.show{
-  display:flex;
-}
+.modalBG.show{display:flex}
 
 .modal{
   width:min(680px,94vw);
   max-height:92vh;
   overflow:auto;
   background:
-    radial-gradient(circle at 82% 8%,rgba(138,191,192,.10),transparent 35%),
-    #111719;
-  border:1px solid #28424a;
+    radial-gradient(circle at 82% 8%,rgba(56,189,248,.14),transparent 35%),
+    linear-gradient(180deg,#111827,#020617);
+  border:1px solid rgba(56,189,248,.32);
+  border-radius:26px;
   box-shadow:0 28px 90px rgba(0,0,0,.70);
   padding:24px;
 }
@@ -543,7 +530,7 @@ button.ghost{
 .modalIcon .iconShell{
   width:115px;
   height:115px;
-  border-radius:28px;
+  border-radius:30px;
 }
 
 .modalIcon .iconShell img{
@@ -553,33 +540,33 @@ button.ghost{
 
 .modal h2{
   margin:0;
-  color:var(--teal);
-  font-family:Georgia,serif;
+  color:#fff;
   font-size:34px;
-  font-style:italic;
+  letter-spacing:-1px;
 }
 
 .modalSub{
-  font-size:18px;
-  color:#fff;
-  margin-top:5px;
+  font-size:13px;
+  color:var(--cyan);
+  margin-top:6px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:1px;
 }
 
 .modalInfo{
-  font-size:15px;
+  font-size:14px;
   color:#cbd5e1;
   line-height:1.55;
   margin-top:9px;
 }
 
-.modalInfo b{
-  color:var(--gold);
-}
+.modalInfo b{color:var(--gold)}
 
 .question{
   text-align:center;
-  font-family:Georgia,serif;
-  font-size:25px;
+  font-size:20px;
+  font-weight:1000;
   margin:22px 0 16px;
 }
 
@@ -596,30 +583,30 @@ button.ghost{
   display:flex;
   align-items:center;
   gap:12px;
-  background:rgba(0,0,0,.18);
-  border:1px solid transparent;
-  padding:11px;
-  border-radius:14px;
-  font-size:16px;
+  background:rgba(15,23,42,.70);
+  border:1px solid rgba(148,163,184,.24);
+  padding:12px;
+  border-radius:16px;
+  font-size:15px;
 }
 
 .action:hover,
 .action.selected{
-  background:rgba(138,191,192,.08);
-  border-color:rgba(138,191,192,.30);
+  background:rgba(56,189,248,.10);
+  border-color:rgba(56,189,248,.42);
 }
 
 .radio{
-  width:22px;
-  height:22px;
+  width:21px;
+  height:21px;
   border-radius:50%;
   background:#fff;
-  border:2px solid #999;
+  border:2px solid #94a3b8;
   flex:0 0 auto;
 }
 
 .action.selected .radio{
-  background:var(--teal);
+  background:var(--cyan);
   box-shadow:inset 0 0 0 5px #fff;
 }
 
@@ -627,15 +614,13 @@ button.ghost{
   display:none;
   max-width:480px;
   margin:14px auto 0;
-  padding:13px;
-  border:1px solid var(--line2);
-  background:rgba(0,0,0,.25);
-  border-radius:16px;
+  padding:14px;
+  border:1px solid rgba(56,189,248,.24);
+  background:rgba(2,6,23,.55);
+  border-radius:18px;
 }
 
-.sellBox.show{
-  display:block;
-}
+.sellBox.show{display:block}
 
 .sellGrid{
   display:grid;
@@ -730,29 +715,25 @@ label{
       <div class="coins" id="profileCoins">0 coins</div>
     </div>
 
-    <div class="navTitle">Your Items</div>
-    <button class="navBtn active" onclick="setTab('items')">Inventory <span id="leftItems" class="count">0</span></button>
+    <div class="navTitle">Collection</div>
+    <button class="navBtn active" onclick="setTab('items')">Items <span id="leftItems" class="count">0</span></button>
     <button class="navBtn" onclick="setTab('pets')">Pets <span id="leftPets" class="count">0</span></button>
-    <button class="navBtn" onclick="setTab('collections')">Collections <span id="leftCollections" class="count">0</span></button>
+    <button class="navBtn" onclick="setTab('collections')">Collectibles <span id="leftCollections" class="count">0</span></button>
 
-    <div class="navTitle">Economy</div>
-    <button class="navBtn" onclick="showToast('Use item actions to list items on the marketplace.')">Sell Items</button>
+    <div class="navTitle">Actions</div>
+    <button class="navBtn" onclick="showToast('Click an item to sell it on the marketplace.')">Sell Items</button>
     <button class="navBtn" onclick="showToast('Open Marketplace from GameForge nav to browse stalls.')">Marketplace</button>
-
-    <div class="navTitle">Future</div>
-    <button class="navBtn" onclick="showToast('Trunk storage is planned for larger collections.')">Trunk</button>
-    <button class="navBtn" onclick="showToast('Crafting is planned for collectible materials.')">Crafting</button>
   </aside>
 
   <main class="main">
     <section class="top">
       <div class="titleRow">
         <div class="title">
-          <h1 id="pageTitle">Inventory</h1>
-          <p id="pageSub">Click an item to use it, sell it, or prepare it for future systems.</p>
+          <h1><span>Inventory</span></h1>
+          <p id="pageSub">Manage items, pets, and collectibles.</p>
         </div>
         <div class="capacity">
-          <span id="capacityLabel">MY ITEMS</span><br>
+          MY ITEMS<br>
           <span id="capacityNow">0</span> / <span id="capacityMax">100</span>
         </div>
       </div>
@@ -761,11 +742,10 @@ label{
 
     <section class="tabbar">
       <div class="tabs">
-        <button id="top-items" class="tab active" onclick="setTab('items')">Quick Inventory</button>
+        <button id="top-items" class="tab active" onclick="setTab('items')">Items</button>
         <button id="top-pets" class="tab" onclick="setTab('pets')">Pets</button>
-        <button id="top-collections" class="tab" onclick="setTab('collections')">Collections</button>
+        <button id="top-collections" class="tab" onclick="setTab('collections')">Collectibles</button>
         <button class="tab" onclick="showToast('Marketplace browsing opens from the main GameForge nav.')">Market</button>
-        <button class="tab" onclick="showToast('Trunk storage is planned.')">Trunk</button>
       </div>
 
       <div class="filters">
@@ -782,8 +762,8 @@ label{
     <section class="content">
       <div class="sectionTitle">
         <div>
-          <h2 id="sectionTitle">My Items</h2>
-          <div id="sectionHint" class="hint">Transparent item PNGs at /assets/items/&lt;itemId&gt;.png will display automatically.</div>
+          <h2 id="sectionTitle">Items</h2>
+          <div id="sectionHint" class="hint">Item images load from /assets/items/&lt;itemId&gt;.png.</div>
         </div>
         <button class="ghost" onclick="loadInventory()">Refresh</button>
       </div>
@@ -804,13 +784,11 @@ label{
       </div>
     </div>
 
-    <div class="question">What do you want to do?</div>
+    <div class="question">Choose an action</div>
 
     <div class="actions">
       <button id="actionUse" class="action" onclick="selectAction('use')"><span class="radio"></span><span>🐾 Use on active pet</span></button>
       <button id="actionSell" class="action" onclick="selectAction('sell')"><span class="radio"></span><span>🏪 Sell on Marketplace</span></button>
-      <button id="actionStore" class="action" onclick="selectAction('store')"><span class="radio"></span><span>📦 Put into storage trunk <small style="color:var(--muted)">soon</small></span></button>
-      <button id="actionCraft" class="action" onclick="selectAction('craft')"><span class="radio"></span><span>✨ Craft / transfigure <small style="color:var(--muted)">soon</small></span></button>
     </div>
 
     <div id="sellBox" class="sellBox">
@@ -842,6 +820,7 @@ let profile=null;
 let shop={};
 let selectedItemId='';
 let selectedAction='';
+let currentTab='items';
 const INVENTORY_LIMIT=100;
 
 const ITEM_META={
@@ -856,7 +835,6 @@ const ITEM_META={
   shade_cover:{name:'Shade Cover',fallback:'🌙',type:'Egg Care',rarity:'rare',desc:'Adds dark influence to an egg.'},
   sparkle_treat:{name:'Sparkle Treat',fallback:'✨',type:'Treat',rarity:'uncommon',desc:'A special treat that boosts happiness.'},
   toy_ball:{name:'Toy Ball',fallback:'🎾',type:'Toy',rarity:'common',desc:'A toy for play and happiness.'},
-
   ember_shell:{name:'Ember Shell',fallback:'🔥',type:'Fragment',rarity:'uncommon',desc:'A warm shell fragment for future fire egg crafting.'},
   tide_pearl:{name:'Tide Pearl',fallback:'💧',type:'Fragment',rarity:'uncommon',desc:'A cool pearl tied to water companions.'},
   moon_wisp:{name:'Moon Wisp',fallback:'🌙',type:'Fragment',rarity:'rare',desc:'A shadowy collectible for future rare eggs.'},
@@ -874,7 +852,6 @@ function getUsername(){
            localStorage.getItem('gf_user') ||
            '';
   }
-
   try{return localStorage.getItem('gf_user')||''}
   catch(e){return ''}
 }
@@ -935,8 +912,6 @@ function setTab(tab){
   draw();
 }
 
-let currentTab='items';
-
 function draw(){
   if(!profile){
     contentArea.innerHTML='<div class="empty">Loading inventory...</div>';
@@ -980,11 +955,9 @@ function filteredItems(list){
 }
 
 function drawItems(){
-  pageTitle.innerText='Inventory';
-  pageSub.innerText='Click an item to use it, sell it, or prepare it for future systems.';
-  sectionTitle.innerText='My Items';
-  sectionHint.innerText='Item images load from /assets/items/<itemId>.png. Transparent PNGs look best.';
-  capacityLabel.innerText='MY ITEMS';
+  pageSub.innerText='Manage items, pets, and collectibles.';
+  sectionTitle.innerText='Items';
+  sectionHint.innerText='Item images load from /assets/items/<itemId>.png.';
 
   let inv=profile.inventory||{};
   let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&!isCollectionType(meta(id).type));
@@ -999,11 +972,9 @@ function drawItems(){
 }
 
 function drawCollections(){
-  pageTitle.innerText='Collections';
   pageSub.innerText='Fragments, badges, trophies, cosmetics, and event items can grow here.';
-  sectionTitle.innerText='Collections';
+  sectionTitle.innerText='Collectibles';
   sectionHint.innerText='Future collection systems should use server-owned items and transparent PNG art.';
-  capacityLabel.innerText='COLLECTIONS';
 
   let inv=profile.inventory||{};
   let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&isCollectionType(meta(id).type));
@@ -1018,11 +989,9 @@ function drawCollections(){
 }
 
 function drawPets(){
-  pageTitle.innerText='Pets';
   pageSub.innerText='View your current pet roster.';
-  sectionTitle.innerText='My Pets';
+  sectionTitle.innerText='Pets';
   sectionHint.innerText='Pet art loads from /assets/pets/<species>/<stage>.png.';
-  capacityLabel.innerText='ROSTER';
 
   let pets=profile.pets?Object.values(profile.pets):[];
   let q=(searchBox.value||'').toLowerCase().trim();
@@ -1134,18 +1103,16 @@ function selectAction(action){
 }
 
 function updateActionStyles(){
-  [actionUse,actionSell,actionStore,actionCraft].forEach(b=>b.classList.remove('selected'));
+  [actionUse,actionSell].forEach(b=>b.classList.remove('selected'));
 
   if(selectedAction==='use')actionUse.classList.add('selected');
   if(selectedAction==='sell')actionSell.classList.add('selected');
-  if(selectedAction==='store')actionStore.classList.add('selected');
-  if(selectedAction==='craft')actionCraft.classList.add('selected');
 }
 
 function updateSellSummary(){
   let q=Math.max(1,Math.floor(Number(sellQty.value||1)));
   let p=Math.max(1,Math.floor(Number(sellPrice.value||1)));
-  sellSummary.innerText='Listing total: '+(q*p).toLocaleString()+' coins. Marketplace will hold these items while listed.';
+  sellSummary.innerText='Listing total: '+(q*p).toLocaleString()+' coins.';
 }
 
 sellQty.addEventListener('input',updateSellSummary);
@@ -1168,8 +1135,6 @@ async function runSelectedAction(){
     await sellItem(selectedItemId);
     return;
   }
-
-  showToast('That action is planned for a future update.');
 }
 
 async function useItem(itemId){
@@ -1281,8 +1246,8 @@ function itemFlavor(m){
   if(m.rarity==='epic')return 'EPIC FIND!';
   if(m.rarity==='rare')return 'RARE FIND!';
   if(m.type==='Egg Care')return 'EGG CARE!';
-  if(m.type==='Food')return 'SO GOOD!';
-  return 'USEFUL SUPPLY';
+  if(m.type==='Food')return 'FOOD ITEM';
+  return 'SUPPLY';
 }
 
 function petAssetPath(p){
