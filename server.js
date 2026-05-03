@@ -1183,7 +1183,7 @@ function checkPetGrowth(pet){
   return null;
 }
 function addPetXp(pet,amount){
-  let result={xpGained:amount,leveled:false,levelsGained:0,learnedMove:null};
+  let result={xpGained:amount,leveled:false,levelsGained:0,learnedMove:null,growth:null};
   pet.stats.xp=Number(pet.stats.xp||0)+amount;
 
   function careScore(p){
@@ -1220,17 +1220,16 @@ function addPetXp(pet,amount){
 
     result.leveled=true;
     result.levelsGained++;
-    let growth = checkPetGrowth(pet);
-    result.growth = growth;
   }
 
+  // ✅ ONLY CHECK GROWTH ONCE HERE
   if(result.leveled){
+    result.growth = checkPetGrowth(pet);
     result.learnedMove=maybeLearnMove(pet,.45);
   }
 
   return result;
 }
-
 function maybeLearnMove(pet,chance,typeHint){
   if((pet.moves||[]).length>=4)return null;
   if(Math.random()>chance)return null;
