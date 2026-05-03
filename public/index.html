@@ -1521,72 +1521,96 @@ body.gameMode #gameArea .danger{
 
 
 
-/* ===== GAME MODE DESKTOP ROOM SIDE PANEL PATCH =====
-   Surgical patch: keeps game iframe visible while reserving a clean right rail
-   for room chat + online users. Does not change launcher/server/game logic. */
+/* ===== GAME MODE DESKTOP ROOM SIDE PANEL (SCALABLE v2) =====
+   Keeps the started game focused while giving room chat and online users
+   their own scalable right rail. This is CSS-only and does not change
+   launcher, pet, server, or game logic. */
 @media (min-width:1051px){
+
+  /* Game gets more width because the rail is narrower than before. */
   body.gameMode #gameArea{
-    inset:8px 390px 8px 8px!important;
+    inset:8px 330px 8px 8px!important;
     z-index:5000!important;
   }
 
+  /* Right rail: about 15% narrower than the prior 366px panel. */
   body.gameMode .side{
     display:flex!important;
     flex-direction:column!important;
-    gap:12px!important;
+    gap:10px!important;
     position:fixed!important;
     top:8px!important;
     right:8px!important;
     bottom:8px!important;
-    width:366px!important;
+    width:310px!important;
     height:auto!important;
     max-height:none!important;
     padding:10px!important;
     z-index:6500!important;
     overflow:hidden!important;
     pointer-events:auto!important;
-    border-radius:24px!important;
+    border-radius:22px!important;
     border:1px solid rgba(148,163,184,.28)!important;
     background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98))!important;
-    box-shadow:0 30px 90px rgba(0,0,0,.45)!important;
+    box-shadow:0 25px 70px rgba(0,0,0,.45)!important;
   }
 
+  /* Hide unrelated side cards while a room game is running. */
   body.gameMode .side .sideCard{
     display:none!important;
   }
 
-  body.gameMode .side #presencePanel,
-  body.gameMode .side #roomChatPanel{
+  /* Online users: capped so it cannot eat the chat area. */
+  body.gameMode .side #presencePanel{
     display:flex!important;
     flex-direction:column!important;
+    flex:0 0 auto!important;
+    max-height:145px!important;
+    min-height:88px!important;
+    overflow-y:auto!important;
     margin:0!important;
-    min-height:0!important;
     pointer-events:auto!important;
     background:rgba(2,6,23,.72)!important;
     border:1px solid rgba(148,163,184,.25)!important;
-    border-radius:20px!important;
+    border-radius:16px!important;
+    padding:10px!important;
     box-shadow:none!important;
-  }
-
-  body.gameMode .side #presencePanel{
-    flex:0 0 auto!important;
-    max-height:30vh!important;
-    overflow:auto!important;
   }
 
   body.gameMode .side #presencePanel .muted{
     display:none!important;
   }
 
+  body.gameMode .side #presence{
+    min-height:0!important;
+  }
+
+  body.gameMode .side .userItem{
+    padding:7px 8px!important;
+    font-size:12px!important;
+  }
+
+  /* Room chat: fills the rest of the rail and scrolls internally. */
   body.gameMode .side #roomChatPanel{
+    display:flex!important;
+    flex-direction:column!important;
     flex:1 1 auto!important;
+    min-height:0!important;
+    margin:0!important;
+    pointer-events:auto!important;
+    background:rgba(2,6,23,.72)!important;
+    border:1px solid rgba(148,163,184,.25)!important;
+    border-radius:16px!important;
+    padding:10px!important;
+    box-shadow:none!important;
   }
 
   body.gameMode .chatBox{
     flex:1 1 auto!important;
     height:auto!important;
-    min-height:180px!important;
+    min-height:120px!important;
     max-height:none!important;
+    overflow-y:auto!important;
   }
 
   body.gameMode .chatInput{
@@ -1596,6 +1620,22 @@ body.gameMode #gameArea .danger{
   body.gameMode #roomChatPanel.chatCollapsed{
     flex:0 0 auto!important;
     width:auto!important;
+  }
+
+  body.gameMode #roomChatPanel.chatCollapsed .chatBox,
+  body.gameMode #roomChatPanel.chatCollapsed .chatInput{
+    display:none!important;
+  }
+
+  body.gameMode #presencePanel::-webkit-scrollbar,
+  body.gameMode .chatBox::-webkit-scrollbar{
+    width:6px;
+  }
+
+  body.gameMode #presencePanel::-webkit-scrollbar-thumb,
+  body.gameMode .chatBox::-webkit-scrollbar-thumb{
+    background:rgba(148,163,184,.4);
+    border-radius:6px;
   }
 }
 
