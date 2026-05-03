@@ -195,6 +195,22 @@ h1,h2,h3{margin:0}
 .hpFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
 .hpFill.low{background:linear-gradient(90deg,#dc2626,#fb7185)}
 
+.meterBar{
+  height:8px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#e5e7eb;
+  margin:6px 0 2px;
+}
+
+.meterFill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#38bdf8,#2563eb);
+  transition:width .25s ease;
+}
+
 .statGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -207,6 +223,24 @@ h1,h2,h3{margin:0}
   border:1px solid rgba(148,163,184,.28);
   border-radius:14px;
   padding:8px;
+}
+
+.statusTags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  min-height:22px;
+  margin-top:6px;
+}
+
+.statusTag{
+  font-size:11px;
+  font-weight:900;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:#3730a3;
+  border:1px solid #c7d2fe;
 }
 
 .controls{
@@ -279,7 +313,7 @@ button:disabled{
   <div class="top">
     <div>
       <h1>Pet Battle Arena</h1>
-      <div class="muted">Turn-based companion battles. Defense, speed, and move choice now matter more.</div>
+      <div class="muted">Turn-based companion battles with initiative, status effects, and slower pacing.</div>
     </div>
     <div>
       <span id="meBadge" class="badge">Loading</span>
@@ -294,6 +328,9 @@ button:disabled{
         <div id="p0Sub" class="muted">Loading...</div>
         <div class="hpBar"><div id="p0Hp" class="hpFill"></div></div>
         <div id="p0HpText" class="muted"></div>
+        <div class="meterBar"><div id="p0Meter" class="meterFill"></div></div>
+        <div id="p0MeterText" class="muted"></div>
+        <div id="p0Statuses" class="statusTags"></div>
       </div>
 
       <div class="petStage">
@@ -323,6 +360,9 @@ button:disabled{
         <div id="p1Sub" class="muted">Loading...</div>
         <div class="hpBar"><div id="p1Hp" class="hpFill"></div></div>
         <div id="p1HpText" class="muted"></div>
+        <div class="meterBar"><div id="p1Meter" class="meterFill"></div></div>
+        <div id="p1MeterText" class="muted"></div>
+        <div id="p1Statuses" class="statusTags"></div>
       </div>
 
       <div class="petStage enemy">
@@ -410,11 +450,12 @@ function battlePet(seat){
   if(!p)return null;
 
   var stats=p.stats||{};
+  var stage=p.stage||'egg';
 
   return {
     owner:players[seat].name,
     name:p.name||'Pet',
-    stage:p.stage||'egg',
+    stage:stage,
     species:p.species||'egg',
     type:p.type||'normal',
     emoji:p.emoji||'🥚',
@@ -426,8 +467,7 @@ function battlePet(seat){
       defense:Number(stats.defense||4),
       speed:Number(stats.speed||5)
     },
-    moves:(p.moves&&p.moves.length?p.moves:['tackle']).slice(0,4),
-    status:{}
+    moves:(p.moves&&p.moves.length?p.moves:['tackle']).slice(0,4)
   };
 }
 
@@ -435,22 +475,41 @@ function freshBattle(){
   var a=battlePet(0);
   var b=battlePet(1);
 
-  if(!a||!b){
-    return null;
+  if(!a||!b)return null;
+
+  if(a.stage==='egg'||b.stage==='egg'){
+    return {
+      pets:[a,b],
+      hp:[a.stats.maxHp,b.stats.maxHp],
+      meter:[0,0],
+      status:[{},{}],
+      turn:null,
+      round:1,
+      winner:null,
+      blocked:true,
+      log:['Eggs cannot battle yet. Hatch both companions first.'],
+      lastAction:null
+    };
   }
 
   var first=a.stats.speed>=b.stats.speed?0:1;
+  var second=first===0?1:0;
 
   return {
     pets:[a,b],
     hp:[a.stats.maxHp,b.stats.maxHp],
+    meter:[
+      first===0?72:52,
+      first===1?72:52
+    ],
     status:[{},{}],
-    turn:first,
+    turn:null,
     round:1,
     winner:null,
+    blocked:false,
     log:[
       'Battle started: '+a.name+' vs '+b.name+'.',
-      (first===0?a.name:b.name)+' moves first.'
+      'Initiative is charging. Faster pets act sooner, but turns are no longer guaranteed wins.'
     ],
     lastAction:null
   };
@@ -467,10 +526,21 @@ function drawEmpty(){
 function draw(){
   if(!state)return;
 
+  if(!state.blocked&&state.winner===null&&state.turn===null){
+    advanceInitiative();
+  }
+
   drawPetSide(0);
   drawPetSide(1);
   drawLog();
   drawMoves();
+
+  if(state.blocked){
+    setStatus('Battle unavailable','Eggs cannot battle. Hatch both companions first.');
+    winnerBox.innerHTML='';
+    turnBadge.innerText='Blocked';
+    return;
+  }
 
   if(state.winner!==null){
     var winnerName=players[state.winner].name;
@@ -479,9 +549,9 @@ function draw(){
     turnBadge.innerText='Finished';
   }else{
     winnerBox.innerHTML='';
-    var turnName=players[state.turn].name;
-    setStatus('Current Turn',turnName+' chooses a move.');
-    turnBadge.innerText='Turn: '+turnName;
+    var turnName=state.turn===null?'Charging':players[state.turn].name;
+    setStatus(state.turn===null?'Charging Initiative':'Current Turn',state.turn===null?'Pets are building initiative.':turnName+' chooses a move.');
+    turnBadge.innerText=state.turn===null?'Charging':'Turn: '+turnName;
   }
 
   if(state.lastAction){
@@ -494,13 +564,19 @@ function drawPetSide(seat){
   var hp=state.hp[seat];
   var pct=Math.max(0,Math.min(100,Math.floor(hp/pet.stats.maxHp*100)));
   var hpFill=el('p'+seat+'Hp');
+  var meter=state.meter?Number(state.meter[seat]||0):0;
 
-  el('p'+seat+'Name').innerText=players[seat].name;
-  el('p'+seat+'Sub').innerText=pet.name+' · '+pet.type+' · Lv '+pet.stats.level+statusText(seat);
+  el('p'+seat+'Name').innerText=players[seat]?players[seat].name:'Seat '+(seat+1);
+  el('p'+seat+'Sub').innerText=pet.name+' · '+pet.type+' · Lv '+pet.stats.level;
   el('p'+seat+'HpText').innerText=hp+' / '+pet.stats.maxHp+' HP';
 
   hpFill.style.width=pct+'%';
   hpFill.className='hpFill '+(pct<30?'low':pct<60?'mid':'');
+
+  el('p'+seat+'Meter').style.width=Math.max(0,Math.min(100,meter))+'%';
+  el('p'+seat+'MeterText').innerText='Initiative '+Math.floor(Math.max(0,Math.min(100,meter)))+'%';
+
+  el('p'+seat+'Statuses').innerHTML=statusTags(seat);
 
   el('p'+seat+'Stats').innerHTML=
     stat('Attack',effectiveAttack(seat))+
@@ -511,21 +587,25 @@ function drawPetSide(seat){
   setPetVisual(seat,pet);
 }
 
-function statusText(seat){
+function statusTags(seat){
   var s=(state&&state.status&&state.status[seat])?state.status[seat]:{};
-  var tags=[];
+  var labels=[];
 
-  if(s.burn&&s.burn>0)tags.push('Burn');
-  if(s.slow&&s.slow>0)tags.push('Slow');
-  if(s.sleep&&s.sleep>0)tags.push('Sleep');
-  if(s.stun&&s.stun>0)tags.push('Stun');
-  if(s.snare&&s.snare>0)tags.push('Snare');
-  if(s.attack_up&&s.attack_up>0)tags.push('Atk+');
-  if(s.attack_down&&s.attack_down>0)tags.push('Atk-');
-  if(s.defense_up&&s.defense_up>0)tags.push('Def+');
-  if(s.defense_down&&s.defense_down>0)tags.push('Def-');
+  if(s.burn>0)labels.push('🔥 Burn');
+  if(s.slow>0)labels.push('🐢 Slow');
+  if(s.sleep>0)labels.push('💤 Sleep');
+  if(s.stun>0)labels.push('💫 Stun');
+  if(s.snare>0)labels.push('🌿 Snare');
+  if(s.attack_up>0)labels.push('⚔️ Atk+');
+  if(s.attack_down>0)labels.push('⚔️ Atk-');
+  if(s.defense_up>0)labels.push('🛡️ Def+');
+  if(s.defense_down>0)labels.push('🛡️ Def-');
 
-  return tags.length?' · '+tags.join(', '):'';
+  if(!labels.length)return '<span class="muted">No status</span>';
+
+  return labels.map(function(x){
+    return '<span class="statusTag">'+escapeHtml(x)+'</span>';
+  }).join('');
 }
 
 function setPetVisual(seat,pet){
@@ -568,7 +648,7 @@ function stat(k,v){
 }
 
 function drawLog(){
-  battleLog.innerHTML=state.log.slice(-20).map(function(x){
+  battleLog.innerHTML=state.log.slice(-24).map(function(x){
     return '• '+escapeHtml(x);
   }).join('<br>');
   battleLog.scrollTop=battleLog.scrollHeight;
@@ -576,6 +656,11 @@ function drawLog(){
 
 function drawMoves(){
   var html='';
+
+  if(!state||state.blocked){
+    moveButtons.innerHTML='<button disabled>Battle unavailable</button>';
+    return;
+  }
 
   if(state.winner!==null){
     moveButtons.innerHTML='<button class="gold" onclick="newBattle()">New Battle</button>';
@@ -590,12 +675,14 @@ function drawMoves(){
   var pet=state.pets[mySeat];
 
   pet.moves.forEach(function(id){
-    var m=moveBook[id]||{name:id,type:'normal',power:30,accuracy:95};
-    var category=m.category||'attack';
+    var m=moveBook[id]||{name:id,type:'normal',category:'physical',power:30,accuracy:95};
+    var category=m.category||'physical';
     var powerText=Number(m.power||0)>0?'Power '+Number(m.power||30):'Status';
+    var cost=moveInitiativeCost(m);
+
     html+='<button class="moveBtn primary" onclick="useMove(\''+id+'\')">'+
       '<strong>'+escapeHtml(m.name)+'</strong>'+
-      '<span>'+escapeHtml(m.type||'normal')+' · '+escapeHtml(category)+' · '+powerText+' · Acc '+Number(m.accuracy||95)+'%</span>'+
+      '<span>'+escapeHtml(m.type||'normal')+' · '+escapeHtml(category)+' · '+powerText+' · Acc '+Number(m.accuracy||95)+'% · Cost '+cost+'</span>'+
     '</button>';
   });
 
@@ -603,19 +690,19 @@ function drawMoves(){
 }
 
 function useMove(moveId){
-  if(!state||state.winner!==null)return;
+  if(!state||state.winner!==null||state.blocked)return;
   if(mySeat!==state.turn)return;
 
   var actor=mySeat;
   var target=actor===0?1:0;
   var attacker=state.pets[actor];
-  var defender=state.pets[target];
   var move=moveBook[moveId]||{name:moveId,type:'normal',category:'physical',power:30,accuracy:95};
   var moveName=move.name||moveId;
 
-  ensureStatusArrays();
+  ensureBattleShape();
 
   var blocked=startTurnStatus(actor);
+
   if(blocked){
     addLog(attacker.name+' could not move because of '+blocked+'.');
   }else{
@@ -634,8 +721,10 @@ function useMove(moveId){
 
   if(state.winner===null){
     endTurnStatus(actor);
-    state.turn=target;
-    if(actor===1)state.round++;
+    spendInitiative(actor,move);
+    state.turn=null;
+    state.round++;
+    advanceInitiative();
   }
 
   draw();
@@ -644,7 +733,6 @@ function useMove(moveId){
 
 function resolveMove(actor,target,moveId,move){
   var attacker=state.pets[actor];
-  var defender=state.pets[target];
   var moveName=move.name||moveId;
   var category=move.category||'physical';
   var power=Number(move.power||0);
@@ -665,21 +753,75 @@ function resolveMove(actor,target,moveId,move){
 
 function damage(actor,target,move){
   var attacker=state.pets[actor];
-  var defender=state.pets[target];
 
   var power=Number(move.power||30);
   var atk=effectiveAttack(actor);
   var def=effectiveDefense(target);
   var level=Number(attacker.stats.level||1);
 
-  var base=(power*0.45)+(atk*1.15)+(level*1.2);
-  var reduction=def*0.72;
+  var base=(power*0.38)+(atk*1.05)+(level*1.05);
+  var reduction=def*0.82;
   var variance=0.9+(Math.random()*0.22);
-  var typeBonus=(move.type&&move.type===attacker.type)?1.12:1;
+  var typeBonus=(move.type&&move.type===attacker.type)?1.10:1;
 
   var dmg=Math.floor((base-reduction)*variance*typeBonus);
 
   return Math.max(3,dmg);
+}
+
+function moveInitiativeCost(move){
+  var category=move.category||'physical';
+  var power=Number(move.power||0);
+
+  if(category==='status'||category==='buff'||category==='debuff'||power<=0)return 72;
+  if(power>=52)return 112;
+  if(power>=44)return 100;
+  if(power<=28)return 78;
+  return 90;
+}
+
+function spendInitiative(actor,move){
+  ensureBattleShape();
+  var cost=moveInitiativeCost(move);
+  state.meter[actor]=Math.max(0,Number(state.meter[actor]||0)-cost);
+}
+
+function advanceInitiative(){
+  ensureBattleShape();
+
+  var safety=0;
+
+  while(state.winner===null&&state.turn===null&&safety<80){
+    safety++;
+
+    for(var i=0;i<2;i++){
+      if(state.hp[i]>0){
+        state.meter[i]=Number(state.meter[i]||0)+initiativeGain(i);
+      }
+    }
+
+    if(state.meter[0]>=100||state.meter[1]>=100){
+      if(state.meter[0]>=100&&state.meter[1]>=100){
+        if(effectiveSpeed(0)===effectiveSpeed(1)){
+          state.turn=Math.random()<.5?0:1;
+        }else{
+          state.turn=effectiveSpeed(0)>effectiveSpeed(1)?0:1;
+        }
+      }else{
+        state.turn=state.meter[0]>=100?0:1;
+      }
+      return;
+    }
+  }
+
+  if(state.turn===null){
+    state.turn=effectiveSpeed(0)>=effectiveSpeed(1)?0:1;
+  }
+}
+
+function initiativeGain(seat){
+  var spd=effectiveSpeed(seat);
+  return 18+Math.floor(spd*2.4);
 }
 
 function effectiveAttack(seat){
@@ -715,19 +857,22 @@ function effectiveSpeed(seat){
   return Math.max(1,spd);
 }
 
-function ensureStatusArrays(){
+function ensureBattleShape(){
   if(!state.status)state.status=[{},{}];
   if(!state.status[0])state.status[0]={};
   if(!state.status[1])state.status[1]={};
+  if(!state.meter)state.meter=[0,0];
+  if(state.meter[0]===undefined)state.meter[0]=0;
+  if(state.meter[1]===undefined)state.meter[1]=0;
 }
 
 function startTurnStatus(seat){
-  ensureStatusArrays();
+  ensureBattleShape();
   var s=state.status[seat]||{};
   var pet=state.pets[seat];
 
   if(s.burn&&s.burn>0){
-    var burnDmg=Math.max(2,Math.floor(state.pets[seat].stats.maxHp*.06));
+    var burnDmg=Math.max(2,Math.floor(state.pets[seat].stats.maxHp*.055));
     state.hp[seat]=Math.max(0,state.hp[seat]-burnDmg);
     addLog(pet.name+' is hurt by burn for '+burnDmg+' damage.');
   }
@@ -745,7 +890,7 @@ function startTurnStatus(seat){
 }
 
 function endTurnStatus(seat){
-  ensureStatusArrays();
+  ensureBattleShape();
   var s=state.status[seat]||{};
 
   ['burn','slow','sleep','stun','snare','attack_up','attack_down','defense_up','defense_down'].forEach(function(k){
@@ -762,7 +907,7 @@ function endTurnStatus(seat){
 function applyMoveStatus(actor,target,move){
   if(!move.status)return '';
 
-  ensureStatusArrays();
+  ensureBattleShape();
 
   var status=move.status;
   var effect=status.effect;
@@ -799,6 +944,7 @@ function checkWinner(actor,target){
     state.winner=actor;
     addLog(state.pets[target].name+' fainted.');
     addLog(players[actor].name+' wins!');
+    addRewardPreview(actor,target);
     return;
   }
 
@@ -806,7 +952,13 @@ function checkWinner(actor,target){
     state.winner=target;
     addLog(state.pets[actor].name+' fainted.');
     addLog(players[target].name+' wins!');
+    addRewardPreview(target,actor);
   }
+}
+
+function addRewardPreview(winner,loser){
+  addLog('Rewards preview: winner should receive XP and coins; loser should receive small XP.');
+  addLog('Server reward endpoint can be added next so battle results persist.');
 }
 
 function pulseAction(actor,target){
@@ -836,7 +988,7 @@ function visiblePetEl(seat){
 
 function addLog(t){
   state.log.push(t);
-  if(state.log.length>80)state.log.shift();
+  if(state.log.length>90)state.log.shift();
 }
 
 function setStatus(a,b){
