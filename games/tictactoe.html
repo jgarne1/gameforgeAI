@@ -5,147 +5,622 @@
 <title>Tic Tac Toe</title>
 <style>
 :root{
-  --bg0:#020617;--bg1:#0f172a;--panel:rgba(15,23,42,.90);--panel2:rgba(30,41,59,.74);
-  --line:rgba(56,189,248,.38);--line2:rgba(167,139,250,.40);--text:#e5e7eb;--muted:#94a3b8;
-  --blue:#38bdf8;--purple:#a78bfa;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;
+  --bg0:#020617;
+  --bg1:#0f172a;
+  --panel:rgba(15,23,42,.90);
+  --panel2:rgba(30,41,59,.78);
+  --border:rgba(56,189,248,.42);
+  --borderSoft:rgba(148,163,184,.24);
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --accent:#38bdf8;
+  --accent2:#a78bfa;
+  --x:#38bdf8;
+  --o:#f59e0b;
+  --good:#22c55e;
+  --danger:#fb7185;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;overflow:hidden;font-family:Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 20% 0%,rgba(56,189,248,.24),transparent 32%),radial-gradient(circle at 82% 18%,rgba(167,139,250,.22),transparent 35%),linear-gradient(180deg,#0f172a,#020617 68%)}
-.gameShell{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;padding:10px;position:relative;isolation:isolate}.gameShell:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.035),transparent);pointer-events:none;z-index:-1}.gameHeader,.gamePanel,.gameLog{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05)}
-.gameHeader{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;padding:10px}.centerStatus{min-width:170px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:8px 10px;border-radius:16px;background:linear-gradient(180deg,rgba(56,189,248,.14),rgba(167,139,250,.10));border:1px solid rgba(148,163,184,.22)}.title{font-weight:900;letter-spacing:.3px}.statusText{font-size:12px;color:#dbeafe;line-height:1.25}.roomText{font-size:11px;color:var(--muted)}
-.playerCard{min-width:0;display:flex;align-items:center;gap:10px;padding:9px;border-radius:16px;background:linear-gradient(145deg,rgba(15,23,42,.72),rgba(2,6,23,.72));border:1px solid rgba(148,163,184,.22);position:relative;overflow:hidden}.playerCard:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at top left,rgba(56,189,248,.16),transparent 42%);opacity:.65;pointer-events:none}.playerCard.active{border-color:rgba(56,189,248,.82);box-shadow:0 0 0 1px rgba(56,189,248,.20),0 0 22px rgba(56,189,248,.24)}.playerCard.me{outline:1px solid rgba(34,197,94,.50)}.petBadge{width:46px;height:46px;flex:0 0 46px;border-radius:16px;background:rgba(2,6,23,.65);border:1px solid rgba(148,163,184,.26);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:26px;position:relative;z-index:1}.petBadge img{width:100%;height:100%;object-fit:contain}.playerInfo{min-width:0;position:relative;z-index:1}.playerName{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playerMeta,.petName{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.turnPill{display:inline-block;margin-top:4px;font-size:11px;padding:3px 8px;border-radius:999px;background:rgba(148,163,184,.14);color:#cbd5e1}.playerCard.active .turnPill{background:rgba(56,189,248,.20);color:#e0f2fe}.playerCard.me .turnPill{background:rgba(34,197,94,.16);color:#dcfce7}
-.gamePanel{min-height:0;display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden}.boardWrap{width:min(72vh,440px,94vw);aspect-ratio:1/1;padding:12px;border-radius:28px;background:linear-gradient(145deg,rgba(56,189,248,.20),rgba(167,139,250,.18));border:1px solid rgba(255,255,255,.10);box-shadow:0 18px 45px rgba(0,0,0,.35)}#board{height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:10px}.cell{min-width:0;min-height:0;border:1px solid rgba(148,163,184,.30);border-radius:22px;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.11),transparent 32%),linear-gradient(145deg,#1e293b,#020617);box-shadow:inset 0 0 18px rgba(0,0,0,.48),0 12px 22px rgba(0,0,0,.24);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;font-size:clamp(44px,12vmin,84px);font-weight:950;line-height:1;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease}.cell:not(.disabled):hover{transform:translateY(-2px) scale(1.025);border-color:rgba(56,189,248,.78);box-shadow:0 0 24px rgba(56,189,248,.24),inset 0 0 18px rgba(0,0,0,.48)}.cell.disabled{cursor:not-allowed}.markX{color:#38bdf8;text-shadow:0 0 18px rgba(56,189,248,.52)}.markO{color:#f59e0b;text-shadow:0 0 18px rgba(245,158,11,.48)}.winCell{animation:winPulse .85s ease-in-out infinite alternate;border-color:rgba(34,197,94,.90)!important}@keyframes winPulse{from{box-shadow:0 0 14px rgba(34,197,94,.26),inset 0 0 18px rgba(0,0,0,.48)}to{box-shadow:0 0 32px rgba(34,197,94,.58),inset 0 0 18px rgba(0,0,0,.48)}}
-.gameLog{max-height:74px;overflow:auto;padding:9px 11px;font-size:12px;line-height:1.35;color:#cbd5e1}.logLine{margin:2px 0}.controls{display:flex;gap:8px;justify-content:center;margin-top:7px}.btn{border:1px solid rgba(56,189,248,.48);background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(167,139,250,.18));color:#e0f2fe;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer}.btn:hover{filter:brightness(1.12)}
-@media(max-width:700px){.gameShell{padding:7px;gap:7px}.gameHeader{grid-template-columns:1fr 1fr;grid-template-areas:"p1 p2" "status status";padding:7px}.playerCard{padding:7px;gap:7px}.petBadge{width:38px;height:38px;flex-basis:38px;border-radius:13px}.centerStatus{grid-area:status;min-width:0;padding:6px}.playerCard:first-child{grid-area:p1}.playerCard:last-child{grid-area:p2}.boardWrap{width:min(58vh,94vw);padding:9px;border-radius:22px}#board{gap:7px}.cell{border-radius:17px}.gameLog{max-height:58px;font-size:11px;padding:7px 9px}.playerMeta,.petName{font-size:11px}}
-@media(max-height:560px){.gameHeader{padding:6px}.gameLog{max-height:46px}.boardWrap{width:min(60vh,380px,88vw);padding:8px}.petBadge{width:34px;height:34px;flex-basis:34px}.playerMeta,.petName{display:none}.cell{border-radius:16px}}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:
+    radial-gradient(circle at 20% 0%,rgba(56,189,248,.20),transparent 32%),
+    radial-gradient(circle at 80% 20%,rgba(167,139,250,.22),transparent 35%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  color:var(--text);
+  overflow:hidden;
+}
+.gameShell{
+  height:100vh;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:10px;
+  padding:10px;
+}
+.gameHeader,.gamePanel,.gameLog{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 16px 42px rgba(0,0,0,.32), inset 0 0 24px rgba(56,189,248,.04);
+}
+.gameHeader{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:10px;
+  align-items:stretch;
+  padding:10px;
+}
+.playerCard{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  padding:9px;
+  border-radius:15px;
+  background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.72));
+  border:1px solid var(--borderSoft);
+  position:relative;
+  overflow:hidden;
+}
+.playerCard:before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  opacity:.12;
+  background:radial-gradient(circle at top left,var(--accent),transparent 42%);
+  pointer-events:none;
+}
+.playerCard.active{
+  border-color:var(--accent);
+  box-shadow:0 0 18px rgba(56,189,248,.28), inset 0 0 16px rgba(56,189,248,.08);
+}
+.playerCard.o.active{
+  border-color:var(--o);
+  box-shadow:0 0 18px rgba(245,158,11,.26), inset 0 0 16px rgba(245,158,11,.08);
+}
+.petBadge{
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:rgba(2,6,23,.55);
+  border:1px solid rgba(148,163,184,.25);
+  z-index:1;
+}
+.petBadge img{
+  max-width:50px;
+  max-height:50px;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));
+}
+.petFallback{font-size:24px}
+.playerInfo{min-width:0;z-index:1}
+.playerName{
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.playerMeta,.petName{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.petName{color:#cbd5e1}
+.centerStatus{
+  width:min(250px,30vw);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:4px;
+  padding:8px 10px;
+  border-radius:16px;
+  background:rgba(2,6,23,.45);
+  border:1px solid rgba(148,163,184,.20);
+}
+.title{
+  font-weight:1000;
+  letter-spacing:.3px;
+  font-size:clamp(15px,2vw,20px);
+}
+.statusText{
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.25;
+}
+.scoreLine{
+  color:var(--muted);
+  font-size:12px;
+}
+.gamePanel{
+  min-height:0;
+  display:grid;
+  place-items:center;
+  padding:12px;
+  overflow:hidden;
+}
+.gameSurface{
+  width:min(94vw,560px);
+  height:100%;
+  max-height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(56,189,248,.15),transparent 45%),
+    linear-gradient(135deg,rgba(15,23,42,.98),rgba(2,6,23,.86));
+  border:1px solid rgba(148,163,184,.20);
+  padding:clamp(10px,2vh,20px);
+}
+.board{
+  width:min(100%,68vh,430px);
+  aspect-ratio:1/1;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:clamp(8px,1.8vmin,14px);
+  padding:clamp(10px,2vmin,18px);
+  border-radius:26px;
+  background:linear-gradient(145deg,rgba(56,189,248,.22),rgba(167,139,250,.16));
+  border:1px solid rgba(56,189,248,.28);
+  box-shadow:0 24px 60px rgba(0,0,0,.40), inset 0 0 32px rgba(255,255,255,.04);
+}
+.cell{
+  aspect-ratio:1/1;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:20px;
+  background:linear-gradient(145deg,#1e293b,#020617);
+  color:var(--text);
+  box-shadow:inset 0 0 18px rgba(0,0,0,.70), 0 10px 20px rgba(0,0,0,.35);
+  cursor:pointer;
+  user-select:none;
+  font-size:clamp(42px,13vmin,86px);
+  line-height:1;
+  font-weight:1000;
+  transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.cell:not(.disabled):hover{
+  transform:translateY(-2px) scale(1.025);
+  box-shadow:0 0 22px rgba(56,189,248,.34), inset 0 0 18px rgba(0,0,0,.58);
+}
+.cell.disabled{cursor:not-allowed;opacity:.96}
+.cell.x{color:var(--x);text-shadow:0 0 16px rgba(56,189,248,.60)}
+.cell.o{color:var(--o);text-shadow:0 0 16px rgba(245,158,11,.54)}
+.cell.win{
+  background:linear-gradient(145deg,rgba(34,197,94,.38),rgba(15,23,42,.95));
+  box-shadow:0 0 26px rgba(34,197,94,.35), inset 0 0 20px rgba(34,197,94,.10);
+}
+.gameLog{
+  min-height:54px;
+  max-height:72px;
+  overflow:auto;
+  padding:8px 10px;
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.35;
+}
+.logEntry{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{
+  border:0;
+  border-radius:12px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-weight:800;
+  color:#06111f;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:760px), (max-height:560px){
+  .gameShell{gap:7px;padding:7px}
+  .gameHeader{grid-template-columns:1fr 1fr;padding:8px}
+  .centerStatus{grid-column:1 / -1;grid-row:2;width:100%;order:3}
+  .petBadge{width:42px;height:42px;flex-basis:42px;border-radius:13px}
+  .petBadge img{max-width:40px;max-height:40px}
+  .playerMeta,.petName,.scoreLine{font-size:11px}
+  .gamePanel{padding:8px}
+  .gameLog{max-height:58px}
+}
 </style>
 </head>
 <body>
 <div class="gameShell">
   <header class="gameHeader">
-    <div id="p0Card" class="playerCard"></div>
+    <div id="player0" class="playerCard"></div>
     <div class="centerStatus">
       <div class="title">Tic Tac Toe</div>
       <div id="status" class="statusText">Loading players...</div>
-      <div id="roomText" class="roomText">Room: —</div>
-      <div class="controls"><button class="btn" onclick="newGame(true)">New Game</button></div>
+      <div id="scoreLine" class="scoreLine">Wins: 0 - 0 · Ties: 0</div>
     </div>
-    <div id="p1Card" class="playerCard"></div>
+    <div id="player1" class="playerCard"></div>
   </header>
-  <main class="gamePanel"><div class="boardWrap"><div id="board"></div></div></main>
-  <footer class="gameLog" id="log"><div class="logLine">Game loaded.</div></footer>
+
+  <main class="gamePanel">
+    <div class="gameSurface">
+      <div id="board" class="board"></div>
+    </div>
+  </main>
+
+  <footer class="gameLog" id="log"><div class="logEntry">Game loaded.</div></footer>
 </div>
+
 <script>
 const GAME_ID='tictactoe';
 const GAME_META={id:'tictactoe',name:'Tic Tac Toe',minPlayers:2,maxPlayers:2,seats:2};
-let GAME_CONTEXT={username:'',roomId:'',players:[],seats:[],mySeat:-1,activePets:{}};
-let players=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];
+
+let GAME_CONTEXT={
+  username:'',
+  roomId:'',
+  players:[],
+  seats:[],
+  mySeat:null,
+  activePets:{}
+};
+
+let players=[
+  {seat:0,name:'Player 1'},
+  {seat:1,name:'Player 2'}
+];
 let mySeat=null;
 let setupReceived=false;
-let winningLine=[];
+let lastResultKey='';
 let state=freshState();
 
-function freshState(){return{board:['','','','','','','','',''],turn:players[0].seat,marks:{},scores:{},ties:0,gameOver:false,message:'New game. '+nameOf(players[0].seat)+' goes first.'};}
-function normalizePlayers(input){
-  if(!input||!input.length)return players;
-  return input.slice(0,2).map((p,i)=>{
-    if(typeof p==='string')return{seat:i,name:p};
-    return{seat:Number(p.seat!==undefined?p.seat:i),name:p.name||p.username||('Seat '+(Number(p.seat!==undefined?p.seat:i)+1)),pet:p.pet||p.activePet||null};
-  }).sort((a,b)=>a.seat-b.seat);
+function freshState(){
+  let firstSeat=(players[0]&&Number.isFinite(Number(players[0].seat)))?Number(players[0].seat):0;
+  return {
+    board:['','','','','','','','',''],
+    turn:firstSeat,
+    marks:{},
+    scores:{},
+    ties:0,
+    gameOver:false,
+    winningLine:[],
+    round:1,
+    message:'New game. '+nameOf(firstSeat)+' goes first.'
+  };
 }
-function receiveSetup(newPlayers,newSeat,extra){
-  setupReceived=true;
-  players=normalizePlayers(newPlayers);
-  if(newSeat!==undefined&&newSeat!==null){mySeat=Number(newSeat);if(!players.some(p=>p.seat===mySeat))mySeat=null;}
-  if(extra){
-    GAME_CONTEXT.username=extra.username||GAME_CONTEXT.username||'';
-    GAME_CONTEXT.roomId=extra.roomId||extra.room||GAME_CONTEXT.roomId||'';
-    GAME_CONTEXT.activePets=extra.activePets||GAME_CONTEXT.activePets||{};
+
+function normalizePlayers(input){
+  let arr=[];
+
+  if(Array.isArray(input)){
+    input.forEach(function(p,i){
+      if(!p)return;
+      if(typeof p==='string'){
+        arr.push({seat:i,name:p});
+      }else{
+        arr.push({seat:Number(p.seat!==undefined?p.seat:i),name:p.name||p.username||('Seat '+(i+1))});
+      }
+    });
   }
-  GAME_CONTEXT.players=players;GAME_CONTEXT.mySeat=(mySeat===null?-1:mySeat);
+
+  if(!arr.length){
+    arr=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];
+  }
+
+  arr=arr.slice(0,2).map(function(p,i){
+    return {seat:Number.isFinite(Number(p.seat))?Number(p.seat):i,name:p.name||('Seat '+(i+1))};
+  }).sort(function(a,b){return a.seat-b.seat;});
+
+  while(arr.length<2){
+    arr.push({seat:arr.length,name:'Waiting...'});
+  }
+
+  return arr;
+}
+
+function receiveContext(ctx){
+  ctx=ctx||{};
+  GAME_CONTEXT=Object.assign({},GAME_CONTEXT,ctx);
+
+  if(ctx.players)players=normalizePlayers(ctx.players);
+  if(ctx.mySeat!==undefined&&ctx.mySeat!==null){
+    mySeat=Number(ctx.mySeat);
+  }else{
+    mySeat=null;
+  }
+
+  setupReceived=true;
   ensureStateShape();
-  if(!players.some(p=>p.seat===state.turn))state.turn=players[0].seat;
+
+  if(!players.some(function(p){return p.seat===state.turn;})){
+    state.turn=players[0].seat;
+  }
+
   draw();
 }
+
+function receiveSetup(newPlayers,newSeat,msg){
+  receiveContext({
+    username:(msg&&msg.username)||GAME_CONTEXT.username||'',
+    roomId:(msg&&msg.roomId)||GAME_CONTEXT.roomId||'',
+    players:newPlayers||GAME_CONTEXT.players||players,
+    mySeat:newSeat,
+    activePets:(msg&&msg.activePets)||GAME_CONTEXT.activePets||{}
+  });
+}
+
 function ensureStateShape(){
   if(!state)state=freshState();
-  if(!state.board)state.board=['','','','','','','','',''];
-  if(!state.marks)state.marks={}; if(!state.scores)state.scores={}; if(state.ties===undefined)state.ties=0;
-  if(players[0]){state.marks[players[0].seat]='X';if(state.scores[players[0].seat]===undefined)state.scores[players[0].seat]=0;}
-  if(players[1]){state.marks[players[1].seat]='O';if(state.scores[players[1].seat]===undefined)state.scores[players[1].seat]=0;}
+  if(!Array.isArray(state.board)||state.board.length!==9)state.board=['','','','','','','','',''];
+  if(!state.marks)state.marks={};
+  if(!state.scores)state.scores={};
+  if(state.ties===undefined)state.ties=0;
+  if(!state.winningLine)state.winningLine=[];
+  if(!state.round)state.round=1;
+
+  if(players[0]){
+    state.marks[players[0].seat]='X';
+    if(state.scores[players[0].seat]===undefined)state.scores[players[0].seat]=0;
+  }
+  if(players[1]){
+    state.marks[players[1].seat]='O';
+    if(state.scores[players[1].seat]===undefined)state.scores[players[1].seat]=0;
+  }
 }
+
 function draw(){
   ensureStateShape();
-  let turnName=nameOf(state.turn); let myTurn=mySeat===state.turn&&!state.gameOver;
-  document.getElementById('roomText').innerText='Room: '+(GAME_CONTEXT.roomId||'—');
-  document.getElementById('status').innerText=state.gameOver?state.message:(myTurn?'Your turn. Place your mark.':turnName+"'s turn. Watching live.");
-  renderPlayerCard(0);renderPlayerCard(1);
-  const board=document.getElementById('board');board.innerHTML='';
-  state.board.forEach((value,index)=>{
-    let cell=document.createElement('div');cell.className='cell';
-    if(value){cell.className+=' mark'+value;cell.textContent=value;}
-    if(winningLine.includes(index))cell.className+=' winCell';
-    if(value||!myTurn||state.gameOver){cell.className+=' disabled';}else{cell.onclick=()=>makeMove(index);}
+  drawPlayers();
+  drawBoard();
+  drawScore();
+
+  let turnName=nameOf(state.turn);
+  let myTurn=mySeat===state.turn&&!state.gameOver;
+  let status=document.getElementById('status');
+
+  if(state.gameOver){
+    status.innerText=state.message;
+  }else if(mySeat===null){
+    status.innerText=turnName+"'s turn. Watching live.";
+  }else if(myTurn){
+    status.innerText='Your turn. Place your mark.';
+  }else{
+    status.innerText=turnName+"'s turn. Waiting...";
+  }
+}
+
+function drawPlayers(){
+  [0,1].forEach(function(index){
+    let el=document.getElementById('player'+index);
+    let p=players[index]||{seat:index,name:'Waiting...'};
+    let mark=index===0?'X':'O';
+    let pet=GAME_CONTEXT.activePets&&GAME_CONTEXT.activePets[p.name];
+    let isActive=!state.gameOver&&state.turn===p.seat;
+
+    el.className='playerCard '+(mark==='O'?'o ':'')+(isActive?'active':'');
+    el.innerHTML=
+      '<div class="petBadge">'+petHtml(pet)+'</div>'+ 
+      '<div class="playerInfo">'+
+        '<div class="playerName">'+escapeHtml(p.name)+'</div>'+ 
+        '<div class="playerMeta">Seat '+(p.seat+1)+' · '+mark+(mySeat===p.seat?' · You':'')+'</div>'+ 
+        '<div class="petName">'+(pet?escapeHtml(pet.name||'Active Pet')+' Lv.'+Number(pet.level||1):'No active pet')+'</div>'+ 
+      '</div>';
+  });
+}
+
+function petHtml(pet){
+  if(!pet)return '<span class="petFallback">✦</span>';
+  let emoji=pet.emoji||'🐾';
+  if(pet.image){
+    return '<img src="'+escapeAttr(pet.image)+'" alt="'+escapeAttr(pet.name||'Pet')+'" onerror="this.outerHTML=\'<span class=&quot;petFallback&quot;>'+escapeHtml(emoji)+'</span>\'">';
+  }
+  return '<span class="petFallback">'+escapeHtml(emoji)+'</span>';
+}
+
+function drawBoard(){
+  let board=document.getElementById('board');
+  board.innerHTML='';
+  let myTurn=mySeat===state.turn&&!state.gameOver;
+  let winning={};
+  (state.winningLine||[]).forEach(function(i){winning[i]=true;});
+
+  state.board.forEach(function(value,index){
+    let cell=document.createElement('button');
+    cell.className='cell '+(value==='X'?'x ':value==='O'?'o ':'')+(value||!myTurn||state.gameOver?'disabled ':'')+(winning[index]?'win':'');
+    cell.textContent=value;
+    cell.disabled=!!(value||!myTurn||state.gameOver);
+    if(!cell.disabled)cell.onclick=function(){makeMove(index);};
     board.appendChild(cell);
   });
 }
-function renderPlayerCard(idx){
-  const el=document.getElementById(idx===0?'p0Card':'p1Card'); const p=players[idx]||{seat:idx,name:'Waiting...'}; const seat=p.seat;
-  const mark=idx===0?'X':'O'; const active=state&&!state.gameOver&&state.turn===seat; const me=(mySeat===seat);
-  const pet=getPetFor(p); let petHtml='<div class="petBadge">'+(idx===0?'✕':'○')+'</div>';
-  if(pet){petHtml='<div class="petBadge">'+(pet.image?'<img src="'+escapeAttr(pet.image)+'" alt="">':(pet.emoji||'🐾'))+'</div>';}
-  el.className='playerCard'+(active?' active':'')+(me?' me':'');
-  el.innerHTML=petHtml+'<div class="playerInfo"><div class="playerName">'+escapeHtml(p.name)+'</div><div class="playerMeta">Seat '+(seat+1)+' · '+mark+(me?' · You':'')+'</div><div class="petName">'+(pet?escapeHtml((pet.name||'Pet')+(pet.level?' Lv.'+pet.level:'')):'No active pet')+'</div><span class="turnPill">'+(state&&state.gameOver?'Round over':(active?'Current turn':'Waiting'))+'</span></div>';
+
+function drawScore(){
+  let a=players[0]?state.scores[players[0].seat]||0:0;
+  let b=players[1]?state.scores[players[1].seat]||0:0;
+  document.getElementById('scoreLine').innerText='Wins: '+a+' - '+b+' · Ties: '+(state.ties||0);
 }
-function getPetFor(p){
-  if(!p)return null; if(p.pet)return p.pet; if(p.activePet)return p.activePet;
-  let pets=GAME_CONTEXT.activePets||{}; return pets[p.name]||pets[p.username]||pets[p.seat]||null;
-}
+
 function makeMove(index){
-  if(state.gameOver||mySeat!==state.turn||state.board[index])return;
-  let mark=state.marks[mySeat]; state.board[index]=mark; winningLine=[];
-  let line=getWinLine(mark);
-  if(line){winningLine=line;state.gameOver=true;state.scores[mySeat]=(state.scores[mySeat]||0)+1;state.message=nameOf(mySeat)+' wins!';log(state.message);}
-  else if(state.board.every(x=>x)){state.gameOver=true;state.ties=(state.ties||0)+1;state.message='Tie game!';log(state.message);}
-  else{nextTurn();state.message=nameOf(state.turn)+' is next.';log(nameOf(mySeat)+' played a square.');}
-  draw();sync();
-}
-function nextTurn(){let idx=players.findIndex(p=>p.seat===state.turn);if(idx<0)idx=0;state.turn=players[(idx+1)%players.length].seat;}
-function getWinLine(mark){const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return wins.find(combo=>combo.every(i=>state.board[i]===mark))||null;}
-function checkWin(mark){return !!getWinLine(mark);}
-function newGame(sendIt){
-  let oldScores=state&&state.scores?state.scores:{};let oldTies=state&&state.ties?state.ties:0;winningLine=[];
-  state={board:['','','','','','','','',''],turn:players[0].seat,marks:{},scores:oldScores,ties:oldTies,gameOver:false,message:'New game. '+nameOf(players[0].seat)+' goes first.'};
-  ensureStateShape();draw();log('New round started.');if(sendIt)sync();
-}
-function nameOf(seat){let p=players.find(x=>x.seat===seat);return p?p.name:'Seat '+(seat+1);}
-function sync(){window.sendMove({type:'state',state,winningLine});}
-window.sendMove=function(data){parent.postMessage({type:'move',data:data},'*');};
-window.onMove=function(data){
-  if(!data)return;
-  if(data.game&&data.game!==GAME_ID)return;
-  if(data.type==='state'){state=data.state;winningLine=data.winningLine||[];ensureStateShape();draw();}
-  if(data.type==='gameSetup'){receiveSetup(data.players,data.mySeat,data);}
-};
-window.addEventListener('message',function(event){
-  let data=event.data||{};
-  if(data.type==='gameSetup'){receiveSetup(data.players,data.mySeat,data);}
-  if(data.type==='GAME_CONTEXT'){
-    let ctx=data.data||data;GAME_CONTEXT=Object.assign(GAME_CONTEXT,ctx);
-    receiveSetup(ctx.players||ctx.seats,ctx.mySeat,ctx);
+  if(state.gameOver)return;
+  if(mySeat!==state.turn)return;
+  if(state.board[index])return;
+
+  let mark=state.marks[mySeat];
+  state.board[index]=mark;
+  addLog(nameOf(mySeat)+' placed '+mark+'.');
+
+  let line=getWinningLine(mark);
+  if(line){
+    state.gameOver=true;
+    state.winningLine=line;
+    state.scores[mySeat]=(state.scores[mySeat]||0)+1;
+    state.message=nameOf(mySeat)+' wins! New round starting soon.';
+    reportResult('win',mySeat,null);
+    draw();
+    sync();
+    setTimeout(function(){newGame(true);},1800);
+    return;
   }
-  if(data.type==='gameMove')window.onMove(data.data||{});
+
+  if(state.board.every(Boolean)){
+    state.gameOver=true;
+    state.ties=(state.ties||0)+1;
+    state.message='Tie game! New round starting soon.';
+    reportResult('tie',null,null);
+    draw();
+    sync();
+    setTimeout(function(){newGame(true);},1800);
+    return;
+  }
+
+  nextTurn();
+  state.message=nameOf(state.turn)+' is next.';
+  draw();
+  sync();
+}
+
+function nextTurn(){
+  let idx=players.findIndex(function(p){return p.seat===state.turn;});
+  if(idx<0)idx=0;
+  state.turn=players[(idx+1)%players.length].seat;
+}
+
+function getWinningLine(mark){
+  let wins=[
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  return wins.find(function(combo){return combo.every(function(i){return state.board[i]===mark;});})||null;
+}
+
+function newGame(sendIt){
+  let oldScores=state&&state.scores?state.scores:{};
+  let oldTies=state&&state.ties?state.ties:0;
+  let nextRound=(state&&state.round?state.round:1)+1;
+
+  state=freshState();
+  state.scores=oldScores;
+  state.ties=oldTies;
+  state.round=nextRound;
+  state.message='Round '+nextRound+'. '+nameOf(state.turn)+' goes first.';
+  lastResultKey='';
+
+  ensureStateShape();
+  draw();
+  addLog('Round '+nextRound+' started.');
+  if(sendIt)sync();
+}
+
+function reportResult(result,winnerSeat,loserSeat){
+  let key=state.round+'|'+result+'|'+winnerSeat;
+  if(lastResultKey===key)return;
+  lastResultKey=key;
+
+  let winner=winnerSeat!==null&&winnerSeat!==undefined?playerBySeat(winnerSeat):null;
+  let loser=null;
+  if(result==='win'){
+    loser=players.find(function(p){return p&&p.seat!==winnerSeat;})||null;
+  }
+
+  parent.postMessage({
+    type:'gameResult',
+    data:{
+      game:GAME_ID,
+      roomId:GAME_CONTEXT.roomId||'',
+      result:result,
+      winner:winner?winner.name:null,
+      loser:loser?loser.name:null,
+      round:state.round
+    }
+  },'*');
+}
+
+function sync(){
+  parent.postMessage({type:'move',data:{type:'state',game:GAME_ID,state:state}},'*');
+}
+
+window.onMove=function(data){
+  data=data||{};
+
+  if(data.game&&data.game!==GAME_ID)return;
+
+  if(data.type==='state'){
+    state=data.state||state;
+    ensureStateShape();
+    draw();
+  }
+
+  if(data.type==='gameSetup'){
+    receiveSetup(data.players,data.mySeat,data);
+  }
+
+  if(data.type==='GAME_CONTEXT'){
+    receiveContext(data.data||data);
+  }
+};
+
+window.addEventListener('message',function(event){
+  let msg=event.data||{};
+
+  if(msg.type==='GAME_CONTEXT'){
+    receiveContext(msg.data||msg);
+  }
+
+  if(msg.type==='gameSetup'){
+    receiveSetup(msg.players,msg.mySeat,msg);
+  }
+
+  if(msg.type==='gameMove'){
+    window.onMove(msg.data||{});
+  }
 });
-function log(text){let el=document.getElementById('log');let line=document.createElement('div');line.className='logLine';line.textContent=text;el.appendChild(line);while(el.children.length>7)el.removeChild(el.firstChild);el.scrollTop=el.scrollHeight;}
-function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-function escapeAttr(s){return escapeHtml(s).replace(/`/g,'&#96;');}
-parent.postMessage({type:'gameReady'},'*');
+
+function playerBySeat(seat){
+  return players.find(function(p){return p&&p.seat===seat;})||null;
+}
+
+function nameOf(seat){
+  let p=playerBySeat(seat);
+  return p?p.name:'Seat '+(Number(seat)+1);
+}
+
+function addLog(text){
+  let log=document.getElementById('log');
+  let div=document.createElement('div');
+  div.className='logEntry';
+  div.textContent=text;
+  log.appendChild(div);
+  while(log.children.length>6)log.removeChild(log.children[0]);
+  log.scrollTop=log.scrollHeight;
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+}
+
+function escapeAttr(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'');
+}
+
+parent.postMessage({type:'gameReady',game:GAME_ID},'*');
+
 setTimeout(function(){
   if(!setupReceived){
-    if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length)receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT,{});
-    else{ensureStateShape();draw();}
+    if(window.GAME_CONTEXT){
+      receiveContext(window.GAME_CONTEXT);
+    }else if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){
+      receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT,{});
+    }else{
+      ensureStateShape();
+      draw();
+    }
   }
-},100);
+},80);
 </script>
 </body>
 </html>
