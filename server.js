@@ -106,8 +106,40 @@ function itemBasePrice(itemId){
   return 0;
 }
 
+function normalizeHour(value,fallback){
+  let n=Math.floor(Number(value));
+  if(!Number.isFinite(n))return fallback;
+  return Math.max(0,Math.min(23,n));
+}
+
+function isShopOpen(shop,now=new Date()){
+  if(!shop)return true;
+  if(shop.forceClosed===true)return false;
+  if(shop.forceOpen===true)return true;
+
+  let open=normalizeHour(shop.openHour,0);
+  let close=normalizeHour(shop.closeHour,24);
+  let hour=now.getHours();
+
+  if(close>=24)return hour>=open;
+  if(open===close)return true;
+  if(open<close)return hour>=open&&hour<close;
+  return hour>=open||hour<close;
+}
+
 function publicShopCatalog(){
-  return shopCatalog();
+  let catalog=shopCatalog();
+  Object.keys(catalog||{}).forEach(id=>{
+    let shop=catalog[id]||{};
+    shop.id=shop.id||id;
+    shop.openHour=normalizeHour(shop.openHour,0);
+    shop.closeHour=shop.closeHour===24?24:normalizeHour(shop.closeHour,24);
+    shop.bannerImage=shop.bannerImage||('/assets/shops/'+id+'_banner.png');
+    shop.keeperImage=shop.keeperImage||('/assets/shops/'+id+'_keeper.png');
+    shop.isOpen=isShopOpen(shop);
+    catalog[id]=shop;
+  });
+  return catalog;
 }
 
 function allShopItemIds(){
@@ -1303,6 +1335,38 @@ app.get('/api/admin/market',(req,res)=>{
   });
 });
 
+app.post('/api/admin/shops/update',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let shopId=String(req.body.shopId||'').trim();
+  let catalog=shopCatalog();
+  let shop=catalog[shopId];
+
+  if(!shop)return res.status(404).json({error:'Shop not found'});
+
+  shop.name=String(req.body.name||shop.name||shopId).trim().slice(0,40)||shopId;
+  shop.icon=String(req.body.icon||shop.icon||'🏪').trim().slice(0,4)||'🏪';
+  shop.theme=String(req.body.theme||shop.theme||'classic').trim().slice(0,32)||'classic';
+  shop.description=String(req.body.description||shop.description||'').trim().slice(0,180);
+  shop.openHour=normalizeHour(req.body.openHour,0);
+  shop.closeHour=Number(req.body.closeHour)===24?24:normalizeHour(req.body.closeHour,24);
+  shop.bannerImage=String(req.body.bannerImage||shop.bannerImage||('/assets/shops/'+shopId+'_banner.png')).trim().slice(0,160);
+  shop.keeperImage=String(req.body.keeperImage||shop.keeperImage||('/assets/shops/'+shopId+'_keeper.png')).trim().slice(0,160);
+  shop.forceOpen=!!req.body.forceOpen;
+  shop.forceClosed=!!req.body.forceClosed;
+  if(shop.forceOpen&&shop.forceClosed)shop.forceClosed=false;
+
+  catalog[shopId]=shop;
+  writeJSON(shopsFile,catalog);
+
+  res.json({
+    ok:true,
+    message:'Shop updated.',
+    npcShops:publicShopCatalog()
+  });
+});
+
 app.post('/api/admin/market/remove',(req,res)=>{
   let adminUser=requireAdmin(req,res);
   if(!adminUser)return;
@@ -1480,6 +1544,7 @@ app.post('/api/pet/buy',(req,res)=>{
 
   let sale=getShopSale(itemId);
   if(!sale)return res.json({error:'This item is not currently sold in shops'});
+  if(!isShopOpen(sale.shop))return res.json({error:(sale.shop.name||'This shop')+' is currently closed'});
 
   let price=Number((sale.sale&&sale.sale.price)!==undefined?sale.sale.price:itemBasePrice(itemId));
   if(price<0)return res.json({error:'Invalid item price'});
