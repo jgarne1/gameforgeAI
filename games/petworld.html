@@ -14,7 +14,7 @@ GameForge AI / PetWorld maintainer notes:
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
 - Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
 - Top-level duplicate tab buttons and duplicate progress panels were intentionally removed; utility systems live in the right-side tabs and progression lives on the stage.
-- Rename is a small title-bar utility; the left panel stays focused on next goals while the journal is pinned to the iframe bottom.
+- Rename is a small title-bar utility; the left panel shows the current next goal first, then compact supporting identity details; the journal is pinned to the iframe bottom.
 - Exploration now uses a short client-side adventure animation and reward reveal, while rewards remain server-authoritative.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 - Pet reactions are client-only animations; profile changes still come from server APIs.
@@ -921,8 +921,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   <div class="hud">
     <div class="panel leftPanel">
       <div class="leftTop">
-        <div id="statStack" class="statStack"></div>
         <div id="leftGoalBox" class="goalCard"></div>
+        <div id="statStack" class="statStack"></div>
       </div>
     </div>
 
