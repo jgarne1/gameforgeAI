@@ -172,7 +172,7 @@
   "myrarepet": {
     "id": "myrarepet",
     "name": "RareSkill",
-    "type": "rareskills",
+    "type": "water",
     "emoji": "🐾",
     "rarity": "common",
     "hatchWeight": 100,
