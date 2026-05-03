@@ -59,6 +59,7 @@ const marketFile=path.join(DATA,'market.json');
 const itemsFile=path.join(DATA,'items.json');
 const shopsFile=path.join(DATA,'shops.json');
 const gamesFile=path.join(__dirname,'games.json');
+const petSpeciesFile=path.join(DATA,'pet_species.json');
 
 app.use(express.json({limit:'12mb'}));
 app.use(express.static(path.join(__dirname,'public')));
@@ -635,7 +636,16 @@ function defaultPetProfile(username){
     }
   },username);
 }
+function petSpeciesCatalog(){
+  return readJSON(petSpeciesFile,{});
+}
 
+function mergedPetSpecies(){
+  return {
+    ...PET_SPECIES,
+    ...petSpeciesCatalog()
+  };
+}
 const PET_SPECIES={
   flarecub:{name:'Flarecub',type:'fire',emoji:'🔥',base:{hp:24,attack:7,defense:4,speed:5},moves:['tackle','ember_nip']},
   frostfin:{name:'Frostfin',type:'water',emoji:'💧',base:{hp:22,attack:5,defense:6,speed:6},moves:['tackle','bubble_snap']},
@@ -862,7 +872,7 @@ function hatchPersonality(traits,affection){
 
 function hatchPet(pet){
   let speciesKey=hatchSpecies(pet.eggTraits||{});
-  let species=PET_SPECIES[speciesKey];
+let species=mergedPetSpecies()[speciesKey];
 
   let traits=pet.eggTraits||{};
   let totalTraits=Object.values(traits).reduce((a,b)=>a+b,0)||1;
@@ -1996,7 +2006,7 @@ app.get('/api/pet/profile',(req,res)=>{
   res.json({
     ok:true,
     profile,
-    species:PET_SPECIES,
+    species:mergedPetSpecies(),
     limits:PET_LIMITS,
     shop:itemCatalog(),
     shops:publicShopCatalog(),
