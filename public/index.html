@@ -3264,5 +3264,58 @@ loadGames();
 drawRoom();
 updateQuickStats();
 </script>
+  <script>
+/*
+GameForge Chat + Player Visibility Patch
+SAFE: does not override layout, only unhides panels in game mode
+*/
+
+(function(){
+
+  function forceChatVisible(){
+    const body = document.body;
+
+    // Only apply when in game mode
+    if(!body.classList.contains('gameMode')) return;
+
+    // Try common containers
+    const sidePanels = document.querySelectorAll('.side, .sidePanel, .rightPanel');
+
+    sidePanels.forEach(panel=>{
+      panel.style.display = 'flex';
+      panel.style.visibility = 'visible';
+      panel.style.opacity = '1';
+    });
+
+    // Unhide chat specifically
+    const chat = document.querySelector('#roomChatPanel, .chatPanel');
+    if(chat){
+      chat.classList.remove('hidden');
+      chat.style.display = 'flex';
+    }
+
+    // Unhide player list
+    const players = document.querySelector('#roomPlayers, .playerList');
+    if(players){
+      players.style.display = 'block';
+      players.style.visibility = 'visible';
+    }
+  }
+
+  // Run when game loads
+  const observer = new MutationObserver(()=>{
+    forceChatVisible();
+  });
+
+  observer.observe(document.body, {
+    attributes:true,
+    attributeFilter:['class']
+  });
+
+  // Also try periodically (covers async loads)
+  setInterval(forceChatVisible, 1000);
+
+})();
+</script>
 </body>
 </html>
