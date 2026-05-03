@@ -14,7 +14,7 @@ GameForge AI / PetWorld maintainer notes:
 - This layout is the "PetWorld HUD": left status/quests, center living pet stage with action dock, right utility tabs.
 - Main view should be pet-first. Keep only urgent needs visible; detailed stats live in the Details tab.
 - Top-level duplicate tab buttons and duplicate progress panels were intentionally removed; utility systems live in the right-side tabs and progression lives on the stage.
-- Rename is a small title-bar utility; the left panel shows the current next goal first, then compact supporting identity details; the journal is pinned to the iframe bottom.
+- Rename is a small title-bar utility; the left panel shows the current next goal first, then compact supporting identity details; the journal is compact and lives under the pet stage so it does not steal full-width screen height.
 - Exploration now uses a short client-side adventure animation and reward reveal, while rewards remain server-authoritative.
 - Eggs should stay mostly centered and react visually to care traits; hatched pets can wander around the stage.
 - Pet reactions are client-only animations; profile changes still come from server APIs.
@@ -56,11 +56,11 @@ button,input,select{font-family:inherit}
 
 .wrap{
   height:100vh;
-  min-height:700px;
-  padding:12px;
+  min-height:0;
+  padding:8px;
   display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto;
-  gap:10px;
+  grid-template-rows:auto minmax(0,1fr);
+  gap:8px;
 }
 
 .top{
@@ -143,20 +143,23 @@ button,input,select{font-family:inherit}
 }
 .journalDock{
   min-height:0;
+  height:78px;
+  margin:6px 10px 10px;
   background:rgba(255,255,255,.68);
   backdrop-filter:blur(18px);
   border:1px solid var(--line);
-  box-shadow:0 16px 42px rgba(15,23,42,.11);
-  border-radius:22px;
-  padding:8px 10px;
+  box-shadow:0 10px 26px rgba(15,23,42,.09);
+  border-radius:18px;
+  padding:6px 8px;
+  overflow:hidden;
 }
 .journalTitle{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  margin-bottom:5px;
-  font-size:12px;
+  margin-bottom:3px;
+  font-size:11px;
   font-weight:1000;
   color:#334155;
 }
@@ -165,7 +168,7 @@ button,input,select{font-family:inherit}
   overflow:hidden;
   position:relative;
   display:grid;
-  grid-template-rows:minmax(0,1fr)64px;
+  grid-template-rows:minmax(0,1fr) auto auto 78px;
 }
 
 .petStage{
@@ -480,24 +483,25 @@ button,input,select{font-family:inherit}
 .itemActionRow button{padding:8px 10px;font-size:12px}
 
 .actionDock{
-  position:absolute;
-  left:18px;
-  right:18px;
-  bottom:14px;
+  position:relative;
+  left:auto;
+  right:auto;
+  bottom:auto;
   z-index:10;
-  background:rgba(15,23,42,.46);
+  margin:8px 10px 0;
+  background:rgba(15,23,42,.56);
   border:1px solid rgba(255,255,255,.24);
   backdrop-filter:blur(16px);
-  border-radius:24px;
-  padding:8px;
-  box-shadow:0 16px 46px rgba(15,23,42,.22);
+  border-radius:20px;
+  padding:7px;
+  box-shadow:0 10px 26px rgba(15,23,42,.16);
 }
 .dockTop{
   display:grid;
-  grid-template-columns:minmax(0,1fr)118px 108px;
-  gap:7px;
+  grid-template-columns:minmax(0,1fr)110px 98px;
+  gap:6px;
   align-items:center;
-  margin-bottom:7px;
+  margin-bottom:6px;
 }
 .dockTop select{
   min-width:0;
@@ -509,31 +513,31 @@ button,input,select{font-family:inherit}
   font-size:13px;
 }
 .dockTop button{
-  min-height:42px;
-  padding:8px 10px;
-  border-radius:15px;
+  min-height:38px;
+  padding:7px 9px;
+  border-radius:14px;
   font-size:13px;
 }
 .dockActions{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:7px;
+  gap:6px;
 }
 .dockActions.compact{grid-template-columns:repeat(5,minmax(0,1fr))}
 .dockActions.egg{grid-template-columns:repeat(4,1fr)}
 .dockBtn{
-  min-height:46px;
-  border-radius:16px;
+  min-height:40px;
+  border-radius:14px;
   border:1px solid rgba(255,255,255,.24);
   color:white;
   text-align:left;
-  padding:7px 8px;
+  padding:6px 7px;
   background:rgba(255,255,255,.15);
 }
 .dockBtn strong{display:block;font-size:12px;line-height:1.05}
 .dockBtn span{display:block;font-size:10px;opacity:.82;margin-top:2px;line-height:1.1}
 .trainMini{
-  min-height:46px;
+  min-height:40px;
   border-radius:16px;
   border:1px solid rgba(255,255,255,.24);
   background:rgba(255,255,255,.15);
@@ -569,12 +573,14 @@ button,input,select{font-family:inherit}
 .speech{
   z-index:3;
   margin:0;
-  padding:12px 16px;
+  min-height:42px;
+  padding:8px 14px;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
   font-weight:900;
+  font-size:14px;
   color:#334155;
   background:rgba(255,255,255,.66);
   border-top:1px solid rgba(255,255,255,.45);
@@ -709,16 +715,16 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .eggInfluence .tags span{font-size:11px;font-weight:900;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:5px 8px}
 
 .log{
-  height:190px;
-  max-height:32vh;
+  height:46px;
+  max-height:46px;
   overflow:auto;
   background:rgba(255,251,234,.82);
   border:1px solid #d6bd6b;
-  border-radius:17px;
-  padding:8px;
-  font-size:12px;
+  border-radius:13px;
+  padding:5px 7px;
+  font-size:11px;
   color:#1f2937;
-  line-height:1.35;
+  line-height:1.25;
 }
 
 .eggIdentityPanel{
@@ -876,11 +882,11 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
 @media(max-width:900px){
   body{overflow:auto}
-  .wrap{height:auto}
+  .wrap{height:auto;min-height:100vh}
   .hud{grid-template-columns:1fr}
   .panel{overflow:visible}
-  .stageShell{min-height:620px}
-  .petStage{min-height:520px}
+  .stageShell{min-height:620px;grid-template-rows:minmax(360px,1fr) auto auto 78px}
+  .petStage{min-height:360px}
 }
 @media(max-width:680px){
   .top{align-items:flex-start;flex-direction:column}
@@ -943,10 +949,14 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
         <div id="eggIdentityPanel" class="eggIdentityPanel hidden"></div>
         <div id="floatingFx" class="floatingFx">+1</div>
-        <div id="actionDock" class="actionDock"></div>
       </div>
 
+      <div id="actionDock" class="actionDock"></div>
       <div id="speech" class="speech">Loading your companion...</div>
+      <div class="journalDock">
+        <div class="journalTitle"><span>Journal</span><span class="muted">Recent companion activity</span></div>
+        <div id="log" class="log"></div>
+      </div>
     </div>
 
     <div class="panel">
@@ -966,11 +976,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
       <div id="shopPanel" class="hidden"></div>
       <div id="zonesPanel" class="hidden"></div>
     </div>
-  </div>
-
-  <div class="journalDock">
-    <div class="journalTitle"><span>Journal</span><span class="muted">Recent companion activity</span></div>
-    <div id="log" class="log"></div>
   </div>
 </div>
 
@@ -1015,20 +1020,6 @@ var currentTab='quests';
 var selectedZoneId='meadow';
 var logs=[];
 var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1};
-var pendingPetAction={key:'',expiresAt:0};
-
-function confirmRosterAction(key,message){
-  var now=Date.now();
-  if(pendingPetAction.key===key&&pendingPetAction.expiresAt>now){
-    pendingPetAction={key:'',expiresAt:0};
-    return true;
-  }
-
-  pendingPetAction={key:key,expiresAt:now+6500};
-  notify(message+' Click the button again to confirm.');
-  return false;
-}
-
 
 function el(id){return document.getElementById(id);}
 
@@ -1739,17 +1730,13 @@ async function convertPetToEgg(petId){
   if(!pet)return notify('Pet not found.');
 
   var name=pet.name||'this pet';
-  if(!confirmRosterAction('rescue:'+petId,'Rescue '+name+' for a fresh Mystery Egg? This cannot be undone.'))return;
+  var ok=confirm('Rescue '+name+' and receive a fresh Mystery Egg? This cannot be undone.');
+  if(!ok)return;
 
   try{
     var res=await fetch('/api/pet/convert-to-egg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,petId:petId})});
-    var text=await res.text();
-    var data;
-    try{data=JSON.parse(text)}catch(parseErr){
-      console.error('Rescue pet bad response:',text);
-      return notify('Rescue failed: server returned a bad response.');
-    }
-    if(!res.ok||data.error)return notify((data&&data.error)||('Rescue failed with status '+res.status));
+    var data=await res.json();
+    if(data.error)return notify(data.error);
     profile=data.profile;
     addLog(data.message||'Pet rescued. You received a fresh Mystery Egg.');
     notify(data.message||'Pet rescued!');
@@ -1767,7 +1754,8 @@ async function sellPet(petId){
   if(ids.length<=1)return notify('You cannot sell your last pet.');
 
   var name=pet.name||'this pet';
-  if(!confirmRosterAction('sell:'+petId,'Sell / release '+name+' for coins? This cannot be undone.'))return;
+  var ok=confirm('Sell / release '+name+' for coins? This cannot be undone.');
+  if(!ok)return;
 
   try{
     var res=await fetch('/api/pet/sell',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,petId:petId})});
