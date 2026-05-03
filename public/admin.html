@@ -521,7 +521,10 @@ textarea.adminTextArea{
             <h3>Pet Species Editor</h3>
             <p class="muted">Create or edit pet species data in data/pet_species.json, then upload Baby, Young, and Adult images for that species.</p>
           </div>
-          <button class="primary" onclick="refreshPetSpeciesEditor()">Reload Pets</button>
+          <div class="row">
+            <button class="gold" onclick="syncPetDataFromGithub()">Sync GitHub → Live</button>
+            <button class="primary" onclick="refreshPetSpeciesEditor()">Reload Pets</button>
+          </div>
         </div>
 
         <div class="row" style="margin-bottom:14px">
@@ -1282,6 +1285,30 @@ async function refreshPetSpeciesEditor(){
     toast('Pet species reloaded.');
   }catch(err){
     toast(err.message||'Pet species load failed.');
+  }
+}
+
+async function syncPetDataFromGithub(){
+  if(!confirm('Sync pet_species.json and pet_moves.json from GitHub/repo into the live Render persistent data? GitHub/repo values win when the same pet or move id exists.'))return;
+
+  try{
+    let data=await api('/api/admin/pet-data/sync-from-repo',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:adminUser})
+    });
+
+    petSpeciesCatalog=data.petSpecies||[];
+    PET_EDITOR_SPECIES=petSpeciesCatalog;
+    initPetEditorDropdowns();
+    loadPetSpeciesForm();
+    drawPetEditor();
+    buildAssetDropdowns();
+
+    let changed=(data.sync&&data.sync.results||[]).filter(r=>r.changed).map(r=>r.file).join(', ');
+    toast((data.message||'Pet data synced.')+(changed?' Updated: '+changed: ' No file changes needed.'));
+  }catch(err){
+    toast(err.message||'Pet data sync failed.');
   }
 }
 
