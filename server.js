@@ -21,9 +21,11 @@ const itemsFile=path.join(DATA,'items.json');
 const shopsFile=path.join(DATA,'shops.json');
 const gamesFile=path.join(__dirname,'games.json');
 
-app.use(express.json());
+app.use(express.json({limit:'12mb'}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/games',express.static(path.join(__dirname,'games')));
+// Admin-uploaded image previews live here before approval.
+app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 
 /*
 GameForge AI server maintainer notes for future AI chats/editors:
@@ -1050,6 +1052,275 @@ function requireAdmin(req,res){
 
   return username;
 }
+
+
+
+/* ===== ADMIN ASSET MANAGER API =====
+   No extra npm packages required. The browser sends images as base64 JSON.
+   Flow: upload preview -> review -> approve -> commit correctly named asset to GitHub.
+*/
+
+const ADMIN_ASSET_TYPES=['items','pets','eggs','shops','backgrounds'];
+const ADMIN_ASSET_SLOTS={
+  items:['image'],
+  pets:['idle','battle','portrait','egg','baby','young','adult'],
+  eggs:['idle','cracked','hatch'],
+  shops:['banner','keeper','background'],
+  backgrounds:['image']
+};
+
+function safeAssetId(value){
+  return String(value||'')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g,'_')
+    .replace(/_+/g,'_')
+    .replace(/^_+|_+$/g,'')
+    .slice(0,80);
+}
+
+function safeAssetSlot(type,slot){
+  slot=String(slot||'image').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_');
+  let allowed=ADMIN_ASSET_SLOTS[type]||['image'];
+  return allowed.includes(slot)?slot:allowed[0];
+}
+
+function parseImageDataUrl(dataUrl){
+  let match=String(dataUrl||'').match(/^data:image\/(png|jpeg|jpg|webp);base64,([A-Za-z0-9+/=]+)$/);
+  if(!match)return null;
+  let ext=match[1]==='jpeg'?'jpg':match[1];
+  let buffer=Buffer.from(match[2],'base64');
+  return {ext,buffer};
+}
+
+function pendingAssetDir(type){
+  return path.join(__dirname,'uploads','pending',type);
+}
+
+function pendingAssetPath(type,tempFile){
+  return path.join(pendingAssetDir(type),path.basename(String(tempFile||'')));
+}
+
+function finalAssetRepoPath(type,targetId,slot,ext){
+  targetId=safeAssetId(targetId);
+  slot=safeAssetSlot(type,slot);
+  ext=String(ext||'png').replace(/[^a-z0-9]/g,'')||'png';
+
+  if(type==='items')return `public/assets/items/${targetId}.${ext}`;
+  if(type==='pets')return `public/assets/pets/${targetId}/${slot}.${ext}`;
+  if(type==='eggs')return `public/assets/pets/egg/${slot}.${ext}`;
+  if(type==='shops')return `public/assets/shops/${targetId}_${slot}.${ext}`;
+  if(type==='backgrounds')return `public/assets/backgrounds/${targetId}.${ext}`;
+
+  return `public/assets/misc/${targetId}.${ext}`;
+}
+
+function publicPathFromRepoPath(repoPath){
+  return '/'+String(repoPath||'').replace(/^public\//,'');
+}
+
+async function githubJson(method,url,body){
+  let token=process.env.GITHUB_TOKEN;
+  if(!token)throw new Error('Missing GITHUB_TOKEN environment variable.');
+
+  let response=await fetch(url,{
+    method,
+    headers:{
+      'Authorization':'Bearer '+token,
+      'Accept':'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28',
+      'Content-Type':'application/json'
+    },
+    body:body?JSON.stringify(body):undefined
+  });
+
+  let text=await response.text();
+  let data={};
+  try{data=text?JSON.parse(text):{};}catch(e){data={raw:text};}
+
+  if(!response.ok){
+    throw new Error((data&&data.message)||('GitHub request failed: '+response.status));
+  }
+
+  return data;
+}
+
+async function getGithubFileSha(repoPath){
+  let owner=process.env.GITHUB_OWNER;
+  let repo=process.env.GITHUB_REPO;
+  let branch=process.env.GITHUB_BRANCH||'main';
+  let url=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${encodeURIComponent(branch)}`;
+
+  try{
+    let data=await githubJson('GET',url);
+    return data.sha||null;
+  }catch(err){
+    if(String(err.message||'').includes('Not Found'))return null;
+    return null;
+  }
+}
+
+async function commitFileToGithub(repoPath,buffer,message){
+  let owner=process.env.GITHUB_OWNER;
+  let repo=process.env.GITHUB_REPO;
+  let branch=process.env.GITHUB_BRANCH||'main';
+
+  if(!owner||!repo)throw new Error('Missing GITHUB_OWNER or GITHUB_REPO environment variable.');
+
+  let url=`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}`;
+  let sha=await getGithubFileSha(repoPath);
+  let body={
+    message,
+    content:buffer.toString('base64'),
+    branch
+  };
+  if(sha)body.sha=sha;
+
+  return githubJson('PUT',url,body);
+}
+
+app.post('/api/admin/assets/upload-preview',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let type=String(req.body.type||'').trim().toLowerCase();
+  let targetId=safeAssetId(req.body.targetId);
+  let slot=String(req.body.slot||'image').trim().toLowerCase();
+  let parsed=parseImageDataUrl(req.body.dataUrl);
+
+  if(!ADMIN_ASSET_TYPES.includes(type))return res.status(400).json({error:'Invalid asset type'});
+  if(!targetId)return res.status(400).json({error:'Missing targetId'});
+  if(!parsed)return res.status(400).json({error:'Image must be PNG, JPG, or WEBP'});
+  if(parsed.buffer.length>5*1024*1024)return res.status(400).json({error:'Image must be under 5MB'});
+
+  slot=safeAssetSlot(type,slot);
+
+  let dir=pendingAssetDir(type);
+  fs.mkdirSync(dir,{recursive:true});
+
+  let tempFile=`${targetId}_${slot}_${Date.now()}.${parsed.ext}`;
+  fs.writeFileSync(path.join(dir,tempFile),parsed.buffer);
+
+  res.json({
+    ok:true,
+    message:'Preview uploaded.',
+    type,
+    targetId,
+    slot,
+    tempFile,
+    previewUrl:`/uploads/pending/${type}/${tempFile}`
+  });
+});
+
+app.get('/api/admin/assets/pending',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let out=[];
+
+  ADMIN_ASSET_TYPES.forEach(type=>{
+    let dir=pendingAssetDir(type);
+    if(!fs.existsSync(dir))return;
+
+    fs.readdirSync(dir).forEach(file=>{
+      let full=path.join(dir,file);
+      let stat=fs.statSync(full);
+      out.push({
+        type,
+        tempFile:file,
+        previewUrl:`/uploads/pending/${type}/${file}`,
+        size:stat.size,
+        createdAt:stat.mtimeMs
+      });
+    });
+  });
+
+  out.sort((a,b)=>Number(b.createdAt)-Number(a.createdAt));
+  res.json({ok:true,pending:out});
+});
+
+app.post('/api/admin/assets/reject',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let type=String(req.body.type||'').trim().toLowerCase();
+  let tempFile=path.basename(String(req.body.tempFile||''));
+
+  if(!ADMIN_ASSET_TYPES.includes(type))return res.status(400).json({error:'Invalid asset type'});
+  if(!tempFile)return res.status(400).json({error:'Missing tempFile'});
+
+  let full=pendingAssetPath(type,tempFile);
+  if(fs.existsSync(full))fs.unlinkSync(full);
+
+  res.json({ok:true,message:'Pending asset rejected.'});
+});
+
+app.post('/api/admin/assets/approve',async (req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  try{
+    let type=String(req.body.type||'').trim().toLowerCase();
+    let targetId=safeAssetId(req.body.targetId);
+    let slot=String(req.body.slot||'image').trim().toLowerCase();
+    let tempFile=path.basename(String(req.body.tempFile||''));
+
+    if(!ADMIN_ASSET_TYPES.includes(type))return res.status(400).json({error:'Invalid asset type'});
+    if(!targetId)return res.status(400).json({error:'Missing targetId'});
+    if(!tempFile)return res.status(400).json({error:'Missing tempFile'});
+
+    slot=safeAssetSlot(type,slot);
+
+    let pending=pendingAssetPath(type,tempFile);
+    if(!fs.existsSync(pending))return res.status(404).json({error:'Pending file not found'});
+
+    let ext=(path.extname(tempFile).replace('.','')||'png').toLowerCase();
+    let repoPath=finalAssetRepoPath(type,targetId,slot,ext);
+    let publicPath=publicPathFromRepoPath(repoPath);
+    let buffer=fs.readFileSync(pending);
+
+    await commitFileToGithub(repoPath,buffer,`Admin asset update: ${repoPath}`);
+
+    // Also copy locally so the current Render instance can display it until redeploy.
+    let localFinal=path.join(__dirname,repoPath);
+    fs.mkdirSync(path.dirname(localFinal),{recursive:true});
+    fs.writeFileSync(localFinal,buffer);
+
+    // Keep item/shop JSON paths aligned for systems that read image fields.
+    if(type==='items'){
+      let catalog=itemCatalog();
+      catalog[targetId]=catalog[targetId]||{name:targetId};
+      catalog[targetId].image=publicPath;
+      writeJSON(itemsFile,catalog);
+      await commitFileToGithub('data/items.json',Buffer.from(JSON.stringify(catalog,null,2)),`Admin item image path update: ${targetId}`);
+    }
+
+    if(type==='shops'){
+      let catalog=shopCatalog();
+      catalog[targetId]=catalog[targetId]||{id:targetId,name:targetId,items:{}};
+      if(slot==='banner')catalog[targetId].bannerImage=publicPath;
+      if(slot==='keeper')catalog[targetId].keeperImage=publicPath;
+      if(slot==='background')catalog[targetId].backgroundImage=publicPath;
+      writeJSON(shopsFile,catalog);
+      await commitFileToGithub('data/shops.json',Buffer.from(JSON.stringify(catalog,null,2)),`Admin shop image path update: ${targetId}`);
+    }
+
+    fs.unlinkSync(pending);
+
+    res.json({
+      ok:true,
+      message:'Asset approved and committed to GitHub.',
+      type,
+      targetId,
+      slot,
+      repoPath,
+      publicPath
+    });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message||'Asset approval failed'});
+  }
+});
 
 function adminItemCatalog(){
   let catalog=itemCatalog();
