@@ -17,6 +17,8 @@ const adminsFile=path.join(DATA,'admins.json');
 const petsFile=path.join(DATA,'pets.json');
 const movesFile=path.join(DATA,'pet_moves.json');
 const marketFile=path.join(DATA,'market.json');
+const itemsFile=path.join(DATA,'items.json');
+const shopsFile=path.join(DATA,'shops.json');
 const gamesFile=path.join(__dirname,'games.json');
 
 app.use(express.json());
@@ -50,6 +52,95 @@ function pets(){return readJSON(petsFile,{})}
 function moves(){return readJSON(movesFile,DEFAULT_MOVES)}
 function market(){return readJSON(marketFile,{listings:{},nextId:1})}
 function saveMarket(m){writeJSON(marketFile,m)}
+
+function itemCatalog(){
+  return readJSON(itemsFile,SHOP_ITEMS);
+}
+
+function shopCatalog(){
+  return readJSON(shopsFile,{});
+}
+
+function getItemDef(itemId){
+  return itemCatalog()[itemId]||null;
+}
+
+function getItemName(itemId){
+  let item=getItemDef(itemId);
+  return item ? item.name : itemId;
+}
+
+function getShopSale(itemId){
+  let shops=shopCatalog();
+
+  for(let shopId of Object.keys(shops)){
+    let shop=shops[shopId];
+    if(shop.items&&shop.items[itemId]){
+      return {
+        shopId,
+        shop,
+        sale:shop.items[itemId]
+      };
+    }
+  }
+
+  return null;
+}
+
+function itemBasePrice(itemId){
+  let sale=getShopSale(itemId);
+  let item=getItemDef(itemId);
+
+  if(sale&&sale.sale&&sale.sale.price!==undefined){
+    return Number(sale.sale.price||0);
+  }
+
+  if(item&&item.basePrice!==undefined){
+    return Number(item.basePrice||0);
+  }
+
+  if(item&&item.price!==undefined){
+    return Number(item.price||0);
+  }
+
+  return 0;
+}
+
+function publicShopCatalog(){
+  return shopCatalog();
+}
+
+function allShopItemIds(){
+  let ids={};
+  let shops=shopCatalog();
+
+  Object.keys(shops).forEach(shopId=>{
+    let shop=shops[shopId]||{};
+    Object.keys(shop.items||{}).forEach(itemId=>{
+      ids[itemId]=true;
+    });
+  });
+
+  return Object.keys(ids);
+}
+
+function purchasableItemCatalog(){
+  let catalog=itemCatalog();
+  let out={};
+  let shopIds=allShopItemIds();
+
+  if(!shopIds.length){
+    return catalog;
+  }
+
+  shopIds.forEach(id=>{
+    if(catalog[id])out[id]=catalog[id];
+  });
+
+  return out;
+}
+
+
 
 function admins(){
   let a=readJSON(adminsFile,[]);
@@ -425,6 +516,7 @@ const EGG_CARE_ACTIONS={
   bond:{traits:{},affection:2,label:'bonded quietly with the egg'}
 };
 
+// Fallback item data only. Main scalable catalog should come from data/items.json and data/shops.json.
 const SHOP_ITEMS={
   berry:{name:'Berry',price:10,description:'Restores hunger.',effect:{hunger:18},questType:'feed'},
   sparkle_treat:{name:'Sparkle Treat',price:25,description:'Boosts happiness.',effect:{happiness:18}},
@@ -928,12 +1020,20 @@ function requireAdmin(req,res){
 }
 
 function adminItemCatalog(){
-  return Object.keys(SHOP_ITEMS).map(id=>({
-    id,
-    name:SHOP_ITEMS[id].name||id,
-    price:Number(SHOP_ITEMS[id].price||0),
-    description:SHOP_ITEMS[id].description||''
-  }));
+  let catalog=itemCatalog();
+
+  return Object.keys(catalog).map(id=>{
+    let item=catalog[id];
+
+    return {
+      id,
+      name:item.name||id,
+      price:itemBasePrice(id),
+      category:item.category||'',
+      rarity:item.rarity||'common',
+      description:item.description||''
+    };
+  });
 }
 
 function adminRoomSummary(){
@@ -1097,7 +1197,7 @@ app.post('/api/admin/player/item',(req,res)=>{
   let quantity=Math.floor(Number(req.body.quantity||0));
 
   if(!target)return res.status(400).json({error:'Missing target username'});
-  if(!SHOP_ITEMS[itemId])return res.status(400).json({error:'Unknown item'});
+  if(!getItemDef(itemId))return res.status(400).json({error:'Unknown item'});
   if(!['add','remove','set'].includes(mode))return res.status(400).json({error:'Invalid item mode'});
   if(quantity<0)return res.status(400).json({error:'Invalid quantity'});
 
@@ -1197,7 +1297,8 @@ app.get('/api/admin/market',(req,res)=>{
     ok:true,
     listings:adminListingArray(),
     shops:publicShopProfiles(),
-    items:SHOP_ITEMS,
+    items:itemCatalog(),
+    npcShops:publicShopCatalog(),
     limits:MARKET_LIMITS
   });
 });
@@ -1251,7 +1352,8 @@ app.get('/api/pet/profile',(req,res)=>{
     profile,
     species:PET_SPECIES,
     limits:PET_LIMITS,
-    shop:SHOP_ITEMS,
+    shop:itemCatalog(),
+    shops:publicShopCatalog(),
     moves:moves(),
     zones:EXPLORE_ZONES,
     daily:normalizeDaily(profile),
@@ -1372,20 +1474,31 @@ app.post('/api/pet/buy',(req,res)=>{
   if(!username)return;
 
   let itemId=String(req.body.itemId||'');
-  let item=SHOP_ITEMS[itemId];
+  let item=getItemDef(itemId);
 
   if(!item)return res.json({error:'Unknown item'});
 
+  let sale=getShopSale(itemId);
+  if(!sale)return res.json({error:'This item is not currently sold in shops'});
+
+  let price=Number((sale.sale&&sale.sale.price)!==undefined?sale.sale.price:itemBasePrice(itemId));
+  if(price<0)return res.json({error:'Invalid item price'});
+
   let profile=getPetProfile(username);
 
-  if((profile.money||0)<item.price)return res.json({error:'Not enough coins'});
+  if((profile.money||0)<price)return res.json({error:'Not enough coins'});
 
-  profile.money-=item.price;
+  profile.money-=price;
   profile.inventory[itemId]=(profile.inventory[itemId]||0)+1;
 
   savePetProfile(username,profile);
 
-  res.json({ok:true,profile});
+  res.json({
+    ok:true,
+    profile,
+    item,
+    price
+  });
 });
 
 app.post('/api/pet/use-item',(req,res)=>{
@@ -1393,46 +1506,162 @@ app.post('/api/pet/use-item',(req,res)=>{
   if(!username)return;
 
   let itemId=String(req.body.itemId||'');
-  let item=SHOP_ITEMS[itemId];
+  let item=getItemDef(itemId);
 
   if(!item)return res.json({error:'Unknown item'});
+  if(item.usable===false)return res.json({error:'This item cannot be used directly'});
 
   let profile=getPetProfile(username);
 
   if((profile.inventory[itemId]||0)<=0)return res.json({error:'You do not have this item'});
 
   let pet=activePet(profile);
+  let effects=Array.isArray(item.effects)?item.effects:[];
+  let hatched=false;
+  let messages=[];
 
-  if(item.eggTrait&&pet.stage!=='egg'){
-    return res.json({error:'That item only works on eggs'});
+  function applyPetNeed(target,value){
+    if(!pet.needs)pet.needs={hunger:80,happiness:70,energy:80,cleanliness:90};
+    pet.needs[target]=clamp(Number(pet.needs[target]||0)+Number(value||0),0,100);
+  }
+
+  function applyEggInfluence(target,value){
+    if(!pet||pet.stage!=='egg'){
+      throw new Error('That item only works on eggs');
+    }
+
+    pet.eggTraits=pet.eggTraits||{warm:0,cold:0,wet:0,dry:0,light:0,dark:0};
+
+    if(target==='all'){
+      ['warm','cold','wet','dry','light','dark'].forEach(k=>{
+        pet.eggTraits[k]=Number(pet.eggTraits[k]||0)+Number(value||0);
+      });
+    }else{
+      pet.eggTraits[target]=Number(pet.eggTraits[target]||0)+Number(value||0);
+    }
+
+    trackQuest(profile,'eggCare',1);
+    trackQuest(profile,'bondGain',1);
+  }
+
+  try{
+    effects.forEach(effect=>{
+      if(!effect||!effect.type)return;
+
+      if(effect.type==='pet_need'){
+        applyPetNeed(effect.target,effect.value);
+        if(effect.target==='hunger')trackQuest(profile,'feed',1);
+        if(effect.target==='cleanliness')trackQuest(profile,'clean',1);
+        if(effect.target==='energy')trackQuest(profile,'rest',1);
+        messages.push('Updated '+effect.target+'.');
+      }
+
+      if(effect.type==='random_pet_need'){
+        let targets=effect.targets||['hunger','happiness','energy','cleanliness'];
+        let target=targets[Math.floor(Math.random()*targets.length)];
+        let amount=randInt(Number(effect.min||0),Number(effect.max||1));
+        applyPetNeed(target,amount);
+        messages.push('Randomly changed '+target+'.');
+      }
+
+      if(effect.type==='egg_influence'){
+        applyEggInfluence(effect.target,effect.value);
+        messages.push('Adjusted egg '+effect.target+'.');
+      }
+
+      if(effect.type==='egg_progress'){
+        if(!pet||pet.stage!=='egg')throw new Error('That item only works on eggs');
+        pet.eggTraits=pet.eggTraits||{warm:0,cold:0,wet:0,dry:0,light:0,dark:0};
+        pet.eggTraits.warm=Number(pet.eggTraits.warm||0)+Number(effect.value||0);
+        messages.push('Advanced egg progress.');
+      }
+
+      if(effect.type==='egg_balance'){
+        if(!pet||pet.stage!=='egg')throw new Error('That item only works on eggs');
+        let traits=['warm','cold','wet','dry','light','dark'];
+        let values=traits.map(k=>Number(pet.eggTraits[k]||0));
+        let avg=Math.floor(values.reduce((a,b)=>a+b,0)/traits.length);
+        traits.forEach(k=>{ pet.eggTraits[k]=avg; });
+        messages.push('Balanced egg traits.');
+      }
+
+      if(effect.type==='random_egg_influence'){
+        if(!pet||pet.stage!=='egg')throw new Error('That item only works on eggs');
+        let targets=effect.targets||['warm','cold','wet','dry','light','dark'];
+        let target=targets[Math.floor(Math.random()*targets.length)];
+        let amount=randInt(Number(effect.min||0),Number(effect.max||1));
+        pet.eggTraits[target]=Number(pet.eggTraits[target]||0)+amount;
+        messages.push('Randomly adjusted '+target+'.');
+      }
+
+      if(effect.type==='training'){
+        if(!pet||pet.stage==='egg')throw new Error('Eggs cannot use training items');
+        let target=effect.target||'all';
+        let value=Number(effect.value||1);
+        if(target==='all'){
+          TRAINABLE_STATS.forEach(stat=>{ pet.stats[stat]=Number(pet.stats[stat]||0)+value; });
+        }else if(TRAINABLE_STATS.includes(target)){
+          pet.stats[target]=Number(pet.stats[target]||0)+value;
+        }
+        trackQuest(profile,'train',1);
+        messages.push('Training improved.');
+      }
+
+      if(effect.type==='random_training'){
+        if(!pet||pet.stage==='egg')throw new Error('Eggs cannot use training items');
+        let targets=effect.targets||TRAINABLE_STATS;
+        let target=targets[Math.floor(Math.random()*targets.length)];
+        let value=Number(effect.value||1);
+        if(TRAINABLE_STATS.includes(target)){
+          pet.stats[target]=Number(pet.stats[target]||0)+value;
+        }
+        trackQuest(profile,'train',1);
+        messages.push('Random training improved '+target+'.');
+      }
+
+      if(effect.type==='unlock'){
+        profile.unlocks=profile.unlocks||{};
+        profile.unlocks[effect.target]=profile.unlocks[effect.target]||[];
+        if(Array.isArray(profile.unlocks[effect.target])){
+          if(!profile.unlocks[effect.target].includes(effect.value)){
+            profile.unlocks[effect.target].push(effect.value);
+          }
+        }else{
+          profile.unlocks[effect.target]=effect.value;
+        }
+        messages.push('Unlocked '+effect.target+'.');
+      }
+
+      if(effect.type==='profile_cosmetic'||effect.type==='temporary_effect'||effect.type==='site_effect'||effect.type==='explore_boost'||effect.type==='battle_boost'||effect.type==='training_boost'||effect.type==='currency_alt'||effect.type==='info_reveal'||effect.type==='egg_trait_lock'){
+        profile.effects=profile.effects||[];
+        profile.effects.push({
+          id:'eff_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6),
+          itemId,
+          type:effect.type,
+          target:effect.target||'',
+          value:effect.value,
+          createdAt:Date.now(),
+          durationHours:effect.durationHours,
+          durationMinutes:effect.durationMinutes,
+          durationActions:effect.durationActions,
+          durationTurns:effect.durationTurns
+        });
+        messages.push('Effect stored.');
+      }
+    });
+  }catch(err){
+    return res.json({error:err.message});
   }
 
   profile.inventory[itemId]--;
+  if(profile.inventory[itemId]<=0)delete profile.inventory[itemId];
 
-  let hatched=false;
+  pet.affection=clamp(Number(pet.affection||0)+1,0,100);
+  trackQuest(profile,'bondGain',1);
 
-  if(item.effect){
-    Object.keys(item.effect).forEach(k=>{
-      pet.needs[k]=clamp((pet.needs[k]||0)+item.effect[k],0,100);
-    });
-
-    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
-
-    if(item.questType)trackQuest(profile,item.questType,1);
-    trackQuest(profile,'bondGain',1);
-  }
-
-  if(item.eggTrait){
-    Object.keys(item.eggTrait).forEach(k=>{
-      pet.eggTraits[k]=(pet.eggTraits[k]||0)+item.eggTrait[k];
-    });
-
-    pet.affection=clamp(Number(pet.affection||0)+1,0,100);
-    trackQuest(profile,'eggCare',1);
-    trackQuest(profile,'bondGain',1);
-
-    let total=Object.values(pet.eggTraits).reduce((x,y)=>x+y,0);
-    if(total>=18&&pet.stage==='egg'){
+  if(pet.stage==='egg'){
+    let total=Object.values(pet.eggTraits||{}).reduce((x,y)=>x+Number(y||0),0);
+    if(total>=18){
       hatchPet(pet);
       hatched=true;
     }
@@ -1441,7 +1670,13 @@ app.post('/api/pet/use-item',(req,res)=>{
   pet.lastUpdated=Date.now();
 
   savePetProfile(username,profile);
-  res.json({ok:true,hatched,profile});
+
+  res.json({
+    ok:true,
+    hatched,
+    message:hatched ? 'Your egg hatched into '+pet.name+'!' : (messages.join(' ')||'Used '+(item.name||itemId)+'.'),
+    profile
+  });
 });
 
 app.post('/api/pet/play',(req,res)=>{
@@ -1622,7 +1857,7 @@ function publicShopProfiles(){
 }
 
 function itemName(itemId){
-  return SHOP_ITEMS[itemId]?SHOP_ITEMS[itemId].name:itemId;
+  return getItemName(itemId);
 }
 
 app.get('/api/market/listings',(req,res)=>{
@@ -1630,7 +1865,8 @@ app.get('/api/market/listings',(req,res)=>{
     ok:true,
     listings:marketListingsArray(),
     shops:publicShopProfiles(),
-    items:SHOP_ITEMS,
+    items:itemCatalog(),
+    npcShops:publicShopCatalog(),
     limits:MARKET_LIMITS
   });
 });
@@ -1647,7 +1883,8 @@ app.get('/api/market/profile',(req,res)=>{
     profile,
     listings,
     shops:publicShopProfiles(),
-    items:SHOP_ITEMS,
+    items:itemCatalog(),
+    npcShops:publicShopCatalog(),
     limits:MARKET_LIMITS
   });
 });
@@ -1675,7 +1912,7 @@ app.post('/api/market/list',(req,res)=>{
   let quantity=Math.floor(Number(req.body.quantity||1));
   let price=Math.floor(Number(req.body.price||0));
 
-  if(!SHOP_ITEMS[itemId])return res.json({error:'Unknown item'});
+  if(!getItemDef(itemId))return res.json({error:'Unknown item'});
   if(quantity<1||quantity>MARKET_LIMITS.maxQuantityPerListing)return res.json({error:'Invalid quantity'});
   if(price<MARKET_LIMITS.minPrice||price>MARKET_LIMITS.maxPrice)return res.json({error:'Invalid price'});
 
