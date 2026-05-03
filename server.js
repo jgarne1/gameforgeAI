@@ -991,7 +991,7 @@ function hatchSpecies(traits){
   let hatchProfile=buildHatchProfile(traits);
 
   let available=Object.values(catalog).filter(p=>{
-    return p&&p.enabled!==false&&p.hatchable!==false;
+    return p && p.enabled !== false && p.hatchable !== false;
   });
 
   if(!available.length){
@@ -999,21 +999,35 @@ function hatchSpecies(traits){
   }
 
   let weighted=available.map(p=>{
-    let weight=Math.max(1,Number(p.hatchWeight||10));
+    let baseWeight=Math.max(1,Number(p.hatchWeight||10));
     let typeScore=Number((hatchProfile.typeScores&&hatchProfile.typeScores[p.type])||1);
+    let finalWeight=baseWeight*Math.max(1,typeScore);
 
-    // Egg care should matter, but it should not completely lock out other pets.
-    weight*=Math.max(1,typeScore);
-
-    // Balanced eggs get a small chance to favor anything, which keeps rare surprises possible.
     if(hatchProfile.balanced){
-      weight*=1.12;
+      finalWeight*=1.12;
     }
 
     return {
       key:p.id,
-      weight
+      name:p.name,
+      type:p.type,
+      hatchWeight:baseWeight,
+      typeScore:typeScore,
+      weight:finalWeight
     };
+  });
+
+  console.log('HATCH DEBUG', {
+    traits,
+    typeScores:hatchProfile.typeScores,
+    weighted:weighted.map(x=>({
+      key:x.key,
+      name:x.name,
+      type:x.type,
+      hatchWeight:x.hatchWeight,
+      typeScore:x.typeScore,
+      weight:x.weight
+    }))
   });
 
   return weightedPick(weighted).key;
