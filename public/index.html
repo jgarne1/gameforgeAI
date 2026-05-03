@@ -8,8 +8,8 @@ GameForge AI maintainer notes for future AI chats:
 - Keep comments useful and update/remove them when behavior changes. Do not add noisy comments that just repeat the code.
 - This file is intentionally still one copy-paste-ready index.html while the layout is actively changing.
 - Preserve the wrapper contract for games: iframe games receive GAME_PLAYERS/GAME_MY_SEAT and send parent.postMessage({type:'move', data}, '*').
-- Room/game/chat/pet systems are intentionally separated in the UI: room controls stay compact at the top, the right sidebar is for useful live info, and session game cards stay clean/clickable.
-- Pet World and Marketplace belong in Companion Hub, not the normal session game library. Pet Battle is currently a room game and should not be direct-launched unless architecture changes.
+- The main index is now a shell: Play loads /games/launcher.html, and the launcher owns table/game-list UI.
+- Pet World and Marketplace remain direct companion/system pages; table game browsing belongs in games/launcher.html.
 - Ready indicators are intentionally cosmetic/fun only; do not block Start Game with readiness unless the user explicitly asks.
 - Pet/marketplace iframes should post parent.postMessage({type:'petUpdated'}, '*') after any server action that changes coins, items, eggs, or pets.
 -->
@@ -855,6 +855,31 @@ button:disabled{
   margin:0;
 }
 
+
+
+/* ===== LAUNCHER SHELL ===== */
+.launcherShell{
+  padding:0;
+  overflow:hidden;
+  min-height:82vh;
+}
+
+#launcherFrame{
+  width:100%;
+  height:82vh;
+  min-height:650px;
+  border:0;
+  border-radius:22px;
+  background:#020617;
+  display:block;
+}
+
+.homeDashboard{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+
 /* ===== GAME AREA ===== */
 iframe{
   width:100%;
@@ -1582,116 +1607,18 @@ body.gameMode #gameArea .danger{
         </div>
       </div>
 
-      <div class="card">
-        <div class="cardHeader">
-          <h3>Featured Games</h3>
-          <button class="ghost" onclick="showSection('play')">View All</button>
-        </div>
-        <div id="homeGames" class="homeGames">
-          <p class="muted">Loading games...</p>
-        </div>
+      <div id="homeGames" class="hidden"></div>
       </div>
     </div>
 
     <div id="play" class="section">
       <div class="hero" id="playTop">
-        <h2>Play</h2>
-        <p>Choose a session game, create a room, or jump into your companion systems from the hub below.</p>
+        <h2>Game Table</h2>
+        <p>Create a private table, invite friends, choose a game, and start playing. The launcher now owns the table, seats, room players, chat, and game list.</p>
       </div>
 
-      <div class="roomSetupStack" id="roomSetupCard">
-        <div class="card roomControlBar glow">
-          <div class="cardHeader">
-            <div>
-              <h3>Multiplayer Room</h3>
-              <p class="muted">Create, join, and manage rooms without taking over the play screen.</p>
-            </div>
-            <span class="pill">Lobby Control</span>
-          </div>
-
-          <div class="roomControlGrid">
-            <div class="roomStatusPanel">
-              <div class="roomStatusTop">
-                <span class="muted">Current Room</span>
-                <span id="roomPrivacy"></span>
-              </div>
-              <b id="roomLabel" class="roomCodeBig">None</b>
-              <div id="roomHelp" class="notice" style="margin-top:12px">Create or join a room for multiplayer games.</div>
-              <div id="roomPeople" class="muted" style="margin-top:9px"></div>
-            </div>
-
-            <div class="roomActionsPanel">
-              <div class="roomActionRows">
-                <div class="roomActionBox">
-                  <h4>Create Room</h4>
-                  <div class="row">
-                    <label><input type="checkbox" id="privateRoom"> Private 🔒</label>
-                    <button onclick="createRoom()" class="primary">Create</button>
-                  </div>
-                </div>
-
-                <div class="roomActionBox">
-                  <h4>Join / Leave</h4>
-                  <div class="row">
-                    <input id="roomCode" placeholder="room code">
-                    <button onclick="joinRoom()">Join</button>
-                    <button onclick="leaveRoom()">Leave</button>
-                  </div>
-                </div>
-              </div>
-
-              <div id="ownerControls" style="margin-top:10px"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card tablePanel" id="tablePanelCard">
-          <div class="tableHeaderLine">
-            <div>
-              <h3>Table Seats</h3>
-              <p class="muted">Sit at the table, then the room owner can start.</p>
-              <span id="selectedGameLabel" class="selectedGameName"></span>
-            </div>
-            <div class="tableHeaderActions">
-              <button id="changeGameBtn" class="ghost" onclick="changeGame()">Change Game</button>
-              <button id="startBtn" class="good" onclick="startGame()">Start Game</button>
-            </div>
-          </div>
-
-          <div id="tableArea">
-            <div id="seats" class="seatGrid"><i class="muted">Select a multiplayer game to create seats.</i></div>
-            <p id="startHint" class="muted"></p>
-          </div>
-        </div>
-
-        <div class="soloLaunchCard" id="companionHubCard">
-          <div class="cardHeader">
-            <div>
-              <h3>Companion Hub</h3>
-              <p class="muted">Care, train, shop, and battle with your companion. Pet World and Marketplace open instantly; battles can create a room.</p>
-            </div>
-            <span class="pill">Persistent Pet</span>
-          </div>
-          <div class="companionActions">
-            <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
-            <button class="gold" onclick="openMarketDirect()">Visit Marketplace</button>
-            <button class="gold" onclick="selectGame('petbattle')">Pet Battle Arena</button>
-            <button class="ghost" disabled>Training Soon</button>
-          </div>
-        </div>
-
-        <div class="card libraryCard" id="gameLibraryCard">
-          <div class="cardHeader">
-            <div>
-              <h3>Game Library</h3>
-              <p class="muted">Choose a session game. Cards are grouped to keep the library easy to browse on desktop and mobile.</p>
-            </div>
-            <span class="pill">Session Games</span>
-          </div>
-
-          <input id="gameSearch" class="gameSearch" placeholder="Search games..." oninput="drawGames()">
-          <div id="gameList"></div>
-        </div>
+      <div class="card glow launcherShell" id="launcherShell">
+        <iframe id="launcherFrame" src="/games/launcher.html?v=1" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
       </div>
 
       <div id="gameArea" class="card hidden">
@@ -1699,7 +1626,7 @@ body.gameMode #gameArea .danger{
           <h2 id="gameAreaTitle">Game Area</h2>
           <button class="danger" onclick="exitGameMode()">Exit Game</button>
         </div>
-        <p id="gameHint" class="muted">Select a game, sit at the table, and start the match. The game screen will appear here only when it is ready.</p>
+        <p id="gameHint" class="muted">The selected game will appear here after the table host starts the match.</p>
         <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
@@ -2164,6 +2091,7 @@ function drawGames(){
 }
 
 function drawHomeGames(){
+  let homeGames=document.getElementById('homeGames');
   if(!homeGames)return;
 
   let featured=games.filter(function(g){return !['petworld','petbattle'].includes(g.id);}).slice(0,3);
@@ -2364,6 +2292,13 @@ function buildSelectedGameHelp(game,seatedCount,totalSeats,mySeated,isOwner,read
 }
 
 function drawRoom(){
+  if(!document.getElementById('roomLabel')){
+    let frame=document.getElementById('launcherFrame');
+    if(frame&&frame.contentWindow&&room){
+      frame.contentWindow.postMessage({type:'roomUpdate',room:room},'*');
+    }
+    return;
+  }
   roomChatPanel.classList.toggle('hidden',!room);
 
   // UX rule: do not show an empty iframe. Multiplayer gameArea only appears after Start Game. Direct companion games show it immediately.
@@ -3025,6 +2960,46 @@ function handleGameSaveStore(msg){
   }
 }
 
+function handleLauncherStartGame(msg){
+  let startedRoom=msg.room||null;
+  let game=msg.game||(startedRoom&&startedRoom.selectedGame)||null;
+
+  if(startedRoom){
+    room=startedRoom;
+    currentRoom=startedRoom.id;
+  }
+
+  if(!game){
+    return;
+  }
+
+  // The launcher is now the lobby owner. When it announces a started game, focus the game frame.
+  document.body.classList.remove('directGameMode');
+  document.body.classList.add('gameMode');
+  gameArea.classList.remove('hidden');
+  showSection('play');
+  gameAreaTitle.innerText=game.name||'Game';
+  gameHint.innerText='Loading '+(game.name||'game')+' from the table launcher...';
+
+  let seats=(startedRoom&&Array.isArray(startedRoom.seats))?startedRoom.seats:[];
+  let players=seats.map(function(x,i){return x?{seat:i,name:x.name}:null;}).filter(Boolean);
+
+  if(!players.length&&me){
+    players=[{seat:0,name:me}];
+  }
+
+  let mySeatIndex=seats.findIndex(function(x){return x&&x.name===me;});
+  if(mySeatIndex<0&&players.length===1&&players[0].name===me){
+    mySeatIndex=0;
+  }
+
+  loadGameIntoFrame(game,players,mySeatIndex).then(function(){
+    gameHint.innerText='Game started from launcher.';
+  }).catch(function(err){
+    gameHint.innerText='Could not load game: '+err.message;
+  });
+}
+
 window.addEventListener('message',function(e){
   let msg=e.data||{};
 
@@ -3038,6 +3013,10 @@ window.addEventListener('message',function(e){
 
   if(msg.type==='gameSaveStore'){
     handleGameSaveStore(msg);
+  }
+
+  if(msg.type==='launcherStartGame'){
+    handleLauncherStartGame(msg);
   }
 
   if(msg.type==='petUpdated'||msg.type==='marketUpdated'){
