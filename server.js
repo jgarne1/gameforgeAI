@@ -851,8 +851,20 @@ function chooseSpeciesForType(type,traits){
 }
 
 function hatchSpecies(traits){
-  let type=chooseHatchType(traits||{});
-  return chooseSpeciesForType(type,traits||{});
+  let catalog = mergedPetSpecies();
+
+  let available = Object.values(catalog).filter(p => p.hatchable);
+
+  if(!available.length){
+    return 'flarecub';
+  }
+
+  let weighted = available.map(p => ({
+    key: p.id,
+    weight: Number(p.hatchWeight || 10)
+  }));
+
+  return weightedPick(weighted).key;
 }
 
 function hatchPersonality(traits,affection){
