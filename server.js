@@ -957,6 +957,17 @@ function chooseSpeciesForType(type,traits){
 }
 
 function hatchSpecies(traits){
+  // 🔥 Step 1: determine type from egg care
+  let type = chooseHatchType(traits);
+
+  // 🔥 Step 2: use your rarity system (BEST PATH)
+  let fromRegistry = chooseSpeciesForType(type, traits);
+
+  if(fromRegistry){
+    return fromRegistry;
+  }
+
+  // 🔥 Step 3: fallback to JSON system (future-proof)
   let catalog = mergedPetSpecies();
 
   let available = Object.values(catalog).filter(p => p.hatchable);
@@ -965,14 +976,22 @@ function hatchSpecies(traits){
     return 'flarecub';
   }
 
-  let weighted = available.map(p => ({
-    key: p.id,
-    weight: Number(p.hatchWeight || 10)
-  }));
+  let weighted = available.map(p => {
+    let weight = Number(p.hatchWeight || 10);
+
+    // small type bias
+    if(p.type === type){
+      weight *= 1.5;
+    }
+
+    return {
+      key: p.id,
+      weight
+    };
+  });
 
   return weightedPick(weighted).key;
 }
-
 function hatchPersonality(traits,affection){
   traits=traits||{};
   let weights={playful:10,lazy:10,aggressive:10,calm:10,curious:10,moody:10};
