@@ -239,7 +239,32 @@ code{color:#bae6fd}
 
     <div id="market" class="section">
       <div class="card glow">
-        <div class="cardHeader"><div><h3>Marketplace Moderation</h3><p class="muted">Remove bad listings. By default, escrowed items are returned to the seller.</p></div><button class="primary" onclick="loadMarket()">Refresh Market</button></div>
+        <div class="cardHeader"><div><h3>Shop Schedule & Theme Editor</h3><p class="muted">Controls NPC shop hours, theme metadata, and placeholder image paths used by the Marketplace.</p></div><button class="primary" onclick="loadMarket()">Refresh Market</button></div>
+        <div class="row" style="margin-bottom:10px">
+          <select id="shopEditorSelect" onchange="selectShopEditor()"></select>
+          <input id="shopEditorName" placeholder="shop name">
+          <input id="shopEditorIcon" placeholder="emoji/icon" style="max-width:90px">
+          <input id="shopEditorTheme" placeholder="theme" style="max-width:130px">
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <input id="shopEditorDescription" placeholder="description">
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <label class="pill">Open <input id="shopEditorOpenHour" type="number" min="0" max="23" value="0" style="width:72px"></label>
+          <label class="pill">Close <input id="shopEditorCloseHour" type="number" min="0" max="24" value="24" style="width:72px"></label>
+          <label class="pill"><input id="shopEditorForceOpen" type="checkbox"> Force open</label>
+          <label class="pill"><input id="shopEditorForceClosed" type="checkbox"> Force closed</label>
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <input id="shopEditorBanner" placeholder="/assets/shops/shop_banner.png">
+          <input id="shopEditorKeeper" placeholder="/assets/shops/shop_keeper.png">
+          <button class="good" onclick="saveShopEditor()">Save Shop</button>
+        </div>
+        <div id="shopEditorPreview" class="list"></div>
+      </div>
+
+      <div class="card glow">
+        <div class="cardHeader"><div><h3>Marketplace Moderation</h3><p class="muted">Remove bad listings. By default, escrowed items are returned to the seller.</p></div></div>
         <div class="row" style="margin-bottom:10px">
           <input id="marketFilter" placeholder="filter seller or item" oninput="drawMarket()">
           <label class="pill"><input id="returnEscrow" type="checkbox" checked> Return escrow</label>
@@ -516,9 +541,72 @@ async function loadMarket(show=true){
 }
 
 function drawMarket(){
+  drawShopEditor();
   let q=($('marketFilter')&&$('marketFilter').value||'').toLowerCase().trim();
   let list=(marketData.listings||[]).filter(l=>!q||String(l.seller||'').toLowerCase().includes(q)||String(l.itemName||l.itemId||'').toLowerCase().includes(q)||String(l.itemId||'').toLowerCase().includes(q));
   $('marketList').innerHTML=list.length?list.map(listingCard).join(''):'<div class="empty">No matching listings.</div>';
+}
+
+function shopMap(){return marketData.npcShops||marketData.shopCatalog||{};}
+
+function drawShopEditor(){
+  if(!$('shopEditorSelect'))return;
+  let shops=shopMap();
+  let ids=Object.keys(shops);
+  let previous=$('shopEditorSelect').value;
+  $('shopEditorSelect').innerHTML=ids.map(id=>'<option value="'+escAttr(id)+'">'+esc((shops[id].icon||'🏪')+' '+(shops[id].name||id))+'</option>').join('');
+  if(previous&&shops[previous])$('shopEditorSelect').value=previous;
+  selectShopEditor(false);
+  $('shopEditorPreview').innerHTML=ids.map(id=>{
+    let sh=shops[id]||{};
+    let status=sh.forceClosed?'Forced Closed':(sh.forceOpen?'Forced Open':(sh.isOpen?'Open':'Closed'));
+    return cardHtml(esc((sh.icon||'🏪')+' '+(sh.name||id))+' <span class="badge">'+esc(status)+'</span>',
+      'Hours: '+Number(sh.openHour||0)+':00 - '+Number(sh.closeHour===undefined?24:sh.closeHour)+':00 · Theme: '+esc(sh.theme||'classic')+' · '+esc(sh.description||''),
+      '<button onclick="pickShopEditor(\''+escAttr(id)+'\')">Edit</button>');
+  }).join('')||'<div class="empty">No NPC shops found in data/shops.json.</div>';
+}
+
+function pickShopEditor(id){$('shopEditorSelect').value=id;selectShopEditor();}
+
+function selectShopEditor(){
+  if(!$('shopEditorSelect'))return;
+  let shops=shopMap();
+  let id=$('shopEditorSelect').value;
+  let sh=shops[id]||{};
+  $('shopEditorName').value=sh.name||id||'';
+  $('shopEditorIcon').value=sh.icon||'🏪';
+  $('shopEditorTheme').value=sh.theme||'classic';
+  $('shopEditorDescription').value=sh.description||'';
+  $('shopEditorOpenHour').value=Number(sh.openHour||0);
+  $('shopEditorCloseHour').value=Number(sh.closeHour===undefined?24:sh.closeHour);
+  $('shopEditorBanner').value=sh.bannerImage||('/assets/shops/'+id+'_banner.png');
+  $('shopEditorKeeper').value=sh.keeperImage||('/assets/shops/'+id+'_keeper.png');
+  $('shopEditorForceOpen').checked=!!sh.forceOpen;
+  $('shopEditorForceClosed').checked=!!sh.forceClosed;
+}
+
+async function saveShopEditor(){
+  let id=$('shopEditorSelect').value;
+  if(!id)return toast('Select a shop first.');
+  try{
+    let data=await api('/api/admin/shops/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      username:adminUser,
+      shopId:id,
+      name:$('shopEditorName').value,
+      icon:$('shopEditorIcon').value,
+      theme:$('shopEditorTheme').value,
+      description:$('shopEditorDescription').value,
+      openHour:$('shopEditorOpenHour').value,
+      closeHour:$('shopEditorCloseHour').value,
+      bannerImage:$('shopEditorBanner').value,
+      keeperImage:$('shopEditorKeeper').value,
+      forceOpen:$('shopEditorForceOpen').checked,
+      forceClosed:$('shopEditorForceClosed').checked
+    })});
+    marketData.npcShops=data.npcShops||marketData.npcShops||{};
+    drawShopEditor();
+    toast('Shop saved.');
+  }catch(err){toast(err.message||'Shop save failed.')}
 }
 
 async function removeListing(id){

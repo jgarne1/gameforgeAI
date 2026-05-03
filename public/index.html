@@ -1432,6 +1432,68 @@ body.directGameMode .mobileLobbyBtn{
   display:none!important;
 }
 
+
+
+/* ===== FOCUSED APP MODE PATCH =====
+/* Direct companion pages and started games should feel like native app screens, not content buried below the hub. */
+body.directGameMode,
+body.gameMode{
+  overflow:hidden;
+}
+
+body.directGameMode #gameArea,
+body.gameMode #gameArea{
+  position:fixed;
+  inset:8px;
+  z-index:5000;
+  margin:0!important;
+  padding:10px;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr);
+  background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98));
+  border-radius:24px;
+  border:1px solid rgba(148,163,184,.28);
+  box-shadow:0 30px 90px rgba(0,0,0,.55);
+}
+
+body.directGameMode #gameArea .cardHeader,
+body.gameMode #gameArea .cardHeader{
+  min-height:48px;
+  padding:0 4px 8px;
+}
+
+body.directGameMode #gameArea h2,
+body.gameMode #gameArea h2{
+  display:block!important;
+  margin:0;
+  font-size:18px;
+}
+
+body.directGameMode #gameHint,
+body.gameMode #gameHint{
+  display:none!important;
+}
+
+body.directGameMode iframe,
+body.gameMode iframe{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  border-radius:18px;
+  border:2px solid #020617;
+}
+
+body.directGameMode .main,
+body.gameMode .main{
+  padding:0!important;
+}
+
+body.directGameMode #gameArea .danger,
+body.gameMode #gameArea .danger{
+  border-radius:999px;
+  padding:9px 13px;
+}
+
 </style>
 </head>
 
@@ -2440,7 +2502,7 @@ async function maybeLoadGame(){
   let mySeatIndex=room.seats.findIndex(function(x){return x&&x.name===me;});
 
   await loadGameIntoFrame(room.selectedGame,players,mySeatIndex);
-  gameArea.scrollIntoView({behavior:'smooth',block:'start'});
+  window.scrollTo(0,0);
 }
 
 /* ===== SOLO GAME LAUNCH ===== */
@@ -2491,7 +2553,7 @@ function openInventory(){
   roomChatPanel.classList.add('hidden');
   directGameKey='inventory|'+me;
 
-  gameArea.scrollIntoView({behavior:'smooth',block:'start'});
+  window.scrollTo(0,0);
 }
 
 async function launchSoloGame(g){
