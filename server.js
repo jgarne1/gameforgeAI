@@ -21,7 +21,7 @@ const itemsFile=path.join(DATA,'items.json');
 const shopsFile=path.join(DATA,'shops.json');
 const gamesFile=path.join(__dirname,'games.json');
 
-app.use(express.json({limit:'12mb'}));
+app.use(express.json({limit:'15mb'}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/games',express.static(path.join(__dirname,'games')));
 // Admin-uploaded image previews live here before approval.
@@ -1086,11 +1086,12 @@ function safeAssetSlot(type,slot){
 }
 
 function parseImageDataUrl(dataUrl){
-  let match=String(dataUrl||'').match(/^data:image\/(png|jpeg|jpg|webp);base64,([A-Za-z0-9+/=]+)$/);
+  // Admin UI converts every upload to PNG before sending.
+  // Keeping approved paths as .png makes image lookup predictable everywhere.
+  let match=String(dataUrl||'').match(/^data:image\/png;base64,([A-Za-z0-9+/=]+)$/);
   if(!match)return null;
-  let ext=match[1]==='jpeg'?'jpg':match[1];
-  let buffer=Buffer.from(match[2],'base64');
-  return {ext,buffer};
+  let buffer=Buffer.from(match[1],'base64');
+  return {ext:'png',buffer};
 }
 
 function pendingAssetDir(type){
@@ -1101,18 +1102,18 @@ function pendingAssetPath(type,tempFile){
   return path.join(pendingAssetDir(type),path.basename(String(tempFile||'')));
 }
 
-function finalAssetRepoPath(type,targetId,slot,ext){
+function finalAssetRepoPath(type,targetId,slot){
   targetId=safeAssetId(targetId);
   slot=safeAssetSlot(type,slot);
-  ext=String(ext||'png').replace(/[^a-z0-9]/g,'')||'png';
 
-  if(type==='items')return `public/assets/items/${targetId}.${ext}`;
-  if(type==='pets')return `public/assets/pets/${targetId}/${slot}.${ext}`;
-  if(type==='eggs')return `public/assets/pets/egg/${slot}.${ext}`;
-  if(type==='shops')return `public/assets/shops/${targetId}_${slot}.${ext}`;
-  if(type==='backgrounds')return `public/assets/backgrounds/${targetId}.${ext}`;
+  // Standardized image paths. The game can always guess these paths.
+  if(type==='items')return `public/assets/items/${targetId}.png`;
+  if(type==='pets')return `public/assets/pets/${targetId}/${slot}.png`;
+  if(type==='eggs')return `public/assets/pets/egg/${slot}.png`;
+  if(type==='shops')return `public/assets/shops/${targetId}_${slot}.png`;
+  if(type==='backgrounds')return `public/assets/backgrounds/${targetId}.png`;
 
-  return `public/assets/misc/${targetId}.${ext}`;
+  return `public/assets/misc/${targetId}.png`;
 }
 
 function publicPathFromRepoPath(repoPath){
@@ -1190,7 +1191,7 @@ app.post('/api/admin/assets/upload-preview',(req,res)=>{
 
   if(!ADMIN_ASSET_TYPES.includes(type))return res.status(400).json({error:'Invalid asset type'});
   if(!targetId)return res.status(400).json({error:'Missing targetId'});
-  if(!parsed)return res.status(400).json({error:'Image must be PNG, JPG, or WEBP'});
+  if(!parsed)return res.status(400).json({error:'Image upload must be PNG data. Use the updated admin page; it converts JPG/WEBP to PNG automatically.'});
   if(parsed.buffer.length>5*1024*1024)return res.status(400).json({error:'Image must be under 5MB'});
 
   slot=safeAssetSlot(type,slot);
@@ -1275,7 +1276,8 @@ app.post('/api/admin/assets/approve',async (req,res)=>{
     if(!fs.existsSync(pending))return res.status(404).json({error:'Pending file not found'});
 
     let ext=(path.extname(tempFile).replace('.','')||'png').toLowerCase();
-    let repoPath=finalAssetRepoPath(type,targetId,slot,ext);
+    if(ext!=='png')return res.status(400).json({error:'Pending asset is not PNG. Re-upload it with the updated admin page.'});
+    let repoPath=finalAssetRepoPath(type,targetId,slot);
     let publicPath=publicPathFromRepoPath(repoPath);
     let buffer=fs.readFileSync(pending);
 
