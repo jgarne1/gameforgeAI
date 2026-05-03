@@ -1015,6 +1015,20 @@ var currentTab='quests';
 var selectedZoneId='meadow';
 var logs=[];
 var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1};
+var pendingPetAction={key:'',expiresAt:0};
+
+function confirmRosterAction(key,message){
+  var now=Date.now();
+  if(pendingPetAction.key===key&&pendingPetAction.expiresAt>now){
+    pendingPetAction={key:'',expiresAt:0};
+    return true;
+  }
+
+  pendingPetAction={key:key,expiresAt:now+6500};
+  notify(message+' Click the button again to confirm.');
+  return false;
+}
+
 
 function el(id){return document.getElementById(id);}
 
@@ -1725,13 +1739,17 @@ async function convertPetToEgg(petId){
   if(!pet)return notify('Pet not found.');
 
   var name=pet.name||'this pet';
-  var ok=confirm('Rescue '+name+' and receive a fresh Mystery Egg? This cannot be undone.');
-  if(!ok)return;
+  if(!confirmRosterAction('rescue:'+petId,'Rescue '+name+' for a fresh Mystery Egg? This cannot be undone.'))return;
 
   try{
     var res=await fetch('/api/pet/convert-to-egg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,petId:petId})});
-    var data=await res.json();
-    if(data.error)return notify(data.error);
+    var text=await res.text();
+    var data;
+    try{data=JSON.parse(text)}catch(parseErr){
+      console.error('Rescue pet bad response:',text);
+      return notify('Rescue failed: server returned a bad response.');
+    }
+    if(!res.ok||data.error)return notify((data&&data.error)||('Rescue failed with status '+res.status));
     profile=data.profile;
     addLog(data.message||'Pet rescued. You received a fresh Mystery Egg.');
     notify(data.message||'Pet rescued!');
@@ -1749,8 +1767,7 @@ async function sellPet(petId){
   if(ids.length<=1)return notify('You cannot sell your last pet.');
 
   var name=pet.name||'this pet';
-  var ok=confirm('Sell / release '+name+' for coins? This cannot be undone.');
-  if(!ok)return;
+  if(!confirmRosterAction('sell:'+petId,'Sell / release '+name+' for coins? This cannot be undone.'))return;
 
   try{
     var res=await fetch('/api/pet/sell',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,petId:petId})});
