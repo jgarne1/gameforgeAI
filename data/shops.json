@@ -49,7 +49,13 @@
         "price": 80,
         "stock": 5
       }
-    }
+    },
+    "openHour": 6,
+    "closeHour": 22,
+    "bannerImage": "/assets/shops/snack_shack_banner.png",
+    "keeperImage": "/assets/shops/snack_shack_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   },
   "care_clinic": {
     "id": "care_clinic",
@@ -105,7 +111,13 @@
         "price": 220,
         "stock": 1
       }
-    }
+    },
+    "openHour": 7,
+    "closeHour": 21,
+    "bannerImage": "/assets/shops/care_clinic_banner.png",
+    "keeperImage": "/assets/shops/care_clinic_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   },
   "egg_lab": {
     "id": "egg_lab",
@@ -178,7 +190,13 @@
         "stock": 1,
         "requiresUnlock": "egg_lab_master"
       }
-    }
+    },
+    "openHour": 0,
+    "closeHour": 24,
+    "bannerImage": "/assets/shops/egg_lab_banner.png",
+    "keeperImage": "/assets/shops/egg_lab_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   },
   "training_dojo": {
     "id": "training_dojo",
@@ -230,7 +248,13 @@
         "price": 160,
         "stock": 1
       }
-    }
+    },
+    "openHour": 5,
+    "closeHour": 23,
+    "bannerImage": "/assets/shops/training_dojo_banner.png",
+    "keeperImage": "/assets/shops/training_dojo_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   },
   "toy_box": {
     "id": "toy_box",
@@ -278,7 +302,13 @@
         "price": 110,
         "stock": 2
       }
-    }
+    },
+    "openHour": 8,
+    "closeHour": 22,
+    "bannerImage": "/assets/shops/toy_box_banner.png",
+    "keeperImage": "/assets/shops/toy_box_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   },
   "explorer_supply": {
     "id": "explorer_supply",
@@ -323,7 +353,13 @@
         "price": 180,
         "stock": 1
       }
-    }
+    },
+    "openHour": 6,
+    "closeHour": 20,
+    "bannerImage": "/assets/shops/explorer_supply_banner.png",
+    "keeperImage": "/assets/shops/explorer_supply_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   },
   "curio_market": {
     "id": "curio_market",
@@ -379,7 +415,13 @@
         "price": 80,
         "stock": 4
       }
-    }
+    },
+    "openHour": 12,
+    "closeHour": 24,
+    "bannerImage": "/assets/shops/curio_market_banner.png",
+    "keeperImage": "/assets/shops/curio_market_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   },
   "battle_shop": {
     "id": "battle_shop",
@@ -416,6 +458,12 @@
         "price": 200,
         "stock": 1
       }
-    }
+    },
+    "openHour": 10,
+    "closeHour": 23,
+    "bannerImage": "/assets/shops/battle_shop_banner.png",
+    "keeperImage": "/assets/shops/battle_shop_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   }
 }
