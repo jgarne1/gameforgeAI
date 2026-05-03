@@ -2616,19 +2616,22 @@ async function launchSoloGame(g){
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
+  let gameContext=await buildGameContext(players,mySeatIndex,currentRoom||'',room&&Array.isArray(room.seats)?room.seats:[]);
   let html=await (await fetch('/games/'+g.file+'?v='+Date.now())).text();
 
   let inject =
-    '<script>'+
+    '<script>'+ 
     'window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';'+
     'window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';'+
+    'window.GAME_CONTEXT='+JSON.stringify(gameContext).replace(/</g,'\\u003c')+';'+
     'window.addEventListener("message",function(event){'+
       'var msg=event.data||{};'+
       'if(msg.type==="gameMove"&&window.onMove){window.onMove(msg.data);}'+
       'if(msg.type==="gameSetup"&&window.onMove){window.onMove(msg);}'+
+      'if(msg.type==="GAME_CONTEXT"&&window.onMove){window.onMove(msg);}'+
       'if(msg.type==="gameSaveData"&&window.onSaveData){window.onSaveData(msg.data);}'+
     '});'+
-    '<\/script>';
+    '<\\/script>';
 
   if(html.includes('<head>')){
     html=html.replace('<head>','<head>'+inject);
@@ -2639,10 +2642,17 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
   gameFrame.onload=function(){
     if(gameFrame.contentWindow){
       gameFrame.contentWindow.postMessage({
+        type:'GAME_CONTEXT',
+        data:gameContext
+      },'*');
+
+      gameFrame.contentWindow.postMessage({
         type:'gameSetup',
         players:players,
         mySeat:mySeatIndex>=0?mySeatIndex:null,
-        roomId:currentRoom||''
+        activePets:gameContext.activePets,
+        roomId:gameContext.roomId,
+        username:gameContext.username
       },'*');
     }
   };
@@ -2834,6 +2844,89 @@ function petImagePath(pet){
   let file=stage==='adult'?'adult':(stage==='young'||stage==='teen')?'young':'baby';
 
   return '/assets/pets/'+species+'/'+file+'.png';
+}
+
+
+let activePetCache={};
+
+function petImagePath(pet){
+  if(!pet)return '';
+
+  let stage=pet.stage||'egg';
+
+  if(stage==='egg'){
+    let t=pet.eggTraits||{};
+    let total=Number(t.warm||0)+Number(t.cold||0)+Number(t.wet||0)+Number(t.dry||0)+Number(t.light||0)+Number(t.dark||0);
+    return total>=15
+      ? '/assets/pets/egg/egg_cracked.png'
+      : '/assets/pets/egg/egg_idle.png';
+  }
+
+  let species=pet.species||'egg';
+  let file=stage==='adult'?'adult':(stage==='young'||stage==='teen')?'young':'baby';
+
+  return '/assets/pets/'+species+'/'+file+'.png';
+}
+
+function publicActivePetFromProfile(profile){
+  if(!profile||!profile.pets||!profile.activePetId)return null;
+  let pet=profile.pets[profile.activePetId];
+  if(!pet)return null;
+
+  return {
+    id:profile.activePetId,
+    name:pet.name||'Mystery Egg',
+    species:pet.species||'',
+    type:pet.type||'',
+    stage:pet.stage||'egg',
+    level:Number((pet.stats&&pet.stats.level)||pet.level||1),
+    emoji:pet.emoji||'🥚',
+    image:petImagePath(pet)
+  };
+}
+
+async function getPublicActivePet(username){
+  if(!username)return null;
+
+  if(username===me&&petProfile){
+    let mine=publicActivePetFromProfile(petProfile);
+    if(mine)activePetCache[username]=mine;
+    return mine;
+  }
+
+  if(activePetCache[username]!==undefined)return activePetCache[username];
+
+  try{
+    let res=await fetch('/api/pet/profile?user='+encodeURIComponent(username));
+    let data=await res.json();
+    activePetCache[username]=(data&&data.ok)?publicActivePetFromProfile(data.profile):null;
+  }catch(err){
+    activePetCache[username]=null;
+  }
+
+  return activePetCache[username];
+}
+
+async function buildGameContext(players,mySeatIndex,roomIdOverride,seatsOverride){
+  let activePets={};
+
+  await Promise.all((players||[]).map(async function(p){
+    let pet=await getPublicActivePet(p.name);
+    if(pet){
+      activePets[p.name]=pet;
+      activePets[String(p.name||'').toLowerCase()]=pet;
+      if(p.seat!=null)activePets['seat:'+p.seat]=pet;
+    }
+  }));
+
+  return {
+    username:me||'',
+    roomId:(roomIdOverride||(room&&room.id)||currentRoom||''),
+    players:players||[],
+    seats:Array.isArray(seatsOverride)?seatsOverride:(room&&Array.isArray(room.seats)?room.seats:[]),
+    mySeat:mySeatIndex>=0?mySeatIndex:null,
+    activePets:activePets
+  };
 }
 
 function petAvatarHtml(pet,emoji){
@@ -3096,7 +3189,7 @@ function ensureParentJoinedToLauncherRoom(roomId,opts){
   send({type:'joinRoom',roomId:roomId});
 }
 
-function handleLauncherStartGame(msg){
+async function handleLauncherStartGame(msg){
   let startedRoom=msg.room||null;
   let launcherRoomId=(startedRoom&&startedRoom.id)||msg.roomId||currentRoom||'';
   let game=msg.game||(startedRoom&&startedRoom.selectedGame)||null;
@@ -3141,12 +3234,15 @@ function handleLauncherStartGame(msg){
   // room updates. If the same game/room/seats are already loaded, just refresh context.
   if(launcherLoadedGameKey===key){
     if(gameFrame&&gameFrame.contentWindow){
+      let gameContext=await buildGameContext(players,mySeatIndex,safeRoomId,seats);
+      gameFrame.contentWindow.postMessage({type:'GAME_CONTEXT',data:gameContext},'*');
       gameFrame.contentWindow.postMessage({
         type:'gameSetup',
         players:players,
         mySeat:mySeatIndex>=0?mySeatIndex:null,
-        roomId:currentRoom||'',
-        roomId:safeRoomId
+        activePets:gameContext.activePets,
+        roomId:safeRoomId,
+        username:gameContext.username
       },'*');
     }
     gameHint.innerText='Game started from launcher.';
