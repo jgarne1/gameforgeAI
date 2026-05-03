@@ -61,6 +61,8 @@ const itemsFile=path.join(DATA,'items.json');
 const shopsFile=path.join(DATA,'shops.json');
 const gamesFile=path.join(__dirname,'games.json');
 const petSpeciesFile=path.join(DATA,'pet_species.json');
+const repoPetSpeciesFile=path.join(REPO_DATA,'pet_species.json');
+const repoMovesFile=path.join(REPO_DATA,'pet_moves.json');
 
 app.use(express.json({limit:'12mb'}));
 app.use(express.static(path.join(__dirname,'public')));
@@ -88,6 +90,58 @@ function readJSON(f,fb){
 function writeJSON(f,o){
   fs.writeFileSync(f,JSON.stringify(o,null,2));
 }
+
+function stableJSONString(o){
+  return JSON.stringify(o,null,2);
+}
+
+function syncDataFileFromRepo(fileName,options={}){
+  const force=options.force===true;
+  const repoFile=path.join(REPO_DATA,fileName);
+  const liveFile=path.join(DATA,fileName);
+
+  if(!fs.existsSync(repoFile)){
+    return {file:fileName,ok:false,changed:false,message:'Repo file missing.'};
+  }
+
+  const repoData=readJSON(repoFile,{});
+  const liveData=readJSON(liveFile,{});
+  const nextData=force ? repoData : {...liveData,...repoData};
+  const before=stableJSONString(liveData);
+  const after=stableJSONString(nextData);
+  const changed=before!==after;
+
+  if(changed){
+    writeJSON(liveFile,nextData);
+  }
+
+  return {
+    file:fileName,
+    ok:true,
+    changed,
+    mode:force?'replace':'merge_repo_wins',
+    repoCount:Object.keys(repoData||{}).length,
+    liveCount:Object.keys(nextData||{}).length
+  };
+}
+
+function syncLivePetDataFromRepo(options={}){
+  if(!HAS_PERSIST){
+    return {ok:true,skipped:true,message:'Persistent disk not detected; repo data is already live.',results:[]};
+  }
+
+  const results=[
+    syncDataFileFromRepo('pet_species.json',options),
+    syncDataFileFromRepo('pet_moves.json',options)
+  ];
+
+  console.log('[storage] Pet data repo sync:',results);
+  return {ok:true,skipped:false,results};
+}
+
+// Keep Render persistent pet data aligned with the GitHub/repo JSON on every deploy.
+// This prevents stale live species/move data from surviving redeploys forever.
+syncLivePetDataFromRepo({force:false,reason:'startup'});
 
 function games(){return readJSON(gamesFile,[])}
 function users(){return readJSON(usersFile,{})}
@@ -991,7 +1045,7 @@ function hatchSpecies(traits){
   let hatchProfile=buildHatchProfile(traits);
 
   let available=Object.values(catalog).filter(p=>{
-    return p && p.enabled !== false && p.hatchable !== false;
+    return p&&p.enabled!==false&&p.hatchable!==false;
   });
 
   if(!available.length){
@@ -999,35 +1053,21 @@ function hatchSpecies(traits){
   }
 
   let weighted=available.map(p=>{
-    let baseWeight=Math.max(1,Number(p.hatchWeight||10));
+    let weight=Math.max(1,Number(p.hatchWeight||10));
     let typeScore=Number((hatchProfile.typeScores&&hatchProfile.typeScores[p.type])||1);
-    let finalWeight=baseWeight*Math.max(1,typeScore);
 
+    // Egg care should matter, but it should not completely lock out other pets.
+    weight*=Math.max(1,typeScore);
+
+    // Balanced eggs get a small chance to favor anything, which keeps rare surprises possible.
     if(hatchProfile.balanced){
-      finalWeight*=1.12;
+      weight*=1.12;
     }
 
     return {
       key:p.id,
-      name:p.name,
-      type:p.type,
-      hatchWeight:baseWeight,
-      typeScore:typeScore,
-      weight:finalWeight
+      weight
     };
-  });
-
-  console.log('HATCH DEBUG', {
-    traits,
-    typeScores:hatchProfile.typeScores,
-    weighted:weighted.map(x=>({
-      key:x.key,
-      name:x.name,
-      type:x.type,
-      hatchWeight:x.hatchWeight,
-      typeScore:x.typeScore,
-      weight:x.weight
-    }))
   });
 
   return weightedPick(weighted).key;
@@ -1816,6 +1856,26 @@ app.get('/api/admin/pet-species',(req,res)=>{
   let adminUser=requireAdmin(req,res);
   if(!adminUser)return;
   res.json({ok:true,petSpecies:adminPetSpeciesCatalog()});
+});
+
+app.post('/api/admin/pet-data/sync-from-repo',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  try{
+    // Merge mode keeps any live-only custom entries, but GitHub/repo wins when the same id exists in both places.
+    // That fixes stale Render persistent data like an old type or hatchWeight.
+    let sync=syncLivePetDataFromRepo({force:false,reason:'admin:'+adminUser});
+    res.json({
+      ok:true,
+      message:sync.skipped?'Repo data is already live.':'Pet species and moves synced from GitHub/repo into live persistent data.',
+      sync,
+      petSpecies:adminPetSpeciesCatalog()
+    });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message||'Pet data sync failed'});
+  }
 });
 
 app.post('/api/admin/pet-species/update',async (req,res)=>{
