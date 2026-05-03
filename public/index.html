@@ -858,13 +858,14 @@ button:disabled{
 /* ===== GAME AREA ===== */
 iframe{
   width:100%;
-  height:100%;
-  min-height:0;
-  max-height:none;
+  height:82vh;
+  min-height:650px;
+  max-height:900px;
   border:3px solid #020617;
   border-radius:22px;
   background:#020617;
 }
+
 /* Game frame should never appear as a blank white box. It stays hidden until a direct game loads or a room owner starts a multiplayer game. */
 #gameArea{
   margin-top:14px;
@@ -2538,8 +2539,8 @@ function openInventory(){
   // Inventory is a direct system panel, not a games.json game card.
   // Keep /games/inventory.html as a standalone iframe page so it can use the same shell as PetWorld/Marketplace.
   document.body.classList.remove('gameMode');
-  document.body.classList.add('directGameMode');
   showSection('play');
+  document.body.classList.add('directGameMode');
 
   gameFrame.onload=null;
   gameFrame.removeAttribute('srcdoc');
@@ -2562,8 +2563,8 @@ async function launchSoloGame(g){
     return;
   }
   document.body.classList.remove('gameMode');
-  document.body.classList.add('directGameMode');
   showSection('play');
+  document.body.classList.add('directGameMode');
 
   // Direct companion games skip rooms/seats and immediately focus the iframe area.
   gameFrame.removeAttribute('srcdoc');
