@@ -21,7 +21,7 @@ const itemsFile=path.join(DATA,'items.json');
 const shopsFile=path.join(DATA,'shops.json');
 const gamesFile=path.join(__dirname,'games.json');
 
-app.use(express.json({limit:'15mb'}));
+app.use(express.json({limit:'12mb'}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/games',express.static(path.join(__dirname,'games')));
 // Admin-uploaded image previews live here before approval.
@@ -1086,12 +1086,11 @@ function safeAssetSlot(type,slot){
 }
 
 function parseImageDataUrl(dataUrl){
-  // Admin UI converts every upload to PNG before sending.
-  // Keeping approved paths as .png makes image lookup predictable everywhere.
-  let match=String(dataUrl||'').match(/^data:image\/png;base64,([A-Za-z0-9+/=]+)$/);
+  let match=String(dataUrl||'').match(/^data:image\/(png|jpeg|jpg|webp);base64,([A-Za-z0-9+/=]+)$/);
   if(!match)return null;
-  let buffer=Buffer.from(match[1],'base64');
-  return {ext:'png',buffer};
+  let ext=match[1]==='jpeg'?'jpg':match[1];
+  let buffer=Buffer.from(match[2],'base64');
+  return {ext,buffer};
 }
 
 function pendingAssetDir(type){
@@ -1102,18 +1101,18 @@ function pendingAssetPath(type,tempFile){
   return path.join(pendingAssetDir(type),path.basename(String(tempFile||'')));
 }
 
-function finalAssetRepoPath(type,targetId,slot){
+function finalAssetRepoPath(type,targetId,slot,ext){
   targetId=safeAssetId(targetId);
   slot=safeAssetSlot(type,slot);
+  ext=String(ext||'png').replace(/[^a-z0-9]/g,'')||'png';
 
-  // Standardized image paths. The game can always guess these paths.
-  if(type==='items')return `public/assets/items/${targetId}.png`;
-  if(type==='pets')return `public/assets/pets/${targetId}/${slot}.png`;
-  if(type==='eggs')return `public/assets/pets/egg/${slot}.png`;
-  if(type==='shops')return `public/assets/shops/${targetId}_${slot}.png`;
-  if(type==='backgrounds')return `public/assets/backgrounds/${targetId}.png`;
+  if(type==='items')return `public/assets/items/${targetId}.${ext}`;
+  if(type==='pets')return `public/assets/pets/${targetId}/${slot}.${ext}`;
+  if(type==='eggs')return `public/assets/pets/egg/${slot}.${ext}`;
+  if(type==='shops')return `public/assets/shops/${targetId}_${slot}.${ext}`;
+  if(type==='backgrounds')return `public/assets/backgrounds/${targetId}.${ext}`;
 
-  return `public/assets/misc/${targetId}.png`;
+  return `public/assets/misc/${targetId}.${ext}`;
 }
 
 function publicPathFromRepoPath(repoPath){
@@ -1191,7 +1190,7 @@ app.post('/api/admin/assets/upload-preview',(req,res)=>{
 
   if(!ADMIN_ASSET_TYPES.includes(type))return res.status(400).json({error:'Invalid asset type'});
   if(!targetId)return res.status(400).json({error:'Missing targetId'});
-  if(!parsed)return res.status(400).json({error:'Image upload must be PNG data. Use the updated admin page; it converts JPG/WEBP to PNG automatically.'});
+  if(!parsed)return res.status(400).json({error:'Image must be PNG, JPG, or WEBP'});
   if(parsed.buffer.length>5*1024*1024)return res.status(400).json({error:'Image must be under 5MB'});
 
   slot=safeAssetSlot(type,slot);
@@ -1276,8 +1275,7 @@ app.post('/api/admin/assets/approve',async (req,res)=>{
     if(!fs.existsSync(pending))return res.status(404).json({error:'Pending file not found'});
 
     let ext=(path.extname(tempFile).replace('.','')||'png').toLowerCase();
-    if(ext!=='png')return res.status(400).json({error:'Pending asset is not PNG. Re-upload it with the updated admin page.'});
-    let repoPath=finalAssetRepoPath(type,targetId,slot);
+    let repoPath=finalAssetRepoPath(type,targetId,slot,ext);
     let publicPath=publicPathFromRepoPath(repoPath);
     let buffer=fs.readFileSync(pending);
 
@@ -1324,21 +1322,110 @@ app.post('/api/admin/assets/approve',async (req,res)=>{
   }
 });
 
+
+app.post('/api/admin/items/update',async (req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  try{
+    let itemId=safeAssetId(req.body.itemId);
+    if(!itemId)return res.status(400).json({error:'Missing itemId'});
+
+    let catalog=itemCatalog();
+    let item=catalog[itemId]||{id:itemId,name:itemId};
+
+    let name=String(req.body.name||item.name||itemId).trim().slice(0,64);
+    let description=String(req.body.description||'').trim().slice(0,700);
+    let category=String(req.body.category||'other').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,40)||'other';
+    let itemType=String(req.body.itemType||'general').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,40)||'general';
+    let rarity=String(req.body.rarity||'common').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,32)||'common';
+    let price=Math.floor(Number(req.body.price));
+    if(!Number.isFinite(price)||price<0)return res.status(400).json({error:'Invalid price'});
+    if(price>999999)return res.status(400).json({error:'Price is too high'});
+
+    let effects=[];
+    if(req.body.effectsRaw!==undefined&&String(req.body.effectsRaw||'').trim()){
+      try{
+        effects=JSON.parse(String(req.body.effectsRaw||'[]'));
+      }catch(err){
+        return res.status(400).json({error:'Effects must be valid JSON'});
+      }
+      if(!Array.isArray(effects))return res.status(400).json({error:'Effects JSON must be an array'});
+    }else if(Array.isArray(req.body.effects)){
+      effects=req.body.effects;
+    }else if(Array.isArray(item.effects)){
+      effects=item.effects;
+    }
+
+    item.id=itemId;
+    item.name=name||itemId;
+    item.description=description;
+    item.category=category;
+    item.itemType=itemType;
+    item.type=itemType;
+    item.rarity=rarity;
+    item.price=price;
+    item.basePrice=price;
+    item.image='/assets/items/'+itemId+'.png';
+    item.effects=effects;
+    item.usable=req.body.usable===false?false:true;
+
+    catalog[itemId]=item;
+    writeJSON(itemsFile,catalog);
+
+    // Keep NPC shop sale price aligned when this item is already sold by a shop.
+    let shops=shopCatalog();
+    let shopChanged=false;
+    Object.keys(shops||{}).forEach(shopId=>{
+      let shop=shops[shopId]||{};
+      if(shop.items&&shop.items[itemId]){
+        if(typeof shop.items[itemId]==='object'){
+          shop.items[itemId].price=price;
+        }else{
+          shop.items[itemId]={price};
+        }
+        shopChanged=true;
+      }
+    });
+    if(shopChanged)writeJSON(shopsFile,shops);
+
+    await commitFileToGithub('data/items.json',Buffer.from(JSON.stringify(catalog,null,2)),`Admin item metadata update: ${itemId}`);
+    if(shopChanged){
+      await commitFileToGithub('data/shops.json',Buffer.from(JSON.stringify(shops,null,2)),`Admin shop price sync: ${itemId}`);
+    }
+
+    res.json({
+      ok:true,
+      message:'Item updated.',
+      item,
+      items:adminItemCatalog(),
+      npcShops:publicShopCatalog()
+    });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message||'Item update failed'});
+  }
+});
+
 function adminItemCatalog(){
   let catalog=itemCatalog();
 
   return Object.keys(catalog).map(id=>{
-    let item=catalog[id];
+    let item=catalog[id]||{};
 
     return {
       id,
       name:item.name||id,
       price:itemBasePrice(id),
-      category:item.category||'',
+      category:item.category||'other',
+      itemType:item.itemType||item.type||'general',
       rarity:item.rarity||'common',
-      description:item.description||''
+      description:item.description||'',
+      image:item.image||('/assets/items/'+id+'.png'),
+      effects:Array.isArray(item.effects)?item.effects:[],
+      usable:item.usable!==false
     };
-  });
+  }).sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));
 }
 
 function adminRoomSummary(){
