@@ -2,23 +2,6 @@
 <html>
 <head>
 <title>Pet Battle Arena</title>
-
-<!--
-GameForge AI / Pet Battle Arena maintainer notes for future AI chats:
-
-- Update comments whenever behavior changes. Add comments only where they explain design intent, architecture, or non-obvious logic.
-- Do not add useless comments that simply repeat the code.
-- Preserve the GameForge iframe multiplayer contract:
-  - Games send moves with parent.postMessage({type:'move', data}, '*')
-  - Parent relays moves over WebSocket as gameMove
-  - Iframe receives relayed data through window.onMove(data)
-- This file is intentionally client-side battle logic for now. Server rewards should be added later through a dedicated API, not by storing permanent results here.
-- Pets store only move IDs. Full move definitions come from /api/pet/profile via data.moves.
-- Keep the arena emotional and readable: moves should show impact, logs should explain what happened, and learned/future move moments should feel rewarding.
-- Current battle sync model: Seat 0 acts as the battle host and broadcasts full battle state. Do not let both clients independently resolve RNG or they will desync.
-- Future improvement: move battle resolution to server-authoritative logic when rewards become permanent.
--->
-
 <style>
 :root{
   --bg:#07111f;
@@ -32,8 +15,6 @@ GameForge AI / Pet Battle Arena maintainer notes for future AI chats:
   --green:#16a34a;
   --gold:#facc15;
   --purple:#7c3aed;
-  --sky:#38bdf8;
-  --shadow:0 20px 55px rgba(15,23,42,.13);
 }
 
 *{box-sizing:border-box}
@@ -76,7 +57,6 @@ h1,h2,h3{margin:0}
 .muted{
   color:var(--muted);
   font-size:13px;
-  line-height:1.35;
 }
 
 .badge{
@@ -94,7 +74,7 @@ h1,h2,h3{margin:0}
 .arena{
   min-height:0;
   display:grid;
-  grid-template-columns:1fr 335px 1fr;
+  grid-template-columns:1fr 320px 1fr;
   gap:12px;
 }
 
@@ -105,7 +85,7 @@ h1,h2,h3{margin:0}
   border:1px solid var(--line);
   border-radius:28px;
   padding:14px;
-  box-shadow:var(--shadow);
+  box-shadow:0 20px 55px rgba(15,23,42,.13);
   display:grid;
   grid-template-rows:auto 1fr auto;
   gap:10px;
@@ -124,7 +104,7 @@ h1,h2,h3{margin:0}
   border:1px solid var(--line);
   border-radius:24px;
   padding:14px;
-  box-shadow:var(--shadow);
+  box-shadow:0 20px 55px rgba(15,23,42,.13);
 }
 
 .log{
@@ -138,13 +118,6 @@ h1,h2,h3{margin:0}
   line-height:1.35;
   font-size:13px;
 }
-
-.log .crit{color:#b45309;font-weight:900}
-.log .super{color:#15803d;font-weight:900}
-.log .resist{color:#475569;font-weight:900}
-.log .miss{color:#64748b;font-weight:900}
-.log .status{color:#7c3aed;font-weight:900}
-.log .reward{color:#92400e;font-weight:900}
 
 .petStage{
   position:relative;
@@ -165,12 +138,6 @@ h1,h2,h3{margin:0}
     radial-gradient(circle at 50% 40%,rgba(255,255,255,.95),rgba(255,255,255,.28) 35%,transparent 62%),
     linear-gradient(180deg,#fecaca,#fde68a);
 }
-
-.petStage.fire{box-shadow:inset 0 0 60px rgba(249,115,22,.24)}
-.petStage.water{box-shadow:inset 0 0 60px rgba(14,165,233,.24)}
-.petStage.nature{box-shadow:inset 0 0 60px rgba(22,163,74,.24)}
-.petStage.earth{box-shadow:inset 0 0 60px rgba(120,113,108,.24)}
-.petStage.shadow{box-shadow:inset 0 0 60px rgba(124,58,237,.24)}
 
 .petImg{
   width:190px;
@@ -195,15 +162,10 @@ h1,h2,h3{margin:0}
 
 .attackAnim{animation:attack .45s ease}
 .hitAnim{animation:hit .45s ease}
-.critAnim{animation:critHit .7s ease}
-.statusBurn{animation:burnPulse .8s ease}
-.statusBuff{animation:buffGlow .8s ease}
-.statusDebuff{animation:debuffPulse .8s ease}
-.statusHeal{animation:healGlow .8s ease}
 
 @keyframes attack{
   0%{transform:translateX(0) scale(1)}
-  50%{transform:translateX(28px) scale(1.12)}
+  50%{transform:translateX(26px) scale(1.12)}
   100%{transform:translateX(0) scale(1)}
 }
 
@@ -212,58 +174,6 @@ h1,h2,h3{margin:0}
   25%{filter:brightness(2) drop-shadow(0 0 16px rgba(220,38,38,.8))}
   50%{transform:translateX(-10px)}
   100%{filter:brightness(1)}
-}
-
-@keyframes critHit{
-  0%{filter:brightness(1)}
-  22%{filter:brightness(2.4) drop-shadow(0 0 22px rgba(250,204,21,.9));transform:scale(1.18)}
-  48%{transform:translateX(-16px) rotate(-3deg)}
-  100%{filter:brightness(1);transform:scale(1)}
-}
-
-@keyframes burnPulse{
-  0%,100%{filter:brightness(1)}
-  35%{filter:brightness(1.7) drop-shadow(0 0 20px rgba(249,115,22,.85))}
-}
-
-@keyframes buffGlow{
-  0%,100%{filter:brightness(1)}
-  45%{filter:brightness(1.5) drop-shadow(0 -10px 20px rgba(34,197,94,.85))}
-}
-
-@keyframes debuffPulse{
-  0%,100%{filter:brightness(1)}
-  45%{filter:brightness(.75) drop-shadow(0 10px 18px rgba(124,58,237,.8))}
-}
-
-@keyframes healGlow{
-  0%,100%{filter:brightness(1)}
-  45%{filter:brightness(1.7) drop-shadow(0 0 22px rgba(34,197,94,.9))}
-}
-
-.floatText{
-  position:absolute;
-  left:50%;
-  top:44%;
-  transform:translate(-50%,-50%);
-  font-size:30px;
-  font-weight:900;
-  color:#991b1b;
-  text-shadow:0 3px 10px rgba(255,255,255,.75);
-  pointer-events:none;
-  opacity:0;
-  animation:floatText 1s ease forwards;
-  z-index:5;
-}
-
-.floatText.crit{font-size:42px;color:#b45309}
-.floatText.status{color:#7c3aed}
-.floatText.heal{color:#15803d}
-
-@keyframes floatText{
-  0%{opacity:0;transform:translate(-50%,-20%) scale(.75)}
-  15%{opacity:1}
-  100%{opacity:0;transform:translate(-50%,-150%) scale(1.12)}
 }
 
 .hpBar{
@@ -285,23 +195,6 @@ h1,h2,h3{margin:0}
 .hpFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}
 .hpFill.low{background:linear-gradient(90deg,#dc2626,#fb7185)}
 
-.statusRow{
-  display:flex;
-  flex-wrap:wrap;
-  gap:5px;
-  margin-top:6px;
-  min-height:24px;
-}
-
-.statusPill{
-  padding:4px 8px;
-  border-radius:999px;
-  border:1px solid rgba(148,163,184,.35);
-  background:rgba(255,255,255,.72);
-  font-size:11px;
-  font-weight:900;
-}
-
 .statGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -322,15 +215,7 @@ h1,h2,h3{margin:0}
   border:1px solid var(--line);
   border-radius:24px;
   padding:12px;
-  box-shadow:var(--shadow);
-}
-
-.moveHeader{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:8px;
+  box-shadow:0 20px 55px rgba(15,23,42,.13);
 }
 
 .moves{
@@ -361,38 +246,14 @@ button:disabled{
   box-shadow:none;
 }
 
-.moveBtn{
-  text-align:left;
-  min-height:92px;
-  position:relative;
-  overflow:hidden;
-}
-
-.moveBtn:after{
-  content:"";
-  position:absolute;
-  inset:auto 0 0 0;
-  height:5px;
-  background:rgba(255,255,255,.45);
-}
-
+.moveBtn{text-align:left}
 .moveBtn strong{display:block}
-.moveBtn span{display:block;color:rgba(255,255,255,.88);font-size:12px;margin-top:3px;line-height:1.25}
-.moveBtn small{display:block;color:rgba(255,255,255,.82);font-size:11px;margin-top:5px;line-height:1.2}
+.moveBtn span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
 
 .primary{background:linear-gradient(135deg,var(--blue),#1d4ed8);color:white;border-color:var(--blue)}
 .good{background:linear-gradient(135deg,var(--green),#22c55e);color:white;border-color:var(--green)}
 .gold{background:linear-gradient(135deg,var(--gold),#f59e0b);color:#111827;border-color:var(--gold)}
 .danger{background:linear-gradient(135deg,var(--red),#ef4444);color:white;border-color:var(--red)}
-.purple{background:linear-gradient(135deg,var(--purple),#a855f7);color:white;border-color:var(--purple)}
-.sky{background:linear-gradient(135deg,var(--sky),#0284c7);color:white;border-color:var(--sky)}
-
-.move-fire{background:linear-gradient(135deg,#f97316,#dc2626);color:white;border-color:#fb923c}
-.move-water{background:linear-gradient(135deg,#38bdf8,#2563eb);color:white;border-color:#38bdf8}
-.move-nature{background:linear-gradient(135deg,#22c55e,#15803d);color:white;border-color:#22c55e}
-.move-earth{background:linear-gradient(135deg,#a16207,#57534e);color:white;border-color:#d6a955}
-.move-shadow{background:linear-gradient(135deg,#7c3aed,#111827);color:white;border-color:#a855f7}
-.move-normal{background:linear-gradient(135deg,#64748b,#334155);color:white;border-color:#94a3b8}
 
 .winner{
   font-size:22px;
@@ -402,17 +263,6 @@ button:disabled{
   border-radius:18px;
   background:rgba(250,204,21,.35);
   border:1px solid rgba(245,158,11,.5);
-}
-
-.rewardHint{
-  margin-top:8px;
-  padding:9px 10px;
-  border-radius:16px;
-  background:rgba(255,251,235,.72);
-  border:1px solid rgba(245,158,11,.35);
-  color:#92400e;
-  font-size:12px;
-  font-weight:900;
 }
 
 @media(max-width:1000px){
@@ -429,7 +279,7 @@ button:disabled{
   <div class="top">
     <div>
       <h1>Pet Battle Arena</h1>
-      <div class="muted">Turn-based companion battles with crits, statuses, type matchups, and battle momentum.</div>
+      <div class="muted">Turn-based companion battles. Defense, speed, and move choice now matter more.</div>
     </div>
     <div>
       <span id="meBadge" class="badge">Loading</span>
@@ -444,10 +294,9 @@ button:disabled{
         <div id="p0Sub" class="muted">Loading...</div>
         <div class="hpBar"><div id="p0Hp" class="hpFill"></div></div>
         <div id="p0HpText" class="muted"></div>
-        <div id="p0Statuses" class="statusRow"></div>
       </div>
 
-      <div id="p0Stage" class="petStage">
+      <div class="petStage">
         <img id="p0Img" class="petImg hide">
         <div id="p0Emoji" class="petEmoji">🥚</div>
       </div>
@@ -474,10 +323,9 @@ button:disabled{
         <div id="p1Sub" class="muted">Loading...</div>
         <div class="hpBar"><div id="p1Hp" class="hpFill"></div></div>
         <div id="p1HpText" class="muted"></div>
-        <div id="p1Statuses" class="statusRow"></div>
       </div>
 
-      <div id="p1Stage" class="petStage enemy">
+      <div class="petStage enemy">
         <img id="p1Img" class="petImg hide">
         <div id="p1Emoji" class="petEmoji">🥚</div>
       </div>
@@ -487,13 +335,6 @@ button:disabled{
   </div>
 
   <div class="controls">
-    <div class="moveHeader">
-      <div>
-        <b>Choose a Move</b>
-        <div id="moveHelp" class="muted">Moves show power, accuracy, crit chance, and effects.</div>
-      </div>
-      <span id="roundBadge" class="badge">Round 1</span>
-    </div>
     <div id="moveButtons" class="moves"></div>
   </div>
 </div>
@@ -507,33 +348,6 @@ var profiles={};
 var moveBook={};
 var state=null;
 var ready=false;
-var lastAnimatedActionId='';
-
-/*
-Battle constants are kept together so future tuning is safe and obvious.
-Status durations tick after the affected pet gets a turn.
-*/
-var TYPE_CHART={
-  fire:{nature:1.5,water:.75},
-  water:{fire:1.5,earth:1.5,nature:.75},
-  nature:{water:1.5,fire:.75,earth:1.25},
-  earth:{fire:1.5,water:.75,nature:.75},
-  shadow:{normal:1.1},
-  normal:{}
-};
-
-var STATUS_META={
-  burn:{icon:'🔥',label:'Burn',kind:'dot'},
-  slow:{icon:'🐌',label:'Slow',kind:'debuff'},
-  snare:{icon:'🌿',label:'Snare',kind:'debuff'},
-  stun:{icon:'💫',label:'Stun',kind:'control'},
-  sleep:{icon:'💤',label:'Sleep',kind:'control'},
-  confuse:{icon:'🌀',label:'Confuse',kind:'control'},
-  defense_up:{icon:'🛡',label:'DEF Up',kind:'buff'},
-  defense_down:{icon:'🔻',label:'DEF Down',kind:'debuff'},
-  attack_up:{icon:'⚔️',label:'ATK Up',kind:'buff'},
-  attack_down:{icon:'⬇️',label:'ATK Down',kind:'debuff'}
-};
 
 function el(id){return document.getElementById(id);}
 
@@ -573,10 +387,6 @@ async function loadProfiles(){
 
     ready=true;
 
-    /*
-    Seat 0 hosts battle creation and all move resolution. This prevents the two browsers
-    from rolling different RNG and drifting apart.
-    */
     if(mySeat===0&&!state){
       state=freshBattle();
       sync();
@@ -600,7 +410,6 @@ function battlePet(seat){
   if(!p)return null;
 
   var stats=p.stats||{};
-  var needs=p.needs||{};
 
   return {
     owner:players[seat].name,
@@ -609,9 +418,6 @@ function battlePet(seat){
     species:p.species||'egg',
     type:p.type||'normal',
     emoji:p.emoji||'🥚',
-    personality:p.personality||'unknown',
-    affection:Number(p.affection||p.bond||0),
-    moodScore:averageNeeds(needs),
     stats:{
       level:Number(stats.level||1),
       hp:Number(stats.hp||20),
@@ -620,13 +426,9 @@ function battlePet(seat){
       defense:Number(stats.defense||4),
       speed:Number(stats.speed||5)
     },
-    moves:(p.moves&&p.moves.length?p.moves:['tackle']).slice(0,4)
+    moves:(p.moves&&p.moves.length?p.moves:['tackle']).slice(0,4),
+    status:{}
   };
-}
-
-function averageNeeds(n){
-  var vals=[n.hunger,n.happiness,n.energy,n.cleanliness].map(function(x){return Number(x||0);});
-  return Math.floor(vals.reduce(function(a,b){return a+b;},0)/Math.max(1,vals.length));
 }
 
 function freshBattle(){
@@ -637,27 +439,21 @@ function freshBattle(){
     return null;
   }
 
-  var first=rollInitiative(a,0)>=rollInitiative(b,1)?0:1;
+  var first=a.stats.speed>=b.stats.speed?0:1;
 
   return {
-    version:2,
     pets:[a,b],
     hp:[a.stats.maxHp,b.stats.maxHp],
-    statuses:[{},{}],
+    status:[{},{}],
     turn:first,
     round:1,
     winner:null,
     log:[
       'Battle started: '+a.name+' vs '+b.name+'.',
-      (first===0?a.name:b.name)+' wins initiative and moves first.'
+      (first===0?a.name:b.name)+' moves first.'
     ],
-    lastAction:null,
-    actionSeq:0
+    lastAction:null
   };
-}
-
-function rollInitiative(pet,seat){
-  return effectiveSpeed(seat,pet)+(Math.floor(Math.random()*11));
 }
 
 function drawEmpty(){
@@ -676,30 +472,20 @@ function draw(){
   drawLog();
   drawMoves();
 
-  roundBadge.innerText='Round '+Number(state.round||1);
-
   if(state.winner!==null){
     var winnerName=players[state.winner].name;
-    var loser=state.winner===0?1:0;
-
     setStatus('Battle Complete',winnerName+' wins the battle!');
-    winnerBox.innerHTML=
-      '<div class="winner">🏆 '+escapeHtml(winnerName)+' wins!</div>'+
-      '<div class="rewardHint">Rewards hook ready: winner XP/coins, loser consolation XP, and battle records should be saved by server API later.</div>';
-
+    winnerBox.innerHTML='<div class="winner">🏆 '+escapeHtml(winnerName)+' wins!</div>';
     turnBadge.innerText='Finished';
-    moveHelp.innerText='Battle complete. Seat 1 can start a fresh rematch.';
   }else{
     winnerBox.innerHTML='';
     var turnName=players[state.turn].name;
     setStatus('Current Turn',turnName+' chooses a move.');
     turnBadge.innerText='Turn: '+turnName;
-    moveHelp.innerText=mySeat===state.turn?'Pick a move. Strong type matchups, crits, and statuses can swing the battle.':'Waiting for '+turnName+'.';
   }
 
-  if(state.lastAction&&state.lastAction.id!==lastAnimatedActionId){
-    lastAnimatedActionId=state.lastAction.id;
-    pulseAction(state.lastAction);
+  if(state.lastAction){
+    pulseAction(state.lastAction.actor,state.lastAction.target);
   }
 }
 
@@ -710,47 +496,43 @@ function drawPetSide(seat){
   var hpFill=el('p'+seat+'Hp');
 
   el('p'+seat+'Name').innerText=players[seat].name;
-  el('p'+seat+'Sub').innerText=
-    pet.name+' · '+pet.type+' · Lv '+pet.stats.level+
-    (pet.personality&&pet.personality!=='unknown'?' · '+pet.personality:'');
-
+  el('p'+seat+'Sub').innerText=pet.name+' · '+pet.type+' · Lv '+pet.stats.level+statusText(seat);
   el('p'+seat+'HpText').innerText=hp+' / '+pet.stats.maxHp+' HP';
 
   hpFill.style.width=pct+'%';
   hpFill.className='hpFill '+(pct<30?'low':pct<60?'mid':'');
 
   el('p'+seat+'Stats').innerHTML=
-    stat('Attack',effectiveAttack(seat,pet))+
-    stat('Defense',effectiveDefense(seat,pet))+
-    stat('Speed',effectiveSpeed(seat,pet))+
-    stat('Bond',pet.affection||0);
-
-  el('p'+seat+'Statuses').innerHTML=statusPills(seat);
+    stat('Attack',effectiveAttack(seat))+
+    stat('Defense',effectiveDefense(seat))+
+    stat('Speed',effectiveSpeed(seat))+
+    stat('Moves',pet.moves.length);
 
   setPetVisual(seat,pet);
 }
 
-function statusPills(seat){
-  var s=state.statuses[seat]||{};
-  var html='';
+function statusText(seat){
+  var s=(state&&state.status&&state.status[seat])?state.status[seat]:{};
+  var tags=[];
 
-  Object.keys(s).forEach(function(k){
-    if(!s[k]||Number(s[k].duration||0)<=0)return;
-    var meta=STATUS_META[k]||{icon:'✨',label:k};
-    html+='<span class="statusPill">'+meta.icon+' '+escapeHtml(meta.label)+' '+Number(s[k].duration||0)+'</span>';
-  });
+  if(s.burn&&s.burn>0)tags.push('Burn');
+  if(s.slow&&s.slow>0)tags.push('Slow');
+  if(s.sleep&&s.sleep>0)tags.push('Sleep');
+  if(s.stun&&s.stun>0)tags.push('Stun');
+  if(s.snare&&s.snare>0)tags.push('Snare');
+  if(s.attack_up&&s.attack_up>0)tags.push('Atk+');
+  if(s.attack_down&&s.attack_down>0)tags.push('Atk-');
+  if(s.defense_up&&s.defense_up>0)tags.push('Def+');
+  if(s.defense_down&&s.defense_down>0)tags.push('Def-');
 
-  return html||'<span class="muted">No status</span>';
+  return tags.length?' · '+tags.join(', '):'';
 }
 
 function setPetVisual(seat,pet){
   var img=el('p'+seat+'Img');
   var emoji=el('p'+seat+'Emoji');
-  var stageEl=el('p'+seat+'Stage');
 
   emoji.innerText=pet.emoji||'🥚';
-
-  stageEl.className='petStage '+(seat===1?'enemy ':'')+(pet.type||'normal');
 
   var src=petAssetPath(pet);
 
@@ -786,25 +568,10 @@ function stat(k,v){
 }
 
 function drawLog(){
-  battleLog.innerHTML=state.log.slice(-26).map(function(x){
-    return '• '+formatLogLine(x);
+  battleLog.innerHTML=state.log.slice(-20).map(function(x){
+    return '• '+escapeHtml(x);
   }).join('<br>');
   battleLog.scrollTop=battleLog.scrollHeight;
-}
-
-function formatLogLine(x){
-  var safe=escapeHtml(x);
-
-  safe=safe.replace(/CRITICAL HIT!/g,'<span class="crit">CRITICAL HIT!</span>');
-  safe=safe.replace(/Super effective!/g,'<span class="super">Super effective!</span>');
-  safe=safe.replace(/Resisted\./g,'<span class="resist">Resisted.</span>');
-  safe=safe.replace(/missed!/g,'<span class="miss">missed!</span>');
-  safe=safe.replace(/was burned|was slowed|was snared|was stunned|fell asleep|became confused|defense rose|defense fell|attack rose|attack fell/g,function(m){
-    return '<span class="status">'+m+'</span>';
-  });
-  safe=safe.replace(/Reward hook:/g,'<span class="reward">Reward hook:</span>');
-
-  return safe;
 }
 
 function drawMoves(){
@@ -812,11 +579,6 @@ function drawMoves(){
 
   if(state.winner!==null){
     moveButtons.innerHTML='<button class="gold" onclick="newBattle()">New Battle</button>';
-    return;
-  }
-
-  if(mySeat===null||mySeat===undefined||mySeat<0){
-    moveButtons.innerHTML='<button disabled>Spectating battle...</button>';
     return;
   }
 
@@ -828,219 +590,179 @@ function drawMoves(){
   var pet=state.pets[mySeat];
 
   pet.moves.forEach(function(id){
-    var m=normalizeMove(id);
-    var effectText=moveEffectText(m);
-    var cls='moveBtn move-'+escapeAttr(m.type||'normal');
-
-    html+='<button class="'+cls+'" onclick="useMove(\''+escapeAttr(id)+'\')">'+
+    var m=moveBook[id]||{name:id,type:'normal',power:30,accuracy:95};
+    var category=m.category||'attack';
+    var powerText=Number(m.power||0)>0?'Power '+Number(m.power||30):'Status';
+    html+='<button class="moveBtn primary" onclick="useMove(\''+id+'\')">'+
       '<strong>'+escapeHtml(m.name)+'</strong>'+
-      '<span>'+escapeHtml(m.type||'normal')+' · '+escapeHtml(m.category||'physical')+'</span>'+
-      '<small>Power '+Number(m.power||0)+' · Acc '+Number(m.accuracy||100)+'% · Crit '+critChance(pet,m)+'%'+effectText+'</small>'+
+      '<span>'+escapeHtml(m.type||'normal')+' · '+escapeHtml(category)+' · '+powerText+' · Acc '+Number(m.accuracy||95)+'%</span>'+
     '</button>';
   });
 
   moveButtons.innerHTML=html;
 }
 
-function moveEffectText(m){
-  if(!m.status)return '';
-  var meta=STATUS_META[m.status.effect]||{label:m.status.effect};
-  return ' · '+meta.label+' '+Number(m.status.chance||0)+'%';
-}
-
-function normalizeMove(id){
-  var raw=moveBook[id]||{};
-  return {
-    id:id,
-    name:raw.name||id,
-    type:raw.type||'normal',
-    category:raw.category||'physical',
-    power:Number(raw.power||0),
-    accuracy:Number(raw.accuracy||100),
-    crit:Number(raw.crit||5),
-    status:raw.status||null,
-    description:raw.description||''
-  };
-}
-
 function useMove(moveId){
   if(!state||state.winner!==null)return;
   if(mySeat!==state.turn)return;
 
-  /*
-  Only the active player asks the host to resolve the move.
-  If the active player is Seat 0, resolve immediately. If Seat 1, Seat 0 receives the request and resolves it.
-  */
-  if(mySeat===0){
-    resolveMove(0,moveId);
-    draw();
-    sync();
-  }else{
-    window.sendMove({type:'battleMoveRequest',actor:mySeat,moveId:moveId});
-    moveButtons.innerHTML='<button disabled>Move locked in...</button>';
-  }
-}
-
-function resolveMove(actor,moveId){
-  if(!state||state.winner!==null)return;
-  if(actor!==state.turn)return;
-
+  var actor=mySeat;
   var target=actor===0?1:0;
   var attacker=state.pets[actor];
   var defender=state.pets[target];
-  var move=normalizeMove(moveId);
-
-  state.actionSeq=Number(state.actionSeq||0)+1;
-  var action={
-    id:'act_'+state.actionSeq+'_'+Date.now(),
-    actor:actor,
-    target:target,
-    move:moveId,
-    damage:0,
-    miss:false,
-    crit:false,
-    status:'',
-    effectiveness:1,
-    heal:0
-  };
-
-  var skip=preTurnControlCheck(actor,attacker);
-
-  if(skip){
-    addLog(skip);
-    finishTurn(actor,target,action);
-    return;
-  }
-
-  applyStartTurnEffects(actor,attacker,action);
-  if(state.hp[actor]<=0){
-    state.winner=target;
-    addLog(attacker.name+' fainted from lingering effects.');
-    addLog(players[target].name+' wins!');
-    state.lastAction=action;
-    return;
-  }
-
+  var move=moveBook[moveId]||{name:moveId,type:'normal',category:'physical',power:30,accuracy:95};
   var moveName=move.name||moveId;
-  var accuracy=clamp(Number(move.accuracy||100),1,100);
-  var roll=Math.random()*100;
 
-  if(roll>accuracy){
-    action.miss=true;
-    addLog(attacker.name+' used '+moveName+' but missed!');
-    finishTurn(actor,target,action);
-    return;
-  }
+  ensureStatusArrays();
 
-  if(move.category==='heal'){
-    var healAmount=Math.max(1,Math.floor(attacker.stats.maxHp*.22));
-    state.hp[actor]=Math.min(attacker.stats.maxHp,state.hp[actor]+healAmount);
-    action.heal=healAmount;
-    addLog(attacker.name+' used '+moveName+' and recovered '+healAmount+' HP.');
-    applyMoveStatus(actor,actor,move,action);
-    finishTurn(actor,target,action);
-    return;
-  }
-
-  if(move.power>0){
-    var result=calculateDamage(attacker,defender,move,actor,target);
-    state.hp[target]=Math.max(0,state.hp[target]-result.damage);
-
-    action.damage=result.damage;
-    action.crit=result.crit;
-    action.effectiveness=result.effectiveness;
-
-    var line=attacker.name+' used '+moveName+' and dealt '+result.damage+' damage.';
-    if(result.crit)line+=' CRITICAL HIT!';
-    if(result.effectiveness>=1.49)line+=' Super effective!';
-    if(result.effectiveness<=.76)line+=' Resisted.';
-
-    addLog(line);
+  var blocked=startTurnStatus(actor);
+  if(blocked){
+    addLog(attacker.name+' could not move because of '+blocked+'.');
   }else{
-    addLog(attacker.name+' used '+moveName+'.');
-  }
+    var roll=Math.random()*100;
 
-  applyMoveStatus(actor,target,move,action);
-
-  if(state.hp[target]<=0){
-    state.winner=actor;
-    addLog(defender.name+' fainted.');
-    addLog(players[actor].name+' wins!');
-    addLog('Reward hook: save winner coins/XP, loser consolation XP, and battle record on the server later.');
-  }
-
-  finishTurn(actor,target,action);
-}
-
-function preTurnControlCheck(actor,pet){
-  var statuses=state.statuses[actor]||{};
-
-  if(statuses.sleep&&statuses.sleep.duration>0){
-    statuses.sleep.duration--;
-    return pet.name+' is asleep and cannot move.';
-  }
-
-  if(statuses.stun&&statuses.stun.duration>0){
-    statuses.stun.duration--;
-    return pet.name+' is stunned and loses the turn.';
-  }
-
-  if(statuses.confuse&&statuses.confuse.duration>0){
-    statuses.confuse.duration--;
-    if(Math.random()<.35){
-      var selfDamage=Math.max(1,Math.floor(pet.stats.maxHp*.08));
-      state.hp[actor]=Math.max(0,state.hp[actor]-selfDamage);
-      return pet.name+' is confused and hurt itself for '+selfDamage+' damage.';
+    if(roll>Number(move.accuracy||95)){
+      addLog(attacker.name+' used '+moveName+' but missed!');
+    }else{
+      resolveMove(actor,target,moveId,move);
     }
   }
 
-  return '';
-}
+  state.lastAction={actor:actor,target:target,move:moveId,time:Date.now()};
 
-function applyStartTurnEffects(actor,pet,action){
-  var statuses=state.statuses[actor]||{};
-
-  if(statuses.burn&&statuses.burn.duration>0){
-    var burnDmg=Math.max(1,Math.floor(pet.stats.maxHp*.07));
-    state.hp[actor]=Math.max(0,state.hp[actor]-burnDmg);
-    action.status='burn';
-    addLog(pet.name+' is hurt by burn for '+burnDmg+' damage.');
-  }
-}
-
-function finishTurn(actor,target,action){
-  tickStatusDurations(actor);
-
-  cleanupStatuses(0);
-  cleanupStatuses(1);
-
-  state.lastAction=action;
+  checkWinner(actor,target);
 
   if(state.winner===null){
+    endTurnStatus(actor);
     state.turn=target;
     if(actor===1)state.round++;
   }
+
+  draw();
+  sync();
 }
 
-function tickStatusDurations(seat){
-  var s=state.statuses[seat]||{};
+function resolveMove(actor,target,moveId,move){
+  var attacker=state.pets[actor];
+  var defender=state.pets[target];
+  var moveName=move.name||moveId;
+  var category=move.category||'physical';
+  var power=Number(move.power||0);
 
-  Object.keys(s).forEach(function(k){
-    if(k==='burn')s[k].duration--;
-    else if(['defense_up','defense_down','attack_up','attack_down','slow','snare'].indexOf(k)>=0)s[k].duration--;
+  if(category==='status'||category==='buff'||category==='debuff'||power<=0){
+    var applied=applyMoveStatus(actor,target,move);
+    addLog(attacker.name+' used '+moveName+'.'+(applied?' '+applied:''));
+    return;
+  }
+
+  var dmg=damage(actor,target,move);
+  state.hp[target]=Math.max(0,state.hp[target]-dmg);
+  addLog(attacker.name+' used '+moveName+' and dealt '+dmg+' damage.');
+
+  var appliedAfterDamage=applyMoveStatus(actor,target,move);
+  if(appliedAfterDamage)addLog(appliedAfterDamage);
+}
+
+function damage(actor,target,move){
+  var attacker=state.pets[actor];
+  var defender=state.pets[target];
+
+  var power=Number(move.power||30);
+  var atk=effectiveAttack(actor);
+  var def=effectiveDefense(target);
+  var level=Number(attacker.stats.level||1);
+
+  var base=(power*0.45)+(atk*1.15)+(level*1.2);
+  var reduction=def*0.72;
+  var variance=0.9+(Math.random()*0.22);
+  var typeBonus=(move.type&&move.type===attacker.type)?1.12:1;
+
+  var dmg=Math.floor((base-reduction)*variance*typeBonus);
+
+  return Math.max(3,dmg);
+}
+
+function effectiveAttack(seat){
+  var pet=state.pets[seat];
+  var s=state.status&&state.status[seat]?state.status[seat]:{};
+  var atk=Number(pet.stats.attack||5);
+
+  if(s.attack_up&&s.attack_up>0)atk+=Number(s.attack_up_amount||1);
+  if(s.attack_down&&s.attack_down>0)atk-=Number(s.attack_down_amount||1);
+
+  return Math.max(1,atk);
+}
+
+function effectiveDefense(seat){
+  var pet=state.pets[seat];
+  var s=state.status&&state.status[seat]?state.status[seat]:{};
+  var def=Number(pet.stats.defense||4);
+
+  if(s.defense_up&&s.defense_up>0)def+=Number(s.defense_up_amount||1);
+  if(s.defense_down&&s.defense_down>0)def-=Number(s.defense_down_amount||1);
+
+  return Math.max(1,def);
+}
+
+function effectiveSpeed(seat){
+  var pet=state.pets[seat];
+  var s=state.status&&state.status[seat]?state.status[seat]:{};
+  var spd=Number(pet.stats.speed||5);
+
+  if(s.slow&&s.slow>0)spd=Math.max(1,Math.floor(spd*.65));
+  if(s.snare&&s.snare>0)spd=Math.max(1,Math.floor(spd*.75));
+
+  return Math.max(1,spd);
+}
+
+function ensureStatusArrays(){
+  if(!state.status)state.status=[{},{}];
+  if(!state.status[0])state.status[0]={};
+  if(!state.status[1])state.status[1]={};
+}
+
+function startTurnStatus(seat){
+  ensureStatusArrays();
+  var s=state.status[seat]||{};
+  var pet=state.pets[seat];
+
+  if(s.burn&&s.burn>0){
+    var burnDmg=Math.max(2,Math.floor(state.pets[seat].stats.maxHp*.06));
+    state.hp[seat]=Math.max(0,state.hp[seat]-burnDmg);
+    addLog(pet.name+' is hurt by burn for '+burnDmg+' damage.');
+  }
+
+  if(state.hp[seat]<=0){
+    state.winner=seat===0?1:0;
+    addLog(pet.name+' fainted from lingering damage.');
+    return 'burn';
+  }
+
+  if(s.sleep&&s.sleep>0)return 'sleep';
+  if(s.stun&&s.stun>0)return 'stun';
+
+  return null;
+}
+
+function endTurnStatus(seat){
+  ensureStatusArrays();
+  var s=state.status[seat]||{};
+
+  ['burn','slow','sleep','stun','snare','attack_up','attack_down','defense_up','defense_down'].forEach(function(k){
+    if(s[k]&&s[k]>0){
+      s[k]--;
+      if(s[k]<=0){
+        delete s[k];
+        delete s[k+'_amount'];
+      }
+    }
   });
 }
 
-function cleanupStatuses(seat){
-  var s=state.statuses[seat]||{};
+function applyMoveStatus(actor,target,move){
+  if(!move.status)return '';
 
-  Object.keys(s).forEach(function(k){
-    if(!s[k]||Number(s[k].duration||0)<=0)delete s[k];
-  });
-}
-
-function applyMoveStatus(actor,target,move,action){
-  if(!move.status)return;
+  ensureStatusArrays();
 
   var status=move.status;
   var effect=status.effect;
@@ -1048,181 +770,62 @@ function applyMoveStatus(actor,target,move,action){
   var duration=Number(status.duration||1);
   var amount=Number(status.amount||1);
 
-  var isSelfBuff=['defense_up','attack_up'].indexOf(effect)>=0;
-  var statusTarget=isSelfBuff?actor:target;
+  if(!effect)return '';
+  if(Math.random()*100>chance)return '';
 
-  if(Math.random()*100>chance)return;
+  var recipient=target;
 
-  if(!state.statuses[statusTarget])state.statuses[statusTarget]={};
+  if(effect==='attack_up'||effect==='defense_up'){
+    recipient=actor;
+  }
 
-  state.statuses[statusTarget][effect]={
-    duration:duration,
-    amount:amount,
-    source:actor
-  };
+  var s=state.status[recipient]||{};
+  s[effect]=Math.max(Number(s[effect]||0),duration);
 
-  action.status=effect;
+  if(effect==='attack_up'||effect==='attack_down'||effect==='defense_up'||effect==='defense_down'){
+    s[effect+'_amount']=Math.max(Number(s[effect+'_amount']||0),amount);
+  }
 
-  var targetPet=state.pets[statusTarget];
-  var meta=STATUS_META[effect]||{label:effect};
+  state.status[recipient]=s;
 
-  if(effect==='burn')addLog(targetPet.name+' was burned.');
-  else if(effect==='slow')addLog(targetPet.name+' was slowed.');
-  else if(effect==='snare')addLog(targetPet.name+' was snared.');
-  else if(effect==='stun')addLog(targetPet.name+' was stunned.');
-  else if(effect==='sleep')addLog(targetPet.name+' fell asleep.');
-  else if(effect==='confuse')addLog(targetPet.name+' became confused.');
-  else if(effect==='defense_up')addLog(targetPet.name+' defense rose.');
-  else if(effect==='defense_down')addLog(targetPet.name+' defense fell.');
-  else if(effect==='attack_up')addLog(targetPet.name+' attack rose.');
-  else if(effect==='attack_down')addLog(targetPet.name+' attack fell.');
-  else addLog(targetPet.name+' gained '+meta.label+'.');
+  var pet=state.pets[recipient];
+  return pet.name+' is affected by '+effect.replace('_',' ')+'.';
 }
 
-function calculateDamage(attacker,defender,move,actor,target){
-  var power=Math.max(1,Number(move.power||30));
-  var atk=Math.max(1,effectiveAttack(actor,attacker));
-  var def=Math.max(1,effectiveDefense(target,defender));
-  var random=0.85+(Math.random()*0.30);
-  var effectiveness=typeMultiplier(move.type,defender.type);
-  var crit=rollCrit(attacker,move);
-  var critMultiplier=crit?1.65:1;
-  var stab=(move.type&&move.type===attacker.type)?1.12:1;
+function checkWinner(actor,target){
+  if(state.winner!==null)return;
 
-  var raw=(atk/def)*power*random*effectiveness*critMultiplier*stab;
-  var damage=Math.max(1,Math.floor(raw));
+  if(state.hp[target]<=0){
+    state.winner=actor;
+    addLog(state.pets[target].name+' fainted.');
+    addLog(players[actor].name+' wins!');
+    return;
+  }
 
-  return {
-    damage:damage,
-    crit:crit,
-    effectiveness:effectiveness
-  };
+  if(state.hp[actor]<=0){
+    state.winner=target;
+    addLog(state.pets[actor].name+' fainted.');
+    addLog(players[target].name+' wins!');
+  }
 }
 
-function typeMultiplier(moveType,targetType){
-  moveType=moveType||'normal';
-  targetType=targetType||'normal';
-
-  var row=TYPE_CHART[moveType]||{};
-  if(row[targetType])return row[targetType];
-
-  return 1;
-}
-
-function rollCrit(attacker,move){
-  var chance=critChance(attacker,move);
-  return Math.random()*100<chance;
-}
-
-function critChance(attacker,move){
-  var chance=Number(move.crit||5);
-
-  if(attacker.type==='shadow')chance+=3;
-  if(attacker.personality==='aggressive')chance+=4;
-  if(attacker.affection>=75)chance+=2;
-  if(attacker.affection>=95)chance+=1;
-
-  return clamp(Math.floor(chance),0,45);
-}
-
-function effectiveAttack(seat,pet){
-  var v=Number(pet.stats.attack||5);
-  var s=state&&state.statuses?state.statuses[seat]||{}:{};
-
-  if(pet.personality==='aggressive')v+=1;
-  if(s.attack_up)v+=Number(s.attack_up.amount||1);
-  if(s.attack_down)v-=Number(s.attack_down.amount||1);
-
-  return Math.max(1,v);
-}
-
-function effectiveDefense(seat,pet){
-  var v=Number(pet.stats.defense||4);
-  var s=state&&state.statuses?state.statuses[seat]||{}:{};
-
-  if(pet.personality==='calm')v+=1;
-  if(s.defense_up)v+=Number(s.defense_up.amount||1);
-  if(s.defense_down)v-=Number(s.defense_down.amount||1);
-
-  return Math.max(1,v);
-}
-
-function effectiveSpeed(seat,pet){
-  var v=Number(pet.stats.speed||5);
-  var s=state&&state.statuses?state.statuses[seat]||{}:{};
-
-  if(pet.personality==='lazy')v-=1;
-  if(s.slow)v-=2;
-  if(s.snare)v-=3;
-
-  return Math.max(1,v);
-}
-
-function pulseAction(action){
-  var actor=action.actor;
-  var target=action.target;
+function pulseAction(actor,target){
   var a=visiblePetEl(actor);
   var t=visiblePetEl(target);
 
-  if(a&&!action.miss){
-    restartAnim(a,'attackAnim');
+  if(a){
+    a.classList.remove('attackAnim');
+    void a.offsetWidth;
+    a.classList.add('attackAnim');
   }
 
-  if(action.heal>0){
+  if(t){
     setTimeout(function(){
-      restartAnim(visiblePetEl(actor),'statusHeal');
-      floatText(actor,'+'+action.heal,'heal');
-    },160);
-    return;
-  }
-
-  if(action.miss){
-    setTimeout(function(){floatText(target,'Miss','status');},160);
-    return;
-  }
-
-  if(t&&action.damage>0){
-    setTimeout(function(){
-      restartAnim(t,action.crit?'critAnim':'hitAnim');
-      floatText(target,'-'+action.damage,action.crit?'crit':'');
+      t.classList.remove('hitAnim');
+      void t.offsetWidth;
+      t.classList.add('hitAnim');
     },180);
   }
-
-  if(action.status){
-    setTimeout(function(){
-      var statusTarget=['defense_up','attack_up'].indexOf(action.status)>=0?actor:target;
-      var cls=statusAnimClass(action.status);
-      restartAnim(visiblePetEl(statusTarget),cls);
-      var meta=STATUS_META[action.status]||{icon:'✨'};
-      floatText(statusTarget,meta.icon,'status');
-    },360);
-  }
-}
-
-function statusAnimClass(status){
-  if(status==='burn')return 'statusBurn';
-  if(['defense_up','attack_up'].indexOf(status)>=0)return 'statusBuff';
-  if(['defense_down','attack_down','slow','snare','stun','sleep','confuse'].indexOf(status)>=0)return 'statusDebuff';
-  return 'statusBuff';
-}
-
-function restartAnim(node,cls){
-  if(!node)return;
-  node.classList.remove(cls);
-  void node.offsetWidth;
-  node.classList.add(cls);
-}
-
-function floatText(seat,text,cls){
-  var stage=el('p'+seat+'Stage');
-  var d=document.createElement('div');
-  d.className='floatText '+(cls||'');
-  d.innerText=text;
-  stage.appendChild(d);
-
-  setTimeout(function(){
-    if(d&&d.parentNode)d.parentNode.removeChild(d);
-  },1100);
 }
 
 function visiblePetEl(seat){
@@ -1233,7 +836,7 @@ function visiblePetEl(seat){
 
 function addLog(t){
   state.log.push(t);
-  if(state.log.length>90)state.log.shift();
+  if(state.log.length>80)state.log.shift();
 }
 
 function setStatus(a,b){
@@ -1248,7 +851,6 @@ function newBattle(){
   }
 
   state=freshBattle();
-  lastAnimatedActionId='';
   draw();
   sync();
 }
@@ -1272,21 +874,6 @@ window.onMove=function(data){
   if(data.type==='battleState'){
     state=data.state;
     draw();
-    return;
-  }
-
-  /*
-  Seat 0 is the resolver. Seat 1 sends requested moves here so only one browser rolls RNG.
-  This is the safest short-term model until server-authoritative battle resolution is added.
-  */
-  if(data.type==='battleMoveRequest'){
-    if(mySeat!==0)return;
-    if(!state||state.winner!==null)return;
-    if(Number(data.actor)!==state.turn)return;
-
-    resolveMove(Number(data.actor),data.moveId);
-    draw();
-    sync();
   }
 };
 
@@ -1302,17 +889,7 @@ window.addEventListener('message',function(event){
   }
 });
 
-function clamp(n,min,max){
-  return Math.max(min,Math.min(max,n));
-}
-
 function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g,function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
-}
-
-function escapeAttr(s){
   return String(s||'').replace(/[&<>"']/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
