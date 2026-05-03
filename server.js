@@ -1103,7 +1103,85 @@ function requireUser(req,res){
 function xpToNextLevel(pet){
   return Math.max(20,Number(pet.stats.level||1)*20);
 }
+function petCareAverage(pet){
+  let n=pet.needs||{};
+  return ((n.hunger||0)+(n.happiness||0)+(n.energy||0)+(n.cleanliness||0))/4;
+}
 
+function checkPetGrowth(pet){
+  if(!pet || pet.stage==='egg') return null;
+
+  let stage=pet.stage||'baby';
+  let level=Number(pet.stats.level||1);
+  let bond=Number(pet.affection||0);
+  let care=petCareAverage(pet);
+
+  // Ensure legacy pets get stage
+  if(!pet.stage){
+    pet.stage = pet.species ? 'baby' : 'egg';
+    return null;
+  }
+
+  // BABY → YOUNG
+  if(stage==='baby'){
+    if(level>=5 && bond>=20 && care>=60){
+      pet.stage='young';
+
+      // stat boost
+      pet.stats.maxHp += 5;
+      pet.stats.attack += 2;
+      pet.stats.defense += 2;
+      pet.stats.speed += 2;
+      pet.stats.hp = pet.stats.maxHp;
+
+      let move=maybeLearnMove(pet,0.8);
+
+      return {
+        stage:'young',
+        message:`✨ ${pet.name} has grown into a Young companion!`,
+        move
+      };
+    }
+
+    return {
+      hint:
+        level<5 ? `${pet.name} needs more experience to grow.` :
+        bond<20 ? `${pet.name} needs more bonding.` :
+        `${pet.name} needs better care.`
+    };
+  }
+
+  // YOUNG → ADULT
+  if(stage==='young'){
+    if(level>=15 && bond>=55 && care>=70){
+      pet.stage='adult';
+
+      // bigger stat boost
+      pet.stats.maxHp += 10;
+      pet.stats.attack += 4;
+      pet.stats.defense += 4;
+      pet.stats.speed += 3;
+      pet.stats.hp = pet.stats.maxHp;
+
+      let move=maybeLearnMove(pet,1);
+
+      return {
+        stage:'adult',
+        message:`✨ ${pet.name} has matured into an Adult companion!`,
+        move
+      };
+    }
+
+    return {
+      hint:
+        level<15 ? `${pet.name} needs more experience.` :
+        bond<55 ? `${pet.name} needs stronger bonding.` :
+        `${pet.name} needs better care.`
+    };
+  }
+
+  return null;
+}
 function addPetXp(pet,amount){
   let result={xpGained:amount,leveled:false,levelsGained:0,learnedMove:null};
   pet.stats.xp=Number(pet.stats.xp||0)+amount;
