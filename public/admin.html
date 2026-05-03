@@ -454,16 +454,21 @@ let ws=null;
 const $=id=>document.getElementById(id);
 
 function init(){
-  if(!adminUser||!isAdmin){
-    $('denied').classList.remove('hidden');
-    return;
-  }
+  try{
+    if(!adminUser||!isAdmin){
+      $('denied').classList.remove('hidden');
+      return;
+    }
 
-  $('app').classList.remove('hidden');
-  $('navUserBox').innerHTML='<b>'+esc(adminUser)+'</b><br><span>Admin session active</span>';
-  updateAssetSlotOptions();
-  refreshAll();
-  connectAdminSocket();
+    $('app').classList.remove('hidden');
+    $('navUserBox').innerHTML='<b>'+esc(adminUser)+'</b><br><span>Admin session active</span>';
+    updateAssetSlotOptions();
+    refreshAll();
+    connectAdminSocket();
+  }catch(err){
+    console.error('Admin init failed:',err);
+    document.body.innerHTML='<div class="denied card"><h2>Admin page failed to initialize</h2><p class="muted">'+String(err.message||err)+'</p></div>';
+  }
 }
 
 function openMainApp(){window.open('/','_blank')}
@@ -918,10 +923,16 @@ function loadCurrentAssetPreview(){
     return;
   }
 
-  let src=standardAssetPath(type,targetId,slot);
-  let fallback=fallbackAssetPath(type);
-  $('assetCurrentPreviewBox').innerHTML=
-    '<img src="'+escAttr(src)+'?v='+Date.now()+'" onerror="this.onerror=null;this.src=\\''+escAttr(fallback)+'?v='+Date.now()+'\\';">';
+  let src=standardAssetPath(type,targetId,slot)+'?v='+Date.now();
+  let fallback=fallbackAssetPath(type)+'?v='+Date.now();
+  let img=document.createElement('img');
+  img.src=src;
+  img.onerror=function(){
+    this.onerror=null;
+    this.src=fallback;
+  };
+  $('assetCurrentPreviewBox').innerHTML='';
+  $('assetCurrentPreviewBox').appendChild(img);
 }
 
 function assetTargetSuggestion(){
