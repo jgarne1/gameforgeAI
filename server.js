@@ -9,8 +9,47 @@ const server=http.createServer(app);
 const wss=new WebSocket.Server({server});
 const PORT=process.env.PORT||3000;
 
-const DATA=path.join(__dirname,'data');
-if(!fs.existsSync(DATA))fs.mkdirSync(DATA,{recursive:true});
+const REPO_DATA=path.join(__dirname,'data');
+const PERSIST_ROOT=process.env.PERSIST_ROOT || path.join(__dirname,'persist');
+const HAS_PERSIST=fs.existsSync(PERSIST_ROOT);
+const DATA=HAS_PERSIST ? path.join(PERSIST_ROOT,'data') : REPO_DATA;
+const UPLOADS_ROOT=HAS_PERSIST ? path.join(PERSIST_ROOT,'uploads') : path.join(__dirname,'uploads');
+
+function ensurePersistentStorage(){
+  fs.mkdirSync(DATA,{recursive:true});
+  fs.mkdirSync(UPLOADS_ROOT,{recursive:true});
+
+  if(!HAS_PERSIST){
+    console.log('[storage] Persistent disk not detected. Using repo-local data.');
+    return;
+  }
+
+  console.log('[storage] Persistent disk detected:',PERSIST_ROOT);
+  console.log('[storage] Data path:',DATA);
+  console.log('[storage] Uploads path:',UPLOADS_ROOT);
+
+  const seedFiles=[
+    'users.json',
+    'admins.json',
+    'pets.json',
+    'market.json',
+    'items.json',
+    'shops.json',
+    'pet_moves.json'
+  ];
+
+  seedFiles.forEach(file=>{
+    const src=path.join(REPO_DATA,file);
+    const dest=path.join(DATA,file);
+
+    if(!fs.existsSync(dest)&&fs.existsSync(src)){
+      fs.copyFileSync(src,dest);
+      console.log('[storage] Seeded persistent data file:',file);
+    }
+  });
+}
+
+ensurePersistentStorage();
 
 const usersFile=path.join(DATA,'users.json');
 const adminsFile=path.join(DATA,'admins.json');
@@ -24,8 +63,8 @@ const gamesFile=path.join(__dirname,'games.json');
 app.use(express.json({limit:'12mb'}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/games',express.static(path.join(__dirname,'games')));
-// Admin-uploaded image previews live here before approval.
-app.use('/uploads',express.static(path.join(__dirname,'uploads')));
+// Admin-uploaded image previews live here before approval. On Render this uses the persistent disk when mounted.
+app.use('/uploads',express.static(UPLOADS_ROOT));
 
 /*
 GameForge AI server maintainer notes for future AI chats/editors:
@@ -181,6 +220,92 @@ function admins(){
   return Array.isArray(a)?a:(a.admins||[]);
 }
 
+function saveAdmins(list){
+  let unique=[...new Set((list||[]).map(x=>String(x||'').trim()).filter(Boolean))];
+  writeJSON(adminsFile,unique);
+  return unique;
+}
+
+function ownerUsernames(){
+  return String(process.env.GAMEFORGE_OWNER_USERS||'')
+    .split(',')
+    .map(x=>x.trim())
+    .filter(Boolean);
+}
+
+function isOwnerUsername(username){
+  username=String(username||'').trim();
+  if(!username)return false;
+
+  let ownerList=ownerUsernames();
+  if(ownerList.includes(username))return true;
+
+  let u=users();
+  return !!(u[username]&&u[username].owner===true);
+}
+
+function normalizeUserRecord(u,username){
+  u=u||{};
+  username=String(username||u.username||'').trim();
+
+  u.username=username;
+  u.displayName=String(u.displayName||username).slice(0,40);
+  u.avatar=u.avatar||'/assets/users/default_avatar.png';
+  u.bio=String(u.bio||'').slice(0,280);
+  u.title=String(u.title||'New Player').slice(0,40);
+  u.joinedAt=Number(u.joinedAt||u.createdAt||Date.now());
+  u.createdAt=Number(u.createdAt||u.joinedAt||Date.now());
+  u.lastLoginAt=Number(u.lastLoginAt||0);
+  u.lastSeenAt=Number(u.lastSeenAt||0);
+  u.role=String(u.role||'player').slice(0,24);
+  u.owner=!!u.owner || ownerUsernames().includes(username);
+  u.forumStats=u.forumStats||{};
+  u.forumStats.posts=Number(u.forumStats.posts||0);
+  u.forumStats.replies=Number(u.forumStats.replies||0);
+  u.forumStats.likesReceived=Number(u.forumStats.likesReceived||0);
+  u.forumStats.reputation=Number(u.forumStats.reputation||0);
+  u.wins=Number(u.wins||0);
+  u.losses=Number(u.losses||0);
+  u.ties=Number(u.ties||0);
+  u.gamesPlayed=Number(u.gamesPlayed||0);
+  u.favoriteGame=String(u.favoriteGame||'').slice(0,80);
+
+  return u;
+}
+
+function normalizeAllUsers(){
+  let u=users();
+  let changed=false;
+
+  Object.keys(u).forEach(username=>{
+    let before=JSON.stringify(u[username]);
+    u[username]=normalizeUserRecord(u[username],username);
+    if(before!==JSON.stringify(u[username]))changed=true;
+  });
+
+  if(changed)writeJSON(usersFile,u);
+  return u;
+}
+
+function maybeBootstrapOwner(username){
+  username=String(username||'').trim();
+  if(!username||!ownerUsernames().includes(username))return;
+
+  let u=users();
+  if(u[username]){
+    u[username]=normalizeUserRecord(u[username],username);
+    u[username].owner=true;
+    u[username].role='owner';
+    writeJSON(usersFile,u);
+  }
+
+  let a=admins();
+  if(!a.includes(username)){
+    a.push(username);
+    saveAdmins(a);
+  }
+}
+
 const rooms={};
 const clients=new Set();
 
@@ -227,13 +352,26 @@ const DEFAULT_MOVES={
 };
 
 function safeUser(u){
+  u=normalizeUserRecord(u,u&&u.username);
+
   return {
     username:u.username,
+    displayName:u.displayName,
+    avatar:u.avatar,
+    bio:u.bio,
+    title:u.title,
+    role:u.role,
+    owner:!!u.owner,
+    joinedAt:u.joinedAt,
+    createdAt:u.createdAt,
+    lastLoginAt:u.lastLoginAt,
+    lastSeenAt:u.lastSeenAt,
     wins:u.wins||0,
     losses:u.losses||0,
     ties:u.ties||0,
     gamesPlayed:u.gamesPlayed||0,
-    favoriteGame:u.favoriteGame||''
+    favoriteGame:u.favoriteGame||'',
+    forumStats:u.forumStats||{posts:0,replies:0,likesReceived:0,reputation:0}
   };
 }
 
@@ -984,12 +1122,26 @@ app.post('/api/register',(req,res)=>{
   let u=users();
   if(u[username])return res.json({error:'User exists'});
 
-  u[username]={username,password,wins:0,losses:0,ties:0,gamesPlayed:0,favoriteGame:''};
+  u[username]=normalizeUserRecord({
+    username,
+    password,
+    wins:0,
+    losses:0,
+    ties:0,
+    gamesPlayed:0,
+    favoriteGame:'',
+    joinedAt:Date.now(),
+    createdAt:Date.now(),
+    lastLoginAt:Date.now(),
+    lastSeenAt:Date.now()
+  },username);
   writeJSON(usersFile,u);
 
+  maybeBootstrapOwner(username);
   getPetProfile(username);
 
-  res.json({ok:true,user:safeUser(u[username]),admin:admins().includes(username)});
+  let refreshed=users();
+  res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username)});
 });
 
 app.post('/api/login',(req,res)=>{
@@ -998,15 +1150,22 @@ app.post('/api/login',(req,res)=>{
 
   if(!u[username]||u[username].password!==password)return res.json({error:'Bad login'});
 
+  u[username]=normalizeUserRecord(u[username],username);
+  u[username].lastLoginAt=Date.now();
+  u[username].lastSeenAt=Date.now();
+  writeJSON(usersFile,u);
+
+  maybeBootstrapOwner(username);
   getPetProfile(username);
 
-  res.json({ok:true,user:safeUser(u[username]),admin:admins().includes(username)});
+  let refreshed=users();
+  res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username)});
 });
 
 app.get('/api/admin/users',(req,res)=>{
   let user=req.query.user;
   if(!admins().includes(user))return res.status(403).json({error:'forbidden'});
-  res.json(Object.values(users()).map(safeUser));
+  res.json(Object.values(normalizeAllUsers()).map(safeUser));
 });
 
 app.delete('/api/admin/users/:name',(req,res)=>{
@@ -1028,6 +1187,69 @@ app.delete('/api/admin/users/:name',(req,res)=>{
   saveMarket(mk);
 
   res.json({ok:true});
+});
+
+
+app.post('/api/admin/users/:name/profile',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let target=String(req.params.name||'').trim();
+  let u=users();
+
+  if(!u[target])return res.status(404).json({error:'User not found'});
+
+  u[target]=normalizeUserRecord(u[target],target);
+
+  if(req.body.displayName!==undefined)u[target].displayName=String(req.body.displayName||target).trim().slice(0,40)||target;
+  if(req.body.bio!==undefined)u[target].bio=String(req.body.bio||'').trim().slice(0,280);
+  if(req.body.title!==undefined)u[target].title=String(req.body.title||'Player').trim().slice(0,40)||'Player';
+  if(req.body.avatar!==undefined)u[target].avatar=String(req.body.avatar||'/assets/users/default_avatar.png').trim().slice(0,160)||'/assets/users/default_avatar.png';
+
+  writeJSON(usersFile,u);
+
+  res.json({
+    ok:true,
+    message:'User profile updated.',
+    user:safeUser(u[target])
+  });
+});
+
+app.post('/api/admin/users/:name/admin',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  if(!isOwnerUsername(adminUser)){
+    return res.status(403).json({error:'Only an owner can change admin status.'});
+  }
+
+  let target=String(req.params.name||'').trim();
+  let makeAdmin=req.body.makeAdmin!==false;
+  let u=users();
+
+  if(!u[target])return res.status(404).json({error:'User not found'});
+
+  u[target]=normalizeUserRecord(u[target],target);
+
+  let a=admins();
+
+  if(makeAdmin){
+    if(!a.includes(target))a.push(target);
+    u[target].role=u[target].owner?'owner':'admin';
+  }else{
+    a=a.filter(x=>x!==target);
+    if(!u[target].owner)u[target].role='player';
+  }
+
+  saveAdmins(a);
+  writeJSON(usersFile,u);
+
+  res.json({
+    ok:true,
+    message:makeAdmin ? (target+' is now an admin.') : (target+' is no longer an admin.'),
+    user:safeUser(u[target]),
+    admins:a
+  });
 });
 
 app.get('/api/admin/rooms',(req,res)=>{
@@ -1094,7 +1316,7 @@ function parseImageDataUrl(dataUrl){
 }
 
 function pendingAssetDir(type){
-  return path.join(__dirname,'uploads','pending',type);
+  return path.join(UPLOADS_ROOT,'pending',type);
 }
 
 function pendingAssetPath(type,tempFile){
@@ -1440,7 +1662,7 @@ function adminListingArray(){
 }
 
 function adminPlayerPayload(targetUsername){
-  let allUsers=users();
+  let allUsers=normalizeAllUsers();
   let allPets=pets();
 
   if(!allUsers[targetUsername])return null;
