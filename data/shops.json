@@ -1,0 +1,421 @@
+{
+  "snack_shack": {
+    "id": "snack_shack",
+    "name": "Snack Shack",
+    "icon": "\ud83c\udf53",
+    "theme": "food",
+    "description": "Food, treats, and quick hunger fixes.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "berry": {
+        "price": 8,
+        "stock": "infinite"
+      },
+      "juicy_berry": {
+        "price": 14,
+        "stock": "infinite"
+      },
+      "crunchy_seed": {
+        "price": 6,
+        "stock": "infinite"
+      },
+      "sweet_pod": {
+        "price": 16,
+        "stock": "infinite"
+      },
+      "honey_drop": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "pet_candy": {
+        "price": 20,
+        "stock": "infinite"
+      },
+      "spicy_root": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "sugar_cube": {
+        "price": 14,
+        "stock": "infinite"
+      },
+      "deluxe_treat": {
+        "price": 55,
+        "stock": 8
+      },
+      "feast_platter": {
+        "price": 80,
+        "stock": 5
+      }
+    }
+  },
+  "care_clinic": {
+    "id": "care_clinic",
+    "name": "Care Clinic",
+    "icon": "\ud83e\uddfc",
+    "theme": "care",
+    "description": "Cleaning, rest, and wellness supplies.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "soap": {
+        "price": 12,
+        "stock": "infinite"
+      },
+      "bath_bucket": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "pet_brush": {
+        "price": 16,
+        "stock": "infinite"
+      },
+      "nap_blanket": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "calming_oil": {
+        "price": 22,
+        "stock": "infinite"
+      },
+      "comfort_toy": {
+        "price": 20,
+        "stock": "infinite"
+      },
+      "deluxe_soap": {
+        "price": 38,
+        "stock": 10
+      },
+      "silk_blanket": {
+        "price": 45,
+        "stock": 8
+      },
+      "grooming_kit": {
+        "price": 48,
+        "stock": 8
+      },
+      "spa_ticket": {
+        "price": 90,
+        "stock": 4
+      },
+      "deluxe_spa": {
+        "price": 220,
+        "stock": 1
+      }
+    }
+  },
+  "egg_lab": {
+    "id": "egg_lab",
+    "name": "Egg Lab",
+    "icon": "\ud83e\udd5a",
+    "theme": "egg",
+    "description": "Egg influence tools. Advanced tools should be unlockable.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "warm_pad": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "cool_cloth": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "mist_spray": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "dry_towel": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "sun_lamp": {
+        "price": 45,
+        "stock": 6,
+        "requiresUnlock": "egg_lab_basic"
+      },
+      "shade_cover": {
+        "price": 45,
+        "stock": 6,
+        "requiresUnlock": "egg_lab_basic"
+      },
+      "egg_scanner": {
+        "price": 60,
+        "stock": 3,
+        "requiresUnlock": "egg_lab_basic"
+      },
+      "ember_crystal": {
+        "price": 120,
+        "stock": 2,
+        "requiresUnlock": "egg_lab_advanced"
+      },
+      "frost_crystal": {
+        "price": 120,
+        "stock": 2,
+        "requiresUnlock": "egg_lab_advanced"
+      },
+      "tide_orb": {
+        "price": 120,
+        "stock": 2,
+        "requiresUnlock": "egg_lab_advanced"
+      },
+      "sand_core": {
+        "price": 120,
+        "stock": 2,
+        "requiresUnlock": "egg_lab_advanced"
+      },
+      "balance_stone": {
+        "price": 150,
+        "stock": 1,
+        "requiresUnlock": "egg_lab_advanced"
+      },
+      "incubator": {
+        "price": 280,
+        "stock": 1,
+        "requiresUnlock": "egg_lab_master"
+      }
+    }
+  },
+  "training_dojo": {
+    "id": "training_dojo",
+    "name": "Training Dojo",
+    "icon": "\ud83c\udfcb\ufe0f",
+    "theme": "training",
+    "description": "Stat growth tools and practice gear.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "strength_band": {
+        "price": 26,
+        "stock": "infinite"
+      },
+      "speed_feather": {
+        "price": 26,
+        "stock": "infinite"
+      },
+      "defense_shell": {
+        "price": 26,
+        "stock": "infinite"
+      },
+      "focus_orb": {
+        "price": 26,
+        "stock": "infinite"
+      },
+      "lucky_coin": {
+        "price": 50,
+        "stock": 5
+      },
+      "training_dummy": {
+        "price": 65,
+        "stock": 4
+      },
+      "agility_boots": {
+        "price": 80,
+        "stock": 3
+      },
+      "endurance_kit": {
+        "price": 75,
+        "stock": 3
+      },
+      "wisdom_scroll": {
+        "price": 120,
+        "stock": 2
+      },
+      "elite_manual": {
+        "price": 160,
+        "stock": 1
+      }
+    }
+  },
+  "toy_box": {
+    "id": "toy_box",
+    "name": "Toy Box",
+    "icon": "\ud83e\uddf8",
+    "theme": "fun",
+    "description": "Toys, fun items, and personality-shaping play.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "toy_ball": {
+        "price": 14,
+        "stock": "infinite"
+      },
+      "squeaky_toy": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "bubble_wand": {
+        "price": 22,
+        "stock": "infinite"
+      },
+      "laser_pointer": {
+        "price": 35,
+        "stock": 8
+      },
+      "puzzle_box": {
+        "price": 45,
+        "stock": 6
+      },
+      "mirror_shard": {
+        "price": 48,
+        "stock": 5
+      },
+      "mini_maze": {
+        "price": 70,
+        "stock": 3
+      },
+      "glow_orb": {
+        "price": 95,
+        "stock": 2
+      },
+      "chaos_toy": {
+        "price": 110,
+        "stock": 2
+      }
+    }
+  },
+  "explorer_supply": {
+    "id": "explorer_supply",
+    "name": "Explorer Supply",
+    "icon": "\ud83e\udded",
+    "theme": "explore",
+    "description": "Maps, boosters, and discovery tools.",
+    "unlock": {
+      "type": "feature",
+      "value": "exploration"
+    },
+    "items": {
+      "treasure_map": {
+        "price": 50,
+        "stock": 6
+      },
+      "bait_box": {
+        "price": 30,
+        "stock": "infinite"
+      },
+      "explorer_pack": {
+        "price": 70,
+        "stock": 4
+      },
+      "lucky_compass": {
+        "price": 120,
+        "stock": 2
+      },
+      "relic_scanner": {
+        "price": 140,
+        "stock": 2
+      },
+      "ancient_coin": {
+        "price": 40,
+        "stock": 5
+      },
+      "time_watch": {
+        "price": 220,
+        "stock": 1
+      },
+      "shadow_key": {
+        "price": 180,
+        "stock": 1
+      }
+    }
+  },
+  "curio_market": {
+    "id": "curio_market",
+    "name": "Curio Market",
+    "icon": "\u2728",
+    "theme": "cosmetic",
+    "description": "Cosmetics, profile effects, oddities, and rotating rares.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "confetti_popper": {
+        "price": 25,
+        "stock": "infinite"
+      },
+      "sparkle_fx": {
+        "price": 70,
+        "stock": 5
+      },
+      "blue_name_dye": {
+        "price": 90,
+        "stock": 4
+      },
+      "gold_name_dye": {
+        "price": 180,
+        "stock": 2
+      },
+      "glitch_name_dye": {
+        "price": 220,
+        "stock": 1
+      },
+      "aura_ring": {
+        "price": 130,
+        "stock": 2
+      },
+      "shadow_trail": {
+        "price": 130,
+        "stock": 2
+      },
+      "profile_badge": {
+        "price": 175,
+        "stock": 1
+      },
+      "arcade_ticket": {
+        "price": 160,
+        "stock": 2
+      },
+      "egg_lab_pass": {
+        "price": 150,
+        "stock": 2
+      },
+      "market_license": {
+        "price": 80,
+        "stock": 4
+      }
+    }
+  },
+  "battle_shop": {
+    "id": "battle_shop",
+    "name": "Battle Shop",
+    "icon": "\u2694\ufe0f",
+    "theme": "battle",
+    "description": "Battle consumables and future battle unlocks.",
+    "unlock": {
+      "type": "feature",
+      "value": "pet_battle"
+    },
+    "items": {
+      "battle_bandage": {
+        "price": 25,
+        "stock": "infinite"
+      },
+      "guard_cookie": {
+        "price": 45,
+        "stock": 8
+      },
+      "swift_soda": {
+        "price": 45,
+        "stock": 8
+      },
+      "power_pebble": {
+        "price": 45,
+        "stock": 8
+      },
+      "focus_mint": {
+        "price": 45,
+        "stock": 8
+      },
+      "battle_pass": {
+        "price": 200,
+        "stock": 1
+      }
+    }
+  }
+}

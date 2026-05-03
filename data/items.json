@@ -1,0 +1,2770 @@
+{
+  "berry": {
+    "id": "berry",
+    "name": "Berry",
+    "category": "food",
+    "rarity": "common",
+    "description": "A basic wild fruit. Simple, cheap, and reliable.",
+    "image": "/assets/items/berry.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      }
+    ],
+    "tags": [
+      "food"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 8
+  },
+  "juicy_berry": {
+    "id": "juicy_berry",
+    "name": "Juicy Berry",
+    "category": "food",
+    "rarity": "common",
+    "description": "An extra ripe berry full of sweet juice.",
+    "image": "/assets/items/juicy_berry.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 18
+      }
+    ],
+    "tags": [
+      "food"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 14
+  },
+  "golden_berry": {
+    "id": "golden_berry",
+    "name": "Golden Berry",
+    "category": "food",
+    "rarity": "rare",
+    "description": "A glowing berry that feels lucky to hold.",
+    "image": "/assets/items/golden_berry.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 25
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 5
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "spicy_root": {
+    "id": "spicy_root",
+    "name": "Spicy Root",
+    "category": "food",
+    "rarity": "common",
+    "description": "A warm root with a spicy kick.",
+    "image": "/assets/items/spicy_root.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 12
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 5
+      }
+    ],
+    "tags": [
+      "food"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 18
+  },
+  "sweet_pod": {
+    "id": "sweet_pod",
+    "name": "Sweet Pod",
+    "category": "food",
+    "rarity": "common",
+    "description": "A candy-like plant pod pets love.",
+    "image": "/assets/items/sweet_pod.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 10
+      }
+    ],
+    "tags": [
+      "food"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 16
+  },
+  "frost_fruit": {
+    "id": "frost_fruit",
+    "name": "Frost Fruit",
+    "category": "food",
+    "rarity": "uncommon",
+    "description": "A chilled fruit that leaves icy mist behind.",
+    "image": "/assets/items/frost_fruit.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 15
+      },
+      {
+        "type": "egg_influence",
+        "target": "cold",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "ember_fruit": {
+    "id": "ember_fruit",
+    "name": "Ember Fruit",
+    "category": "food",
+    "rarity": "uncommon",
+    "description": "A warm fruit with a soft ember glow.",
+    "image": "/assets/items/ember_fruit.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 15
+      },
+      {
+        "type": "egg_influence",
+        "target": "warm",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "crunchy_seed": {
+    "id": "crunchy_seed",
+    "name": "Crunchy Seed",
+    "category": "food",
+    "rarity": "common",
+    "description": "A cheap crunchy snack.",
+    "image": "/assets/items/crunchy_seed.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 8
+      }
+    ],
+    "tags": [
+      "food"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 6
+  },
+  "honey_drop": {
+    "id": "honey_drop",
+    "name": "Honey Drop",
+    "category": "treat",
+    "rarity": "common",
+    "description": "A sticky sweet treat that cheers pets up.",
+    "image": "/assets/items/honey_drop.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 20
+      }
+    ],
+    "tags": [
+      "food",
+      "treat"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 18
+  },
+  "sugar_cube": {
+    "id": "sugar_cube",
+    "name": "Sugar Cube",
+    "category": "treat",
+    "rarity": "common",
+    "description": "A sugary cube. Fun, but not very healthy.",
+    "image": "/assets/items/sugar_cube.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 15
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": -5
+      }
+    ],
+    "tags": [
+      "food",
+      "treat"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 14
+  },
+  "glow_melon": {
+    "id": "glow_melon",
+    "name": "Glow Melon",
+    "category": "food",
+    "rarity": "uncommon",
+    "description": "A melon with a soft internal glow.",
+    "image": "/assets/items/glow_melon.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 12
+      },
+      {
+        "type": "egg_influence",
+        "target": "light",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "shadow_berry": {
+    "id": "shadow_berry",
+    "name": "Shadow Berry",
+    "category": "food",
+    "rarity": "uncommon",
+    "description": "A dark berry that absorbs nearby light.",
+    "image": "/assets/items/shadow_berry.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      },
+      {
+        "type": "egg_influence",
+        "target": "dark",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "ocean_kelp": {
+    "id": "ocean_kelp",
+    "name": "Ocean Kelp",
+    "category": "food",
+    "rarity": "common",
+    "description": "A salty sea snack.",
+    "image": "/assets/items/ocean_kelp.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      },
+      {
+        "type": "egg_influence",
+        "target": "wet",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "dry_nut": {
+    "id": "dry_nut",
+    "name": "Dry Nut",
+    "category": "food",
+    "rarity": "common",
+    "description": "A desert nut with a dusty shell.",
+    "image": "/assets/items/dry_nut.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      },
+      {
+        "type": "egg_influence",
+        "target": "dry",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "feast_platter": {
+    "id": "feast_platter",
+    "name": "Feast Platter",
+    "category": "food",
+    "rarity": "rare",
+    "description": "A full meal for a very hungry companion.",
+    "image": "/assets/items/feast_platter.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 30
+      }
+    ],
+    "tags": [
+      "food"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 80
+  },
+  "training_snack": {
+    "id": "training_snack",
+    "name": "Training Snack",
+    "category": "food",
+    "rarity": "uncommon",
+    "description": "Dense food made for active pets.",
+    "image": "/assets/items/training_snack.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      },
+      {
+        "type": "training_boost",
+        "target": "all",
+        "value": 1,
+        "durationActions": 1
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "vitality_fruit": {
+    "id": "vitality_fruit",
+    "name": "Vitality Fruit",
+    "category": "food",
+    "rarity": "rare",
+    "description": "A rare fruit that refreshes the whole body.",
+    "image": "/assets/items/vitality_fruit.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 15
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 15
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 15
+      },
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 15
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "mystery_meal": {
+    "id": "mystery_meal",
+    "name": "Mystery Meal",
+    "category": "food",
+    "rarity": "uncommon",
+    "description": "A strange meal with unpredictable results.",
+    "image": "/assets/items/mystery_meal.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "random_pet_need",
+        "targets": [
+          "hunger",
+          "happiness",
+          "energy",
+          "cleanliness"
+        ],
+        "min": -8,
+        "max": 20
+      }
+    ],
+    "tags": [
+      "food"
+    ]
+  },
+  "pet_candy": {
+    "id": "pet_candy",
+    "name": "Pet Candy",
+    "category": "treat",
+    "rarity": "common",
+    "description": "A bright candy made for pets.",
+    "image": "/assets/items/pet_candy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 20
+      }
+    ],
+    "tags": [
+      "food",
+      "treat"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 20
+  },
+  "deluxe_treat": {
+    "id": "deluxe_treat",
+    "name": "Deluxe Treat",
+    "category": "treat",
+    "rarity": "rare",
+    "description": "A premium snack wrapped in shiny paper.",
+    "image": "/assets/items/deluxe_treat.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 20
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 20
+      }
+    ],
+    "tags": [
+      "food",
+      "treat"
+    ],
+    "defaultShopId": "snack_shack",
+    "basePrice": 55
+  },
+  "soap": {
+    "id": "soap",
+    "name": "Soap",
+    "category": "care",
+    "rarity": "common",
+    "description": "A simple soap bar for cleaning pets.",
+    "image": "/assets/items/soap.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 20
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 12
+  },
+  "deluxe_soap": {
+    "id": "deluxe_soap",
+    "name": "Deluxe Soap",
+    "category": "care",
+    "rarity": "uncommon",
+    "description": "A premium soap that smells like rain.",
+    "image": "/assets/items/deluxe_soap.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 35
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 38
+  },
+  "nap_blanket": {
+    "id": "nap_blanket",
+    "name": "Nap Blanket",
+    "category": "care",
+    "rarity": "common",
+    "description": "A soft blanket for quick rests.",
+    "image": "/assets/items/nap_blanket.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 20
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 18
+  },
+  "silk_blanket": {
+    "id": "silk_blanket",
+    "name": "Silk Blanket",
+    "category": "care",
+    "rarity": "uncommon",
+    "description": "A luxury blanket with a calming texture.",
+    "image": "/assets/items/silk_blanket.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 30
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 45
+  },
+  "energy_drink": {
+    "id": "energy_drink",
+    "name": "Energy Drink",
+    "category": "care",
+    "rarity": "uncommon",
+    "description": "A fizzy drink that gives energy but makes pets jittery.",
+    "image": "/assets/items/energy_drink.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 25
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": -5
+      }
+    ],
+    "tags": [
+      "care"
+    ]
+  },
+  "grooming_kit": {
+    "id": "grooming_kit",
+    "name": "Grooming Kit",
+    "category": "care",
+    "rarity": "uncommon",
+    "description": "A compact kit for a full tidy-up.",
+    "image": "/assets/items/grooming_kit.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 15
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 15
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 48
+  },
+  "calming_oil": {
+    "id": "calming_oil",
+    "name": "Calming Oil",
+    "category": "care",
+    "rarity": "common",
+    "description": "A soothing oil that settles restless pets.",
+    "image": "/assets/items/calming_oil.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 20
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 22
+  },
+  "bath_bucket": {
+    "id": "bath_bucket",
+    "name": "Bath Bucket",
+    "category": "care",
+    "rarity": "common",
+    "description": "A sturdy bucket for quick washing.",
+    "image": "/assets/items/bath_bucket.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 15
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 18
+  },
+  "spa_ticket": {
+    "id": "spa_ticket",
+    "name": "Spa Ticket",
+    "category": "care",
+    "rarity": "rare",
+    "description": "A pass for a relaxing pet spa visit.",
+    "image": "/assets/items/spa_ticket.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 25
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 25
+      },
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 25
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 90
+  },
+  "sleep_powder": {
+    "id": "sleep_powder",
+    "name": "Sleep Powder",
+    "category": "care",
+    "rarity": "uncommon",
+    "description": "A gentle powder that helps pets sleep immediately.",
+    "image": "/assets/items/sleep_powder.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 40
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": -10
+      }
+    ],
+    "tags": [
+      "care"
+    ]
+  },
+  "comfort_toy": {
+    "id": "comfort_toy",
+    "name": "Comfort Toy",
+    "category": "care",
+    "rarity": "common",
+    "description": "A soft toy for emotional comfort.",
+    "image": "/assets/items/comfort_toy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 15
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 20
+  },
+  "healing_paste": {
+    "id": "healing_paste",
+    "name": "Healing Paste",
+    "category": "care",
+    "rarity": "uncommon",
+    "description": "A soothing paste for rough days.",
+    "image": "/assets/items/healing_paste.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 10
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 10
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 10
+      },
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 10
+      }
+    ],
+    "tags": [
+      "care"
+    ]
+  },
+  "deluxe_spa": {
+    "id": "deluxe_spa",
+    "name": "Deluxe Spa Pass",
+    "category": "care",
+    "rarity": "epic",
+    "description": "A premium full-service spa pass.",
+    "image": "/assets/items/deluxe_spa.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "hunger",
+        "value": 40
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 40
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 40
+      },
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 40
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 220
+  },
+  "pet_brush": {
+    "id": "pet_brush",
+    "name": "Pet Brush",
+    "category": "care",
+    "rarity": "common",
+    "description": "A brush that cleans and calms pets.",
+    "image": "/assets/items/pet_brush.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "cleanliness",
+        "value": 10
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 5
+      }
+    ],
+    "tags": [
+      "care"
+    ],
+    "defaultShopId": "care_clinic",
+    "basePrice": 16
+  },
+  "scent_candle": {
+    "id": "scent_candle",
+    "name": "Scent Candle",
+    "category": "care",
+    "rarity": "uncommon",
+    "description": "A calming candle that improves mood over time.",
+    "image": "/assets/items/scent_candle.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "temporary_effect",
+        "target": "pet_happiness_regen",
+        "value": 2,
+        "durationMinutes": 30
+      }
+    ],
+    "tags": [
+      "care"
+    ]
+  },
+  "warm_pad": {
+    "id": "warm_pad",
+    "name": "Warm Pad",
+    "category": "egg_tool",
+    "rarity": "common",
+    "description": "A beginner heating pad for egg care.",
+    "image": "/assets/items/warm_pad.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "warm",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "warm"
+    ],
+    "defaultShopId": "egg_lab",
+    "basePrice": 18
+  },
+  "cool_cloth": {
+    "id": "cool_cloth",
+    "name": "Cool Cloth",
+    "category": "egg_tool",
+    "rarity": "common",
+    "description": "A beginner cooling cloth for egg care.",
+    "image": "/assets/items/cool_cloth.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "cold",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "cold"
+    ],
+    "defaultShopId": "egg_lab",
+    "basePrice": 18
+  },
+  "mist_spray": {
+    "id": "mist_spray",
+    "name": "Mist Spray",
+    "category": "egg_tool",
+    "rarity": "common",
+    "description": "A beginner mist bottle for egg care.",
+    "image": "/assets/items/mist_spray.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "wet",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "wet"
+    ],
+    "defaultShopId": "egg_lab",
+    "basePrice": 18
+  },
+  "dry_towel": {
+    "id": "dry_towel",
+    "name": "Dry Towel",
+    "category": "egg_tool",
+    "rarity": "common",
+    "description": "A beginner towel for drying eggs.",
+    "image": "/assets/items/dry_towel.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "dry",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "dry"
+    ],
+    "defaultShopId": "egg_lab",
+    "basePrice": 18
+  },
+  "sun_lamp": {
+    "id": "sun_lamp",
+    "name": "Sun Lamp",
+    "category": "egg_tool",
+    "rarity": "uncommon",
+    "description": "A focused light source for egg care.",
+    "image": "/assets/items/sun_lamp.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "light",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "light"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_basic"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 45
+  },
+  "shade_cover": {
+    "id": "shade_cover",
+    "name": "Shade Cover",
+    "category": "egg_tool",
+    "rarity": "uncommon",
+    "description": "A soft cover that creates safe darkness.",
+    "image": "/assets/items/shade_cover.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "dark",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "dark"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_basic"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 45
+  },
+  "ember_crystal": {
+    "id": "ember_crystal",
+    "name": "Ember Crystal",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "A strong crystal pulsing with heat.",
+    "image": "/assets/items/ember_crystal.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "warm",
+        "value": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "warm"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_advanced"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 120
+  },
+  "frost_crystal": {
+    "id": "frost_crystal",
+    "name": "Frost Crystal",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "A crystal that radiates cold.",
+    "image": "/assets/items/frost_crystal.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "cold",
+        "value": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "cold"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_advanced"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 120
+  },
+  "tide_orb": {
+    "id": "tide_orb",
+    "name": "Tide Orb",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "An orb that swirls with water energy.",
+    "image": "/assets/items/tide_orb.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "wet",
+        "value": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "wet"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_advanced"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 120
+  },
+  "sand_core": {
+    "id": "sand_core",
+    "name": "Sand Core",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "A dry core from a desert relic.",
+    "image": "/assets/items/sand_core.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "dry",
+        "value": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "dry"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_advanced"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 120
+  },
+  "radiant_core": {
+    "id": "radiant_core",
+    "name": "Radiant Core",
+    "category": "egg_tool",
+    "rarity": "epic",
+    "description": "A bright core used for rare light influences.",
+    "image": "/assets/items/radiant_core.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "light",
+        "value": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "light"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_master"
+    }
+  },
+  "void_core": {
+    "id": "void_core",
+    "name": "Void Core",
+    "category": "egg_tool",
+    "rarity": "epic",
+    "description": "A strange core that darkens the air nearby.",
+    "image": "/assets/items/void_core.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "dark",
+        "value": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "dark"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_master"
+    }
+  },
+  "balance_stone": {
+    "id": "balance_stone",
+    "name": "Balance Stone",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "A smooth stone that balances egg influences.",
+    "image": "/assets/items/balance_stone.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_balance",
+        "mode": "normalize"
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "utility"
+    ],
+    "defaultShopId": "egg_lab",
+    "basePrice": 150
+  },
+  "chaos_orb": {
+    "id": "chaos_orb",
+    "name": "Chaos Orb",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "An unstable orb that scrambles egg influence.",
+    "image": "/assets/items/chaos_orb.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "random_egg_influence",
+        "targets": [
+          "warm",
+          "cold",
+          "wet",
+          "dry",
+          "light",
+          "dark"
+        ],
+        "min": 0,
+        "max": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "random"
+    ]
+  },
+  "prism_shard": {
+    "id": "prism_shard",
+    "name": "Prism Shard",
+    "category": "egg_tool",
+    "rarity": "epic",
+    "description": "A rainbow shard that touches every influence.",
+    "image": "/assets/items/prism_shard.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "warm",
+        "value": 1
+      },
+      {
+        "type": "egg_influence",
+        "target": "cold",
+        "value": 1
+      },
+      {
+        "type": "egg_influence",
+        "target": "wet",
+        "value": 1
+      },
+      {
+        "type": "egg_influence",
+        "target": "dry",
+        "value": 1
+      },
+      {
+        "type": "egg_influence",
+        "target": "light",
+        "value": 1
+      },
+      {
+        "type": "egg_influence",
+        "target": "dark",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "rare"
+    ]
+  },
+  "incubator": {
+    "id": "incubator",
+    "name": "Incubator",
+    "category": "egg_tool",
+    "rarity": "epic",
+    "description": "A controlled chamber that steadily advances an egg.",
+    "image": "/assets/items/incubator.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_progress",
+        "value": 2
+      },
+      {
+        "type": "egg_influence",
+        "target": "all",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "unlock"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_master"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 280
+  },
+  "stabilizer": {
+    "id": "stabilizer",
+    "name": "Stabilizer",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "A device that protects current egg traits from random shifts.",
+    "image": "/assets/items/stabilizer.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_trait_lock",
+        "durationActions": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "utility"
+    ]
+  },
+  "egg_scanner": {
+    "id": "egg_scanner",
+    "name": "Egg Scanner",
+    "category": "egg_tool",
+    "rarity": "uncommon",
+    "description": "A scanner that reveals dominant egg influences.",
+    "image": "/assets/items/egg_scanner.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "info_reveal",
+        "target": "egg_traits"
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "info"
+    ],
+    "unlock": {
+      "type": "shop_unlock",
+      "key": "egg_lab_basic"
+    },
+    "defaultShopId": "egg_lab",
+    "basePrice": 60
+  },
+  "strength_band": {
+    "id": "strength_band",
+    "name": "Strength Band",
+    "category": "training",
+    "rarity": "common",
+    "description": "A resistance band for strength practice.",
+    "image": "/assets/items/strength_band.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "strength",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "training",
+      "strength"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 26
+  },
+  "speed_feather": {
+    "id": "speed_feather",
+    "name": "Speed Feather",
+    "category": "training",
+    "rarity": "common",
+    "description": "A light feather used for agility drills.",
+    "image": "/assets/items/speed_feather.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "speed",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "training",
+      "speed"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 26
+  },
+  "defense_shell": {
+    "id": "defense_shell",
+    "name": "Defense Shell",
+    "category": "training",
+    "rarity": "common",
+    "description": "A tough shell used for defense practice.",
+    "image": "/assets/items/defense_shell.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "defense",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "training",
+      "defense"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 26
+  },
+  "focus_orb": {
+    "id": "focus_orb",
+    "name": "Focus Orb",
+    "category": "training",
+    "rarity": "common",
+    "description": "A small orb used for concentration.",
+    "image": "/assets/items/focus_orb.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "magic",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "training",
+      "magic"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 26
+  },
+  "lucky_coin": {
+    "id": "lucky_coin",
+    "name": "Lucky Coin",
+    "category": "training",
+    "rarity": "uncommon",
+    "description": "A coin said to improve lucky growth.",
+    "image": "/assets/items/lucky_coin.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "luck",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "training",
+      "luck"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 50
+  },
+  "training_dummy": {
+    "id": "training_dummy",
+    "name": "Training Dummy",
+    "category": "training",
+    "rarity": "uncommon",
+    "description": "A practice target for balanced training.",
+    "image": "/assets/items/training_dummy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "all",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "training",
+      "all"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 65
+  },
+  "power_elixir": {
+    "id": "power_elixir",
+    "name": "Power Elixir",
+    "category": "training",
+    "rarity": "rare",
+    "description": "A short burst of raw training power.",
+    "image": "/assets/items/power_elixir.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "strength",
+        "value": 2
+      }
+    ],
+    "tags": [
+      "training",
+      "strength"
+    ]
+  },
+  "agility_boots": {
+    "id": "agility_boots",
+    "name": "Agility Boots",
+    "category": "training",
+    "rarity": "uncommon",
+    "description": "Tiny boots for quick movement drills.",
+    "image": "/assets/items/agility_boots.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "speed",
+        "value": 2
+      }
+    ],
+    "tags": [
+      "training",
+      "speed"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 80
+  },
+  "wisdom_scroll": {
+    "id": "wisdom_scroll",
+    "name": "Wisdom Scroll",
+    "category": "training",
+    "rarity": "rare",
+    "description": "A scroll used for magical development.",
+    "image": "/assets/items/wisdom_scroll.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "magic",
+        "value": 2
+      }
+    ],
+    "tags": [
+      "training",
+      "magic"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 120
+  },
+  "elite_manual": {
+    "id": "elite_manual",
+    "name": "Elite Manual",
+    "category": "training",
+    "rarity": "rare",
+    "description": "A manual that improves one random stat.",
+    "image": "/assets/items/elite_manual.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "random_training",
+        "targets": [
+          "strength",
+          "speed",
+          "defense",
+          "magic",
+          "luck"
+        ],
+        "value": 2
+      }
+    ],
+    "tags": [
+      "training",
+      "rare"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 160
+  },
+  "endurance_kit": {
+    "id": "endurance_kit",
+    "name": "Endurance Kit",
+    "category": "training",
+    "rarity": "uncommon",
+    "description": "A kit for stamina and defense routines.",
+    "image": "/assets/items/endurance_kit.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "defense",
+        "value": 1
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": 10
+      }
+    ],
+    "tags": [
+      "training",
+      "care"
+    ],
+    "defaultShopId": "training_dojo",
+    "basePrice": 75
+  },
+  "training_whistle": {
+    "id": "training_whistle",
+    "name": "Training Whistle",
+    "category": "training",
+    "rarity": "rare",
+    "description": "A whistle that improves the next training result.",
+    "image": "/assets/items/training_whistle.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "temporary_effect",
+        "target": "training_bonus",
+        "value": 1,
+        "durationActions": 1
+      }
+    ],
+    "tags": [
+      "training",
+      "temporary"
+    ]
+  },
+  "toy_ball": {
+    "id": "toy_ball",
+    "name": "Toy Ball",
+    "category": "toy",
+    "rarity": "common",
+    "description": "A classic ball for playtime.",
+    "image": "/assets/items/toy_ball.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 12
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 14
+  },
+  "laser_pointer": {
+    "id": "laser_pointer",
+    "name": "Laser Pointer",
+    "category": "toy",
+    "rarity": "uncommon",
+    "description": "A tiny light pets love to chase.",
+    "image": "/assets/items/laser_pointer.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 18
+      },
+      {
+        "type": "pet_need",
+        "target": "energy",
+        "value": -5
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 35
+  },
+  "squeaky_toy": {
+    "id": "squeaky_toy",
+    "name": "Squeaky Toy",
+    "category": "toy",
+    "rarity": "common",
+    "description": "A loud toy with a silly squeak.",
+    "image": "/assets/items/squeaky_toy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 15
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 18
+  },
+  "puzzle_box": {
+    "id": "puzzle_box",
+    "name": "Puzzle Box",
+    "category": "toy",
+    "rarity": "uncommon",
+    "description": "A small box with hidden mechanisms.",
+    "image": "/assets/items/puzzle_box.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "magic",
+        "value": 1
+      },
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 5
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 45
+  },
+  "trampoline": {
+    "id": "trampoline",
+    "name": "Trampoline",
+    "category": "toy",
+    "rarity": "rare",
+    "description": "A springy play pad for energetic pets.",
+    "image": "/assets/items/trampoline.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 20
+      },
+      {
+        "type": "training",
+        "target": "speed",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ]
+  },
+  "mirror_shard": {
+    "id": "mirror_shard",
+    "name": "Mirror Shard",
+    "category": "toy",
+    "rarity": "uncommon",
+    "description": "A shiny shard that keeps curious pets busy.",
+    "image": "/assets/items/mirror_shard.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 10
+      },
+      {
+        "type": "training",
+        "target": "magic",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 48
+  },
+  "bubble_wand": {
+    "id": "bubble_wand",
+    "name": "Bubble Wand",
+    "category": "toy",
+    "rarity": "common",
+    "description": "A wand that makes floating bubbles.",
+    "image": "/assets/items/bubble_wand.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 15
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 22
+  },
+  "mini_maze": {
+    "id": "mini_maze",
+    "name": "Mini Maze",
+    "category": "toy",
+    "rarity": "uncommon",
+    "description": "A small maze that rewards clever pets.",
+    "image": "/assets/items/mini_maze.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "training",
+        "target": "magic",
+        "value": 1
+      },
+      {
+        "type": "training",
+        "target": "luck",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 70
+  },
+  "glow_orb": {
+    "id": "glow_orb",
+    "name": "Glow Orb",
+    "category": "toy",
+    "rarity": "rare",
+    "description": "A glowing orb that pulses with color.",
+    "image": "/assets/items/glow_orb.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "pet_need",
+        "target": "happiness",
+        "value": 20
+      },
+      {
+        "type": "temporary_effect",
+        "target": "profile_aura",
+        "value": "glow",
+        "durationHours": 1
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 95
+  },
+  "chaos_toy": {
+    "id": "chaos_toy",
+    "name": "Chaos Toy",
+    "category": "toy",
+    "rarity": "rare",
+    "description": "A toy that does something different every time.",
+    "image": "/assets/items/chaos_toy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "random_pet_need",
+        "targets": [
+          "hunger",
+          "happiness",
+          "energy",
+          "cleanliness"
+        ],
+        "min": -5,
+        "max": 18
+      }
+    ],
+    "tags": [
+      "toy",
+      "fun"
+    ],
+    "defaultShopId": "toy_box",
+    "basePrice": 110
+  },
+  "treasure_map": {
+    "id": "treasure_map",
+    "name": "Treasure Map",
+    "category": "exploration",
+    "rarity": "uncommon",
+    "description": "A rough map with several marked locations.",
+    "image": "/assets/items/treasure_map.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "explore_boost",
+        "target": "loot_quantity",
+        "value": 1,
+        "durationActions": 1
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 50
+  },
+  "lucky_compass": {
+    "id": "lucky_compass",
+    "name": "Lucky Compass",
+    "category": "exploration",
+    "rarity": "rare",
+    "description": "A compass that points toward unusual finds.",
+    "image": "/assets/items/lucky_compass.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "explore_boost",
+        "target": "rare_chance",
+        "value": 10,
+        "durationActions": 1
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 120
+  },
+  "explorer_pack": {
+    "id": "explorer_pack",
+    "name": "Explorer Pack",
+    "category": "exploration",
+    "rarity": "uncommon",
+    "description": "A basic pack of supplies for exploring.",
+    "image": "/assets/items/explorer_pack.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "explore_boost",
+        "target": "loot_quantity",
+        "value": 2,
+        "durationActions": 1
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 70
+  },
+  "bait_box": {
+    "id": "bait_box",
+    "name": "Bait Box",
+    "category": "exploration",
+    "rarity": "common",
+    "description": "A box of bait for attracting odd finds.",
+    "image": "/assets/items/bait_box.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "explore_boost",
+        "target": "item_find_chance",
+        "value": 8,
+        "durationActions": 1
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 30
+  },
+  "shadow_key": {
+    "id": "shadow_key",
+    "name": "Shadow Key",
+    "category": "exploration",
+    "rarity": "rare",
+    "description": "A dark key for locked shadow paths.",
+    "image": "/assets/items/shadow_key.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "unlock",
+        "target": "zone",
+        "value": "shadow_path"
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 180
+  },
+  "relic_scanner": {
+    "id": "relic_scanner",
+    "name": "Relic Scanner",
+    "category": "exploration",
+    "rarity": "rare",
+    "description": "A scanner tuned for fragments and relics.",
+    "image": "/assets/items/relic_scanner.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "explore_boost",
+        "target": "collectible_chance",
+        "value": 15,
+        "durationActions": 1
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 140
+  },
+  "ancient_coin": {
+    "id": "ancient_coin",
+    "name": "Ancient Coin",
+    "category": "exploration",
+    "rarity": "uncommon",
+    "description": "An old coin accepted by strange traders.",
+    "image": "/assets/items/ancient_coin.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "currency_alt",
+        "target": "curio_tokens",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 40
+  },
+  "time_watch": {
+    "id": "time_watch",
+    "name": "Time Watch",
+    "category": "exploration",
+    "rarity": "epic",
+    "description": "A watch that briefly speeds up actions.",
+    "image": "/assets/items/time_watch.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "temporary_effect",
+        "target": "cooldown_reduction",
+        "value": 25,
+        "durationMinutes": 20
+      }
+    ],
+    "tags": [
+      "explore"
+    ],
+    "defaultShopId": "explorer_supply",
+    "basePrice": 220
+  },
+  "blue_name_dye": {
+    "id": "blue_name_dye",
+    "name": "Blue Name Dye",
+    "category": "cosmetic",
+    "rarity": "rare",
+    "description": "Turns your username blue for a limited time.",
+    "image": "/assets/items/blue_name_dye.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "profile_cosmetic",
+        "target": "name_color",
+        "value": "#38bdf8",
+        "durationHours": 72
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 90
+  },
+  "gold_name_dye": {
+    "id": "gold_name_dye",
+    "name": "Gold Name Dye",
+    "category": "cosmetic",
+    "rarity": "epic",
+    "description": "Turns your username gold for a limited time.",
+    "image": "/assets/items/gold_name_dye.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "profile_cosmetic",
+        "target": "name_color",
+        "value": "#facc15",
+        "durationHours": 24
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 180
+  },
+  "glitch_name_dye": {
+    "id": "glitch_name_dye",
+    "name": "Glitch Name Dye",
+    "category": "cosmetic",
+    "rarity": "epic",
+    "description": "Gives your username a glitchy animated style.",
+    "image": "/assets/items/glitch_name_dye.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "profile_cosmetic",
+        "target": "name_effect",
+        "value": "glitch",
+        "durationHours": 24
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 220
+  },
+  "confetti_popper": {
+    "id": "confetti_popper",
+    "name": "Confetti Popper",
+    "category": "fun",
+    "rarity": "common",
+    "description": "Triggers a burst of confetti on your screen.",
+    "image": "/assets/items/confetti_popper.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "site_effect",
+        "target": "confetti",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 25
+  },
+  "aura_ring": {
+    "id": "aura_ring",
+    "name": "Aura Ring",
+    "category": "cosmetic",
+    "rarity": "rare",
+    "description": "Adds a subtle aura around your player card.",
+    "image": "/assets/items/aura_ring.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "profile_cosmetic",
+        "target": "profile_aura",
+        "value": "ring",
+        "durationHours": 48
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 130
+  },
+  "shadow_trail": {
+    "id": "shadow_trail",
+    "name": "Shadow Trail",
+    "category": "cosmetic",
+    "rarity": "rare",
+    "description": "Adds a shadowy trail to your pet display.",
+    "image": "/assets/items/shadow_trail.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "profile_cosmetic",
+        "target": "pet_trail",
+        "value": "shadow",
+        "durationHours": 48
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 130
+  },
+  "sparkle_fx": {
+    "id": "sparkle_fx",
+    "name": "Sparkle FX",
+    "category": "cosmetic",
+    "rarity": "uncommon",
+    "description": "Adds sparkles to your profile for a while.",
+    "image": "/assets/items/sparkle_fx.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "profile_cosmetic",
+        "target": "profile_fx",
+        "value": "sparkle",
+        "durationHours": 24
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 70
+  },
+  "profile_badge": {
+    "id": "profile_badge",
+    "name": "Profile Badge",
+    "category": "cosmetic",
+    "rarity": "rare",
+    "description": "Unlocks a profile badge cosmetic.",
+    "image": "/assets/items/profile_badge.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "unlock",
+        "target": "profile_badge",
+        "value": "collector"
+      }
+    ],
+    "tags": [
+      "cosmetic",
+      "fun"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 175
+  },
+  "arcade_ticket": {
+    "id": "arcade_ticket",
+    "name": "Arcade Ticket",
+    "category": "unlock",
+    "rarity": "rare",
+    "description": "A ticket that unlocks a hidden arcade game.",
+    "image": "/assets/items/arcade_ticket.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "unlock",
+        "target": "game",
+        "value": "arcade_bonus"
+      }
+    ],
+    "tags": [
+      "unlock"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 160
+  },
+  "battle_pass": {
+    "id": "battle_pass",
+    "name": "Battle Pass",
+    "category": "unlock",
+    "rarity": "rare",
+    "description": "Unlocks advanced pet battle features later.",
+    "image": "/assets/items/battle_pass.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "unlock",
+        "target": "feature",
+        "value": "ranked_pet_battle"
+      }
+    ],
+    "tags": [
+      "unlock"
+    ],
+    "defaultShopId": "battle_shop",
+    "basePrice": 200
+  },
+  "pet_slot_token": {
+    "id": "pet_slot_token",
+    "name": "Pet Slot Token",
+    "category": "unlock",
+    "rarity": "epic",
+    "description": "Unlocks an additional pet slot.",
+    "image": "/assets/items/pet_slot_token.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "unlock",
+        "target": "pet_slot",
+        "value": 1
+      }
+    ],
+    "tags": [
+      "unlock"
+    ]
+  },
+  "egg_lab_pass": {
+    "id": "egg_lab_pass",
+    "name": "Egg Lab Pass",
+    "category": "unlock",
+    "rarity": "rare",
+    "description": "Unlocks advanced Egg Lab tools.",
+    "image": "/assets/items/egg_lab_pass.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "unlock",
+        "target": "shop_unlock",
+        "value": "egg_lab_basic"
+      }
+    ],
+    "tags": [
+      "unlock"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 150
+  },
+  "market_license": {
+    "id": "market_license",
+    "name": "Market License",
+    "category": "unlock",
+    "rarity": "uncommon",
+    "description": "Unlocks advanced marketplace selling features later.",
+    "image": "/assets/items/market_license.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "unlock",
+        "target": "feature",
+        "value": "advanced_market"
+      }
+    ],
+    "tags": [
+      "unlock"
+    ],
+    "defaultShopId": "curio_market",
+    "basePrice": 80
+  },
+  "ember_shell": {
+    "id": "ember_shell",
+    "name": "Ember Shell",
+    "category": "material",
+    "rarity": "uncommon",
+    "description": "A warm shell fragment used in future crafting.",
+    "image": "/assets/items/ember_shell.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "effects": [],
+    "tags": [
+      "material",
+      "mergeable"
+    ],
+    "merge": {
+      "group": "element_shells",
+      "count": 3,
+      "result": "ember_crystal"
+    }
+  },
+  "tide_pearl": {
+    "id": "tide_pearl",
+    "name": "Tide Pearl",
+    "category": "material",
+    "rarity": "uncommon",
+    "description": "A cool pearl used in future crafting.",
+    "image": "/assets/items/tide_pearl.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "effects": [],
+    "tags": [
+      "material",
+      "mergeable"
+    ],
+    "merge": {
+      "group": "element_pearls",
+      "count": 3,
+      "result": "tide_orb"
+    }
+  },
+  "moon_wisp": {
+    "id": "moon_wisp",
+    "name": "Moon Wisp",
+    "category": "material",
+    "rarity": "rare",
+    "description": "A faint shadowy wisp used in rare recipes.",
+    "image": "/assets/items/moon_wisp.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "effects": [],
+    "tags": [
+      "material",
+      "mergeable"
+    ],
+    "merge": {
+      "group": "shadow_wisps",
+      "count": 3,
+      "result": "void_core"
+    }
+  },
+  "fossil_shard": {
+    "id": "fossil_shard",
+    "name": "Fossil Shard",
+    "category": "material",
+    "rarity": "rare",
+    "description": "An ancient shard used in earth recipes.",
+    "image": "/assets/items/fossil_shard.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "effects": [],
+    "tags": [
+      "material",
+      "mergeable"
+    ],
+    "merge": {
+      "group": "fossil_shards",
+      "count": 3,
+      "result": "sand_core"
+    }
+  },
+  "spark_fragment": {
+    "id": "spark_fragment",
+    "name": "Spark Fragment",
+    "category": "material",
+    "rarity": "common",
+    "description": "A tiny fragment of electric energy.",
+    "image": "/assets/items/spark_fragment.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "effects": [],
+    "tags": [
+      "material",
+      "mergeable"
+    ],
+    "merge": {
+      "group": "spark_fragments",
+      "count": 5,
+      "result": "spark_core"
+    }
+  },
+  "leaf_charm": {
+    "id": "leaf_charm",
+    "name": "Leaf Charm",
+    "category": "material",
+    "rarity": "common",
+    "description": "A small charm made from preserved leaves.",
+    "image": "/assets/items/leaf_charm.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "effects": [],
+    "tags": [
+      "material",
+      "mergeable"
+    ],
+    "merge": {
+      "group": "leaf_charms",
+      "count": 4,
+      "result": "radiant_core"
+    }
+  },
+  "spark_core": {
+    "id": "spark_core",
+    "name": "Spark Core",
+    "category": "egg_tool",
+    "rarity": "rare",
+    "description": "A pulsing core that may influence future electric pets.",
+    "image": "/assets/items/spark_core.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "egg_influence",
+        "target": "spark",
+        "value": 3
+      }
+    ],
+    "tags": [
+      "eggInfluence",
+      "futureType"
+    ],
+    "unlock": {
+      "type": "future",
+      "note": "Use when electric type exists"
+    }
+  },
+  "battle_bandage": {
+    "id": "battle_bandage",
+    "name": "Battle Bandage",
+    "category": "battle",
+    "rarity": "common",
+    "description": "A quick patch for battle recovery.",
+    "image": "/assets/items/battle_bandage.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "battle_boost",
+        "target": "recover",
+        "value": 15
+      }
+    ],
+    "tags": [
+      "battle"
+    ],
+    "defaultShopId": "battle_shop",
+    "basePrice": 25
+  },
+  "guard_cookie": {
+    "id": "guard_cookie",
+    "name": "Guard Cookie",
+    "category": "battle",
+    "rarity": "uncommon",
+    "description": "A crunchy cookie that boosts defense in battle.",
+    "image": "/assets/items/guard_cookie.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "battle_boost",
+        "target": "defense",
+        "value": 10,
+        "durationTurns": 3
+      }
+    ],
+    "tags": [
+      "battle"
+    ],
+    "defaultShopId": "battle_shop",
+    "basePrice": 45
+  },
+  "swift_soda": {
+    "id": "swift_soda",
+    "name": "Swift Soda",
+    "category": "battle",
+    "rarity": "uncommon",
+    "description": "A fizzy drink that boosts speed in battle.",
+    "image": "/assets/items/swift_soda.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "battle_boost",
+        "target": "speed",
+        "value": 10,
+        "durationTurns": 3
+      }
+    ],
+    "tags": [
+      "battle"
+    ],
+    "defaultShopId": "battle_shop",
+    "basePrice": 45
+  },
+  "power_pebble": {
+    "id": "power_pebble",
+    "name": "Power Pebble",
+    "category": "battle",
+    "rarity": "uncommon",
+    "description": "A smooth pebble that boosts strength in battle.",
+    "image": "/assets/items/power_pebble.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "battle_boost",
+        "target": "strength",
+        "value": 10,
+        "durationTurns": 3
+      }
+    ],
+    "tags": [
+      "battle"
+    ],
+    "defaultShopId": "battle_shop",
+    "basePrice": 45
+  },
+  "focus_mint": {
+    "id": "focus_mint",
+    "name": "Focus Mint",
+    "category": "battle",
+    "rarity": "uncommon",
+    "description": "A sharp mint that boosts magic in battle.",
+    "image": "/assets/items/focus_mint.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": true,
+    "effects": [
+      {
+        "type": "battle_boost",
+        "target": "magic",
+        "value": 10,
+        "durationTurns": 3
+      }
+    ],
+    "tags": [
+      "battle"
+    ],
+    "defaultShopId": "battle_shop",
+    "basePrice": 45
+  }
+}
