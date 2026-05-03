@@ -172,6 +172,51 @@ code{color:#bae6fd}
 .fileInput{background:#020617;color:var(--text);border:1px solid #475569}
 @media(max-width:760px){.assetPreviewBox{grid-template-columns:1fr}.assetPreview{width:100%;height:220px}}
 
+
+.assetPreviewGrid{
+  display:grid;
+  grid-template-columns:180px 180px minmax(0,1fr);
+  gap:14px;
+  align-items:start;
+}
+.assetPreviewWrap label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+  margin:0 0 6px;
+}
+.assetPreviewSmall{
+  width:180px;
+  height:180px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:rgba(2,6,23,.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.assetPreviewSmall img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+}
+.assetControlGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(160px,1fr));
+  gap:8px;
+  margin-bottom:10px;
+}
+.assetControlGrid input,.assetControlGrid select{
+  width:100%;
+}
+@media(max-width:980px){
+  .assetPreviewGrid{grid-template-columns:1fr}
+  .assetPreviewSmall{width:100%;height:220px}
+  .assetControlGrid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -322,13 +367,23 @@ code{color:#bae6fd}
           <button class="primary" onclick="loadPendingAssets()">Refresh Pending</button>
         </div>
 
-        <div class="assetPreviewBox">
-          <div class="assetPreview" id="assetPreviewBox">
-            <span class="muted">Preview</span>
+        <div class="assetPreviewGrid">
+          <div class="assetPreviewWrap">
+            <label>Current Image</label>
+            <div class="assetPreviewSmall" id="assetCurrentPreviewBox">
+              <span class="muted">Current</span>
+            </div>
+          </div>
+
+          <div class="assetPreviewWrap">
+            <label>New Upload Preview</label>
+            <div class="assetPreviewSmall" id="assetPreviewBox">
+              <span class="muted">New</span>
+            </div>
           </div>
 
           <div>
-            <div class="row" style="margin-bottom:10px">
+            <div class="assetControlGrid">
               <select id="assetType" onchange="updateAssetSlotOptions()">
                 <option value="items">Item</option>
                 <option value="pets">Pet</option>
@@ -337,18 +392,24 @@ code{color:#bae6fd}
                 <option value="backgrounds">Background</option>
               </select>
 
-              <select id="assetSlot"></select>
+              <select id="assetSlot" onchange="loadCurrentAssetPreview()"></select>
 
-              <input id="assetTargetId" placeholder="target id, ex: berry, emberwing, snack_shack">
+              <select id="assetCategory" onchange="filterAssetTargets()"></select>
+            </div>
+
+            <div class="assetControlGrid">
+              <select id="assetTargetSelect" onchange="selectAssetTarget()"></select>
+              <input id="assetTargetId" placeholder="target id" readonly>
+              <input id="assetFile" class="fileInput" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewSelectedAsset()">
             </div>
 
             <div class="row" style="margin-bottom:10px">
-              <input id="assetFile" class="fileInput" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewSelectedAsset()">
               <button class="gold" onclick="uploadAssetPreview()">Upload Preview</button>
+              <button class="ghost" onclick="loadCurrentAssetPreview()">Reload Current Image</button>
             </div>
 
             <p class="muted">
-              Naming is automatic and standardized to PNG. Example: uploading any PNG/JPG/WEBP for item <code>berry</code> saves as <code>/assets/items/berry.png</code> after approval.
+              Admins choose from dropdowns. Naming is automatic and standardized to PNG. Example: uploading any PNG/JPG/WEBP for item <code>berry</code> saves as <code>/assets/items/berry.png</code> after approval.
             </p>
 
             <div id="assetUploadResult" class="item hidden"></div>
@@ -435,6 +496,7 @@ async function refreshAll(){
     drawOverview();
     drawRooms();
     await loadMarket(false);
+    buildAssetDropdowns();
     toast('Admin data loaded.');
   }catch(err){
     console.error(err);
@@ -635,6 +697,7 @@ async function loadMarket(show=true){
   try{
     marketData=await api('/api/admin/market?user='+encodeURIComponent(adminUser));
     drawMarket();
+    if($('assetType'))buildAssetDropdowns();
     if(show)toast('Market loaded.');
   }catch(err){if(show)toast(err.message||'Market load failed.')}
 }
@@ -722,6 +785,7 @@ async function removeListing(id){
 }
 
 
+
 const ASSET_SLOTS={
   items:['image'],
   pets:['idle','battle','portrait','egg','baby','young','adult'],
@@ -730,14 +794,139 @@ const ASSET_SLOTS={
   backgrounds:['image']
 };
 
+let assetCategoryMap={};
+
 function updateAssetSlotOptions(){
   let type=$('assetType').value;
   let slots=ASSET_SLOTS[type]||['image'];
   $('assetSlot').innerHTML=slots.map(s=>'<option value="'+escAttr(s)+'">'+esc(s)+'</option>').join('');
+  buildAssetDropdowns();
+}
+
+function buildAssetDropdowns(){
+  let type=$('assetType').value;
+  assetCategoryMap={};
+
+  if(type==='items'){
+    let items=(itemCatalog||[]).slice().sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));
+
+    items.forEach(item=>{
+      let cat=String(item.category||item.shopId||item.defaultShopId||item.rarity||'other').trim()||'other';
+      if(!assetCategoryMap[cat])assetCategoryMap[cat]=[];
+      assetCategoryMap[cat].push({
+        id:item.id,
+        name:item.name||item.id,
+        meta:(item.category||'')+(item.rarity?' · '+item.rarity:'')
+      });
+    });
+  }else if(type==='shops'){
+    let shops=shopMap();
+    assetCategoryMap.shops=Object.keys(shops).sort().map(id=>({
+      id,
+      name:(shops[id].icon?shops[id].icon+' ':'')+(shops[id].name||id),
+      meta:shops[id].theme||''
+    }));
+  }else if(type==='pets'){
+    assetCategoryMap.species=[
+      {id:'flarecub',name:'Flarecub'},
+      {id:'frostfin',name:'Frostfin'},
+      {id:'leafbun',name:'Leafbun'},
+      {id:'shadepup',name:'Shadepup'},
+      {id:'pebblet',name:'Pebblet'},
+      {id:'chompasaur',name:'Chompasaur'},
+      {id:'emberwing',name:'Emberwing'}
+    ];
+  }else if(type==='eggs'){
+    assetCategoryMap.eggs=[
+      {id:'egg',name:'Mystery Egg'}
+    ];
+  }else if(type==='backgrounds'){
+    assetCategoryMap.backgrounds=[
+      {id:'petworld_bg',name:'Pet World Background'},
+      {id:'battle_bg',name:'Battle Background'},
+      {id:'market_bg',name:'Marketplace Background'},
+      {id:'hub_bg',name:'Hub Background'}
+    ];
+  }
+
+  let cats=Object.keys(assetCategoryMap);
+  if(!cats.length){
+    assetCategoryMap.none=[];
+    cats=['none'];
+  }
+
+  $('assetCategory').innerHTML=cats.map(c=>'<option value="'+escAttr(c)+'">'+esc(prettyAssetCategory(c))+'</option>').join('');
+  filterAssetTargets();
+}
+
+function prettyAssetCategory(c){
+  return String(c||'other').replace(/_/g,' ').replace(/\b\w/g,function(ch){return ch.toUpperCase();});
+}
+
+function filterAssetTargets(){
+  let cat=$('assetCategory').value;
+  let list=assetCategoryMap[cat]||[];
+
+  $('assetTargetSelect').innerHTML=list.map(x=>{
+    let label=x.name||x.id;
+    let meta=x.meta?' · '+x.meta:'';
+    return '<option value="'+escAttr(x.id)+'">'+esc(label+' ('+x.id+')'+meta)+'</option>';
+  }).join('');
+
+  selectAssetTarget();
+}
+
+function selectAssetTarget(){
+  let id=$('assetTargetSelect').value||'';
+  $('assetTargetId').value=id;
+  $('assetFile').value='';
+  $('assetPreviewBox').innerHTML='<span class="muted">New</span>';
+  $('assetUploadResult').classList.add('hidden');
+  lastAssetUpload=null;
+  loadCurrentAssetPreview();
+}
+
+function standardAssetPath(type,targetId,slot){
+  type=String(type||'items');
+  targetId=String(targetId||'').trim();
+  slot=String(slot||'image').trim();
+
+  if(type==='items')return '/assets/items/'+targetId+'.png';
+  if(type==='pets')return '/assets/pets/'+targetId+'/'+slot+'.png';
+  if(type==='eggs')return '/assets/pets/egg/'+slot+'.png';
+  if(type==='shops')return '/assets/shops/'+targetId+'_'+slot+'.png';
+  if(type==='backgrounds')return '/assets/backgrounds/'+targetId+'.png';
+
+  return '/assets/items/generic_item.png';
+}
+
+function fallbackAssetPath(type){
+  if(type==='items')return '/assets/items/generic_item.png';
+  if(type==='pets'||type==='eggs')return '/assets/pets/generic_pet.png';
+  if(type==='shops')return '/assets/shops/generic_shop.png';
+  if(type==='backgrounds')return '/assets/backgrounds/generic_background.png';
+  return '/assets/items/generic_item.png';
+}
+
+function loadCurrentAssetPreview(){
+  let type=$('assetType').value;
+  let targetId=$('assetTargetId').value;
+  let slot=$('assetSlot').value;
+
+  if(!targetId){
+    $('assetCurrentPreviewBox').innerHTML='<span class="muted">Current</span>';
+    return;
+  }
+
+  let src=standardAssetPath(type,targetId,slot);
+  let fallback=fallbackAssetPath(type);
+  $('assetCurrentPreviewBox').innerHTML=
+    '<img src="'+escAttr(src)+'?v='+Date.now()+'" onerror="this.onerror=null;this.src=\\''+escAttr(fallback)+'?v='+Date.now()+'\\';">';
 }
 
 function assetTargetSuggestion(){
   let type=$('assetType').value;
+  if($('assetTargetId')&&$('assetTargetId').value)return $('assetTargetId').value;
   if(type==='items'){
     let first=(itemCatalog&&itemCatalog[0]&&itemCatalog[0].id)||'berry';
     return first;
@@ -790,14 +979,14 @@ async function previewSelectedAsset(){
   try{
     let file=$('assetFile').files&&$('assetFile').files[0];
     if(!file){
-      $('assetPreviewBox').innerHTML='<span class="muted">Preview</span>';
+      $('assetPreviewBox').innerHTML='<span class="muted">New</span>';
       return;
     }
     let dataUrl=await imageFileToPngDataUrl(file);
     $('assetPreviewBox').innerHTML='<img src="'+dataUrl+'">';
   }catch(err){
     $('assetFile').value='';
-    $('assetPreviewBox').innerHTML='<span class="muted">Preview</span>';
+    $('assetPreviewBox').innerHTML='<span class="muted">New</span>';
     toast(err.message||'Preview failed.');
   }
 }
@@ -815,7 +1004,7 @@ async function uploadAssetPreview(){
 
     if(!targetId){
       $('assetTargetId').value=assetTargetSuggestion();
-      return toast('Enter a target id first. I filled an example.');
+      return toast('Choose a target first.');
     }
 
     let dataUrl=await readAssetFileAsDataUrl();
@@ -839,7 +1028,7 @@ async function uploadAssetPreview(){
       '<div class="itemTop">'+
         '<div>'+
           '<div class="itemTitle">Preview uploaded</div>'+
-          '<div class="itemMeta">Type: '+esc(data.type)+' · Target: '+esc(data.targetId)+' · Slot: '+esc(data.slot)+'<br>Temp: '+esc(data.tempFile||'')+'</div>'+
+          '<div class="itemMeta">Type: '+esc(data.type)+' · Target: '+esc(data.targetId)+' · Slot: '+esc(data.slot)+'<br>Final path: '+esc(standardAssetPath(data.type,data.targetId,data.slot))+'</div>'+
         '</div>'+
         '<div class="actions">'+
           '<button class="good" onclick="approveAssetFromUpload()">Approve</button>'+
@@ -909,7 +1098,7 @@ function drawPendingAssets(){
           '<div class="assetThumb"><img src="'+escAttr(a.previewUrl)+'"></div>'+
           '<div>'+
             '<div class="itemTitle">'+esc(a.type)+' · '+esc(target)+' · '+esc(slot)+'</div>'+
-            '<div class="itemMeta">File: '+esc(a.tempFile)+'<br>Size: '+Math.round(Number(a.size||0)/1024)+' KB</div>'+
+            '<div class="itemMeta">File: '+esc(a.tempFile)+'<br>Final path: '+esc(standardAssetPath(a.type,target,slot))+'<br>Size: '+Math.round(Number(a.size||0)/1024)+' KB</div>'+
           '</div>'+
         '</div>'+
         '<div class="actions">'+
@@ -940,8 +1129,11 @@ async function approveAsset(type,tempFile,targetId,slot){
 
     lastAssetUpload=null;
     $('assetUploadResult').classList.add('hidden');
+    $('assetFile').value='';
+    $('assetPreviewBox').innerHTML='<span class="muted">New</span>';
     await loadPendingAssets(false);
     await loadMarket(false);
+    loadCurrentAssetPreview();
     toast(data.message||'Asset approved.');
   }catch(err){
     toast(err.message||'Approval failed.');
@@ -965,6 +1157,8 @@ async function rejectAsset(type,tempFile){
     if(lastAssetUpload&&lastAssetUpload.tempFile===tempFile){
       lastAssetUpload=null;
       $('assetUploadResult').classList.add('hidden');
+      $('assetFile').value='';
+      $('assetPreviewBox').innerHTML='<span class="muted">New</span>';
     }
 
     await loadPendingAssets(false);
