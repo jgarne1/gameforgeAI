@@ -950,6 +950,15 @@ function normalizeSocialUser(entry,username){
   entry.friends=Array.isArray(entry.friends)?uniqueStrings(entry.friends).filter(x=>x!==username):[];
   entry.incomingRequests=Array.isArray(entry.incomingRequests)?uniqueStrings(entry.incomingRequests).filter(x=>x!==username):[];
   entry.outgoingRequests=Array.isArray(entry.outgoingRequests)?uniqueStrings(entry.outgoingRequests).filter(x=>x!==username):[];
+
+  /*
+    Social mail migration notes:
+    - Older GameForge builds stored mail as a flat `mail` array.
+    - Newer builds store mail as typed conversation threads in `mailThreads`.
+    - We keep the legacy `mail` array normalized for compatibility, but the UI and
+      new sends use `mailThreads`. Existing old mail is converted into readable
+      legacy threads so no player loses history during deployment.
+  */
   entry.mail=Array.isArray(entry.mail)?entry.mail:[];
   entry.mail=entry.mail
     .filter(m=>m&&typeof m==='object')
@@ -963,7 +972,107 @@ function normalizeSocialUser(entry,username){
     }))
     .sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0))
     .slice(0,25);
+
+  entry.mailThreads=entry.mailThreads&&typeof entry.mailThreads==='object'?entry.mailThreads:{};
+
+  // Convert legacy one-off mail into one-message threads for the new two-pane UI.
+  entry.mail.forEach(m=>{
+    let legacyId='legacy_'+String(m.id||'');
+    if(!entry.mailThreads[legacyId]){
+      entry.mailThreads[legacyId]={
+        id:legacyId,
+        type:'chat',
+        subject:'Legacy Mail',
+        participants:uniqueStrings([m.from,m.to||username]),
+        createdAt:Number(m.createdAt||Date.now()),
+        updatedAt:Number(m.createdAt||Date.now()),
+        messages:[{
+          id:String(m.id||legacyId),
+          from:String(m.from||''),
+          to:String(m.to||username),
+          text:String(m.text||'').slice(0,500),
+          createdAt:Number(m.createdAt||Date.now()),
+          readBy:m.read?uniqueStrings([username,m.from]):uniqueStrings([m.from])
+        }]
+      };
+    }
+  });
+
+  Object.keys(entry.mailThreads).forEach(id=>{
+    let t=entry.mailThreads[id]&&typeof entry.mailThreads[id]==='object'?entry.mailThreads[id]:{};
+    let messages=Array.isArray(t.messages)?t.messages:[];
+    t.id=String(t.id||id||('thread_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)));
+    t.type=sanitizeMailType(t.type||'chat');
+    t.subject=String(t.subject||defaultMailSubject(t.type)).slice(0,80);
+    t.participants=uniqueStrings(t.participants||[]);
+    if(username&&!t.participants.includes(username))t.participants.push(username);
+    t.createdAt=Number(t.createdAt||Date.now());
+    t.messages=messages
+      .filter(m=>m&&typeof m==='object')
+      .map(m=>({
+        id:String(m.id||('msg_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8))),
+        from:String(m.from||''),
+        to:String(m.to||''),
+        text:String(m.text||'').slice(0,500),
+        createdAt:Number(m.createdAt||Date.now()),
+        readBy:uniqueStrings(Array.isArray(m.readBy)?m.readBy:[])
+      }))
+      .sort((a,b)=>Number(a.createdAt||0)-Number(b.createdAt||0))
+      .slice(-50);
+    t.updatedAt=Number(t.updatedAt||(t.messages.length?t.messages[t.messages.length-1].createdAt:t.createdAt));
+    entry.mailThreads[t.id]=t;
+    if(t.id!==id)delete entry.mailThreads[id];
+  });
+
+  trimMailThreads(entry);
   return entry;
+}
+
+function sanitizeMailType(type){
+  type=String(type||'chat').toLowerCase().trim();
+  return ['chat','battle','trade','system'].includes(type)?type:'chat';
+}
+
+function defaultMailSubject(type){
+  type=sanitizeMailType(type);
+  if(type==='battle')return 'Battle Invite';
+  if(type==='trade')return 'Trade Offer';
+  if(type==='system')return 'System Notice';
+  return 'General Chat';
+}
+
+function mailThreadKey(a,b,type,subject){
+  let pair=uniqueStrings([a,b]).sort((x,y)=>x.localeCompare(y)).join('__');
+  let cleanSubject=String(subject||defaultMailSubject(type)).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,48)||'general';
+  return 'thread_'+pair+'__'+sanitizeMailType(type)+'__'+cleanSubject;
+}
+
+function trimMailThreads(entry){
+  entry.mailThreads=entry.mailThreads&&typeof entry.mailThreads==='object'?entry.mailThreads:{};
+  let sorted=Object.values(entry.mailThreads).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+  entry.mailThreads={};
+  sorted.slice(0,25).forEach(t=>{entry.mailThreads[t.id]=t;});
+}
+
+function mailThreadListForUser(entry,username){
+  let threads=Object.values(entry.mailThreads||{}).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+  return threads.map(t=>{
+    let messages=Array.isArray(t.messages)?t.messages:[];
+    let last=messages[messages.length-1]||null;
+    let unread=messages.filter(m=>m.from!==username&&!uniqueStrings(m.readBy).includes(username)).length;
+    return {
+      id:t.id,
+      type:t.type,
+      subject:t.subject,
+      participants:t.participants,
+      otherParticipants:(t.participants||[]).filter(p=>p!==username),
+      createdAt:t.createdAt,
+      updatedAt:t.updatedAt,
+      unread,
+      lastMessage:last?{from:last.from,text:last.text,createdAt:last.createdAt}:null,
+      messages
+    };
+  });
 }
 
 function uniqueStrings(arr){
@@ -981,12 +1090,13 @@ function getSocialUser(store,username){
 function socialCounts(username){
   let store=social();
   let su=getSocialUser(store,username);
+  let threads=mailThreadListForUser(su,username);
   return {
     friends:su.friends.length,
     incomingRequests:su.incomingRequests.length,
     outgoingRequests:su.outgoingRequests.length,
-    mail:su.mail.length,
-    unreadMail:su.mail.filter(m=>!m.read).length
+    mail:threads.length,
+    unreadMail:threads.reduce((sum,t)=>sum+Number(t.unread||0),0)
   };
 }
 
@@ -2312,7 +2422,8 @@ app.get('/api/social/summary',(req,res)=>{
     friends:friendProfiles,
     incomingRequests:incoming,
     outgoingRequests:outgoing,
-    mail:meSocial.mail
+    mail:meSocial.mail,
+    mailThreads:mailThreadListForUser(meSocial,username)
   });
 });
 
@@ -2426,55 +2537,104 @@ app.post('/api/social/send-mail',(req,res)=>{
   let username=String(req.body.username||'').trim();
   let to=String(req.body.to||'').trim();
   let text=String(req.body.text||'').trim().slice(0,500);
+  let type=sanitizeMailType(req.body.type||'chat');
+  let subject=String(req.body.subject||defaultMailSubject(type)).trim().slice(0,80)||defaultMailSubject(type);
+  let requestedThreadId=String(req.body.threadId||'').trim();
   let u=normalizeAllUsers();
   if(!username||!to)return res.status(400).json({error:'Missing sender or recipient'});
+  if(username===to)return res.status(400).json({error:'You cannot mail yourself.'});
   if(!text)return res.status(400).json({error:'Message is empty'});
   if(!u[username])return res.status(404).json({error:'Sender not found'});
   if(!u[to])return res.status(404).json({error:'Recipient not found'});
 
   let store=social();
+  let sender=getSocialUser(store,username);
   let recipient=getSocialUser(store,to);
-  let mail={
-    id:'m_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),
+
+  // Replies can pass an existing threadId. New messages use a deterministic
+  // participant/type/subject key so the same subject stays grouped as a thread.
+  let threadId=requestedThreadId&&sender.mailThreads[requestedThreadId]?requestedThreadId:mailThreadKey(username,to,type,subject);
+  let existing=sender.mailThreads[threadId]||recipient.mailThreads[threadId]||null;
+  if(existing){
+    type=sanitizeMailType(existing.type||type);
+    subject=String(existing.subject||subject).slice(0,80);
+  }
+
+  let now=Date.now();
+  let msg={
+    id:'msg_'+now.toString(36)+'_'+Math.random().toString(36).slice(2,8),
     from:username,
     to,
     text,
-    createdAt:Date.now(),
-    read:false
+    createdAt:now,
+    readBy:[username]
   };
-  recipient.mail=[mail,...recipient.mail].sort((a,b)=>Number(b.createdAt)-Number(a.createdAt)).slice(0,25);
+
+  [sender,recipient].forEach(entry=>{
+    let t=entry.mailThreads[threadId];
+    if(!t){
+      t={
+        id:threadId,
+        type,
+        subject,
+        participants:uniqueStrings([username,to]),
+        createdAt:now,
+        updatedAt:now,
+        messages:[]
+      };
+    }
+    t.messages=Array.isArray(t.messages)?t.messages:[];
+    t.messages.push({...msg});
+    t.messages=t.messages.sort((a,b)=>Number(a.createdAt||0)-Number(b.createdAt||0)).slice(-50);
+    t.updatedAt=now;
+    entry.mailThreads[threadId]=t;
+    trimMailThreads(entry); // Silent oldest-thread cleanup at 25 threads.
+  });
+
   saveSocial(store);
 
   sendToUser(to,{type:'socialUpdate',reason:'mail',from:username,unreadMail:socialCounts(to).unreadMail});
-  res.json({ok:true,message:'Mail sent.',counts:socialCounts(username)});
+  res.json({ok:true,message:'Mail sent.',counts:socialCounts(username),mailThreads:mailThreadListForUser(sender,username),threadId});
 });
 
 app.post('/api/social/read-mail',(req,res)=>{
   let username=String(req.body.username||'').trim();
   let mailId=String(req.body.mailId||'').trim();
+  let threadId=String(req.body.threadId||mailId||'').trim();
   let u=normalizeAllUsers();
   if(!username)return res.status(400).json({error:'Missing username'});
   if(!u[username])return res.status(404).json({error:'User not found'});
 
   let store=social();
   let mine=getSocialUser(store,username);
+
+  // Legacy flat mail support remains, but threaded mail is now the source of truth.
   mine.mail.forEach(m=>{if(!mailId||m.id===mailId)m.read=true;});
+  Object.values(mine.mailThreads||{}).forEach(t=>{
+    if(threadId&&t.id!==threadId)return;
+    (t.messages||[]).forEach(m=>{
+      m.readBy=uniqueStrings([...(Array.isArray(m.readBy)?m.readBy:[]),username]);
+    });
+  });
+
   saveSocial(store);
-  res.json({ok:true,message:'Mail marked read.',counts:socialCounts(username),mail:mine.mail});
+  res.json({ok:true,message:'Mail marked read.',counts:socialCounts(username),mail:mine.mail,mailThreads:mailThreadListForUser(mine,username)});
 });
 
 app.post('/api/social/delete-mail',(req,res)=>{
   let username=String(req.body.username||'').trim();
   let mailId=String(req.body.mailId||'').trim();
+  let threadId=String(req.body.threadId||mailId||'').trim();
   let u=normalizeAllUsers();
-  if(!username||!mailId)return res.status(400).json({error:'Missing username or mail id'});
+  if(!username||!threadId)return res.status(400).json({error:'Missing username or mail thread id'});
   if(!u[username])return res.status(404).json({error:'User not found'});
 
   let store=social();
   let mine=getSocialUser(store,username);
-  mine.mail=mine.mail.filter(m=>m.id!==mailId);
+  mine.mail=mine.mail.filter(m=>m.id!==mailId&&('legacy_'+m.id)!==threadId);
+  if(mine.mailThreads&&mine.mailThreads[threadId])delete mine.mailThreads[threadId];
   saveSocial(store);
-  res.json({ok:true,message:'Mail deleted.',counts:socialCounts(username),mail:mine.mail});
+  res.json({ok:true,message:'Mail deleted.',counts:socialCounts(username),mail:mine.mail,mailThreads:mailThreadListForUser(mine,username)});
 });
 
 app.get('/api/admin/rooms',(req,res)=>{
