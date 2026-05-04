@@ -1,22 +1,170 @@
 [
-  {"id":"tictactoe","name":"Tic Tac Toe","file":"tictactoe.html","minPlayers":1,"maxPlayers":2,"seats":2},
-  {"id":"gofish","name":"Go Fish","file":"gofish.html","minPlayers":1,"maxPlayers":4,"seats":4},
-  {"id":"yahtzee","name":"Yahtzee","file":"yahtzee.html","minPlayers":1,"maxPlayers":4,"seats":4},
-  {"id":"connect4","name":"Connect4","file":"connect4.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"battleship","name":"Battleship","file":"battleship.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"uno","name":"Uno","file":"uno.html","minPlayers":2,"maxPlayers":4,"seats":4},
-  {"id":"chess","name":"Chess","file":"chess.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"squares","name":"James square game","file":"squares.html","minPlayers":2,"maxPlayers":4,"seats":4},
-  {"id":"miner","name":"Miner","file":"miner.html","minPlayers":2,"maxPlayers":4,"seats":4},
-  {"id":"mancala","name":"Mancala","file":"mancala.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"hangman","name":"Hangman","file":"hangman.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"trouble","name":"Trouble","file":"trouble.html","minPlayers":2,"maxPlayers":4,"seats":4},
-  {"id":"shadowtrace","name":"ShadowTrace","file":"shadowtrace.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"doomlike","name":"Dungeon Blaster","file":"doomlike.html","minPlayers":1,"maxPlayers":1,"seats":1},
-  {"id":"othello","name":"Othello","file":"othello.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"pixelquest","name":"Pixel Quest","file":"pixelquest.html","minPlayers":1,"maxPlayers":1,"seats":1},
-  {"id":"petworld","name":"Pet World","file":"petworld.html","minPlayers":1,"maxPlayers":1,"seats":1},
-  {"id":"market","name":"Marketplace","file":"market.html","minPlayers":1,"maxPlayers":1,"seats":1},
-  {"id":"petbattle","name":"Pet Battle Arena","file":"petbattle.html","minPlayers":2,"maxPlayers":2,"seats":2},
-  {"id":"battleship2","name":"Battleship 2.0","file":"battleship2.html","minPlayers":2,"maxPlayers":2,"seats":2}
+  {
+    "id": "tictactoe",
+    "name": "Tic Tac Toe",
+    "file": "tictactoe.html",
+    "minPlayers": 1,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "gofish",
+    "name": "Go Fish",
+    "file": "gofish.html",
+    "minPlayers": 1,
+    "maxPlayers": 4,
+    "seats": 4
+  },
+  {
+    "id": "yahtzee",
+    "name": "Yahtzee",
+    "file": "yahtzee.html",
+    "minPlayers": 1,
+    "maxPlayers": 4,
+    "seats": 4
+  },
+  {
+    "id": "connect4",
+    "name": "Connect4",
+    "file": "connect4.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "battleship",
+    "name": "Battleship",
+    "file": "battleship.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "uno",
+    "name": "Uno",
+    "file": "uno.html",
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "seats": 4
+  },
+  {
+    "id": "chess",
+    "name": "Chess",
+    "file": "chess.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "squares",
+    "name": "James square game",
+    "file": "squares.html",
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "seats": 4
+  },
+  {
+    "id": "miner",
+    "name": "Miner",
+    "file": "miner.html",
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "seats": 4
+  },
+  {
+    "id": "mancala",
+    "name": "Mancala",
+    "file": "mancala.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "hangman",
+    "name": "Hangman",
+    "file": "hangman.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "trouble",
+    "name": "Trouble",
+    "file": "trouble.html",
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "seats": 4
+  },
+  {
+    "id": "shadowtrace",
+    "name": "ShadowTrace",
+    "file": "shadowtrace.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "doomlike",
+    "name": "Dungeon Blaster",
+    "file": "doomlike.html",
+    "minPlayers": 1,
+    "maxPlayers": 1,
+    "seats": 1
+  },
+  {
+    "id": "othello",
+    "name": "Othello",
+    "file": "othello.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "pixelquest",
+    "name": "Pixel Quest",
+    "file": "pixelquest.html",
+    "minPlayers": 1,
+    "maxPlayers": 1,
+    "seats": 1
+  },
+  {
+    "id": "petworld",
+    "name": "Pet World",
+    "file": "petworld.html",
+    "minPlayers": 1,
+    "maxPlayers": 1,
+    "seats": 1
+  },
+  {
+    "id": "market",
+    "name": "Marketplace",
+    "file": "market.html",
+    "minPlayers": 1,
+    "maxPlayers": 1,
+    "seats": 1
+  },
+  {
+    "id": "battlehall",
+    "name": "Battle Hall",
+    "file": "battlehall.html",
+    "minPlayers": 1,
+    "maxPlayers": 50,
+    "seats": 1
+  },
+  {
+    "id": "petbattle",
+    "name": "Pet Battle Arena",
+    "file": "petbattle.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  },
+  {
+    "id": "battleship2",
+    "name": "Battleship 2.0",
+    "file": "battleship2.html",
+    "minPlayers": 2,
+    "maxPlayers": 2,
+    "seats": 2
+  }
 ]

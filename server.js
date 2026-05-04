@@ -268,7 +268,7 @@ function scanGameFilesForAdmin(){
     let existing=byFile[file]||null;
     let id=existing?existing.id:safeGameId(file);
     let itemId=gameUnlockItemId(id);
-    let internal=CORE_FREE_GAME_IDS.has(id)||['launcher.html','market.html','inventory.html','petworld.html','petbattle.html'].includes(file);
+    let internal=CORE_FREE_GAME_IDS.has(id)||['launcher.html','market.html','inventory.html','petworld.html','petbattle.html','battlehall.html'].includes(file);
     let missing=[];
     if(!existing)missing.push('games.json');
     if(existing&&existing.showInLauncher===undefined&&!internal)missing.push('showInLauncher flag');
@@ -419,7 +419,7 @@ function purchasableItemCatalog(){
 }
 
 
-const CORE_FREE_GAME_IDS=new Set(['petbattle','petworld','market','inventory','launcher']);
+const CORE_FREE_GAME_IDS=new Set(['petbattle','battlehall','petworld','market','inventory','launcher']);
 const MASTER_GAME_ITEM_IDS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
 
 function itemUnlocksGame(item,itemId,gameId){
@@ -651,6 +651,175 @@ function maybeBootstrapOwner(username){
 
 const rooms={};
 const clients=new Set();
+
+/* =========================================================
+   BATTLE HALL + LOCKED BATTLE INSTANCE SYSTEM
+   ---------------------------------------------------------
+   Purpose:
+   - Battle Hall is the public, always-on lobby for random battles.
+   - Friend/direct challenges can later create the same battleInstances.
+   - Pet Battle must read locked snapshots from the server, not live pet data.
+
+   Security rule:
+   The browser may ask to sit/ready/start, but the server chooses the players,
+   validates ownership, and locks battle-ready pet snapshots. Never trust pet
+   level, stats, selected moves, or opponent information from the client.
+   ========================================================= */
+const BATTLE_HALL_TABLE_COUNT=8;
+const battleHall={tables:{},players:{},instances:{}};
+
+function battleHallInit(){
+  for(let i=1;i<=BATTLE_HALL_TABLE_COUNT;i++){
+    let id='T'+i;
+    if(!battleHall.tables[id])battleHall.tables[id]={id,seats:[null,null],createdAt:Date.now()};
+  }
+}
+battleHallInit();
+
+function publicPetCardForUser(username,petId){
+  username=String(username||'').trim();
+  let profile=getPetProfile(username);
+  let pet=petId&&profile.pets&&profile.pets[petId]?profile.pets[petId]:activePet(profile);
+  let species=pet&&pet.species?mergedPetSpecies()[pet.species]:null;
+  let stats=(pet&&pet.stats)||{};
+  let level=Number(stats.level||pet.level||1);
+  let power=Number(stats.maxHp||stats.hp||20)+Number(stats.attack||5)*3+Number(stats.defense||4)*2+Number(stats.speed||5)*2+level*5;
+  let tier=power>=230?'Elite':power>=170?'Strong':power>=115?'Ready':'Growing';
+
+  return {
+    id:pet&&pet.id||'',
+    name:pet&&pet.name||'Mystery Pet',
+    species:pet&&pet.species||'egg',
+    stage:pet&&pet.stage||'egg',
+    type:(pet&&pet.type)||(species&&species.type)||'normal',
+    emoji:(pet&&pet.emoji)||(species&&species.emoji)||(pet&&pet.stage==='egg'?'🥚':'🐾'),
+    rarity:(species&&species.rarity)||'common',
+    level,
+    powerTier:tier,
+    image:(pet&&pet.image)||(species&&species.image)||''
+  };
+}
+
+function lockedBattlePetSnapshot(username,petId){
+  username=String(username||'').trim();
+  let profile=getPetProfile(username);
+  let pet=petId&&profile.pets&&profile.pets[petId]?profile.pets[petId]:activePet(profile);
+  if(!pet)throw new Error('No active pet found.');
+  if(pet.stage==='egg')throw new Error('Eggs cannot battle yet. Hatch your pet first.');
+
+  let species=pet.species?mergedPetSpecies()[pet.species]:null;
+  let stats=pet.stats||{};
+
+  return {
+    id:pet.id,
+    owner:username,
+    name:String(pet.name||'Pet').slice(0,40),
+    stage:pet.stage||'young',
+    species:pet.species||'unknown',
+    type:pet.type||(species&&species.type)||'normal',
+    emoji:pet.emoji||(species&&species.emoji)||'🐾',
+    rarity:(species&&species.rarity)||'common',
+    image:pet.image||(species&&species.image)||'',
+    stats:{
+      level:Number(stats.level||1),
+      hp:Number(stats.hp||stats.maxHp||20),
+      maxHp:Number(stats.maxHp||stats.hp||20),
+      attack:Number(stats.attack||5),
+      defense:Number(stats.defense||4),
+      speed:Number(stats.speed||5)
+    },
+    moves:(Array.isArray(pet.moves)&&pet.moves.length?pet.moves:['tackle']).slice(0,4),
+    lockedAt:Date.now()
+  };
+}
+
+function hallSeat(username,petId){
+  let card=publicPetCardForUser(username,petId);
+  return {username,petId:card.id,pet:card,ready:false,joinedAt:Date.now()};
+}
+
+function battleHallPublic(){
+  return {
+    tables:Object.values(battleHall.tables).map(t=>({
+      id:t.id,
+      seats:(t.seats||[]).map(s=>s?{username:s.username,ready:!!s.ready,pet:s.pet}:null)
+    })),
+    online:Object.keys(battleHall.players).sort()
+  };
+}
+
+function broadcastBattleHall(extra={}){
+  let payload={type:'battleHallState',hall:battleHallPublic(),...extra};
+  clients.forEach(c=>{
+    if(c.readyState===1&&c.battleHall) c.send(JSON.stringify(payload));
+  });
+}
+
+function leaveBattleHallSeat(username){
+  let changed=false;
+  Object.values(battleHall.tables).forEach(t=>{
+    t.seats=t.seats.map(s=>{
+      if(s&&s.username===username){changed=true;return null;}
+      return s;
+    });
+  });
+  return changed;
+}
+
+function findBattleHallSeat(username){
+  for(let t of Object.values(battleHall.tables)){
+    for(let i=0;i<(t.seats||[]).length;i++){
+      if(t.seats[i]&&t.seats[i].username===username)return {table:t,seat:i,entry:t.seats[i]};
+    }
+  }
+  return null;
+}
+
+function createBattleInstanceFromSeats(source,table,seats){
+  let id='B'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,6).toUpperCase();
+  let players=seats.map((s,index)=>({
+    username:s.username,
+    seat:index,
+    lockedPet:lockedBattlePetSnapshot(s.username,s.petId)
+  }));
+
+  battleHall.instances[id]={
+    id,
+    source:source||'battlehall',
+    tableId:table&&table.id||'',
+    status:'ready',
+    createdAt:Date.now(),
+    players,
+    state:null,
+    version:0
+  };
+
+  return battleHall.instances[id];
+}
+
+function publicBattleInstance(instance,viewer){
+  if(!instance)return null;
+  let allowed=(instance.players||[]).some(p=>p.username===viewer);
+  if(!allowed)return null;
+  return {
+    id:instance.id,
+    source:instance.source,
+    status:instance.status,
+    createdAt:instance.createdAt,
+    mySeat:(instance.players||[]).find(p=>p.username===viewer)?.seat,
+    players:(instance.players||[]).map(p=>({username:p.username,name:p.username,seat:p.seat,lockedPet:p.lockedPet})),
+    state:instance.state,
+    version:instance.version||0,
+    moves:mergedMoveBook()
+  };
+}
+
+function mergedMoveBook(){
+  let raw={...DEFAULT_MOVES};
+  try{raw={...raw,...readJSON(petMovesFile,{})};}catch(e){}
+  return raw;
+}
+
 
 function sendToUser(username,obj){
   clients.forEach(c=>{
@@ -4144,6 +4313,15 @@ function pushPresence(){
   });
 }
 
+
+app.get('/api/battle/instance/:id',(req,res)=>{
+  let username=String(req.query.user||'').trim();
+  let instance=battleHall.instances[String(req.params.id||'')];
+  let pub=publicBattleInstance(instance,username);
+  if(!pub)return res.status(403).json({ok:false,error:'Battle instance not found or not allowed.'});
+  res.json({ok:true,instance:pub});
+});
+
 wss.on('connection',ws=>{
   clients.add(ws);
   ws.location='Home';
@@ -4156,6 +4334,101 @@ wss.on('connection',ws=>{
       ws.username=String(m.username||'').trim();
       ws.location=ws.roomId?'Room':'Home';
       pushPresence();
+    }
+
+
+    if(m.type==='battleHallEnter'){
+      let name=ws.username||String(m.username||'').trim()||'Guest';
+      ws.username=name;
+      ws.battleHall=true;
+      ws.location='Battle Hall';
+      battleHall.players[name]={username:name,joinedAt:Date.now()};
+      ws.send(JSON.stringify({type:'battleHallState',hall:battleHallPublic()}));
+      broadcastBattleHall();
+      pushPresence();
+    }
+
+    if(m.type==='battleHallLeave'){
+      let name=ws.username||'Guest';
+      ws.battleHall=false;
+      delete battleHall.players[name];
+      if(leaveBattleHallSeat(name))broadcastBattleHall({notice:{kind:'leave',username:name}});
+      pushPresence();
+    }
+
+    if(m.type==='battleHallSit'){
+      let name=ws.username||'Guest';
+      let table=battleHall.tables[String(m.tableId||'')];
+      let seat=Number(m.seat);
+      if(!table||seat<0||seat>1){ws.send(JSON.stringify({type:'error',message:'Battle table not found.'}));return;}
+      if(table.seats[seat]){ws.send(JSON.stringify({type:'error',message:'That seat is already taken.'}));return;}
+      try{
+        leaveBattleHallSeat(name);
+        table.seats[seat]=hallSeat(name,String(m.petId||''));
+        broadcastBattleHall({notice:{kind:'sit',username:name,tableId:table.id,seat}});
+      }catch(err){
+        ws.send(JSON.stringify({type:'error',message:err.message||'Could not sit at battle table.'}));
+      }
+    }
+
+    if(m.type==='battleHallStand'){
+      let name=ws.username||'Guest';
+      if(leaveBattleHallSeat(name))broadcastBattleHall({notice:{kind:'stand',username:name}});
+    }
+
+    if(m.type==='battleHallReady'){
+      let name=ws.username||'Guest';
+      let found=findBattleHallSeat(name);
+      if(!found){ws.send(JSON.stringify({type:'error',message:'Sit at a Battle Hall table first.'}));return;}
+      try{
+        // Re-read the pet from the server when ready is toggled, so the visible card is honest.
+        found.entry.pet=publicPetCardForUser(name,String(m.petId||found.entry.petId||''));
+        found.entry.petId=found.entry.pet.id;
+        found.entry.ready=!!m.ready;
+        broadcastBattleHall({notice:{kind:'ready',username:name,tableId:found.table.id}});
+      }catch(err){
+        ws.send(JSON.stringify({type:'error',message:err.message||'Could not ready up.'}));
+      }
+    }
+
+    if(m.type==='battleHallStart'){
+      let name=ws.username||'Guest';
+      let found=findBattleHallSeat(name);
+      if(!found){ws.send(JSON.stringify({type:'error',message:'Sit at a Battle Hall table first.'}));return;}
+      let seats=(found.table.seats||[]).filter(Boolean);
+      if(seats.length!==2){ws.send(JSON.stringify({type:'error',message:'This table needs two battlers.'}));return;}
+      if(seats.some(s=>!s.ready)){ws.send(JSON.stringify({type:'error',message:'Both battlers must be ready first.'}));return;}
+      try{
+        let instance=createBattleInstanceFromSeats('battlehall',found.table,found.table.seats);
+        found.table.seats=[null,null];
+        instance.players.forEach(p=>sendToUser(p.username,{type:'battleReady',instanceId:instance.id,opponent:instance.players.find(x=>x.username!==p.username)?.username||'Opponent',url:'/games/petbattle.html?battleInstance='+encodeURIComponent(instance.id)}));
+        broadcastBattleHall({notice:{kind:'start',username:name,tableId:found.table.id}});
+      }catch(err){
+        ws.send(JSON.stringify({type:'error',message:err.message||'Could not start battle.'}));
+      }
+    }
+
+    if(m.type==='battleInstanceJoin'){
+      let name=ws.username||'Guest';
+      let instance=battleHall.instances[String(m.instanceId||'')];
+      let pub=publicBattleInstance(instance,name);
+      if(!pub){ws.send(JSON.stringify({type:'error',message:'Battle instance not found or not allowed.'}));return;}
+      ws.battleInstanceId=instance.id;
+      ws.location='Pet Battle';
+      ws.send(JSON.stringify({type:'battleInstanceSetup',instance:pub}));
+      pushPresence();
+    }
+
+    if(m.type==='battleInstanceMove'){
+      let name=ws.username||'Guest';
+      let instance=battleHall.instances[String(m.instanceId||ws.battleInstanceId||'')];
+      let pub=publicBattleInstance(instance,name);
+      if(!pub)return;
+      if(m.data&&(m.data.type==='state'||m.data.type==='battleState')){
+        instance.state=m.data.state||m.data.battleState||m.data;
+        instance.version=(instance.version||0)+1;
+      }
+      (instance.players||[]).forEach(p=>sendToUser(p.username,{type:'battleInstanceMove',instanceId:instance.id,data:m.data,from:name,version:instance.version||0}));
     }
 
     if(m.type==='createRoom'){
@@ -4459,6 +4732,12 @@ wss.on('connection',ws=>{
     const closingUser=ws.username||'';
     const closingRoomId=ws.roomId||'';
     clients.delete(ws);
+
+    if(closingUser){
+      delete battleHall.players[closingUser];
+      leaveBattleHallSeat(closingUser);
+      broadcastBattleHall();
+    }
 
     if(closingUser&&closingRoomId&&rooms[closingRoomId]){
       const stillInRoom=[...clients].some(c=>c&&c.readyState===1&&c.username===closingUser&&c.roomId===closingRoomId);
