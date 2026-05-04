@@ -1642,6 +1642,10 @@ body.gameMode #gameArea .cardHeader,body.directGameMode #gameArea .cardHeader{ba
 /* ===== GAME VIEWPORT FIT FIX v2 =====
    Fixes games being clipped vertically inside the iframe.
    Parent owns the full-screen frame; iframe gets exactly the remaining height. */
+/* ===== GAME VIEWPORT FIT FIX v3 =====
+   Game frame fills the available viewport without clipping.
+   Multiplayer keeps space for the right chat/presence rail. */
+
 body.directGameMode,
 body.gameMode{
   overflow:hidden!important;
@@ -1650,13 +1654,18 @@ body.gameMode{
 body.directGameMode #gameArea,
 body.gameMode #gameArea{
   position:fixed!important;
-  inset:0!important;
+  top:0!important;
+  left:0!important;
+  bottom:0!important;
+  right:0!important;
   z-index:5000!important;
+
   margin:0!important;
   padding:8px!important;
-  display:grid!important;
-  grid-template-rows:auto minmax(0,1fr)!important;
+  display:flex!important;
+  flex-direction:column!important;
   gap:6px!important;
+
   min-height:0!important;
   overflow:hidden!important;
   background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98))!important;
@@ -1665,13 +1674,16 @@ body.gameMode #gameArea{
   box-shadow:none!important;
 }
 
+body.gameMode #gameArea{
+  right:382px!important;
+}
+
 body.directGameMode #gameArea .cardHeader,
 body.gameMode #gameArea .cardHeader{
+  flex:0 0 auto!important;
   min-height:0!important;
-  height:auto!important;
   margin:0!important;
   padding:6px 10px!important;
-  flex:0 0 auto!important;
   border-radius:16px!important;
   background:rgba(2,6,23,.42)!important;
   border:1px solid rgba(148,163,184,.18)!important;
@@ -1694,8 +1706,9 @@ body.directGameMode #gameFrame,
 body.gameMode #gameFrame,
 body.directGameMode #gameArea iframe,
 body.gameMode #gameArea iframe{
+  flex:1 1 auto!important;
   width:100%!important;
-  height:100%!important;
+  height:auto!important;
   min-height:0!important;
   max-height:none!important;
   display:block!important;
@@ -1710,10 +1723,6 @@ body.gameMode #gameArea .danger{
   border-radius:999px!important;
   padding:7px 12px!important;
   margin:0!important;
-}
-
-body.gameMode #gameArea{
-  right:382px!important;
 }
 
 @media (max-width:1050px){
