@@ -3244,6 +3244,25 @@ wss.on('connection',ws=>{
       pushPresence();
     }
 
+    if(m.type==='setRoomPrivacy'){
+      let r=rooms[ws.roomId];
+
+      if(!r){
+        ws.send(JSON.stringify({type:'error',message:'Join or create a room first.'}));
+        return;
+      }
+
+      let name=ws.username||'Guest';
+      if(r.owner!==name&&!admins().includes(name)){
+        ws.send(JSON.stringify({type:'error',message:'Only the room owner can change room privacy.'}));
+        return;
+      }
+
+      r.private=!!m.private;
+      broadcastRoom(r.id,{type:'roomUpdate',room:roomPublic(r)});
+      pushPresence();
+    }
+
     if(m.type==='joinRoom'){
       let r=rooms[String(m.roomId||'').toUpperCase()];
 
