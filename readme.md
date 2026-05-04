@@ -112,9 +112,13 @@ games.json               → Game definitions
 ### ⚔️ Friend Challenges
 
 * Friends can challenge each other from social/friend UI surfaces
-* Battle challenge notifications are delivered through battle-type mail threads
+* Live battle challenges are WebSocket-driven, temporary, and server-authoritative
+* A user can have only one outgoing and one incoming live challenge at a time
+* Live challenges expire after 60 seconds
+* If either player is already in battle, the challenge is blocked
 * Accepting a challenge creates a private server-locked battle instance
-* The top header can show a battle-ready Join alert when a private battle is ready
+* Battle-type mail threads may still be used for slower/social history, but live challenge popups/header state must not depend on mail
+* The top header can show waiting/respond/join alerts for live challenge state
 
 ---
 

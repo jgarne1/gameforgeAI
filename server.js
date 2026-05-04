@@ -668,6 +668,20 @@ const clients=new Set();
 const BATTLE_HALL_TABLE_COUNT=8;
 const battleHall={tables:{},players:{},instances:{},chat:[]};
 
+
+/* =========================================================
+   LIVE FRIEND BATTLE CHALLENGES (PHASE 1 SERVER FOUNDATION)
+   ---------------------------------------------------------
+   This is separate from threaded mail. Mail is slow/social history;
+   live battle challenges are WebSocket-driven, temporary, and server
+   authoritative. The browser only sends intent. The server validates
+   friends, active pets, online state, pending challenge limits, and then
+   creates the same locked battleInstance used by Battle Hall.
+   ========================================================= */
+const BATTLE_CHALLENGE_TIMEOUT_MS=60*1000;
+const activeBattleChallenges={};
+
+
 function battleHallInit(){
   for(let i=1;i<=BATTLE_HALL_TABLE_COUNT;i++){
     let id='T'+i;
@@ -883,6 +897,194 @@ function publicBattleInstance(instance,viewer){
     version:instance.version||0,
     moves:mergedMoveBook()
   };
+}
+
+
+function isUserOnline(username){
+  username=String(username||'').trim();
+  if(!username)return false;
+  for(let c of clients){
+    if(c.readyState===1&&c.username===username)return true;
+  }
+  return false;
+}
+
+function isUserInActiveBattle(username){
+  /*
+    Phase 1 uses connected socket state as the safest non-invasive signal.
+    We do not block someone forever just because an old in-memory instance
+    exists after they exited the iframe. Later, PetBattle can send an explicit
+    battleInstanceLeave/end message for even cleaner lifecycle tracking.
+  */
+  username=String(username||'').trim();
+  for(let c of clients){
+    if(c.readyState===1&&c.username===username&&c.battleInstanceId)return true;
+  }
+  return false;
+}
+
+function publicChallengePet(username){
+  try{return publicPetCardForUser(username,'');}
+  catch(err){return null;}
+}
+
+function publicBattleChallenge(challenge,viewer){
+  if(!challenge)return null;
+  let opponent=challenge.challenger===viewer?challenge.challenged:challenge.challenger;
+  return {
+    id:challenge.id,
+    status:challenge.status,
+    challenger:challenge.challenger,
+    challenged:challenge.challenged,
+    opponent,
+    createdAt:challenge.createdAt,
+    expiresAt:challenge.expiresAt,
+    remainingMs:Math.max(0,Number(challenge.expiresAt||0)-Date.now()),
+    challengerPet:challenge.challengerPet||null,
+    challengedPet:challenge.challengedPet||null,
+    battleInstanceId:challenge.battleInstanceId||'',
+    url:challenge.url||''
+  };
+}
+
+function sendChallengeToPlayers(challenge,type,extra={}){
+  [challenge.challenger,challenge.challenged].forEach(username=>{
+    sendToUser(username,{
+      type:type||'battleChallengeUpdate',
+      challenge:publicBattleChallenge(challenge,username),
+      ...extra
+    });
+  });
+}
+
+function findPendingBattleChallengeForUser(username,role){
+  username=String(username||'').trim();
+  return Object.values(activeBattleChallenges).find(ch=>{
+    if(!ch||ch.status!=='pending')return false;
+    if(role==='outgoing')return ch.challenger===username;
+    if(role==='incoming')return ch.challenged===username;
+    return ch.challenger===username||ch.challenged===username;
+  })||null;
+}
+
+function finishBattleChallenge(challenge,status,reason,extra={}){
+  if(!challenge)return;
+  challenge.status=status;
+  challenge.reason=reason||status;
+  challenge.updatedAt=Date.now();
+  if(challenge.timeoutHandle){
+    clearTimeout(challenge.timeoutHandle);
+    challenge.timeoutHandle=null;
+  }
+  delete activeBattleChallenges[challenge.id];
+  sendChallengeToPlayers(challenge,'battleChallengeUpdate',{status,reason:challenge.reason,...extra});
+}
+
+function expireBattleChallenge(id){
+  let challenge=activeBattleChallenges[id];
+  if(!challenge||challenge.status!=='pending')return;
+  finishBattleChallenge(challenge,'expired','Battle challenge expired.');
+}
+
+function createLiveBattleChallenge(challenger,challenged){
+  challenger=String(challenger||'').trim();
+  challenged=String(challenged||'').trim();
+  let allUsers=normalizeAllUsers();
+
+  if(!challenger||!challenged)throw new Error('Missing challenger or target.');
+  if(challenger===challenged)throw new Error('You cannot challenge yourself.');
+  if(!allUsers[challenger])throw new Error('Challenger not found.');
+  if(!allUsers[challenged])throw new Error('Player not found.');
+  if(!isUserOnline(challenged))throw new Error(challenged+' is not online right now.');
+  if(isUserInActiveBattle(challenger)||isUserInActiveBattle(challenged))throw new Error('One of these players is already in a battle.');
+
+  let store=social();
+  let challengerSocial=getSocialUser(store,challenger);
+  if(!challengerSocial.friends.includes(challenged))throw new Error('You can only challenge friends right now.');
+
+  if(findPendingBattleChallengeForUser(challenger,'outgoing'))throw new Error('You already have an outgoing challenge waiting.');
+  if(findPendingBattleChallengeForUser(challenger,'incoming'))throw new Error('Respond to your incoming challenge first.');
+  if(findPendingBattleChallengeForUser(challenged,'incoming'))throw new Error(challenged+' already has a pending challenge.');
+  if(findPendingBattleChallengeForUser(challenged,'outgoing'))throw new Error(challenged+' is waiting on another challenge.');
+
+  // Validate challenger immediately. The challenged player is validated now for
+  // display and again on accept so both pets are locked from fresh server data.
+  let challengerPet=publicPetCardForUser(challenger,'');
+  if(!challengerPet.eligible)throw new Error(challengerPet.ineligibleReason||'Your active pet cannot battle yet.');
+  let challengedPet=publicPetCardForUser(challenged,'');
+  if(!challengedPet.eligible)throw new Error(challengedPet.ineligibleReason||challenged+' needs an eligible active pet.');
+
+  let now=Date.now();
+  let challenge={
+    id:'live_challenge_'+now.toString(36)+'_'+Math.random().toString(36).slice(2,8),
+    challenger,
+    challenged,
+    status:'pending',
+    createdAt:now,
+    updatedAt:now,
+    expiresAt:now+BATTLE_CHALLENGE_TIMEOUT_MS,
+    challengerPet,
+    challengedPet,
+    battleInstanceId:'',
+    url:'',
+    timeoutHandle:null
+  };
+
+  activeBattleChallenges[challenge.id]=challenge;
+  challenge.timeoutHandle=setTimeout(()=>expireBattleChallenge(challenge.id),BATTLE_CHALLENGE_TIMEOUT_MS+250);
+  sendChallengeToPlayers(challenge,'battleChallengeCreated');
+  return challenge;
+}
+
+function acceptLiveBattleChallenge(username,challengeId){
+  username=String(username||'').trim();
+  let challenge=activeBattleChallenges[String(challengeId||'')];
+  if(!challenge)throw new Error('Battle challenge was cancelled or expired.');
+  if(challenge.status!=='pending')throw new Error('This battle challenge is no longer pending.');
+  if(challenge.challenged!==username)throw new Error('Only the challenged player can accept this battle.');
+  if(Date.now()>Number(challenge.expiresAt||0)){
+    expireBattleChallenge(challenge.id);
+    throw new Error('Battle challenge expired.');
+  }
+  if(isUserInActiveBattle(challenge.challenger)||isUserInActiveBattle(challenge.challenged))throw new Error('One of these players is already in a battle.');
+  if(!isUserOnline(challenge.challenger)||!isUserOnline(challenge.challenged))throw new Error('Both players must be online to start.');
+
+  let instance=createBattleInstanceFromUsers('liveChallenge',[challenge.challenger,challenge.challenged]);
+  let url='/games/petbattle.html?battleInstance='+encodeURIComponent(instance.id);
+  challenge.status='accepted';
+  challenge.updatedAt=Date.now();
+  challenge.battleInstanceId=instance.id;
+  challenge.url=url;
+  if(challenge.timeoutHandle){
+    clearTimeout(challenge.timeoutHandle);
+    challenge.timeoutHandle=null;
+  }
+  delete activeBattleChallenges[challenge.id];
+
+  sendChallengeToPlayers(challenge,'battleChallengeAccepted',{status:'accepted',url,instanceId:instance.id});
+  instance.players.forEach(p=>{
+    let opponent=instance.players.find(x=>x.username!==p.username)?.username||'Opponent';
+    sendToUser(p.username,{type:'battleReady',instanceId:instance.id,opponent,url,source:'liveChallenge',autoJoin:true});
+  });
+  return {challenge,instance,url};
+}
+
+function cancelLiveBattleChallenge(username,challengeId){
+  username=String(username||'').trim();
+  let challenge=activeBattleChallenges[String(challengeId||'')];
+  if(!challenge)throw new Error('Battle challenge was already cancelled.');
+  if(challenge.challenger!==username)throw new Error('Only the challenger can cancel this battle challenge.');
+  finishBattleChallenge(challenge,'cancelled','Battle challenge cancelled.');
+  return challenge;
+}
+
+function declineLiveBattleChallenge(username,challengeId){
+  username=String(username||'').trim();
+  let challenge=activeBattleChallenges[String(challengeId||'')];
+  if(!challenge)throw new Error('Battle challenge was cancelled or expired.');
+  if(challenge.challenged!==username)throw new Error('Only the challenged player can decline this battle challenge.');
+  finishBattleChallenge(challenge,'declined','Battle challenge declined.');
+  return challenge;
 }
 
 function mergedMoveBook(){
@@ -4734,6 +4936,51 @@ wss.on('connection',ws=>{
       ws.username=String(m.username||'').trim();
       ws.location=ws.roomId?'Room':'Home';
       pushPresence();
+    }
+
+    if(m.type==='battleChallengeCreate'||m.type==='sendChallenge'){
+      let challenger=ws.username||String(m.username||'').trim();
+      let challenged=String(m.to||m.target||m.challenged||'').trim();
+      try{
+        let challenge=createLiveBattleChallenge(challenger,challenged);
+        ws.send(JSON.stringify({type:'battleChallengeAck',ok:true,challenge:publicBattleChallenge(challenge,challenger)}));
+      }catch(err){
+        ws.send(JSON.stringify({type:'battleChallengeError',ok:false,message:err.message||'Could not send battle challenge.'}));
+      }
+      return;
+    }
+
+    if(m.type==='battleChallengeAccept'||m.type==='acceptChallenge'){
+      let username=ws.username||String(m.username||'').trim();
+      try{
+        let result=acceptLiveBattleChallenge(username,String(m.challengeId||m.id||''));
+        ws.send(JSON.stringify({type:'battleChallengeAck',ok:true,challenge:publicBattleChallenge(result.challenge,username),url:result.url,instanceId:result.instance.id}));
+      }catch(err){
+        ws.send(JSON.stringify({type:'battleChallengeError',ok:false,message:err.message||'Could not accept battle challenge.'}));
+      }
+      return;
+    }
+
+    if(m.type==='battleChallengeDecline'||m.type==='declineChallenge'){
+      let username=ws.username||String(m.username||'').trim();
+      try{
+        let challenge=declineLiveBattleChallenge(username,String(m.challengeId||m.id||''));
+        ws.send(JSON.stringify({type:'battleChallengeAck',ok:true,challenge:publicBattleChallenge(challenge,username),status:'declined'}));
+      }catch(err){
+        ws.send(JSON.stringify({type:'battleChallengeError',ok:false,message:err.message||'Could not decline battle challenge.'}));
+      }
+      return;
+    }
+
+    if(m.type==='battleChallengeCancel'||m.type==='cancelChallenge'){
+      let username=ws.username||String(m.username||'').trim();
+      try{
+        let challenge=cancelLiveBattleChallenge(username,String(m.challengeId||m.id||''));
+        ws.send(JSON.stringify({type:'battleChallengeAck',ok:true,challenge:publicBattleChallenge(challenge,username),status:'cancelled'}));
+      }catch(err){
+        ws.send(JSON.stringify({type:'battleChallengeError',ok:false,message:err.message||'Could not cancel battle challenge.'}));
+      }
+      return;
     }
 
 
