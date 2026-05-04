@@ -1761,6 +1761,20 @@ body.gameMode #gameArea .danger{
 .mailChallengeBox{margin:10px 12px 0;border:1px solid rgba(250,204,21,.32);background:linear-gradient(135deg,rgba(250,204,21,.12),rgba(124,58,237,.10));border-radius:17px;padding:11px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .mailChallengeBox b{color:#fff}.mailChallengeBox span{color:var(--muted);font-size:12px}
 
+/* Live battle challenge modal. This is separate from mail because live challenges are WebSocket-driven and expire quickly. */
+.battleChallengeModal .loginModal{width:min(540px,100%)}
+.challengeHero{display:flex;align-items:center;gap:12px;margin:10px 0 14px}
+.challengeIcon{width:58px;height:58px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,#7c3aed,#ec4899);box-shadow:0 14px 34px rgba(124,58,237,.28)}
+.challengeTitle{font-size:23px;font-weight:1000;color:#fff;line-height:1.05}
+.challengeSub{color:var(--muted);font-size:13px;margin-top:4px}
+.challengePetGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.challengePetCard{border:1px solid rgba(148,163,184,.22);border-radius:18px;padding:10px;background:rgba(2,6,23,.52)}
+.challengePetCard b{display:block;color:#fff;margin-bottom:3px}
+.challengePetCard span{display:block;color:var(--muted);font-size:12px;line-height:1.35}
+.challengeTimer{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;border:1px solid rgba(250,204,21,.35);background:rgba(250,204,21,.10);color:#fde68a;font-size:12px;font-weight:1000}
+.challengeStatusNote{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+@media(max-width:560px){.challengePetGrid{grid-template-columns:1fr}.battleChallengeModal .loginModal{padding:15px}.challengeTitle{font-size:20px}}
+
 .socialShell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start}
 .socialMenu{display:grid;gap:8px}
 .socialMenu button{justify-content:flex-start;text-align:left}
@@ -1922,7 +1936,7 @@ body.gameMode #gameArea .danger{
       <div class="topStatusRight topStatusActions">
         <span id="topStatusPet" class="topStatusPill">No companion</span>
         <span id="topStatusRoom" class="topStatusPill">No room</span>
-        <button id="topBattleAlert" class="topStatusPill topBattleAlert" onclick="joinReadyBattle()">⚔️ Battle ready</button>
+        <button id="topBattleAlert" class="topStatusPill topBattleAlert" onclick="handleTopBattleAlertClick()">⚔️ Battle ready</button>
         <button id="topMailBtn" class="ghost topMailBtn hidden" onclick="openMailFromTop()">✉️ Mail <span id="topMailDot" class="topMailDot"></span></button>
         <button id="topFriendsBtn" class="ghost hidden" onclick="toggleTopFriends()">👥 Friends</button>
         <button id="topAdminBtn" class="purple hidden" onclick="openAdmin()">Admin</button>
@@ -2196,6 +2210,12 @@ body.gameMode #gameArea .danger{
   </div>
 </div>
 
+<div id="battleChallengeModalShade" class="loginModalShade battleChallengeModal" onclick="if(event.target===this)closeBattleChallengeModal()">
+  <div class="loginModal" id="battleChallengeModalContent">
+    <p class="muted">Loading challenge...</p>
+  </div>
+</div>
+
 <script>
 /*
 Runtime notes for future AI chats:
@@ -2227,6 +2247,10 @@ let readyRoomId=''; // Tracks which room the cosmetic ready map belongs to so ol
 let socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[],mailThreads:[]};
 let selectedMailThreadId=''; // Active conversation in the Social Center two-pane mail viewer.
 let readyBattleAlert=null; // Set when the server creates a private BattleInstance for this user. Header Join button reads this.
+let liveBattleChallenge=null; // WebSocket-driven 60-second friend challenge. This is separate from mail threads.
+let battleChallengeModalOpen=false;
+let battleChallengeTimerHandle=null;
+let battleJoinInProgress='';
 let accountProfile=null;
 
 
@@ -2301,21 +2325,200 @@ function openMailFromTop(){
   showSocialTab('mail');
 }
 
+function liveChallengeRole(ch){
+  if(!ch||!me)return '';
+  if(ch.challenger===me)return 'outgoing';
+  if(ch.challenged===me)return 'incoming';
+  return '';
+}
+
+function challengePetLine(pet){
+  if(!pet)return 'No eligible pet';
+  return (pet.emoji||'🐾')+' '+(pet.name||'Pet')+' · Lv '+Number(pet.level||1)+' · '+(pet.type||'normal');
+}
+
+function challengeRemainingSeconds(ch){
+  if(!ch||!ch.expiresAt)return 0;
+  return Math.max(0,Math.ceil((Number(ch.expiresAt)-Date.now())/1000));
+}
+
+function startBattleChallengeTimer(){
+  if(battleChallengeTimerHandle)return;
+  battleChallengeTimerHandle=setInterval(function(){
+    if(!liveBattleChallenge){
+      clearInterval(battleChallengeTimerHandle);
+      battleChallengeTimerHandle=null;
+      return;
+    }
+    if(challengeRemainingSeconds(liveBattleChallenge)<=0&&liveBattleChallenge.status==='pending'){
+      liveBattleChallenge.status='expired';
+      closeBattleChallengeModal();
+      drawBattleReadyAlert();
+      showToast('Battle challenge expired.','warn');
+    }
+    if(battleChallengeModalOpen)drawBattleChallengeModal();
+    drawBattleReadyAlert();
+  },1000);
+}
+
 function drawBattleReadyAlert(){
   let btn=document.getElementById('topBattleAlert');
   if(!btn)return;
+
+  // Highest priority: an actual server-created battle instance is ready to join.
   if(readyBattleAlert&&readyBattleAlert.url){
     btn.classList.add('show');
     btn.innerText='⚔️ Battle with '+(readyBattleAlert.opponent||'Opponent')+' ready — Join';
-  }else{
-    btn.classList.remove('show');
-    btn.innerText='⚔️ Battle ready';
+    return;
   }
+
+  // Second priority: a live challenge is pending. Clicking opens the challenge popup.
+  if(liveBattleChallenge&&liveBattleChallenge.status==='pending'){
+    let role=liveChallengeRole(liveBattleChallenge);
+    let secs=challengeRemainingSeconds(liveBattleChallenge);
+    btn.classList.add('show');
+    if(role==='outgoing'){
+      btn.innerText='⚔️ Waiting for '+(liveBattleChallenge.opponent||liveBattleChallenge.challenged||'opponent')+' · '+secs+'s';
+    }else{
+      btn.innerText='⚔️ '+(liveBattleChallenge.opponent||liveBattleChallenge.challenger||'Someone')+' challenged you — Respond';
+    }
+    return;
+  }
+
+  btn.classList.remove('show');
+  btn.innerText='⚔️ Battle ready';
+}
+
+function handleTopBattleAlertClick(){
+  if(readyBattleAlert&&readyBattleAlert.url){
+    joinReadyBattle(readyBattleAlert.url);
+    return;
+  }
+  if(liveBattleChallenge&&liveBattleChallenge.status==='pending'){
+    openBattleChallengeModal();
+    return;
+  }
+  showToast('Battle challenge was cancelled or expired.','warn');
+}
+
+function openBattleChallengeModal(){
+  if(!liveBattleChallenge||liveBattleChallenge.status!=='pending'){
+    showToast('Battle challenge was cancelled or expired.','warn');
+    liveBattleChallenge=null;
+    drawBattleReadyAlert();
+    return;
+  }
+  let shade=document.getElementById('battleChallengeModalShade');
+  if(!shade)return;
+  battleChallengeModalOpen=true;
+  drawBattleChallengeModal();
+  shade.classList.add('open');
+}
+
+function closeBattleChallengeModal(){
+  battleChallengeModalOpen=false;
+  let shade=document.getElementById('battleChallengeModalShade');
+  if(shade)shade.classList.remove('open');
+}
+
+function drawBattleChallengeModal(){
+  let box=document.getElementById('battleChallengeModalContent');
+  if(!box)return;
+  let ch=liveBattleChallenge;
+  if(!ch||ch.status!=='pending'){
+    box.innerHTML='<h3>Battle challenge</h3><p class="muted">This battle challenge was cancelled or expired.</p><div class="loginModalActions"><button onclick="closeBattleChallengeModal()">Close</button></div>';
+    return;
+  }
+
+  let role=liveChallengeRole(ch);
+  let opponent=ch.opponent||(role==='outgoing'?ch.challenged:ch.challenger)||'Opponent';
+  let secs=challengeRemainingSeconds(ch);
+  let challengerPet=ch.challengerPet||null;
+  let challengedPet=ch.challengedPet||null;
+  let title=role==='outgoing'?'Challenge sent':'Battle challenge!';
+  let sub=role==='outgoing'
+    ? 'Waiting for '+opponent+' to accept. You will join automatically if they accept.'
+    : (opponent+' wants to battle. Accepting locks both active pets and starts a private battle.');
+  let actions=role==='outgoing'
+    ? '<button class="danger" onclick="cancelLiveBattleChallenge()">Cancel Challenge</button><button class="ghost" onclick="closeBattleChallengeModal()">Close</button>'
+    : '<button class="good" onclick="acceptLiveBattleChallenge()">Accept</button><button class="danger" onclick="declineLiveBattleChallenge()">Decline</button><button class="ghost" onclick="closeBattleChallengeModal()">Close</button>';
+
+  box.innerHTML=
+    '<div class="challengeHero"><div class="challengeIcon">⚔️</div><div><div class="challengeTitle">'+escapeHtml(title)+'</div><div class="challengeSub">'+escapeHtml(sub)+'</div></div></div>'+ 
+    '<span class="challengeTimer">⏳ Expires in '+secs+'s</span>'+ 
+    '<div class="challengePetGrid">'+
+      '<div class="challengePetCard"><b>'+escapeHtml(ch.challenger||'Challenger')+'</b><span>'+escapeHtml(challengePetLine(challengerPet))+'</span></div>'+ 
+      '<div class="challengePetCard"><b>'+escapeHtml(ch.challenged||'Challenged')+'</b><span>'+escapeHtml(challengePetLine(challengedPet))+'</span></div>'+ 
+    '</div>'+ 
+    '<div class="challengeStatusNote">Clicking outside this popup only hides it. The header alert remains until the challenge is accepted, declined, cancelled, or expires.</div>'+ 
+    '<div class="loginModalActions">'+actions+'</div>';
+}
+
+function updateLiveBattleChallenge(ch,status,reason){
+  if(ch)liveBattleChallenge=ch;
+  if(liveBattleChallenge&&status)liveBattleChallenge.status=status;
+  let finalStatus=status||(liveBattleChallenge&&liveBattleChallenge.status)||'';
+
+  if(finalStatus==='pending'){
+    startBattleChallengeTimer();
+    drawBattleReadyAlert();
+    let role=liveChallengeRole(liveBattleChallenge);
+    if(role==='incoming'&&!battleChallengeModalOpen)openBattleChallengeModal();
+    else if(battleChallengeModalOpen)drawBattleChallengeModal();
+    return;
+  }
+
+  if(finalStatus==='accepted'){
+    closeBattleChallengeModal();
+    drawBattleReadyAlert();
+    return;
+  }
+
+  if(['declined','cancelled','expired'].includes(finalStatus)){
+    let msg=reason||(
+      finalStatus==='declined'?'Battle challenge declined.':
+      finalStatus==='cancelled'?'Battle challenge cancelled.':'Battle challenge expired.'
+    );
+    liveBattleChallenge=null;
+    closeBattleChallengeModal();
+    drawBattleReadyAlert();
+    showToast(msg,finalStatus==='declined'||finalStatus==='cancelled'||finalStatus==='expired'?'warn':'');
+  }
+}
+
+function sendChallengeSocketMessage(type,extra){
+  if(!me){showToast('Log in first.','warn');return;}
+  connect();
+  let payload=Object.assign({type:type,username:me},extra||{});
+  if(socket&&socket.readyState===1){
+    socket.send(JSON.stringify(payload));
+  }else{
+    setTimeout(function(){if(socket)socket.send(JSON.stringify(payload));},250);
+  }
+}
+
+function acceptLiveBattleChallenge(){
+  if(!liveBattleChallenge)return showToast('Battle challenge was cancelled or expired.','warn');
+  sendChallengeSocketMessage('battleChallengeAccept',{challengeId:liveBattleChallenge.id});
+}
+
+function declineLiveBattleChallenge(){
+  if(!liveBattleChallenge)return showToast('Battle challenge was cancelled or expired.','warn');
+  sendChallengeSocketMessage('battleChallengeDecline',{challengeId:liveBattleChallenge.id});
+}
+
+function cancelLiveBattleChallenge(){
+  if(!liveBattleChallenge)return showToast('Battle challenge was cancelled or expired.','warn');
+  sendChallengeSocketMessage('battleChallengeCancel',{challengeId:liveBattleChallenge.id});
 }
 
 function joinReadyBattle(url){
   let battleUrl=url||(readyBattleAlert&&readyBattleAlert.url)||'';
   if(!battleUrl)return;
+  let instanceId=(readyBattleAlert&&readyBattleAlert.instanceId)||'';
+  if(instanceId&&battleJoinInProgress===instanceId)return;
+  battleJoinInProgress=instanceId||battleUrl;
+
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -2330,10 +2533,11 @@ function joinReadyBattle(url){
   gameFrame.onload=function(){setFrameLoading(false);};
   gameFrame.removeAttribute('srcdoc');
   gameFrame.src=battleUrl+(battleUrl.includes('?')?'&':'?')+'v='+Date.now();
-  // CLEAR READY ALERT AFTER JOIN
+
+  // Consuming the ready alert prevents stale “Battle ready — Join” banners after the player exits the battle iframe.
   readyBattleAlert=null;
-  drawBattleReadyAlert();
-  readyBattleAlert=null;
+  liveBattleChallenge=null;
+  closeBattleChallengeModal();
   drawBattleReadyAlert();
   window.scrollTo(0,0);
 }
@@ -2724,10 +2928,51 @@ function connect(){
       loadSocialCenter({silent:true});
     }
 
+    if(m.type==='battleChallengeCreated'){
+      updateLiveBattleChallenge(m.challenge,'pending');
+    }
+
+    if(m.type==='battleChallengeUpdate'){
+      updateLiveBattleChallenge(m.challenge,m.status||(m.challenge&&m.challenge.status),m.reason||m.message);
+    }
+
+    if(m.type==='battleChallengeAccepted'){
+      let ch=m.challenge||{};
+      updateLiveBattleChallenge(ch,'accepted');
+      let url=m.url||ch.url||'';
+      let instanceId=m.instanceId||ch.battleInstanceId||'';
+      if(url){
+        readyBattleAlert={url:url,instanceId:instanceId,opponent:(ch.opponent||'Opponent')};
+        drawBattleReadyAlert();
+        joinReadyBattle(url);
+      }
+    }
+
+    if(m.type==='battleChallengeAck'){
+      if(m.challenge&&m.challenge.status==='pending')updateLiveBattleChallenge(m.challenge,'pending');
+      if(m.url){
+        readyBattleAlert={url:m.url,instanceId:m.instanceId||'',opponent:(m.challenge&&m.challenge.opponent)||'Opponent'};
+        drawBattleReadyAlert();
+        joinReadyBattle(m.url);
+      }
+    }
+
+    if(m.type==='battleChallengeError'){
+      showToast(m.message||'Battle challenge failed.','warn');
+      if(m.message&&/cancelled|expired/i.test(m.message)){
+        liveBattleChallenge=null;
+        closeBattleChallengeModal();
+        drawBattleReadyAlert();
+      }
+    }
+
     if(m.type==='battleReady'){
       readyBattleAlert={url:m.url||('/games/petbattle.html?battleInstance='+encodeURIComponent(m.instanceId||'')),instanceId:m.instanceId||'',opponent:m.opponent||'Opponent'};
+      liveBattleChallenge=null;
+      closeBattleChallengeModal();
       drawBattleReadyAlert();
       showToast('Battle with '+readyBattleAlert.opponent+' is ready.','good');
+      if(m.autoJoin)joinReadyBattle(readyBattleAlert.url);
     }
 
     if(m.type==='roomClosed'){
@@ -4132,6 +4377,7 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     closeTopFriends();
     closeFriendProfile();
+    closeBattleChallengeModal();
   }
 });
 
@@ -4387,15 +4633,14 @@ function mailChallengeActions(t){
 
 async function sendBattleChallenge(target){
   if(!me)return showToast('Log in first.','warn');
+  target=String(target||'').trim();
   if(!target)return;
-  try{
-    let data=await socialApi('/api/social/battle-challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,to:target})});
-    selectedMailThreadId=data.threadId||selectedMailThreadId;
-    showToast(data.message||'Battle challenge sent.','good');
-    await loadSocialCenter({silent:true});
-    showSection('social');
-    showSocialTab('mail');
-  }catch(err){showToast(err.message||'Challenge failed.','warn');}
+  closeTopFriends();
+  closeFriendProfile();
+  liveBattleChallenge=null;
+  drawBattleReadyAlert();
+  showToast('Challenge sent to '+target+'.','good');
+  sendChallengeSocketMessage('battleChallengeCreate',{to:target});
 }
 
 async function acceptBattleChallenge(threadId){
