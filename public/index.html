@@ -2394,6 +2394,8 @@ function connect(){
   };
 }
 
+function noCacheUrl(url){return url+(url.includes('?')?'&':'?')+'_='+Date.now();}
+
 function send(obj){
   if(!me){
     alert('Log in first.');
@@ -2413,7 +2415,7 @@ function send(obj){
 }
 
 async function loadGames(){
-  games=await (await fetch('/api/games')).json();
+  games=await (await fetch(noCacheUrl('/api/games'),{cache:'no-store'})).json();
   drawGames();
   drawHomeGames();
   updateQuickStats();
@@ -3166,7 +3168,7 @@ async function loadPet(){
   }
 
   try{
-    let res=await fetch('/api/pet/profile?user='+encodeURIComponent(me));
+    let res=await fetch(noCacheUrl('/api/pet/profile?user='+encodeURIComponent(me)),{cache:'no-store'});
     let data=await res.json();
 
     if(!data.ok){
@@ -3266,7 +3268,7 @@ async function getPublicActivePet(username){
   if(activePetCache[username]!==undefined)return activePetCache[username];
 
   try{
-    let res=await fetch('/api/pet/profile?user='+encodeURIComponent(username));
+    let res=await fetch(noCacheUrl('/api/pet/profile?user='+encodeURIComponent(username)),{cache:'no-store'});
     let data=await res.json();
     activePetCache[username]=(data&&data.ok)?publicActivePetFromProfile(data.profile):null;
   }catch(err){
