@@ -157,6 +157,23 @@ button,input,select{
   background:rgba(255,255,255,.08);
 }
 
+/* Visual section labels keep the left navigation readable without shrinking the main buttons. */
+.navGroupLabel{
+  margin:12px 6px 4px;
+  color:#64748b;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+
+.navDivider{
+  height:1px;
+  margin:10px 4px 8px;
+  background:linear-gradient(90deg,transparent,rgba(148,163,184,.24),transparent);
+}
+
+
 .navUser{
   margin-top:16px;
   padding:12px;
@@ -1461,7 +1478,8 @@ body.directGameMode .mobileLobbyBtn{
 
 
 /* ===== FOCUSED APP MODE PATCH =====
-/* Direct companion pages and started games should feel like native app screens, not content buried below the hub. */
+   Direct companion pages and started games should feel like native app screens, not content buried below the hub.
+*/
 body.directGameMode,
 body.gameMode{
   overflow:hidden;
@@ -1842,7 +1860,7 @@ body.gameMode #gameArea .danger{
     box-shadow:0 -18px 50px rgba(0,0,0,.42);scrollbar-width:none;
   }
   .nav::-webkit-scrollbar{display:none;}
-  .navBrand,.navUser,.navFooter{display:none!important;}
+  .navBrand,.navUser,.navFooter,.navGroupLabel,.navDivider{display:none!important;}
   .nav button{
     flex:0 0 auto;width:74px;min-width:74px;height:60px;margin:0;padding:6px 5px;
     flex-direction:column;justify-content:center;gap:4px;text-align:center;border-radius:16px;font-size:10px;line-height:1.05;
@@ -1905,37 +1923,23 @@ body.gameMode #gameArea .danger{
     <div class="navUser" id="navUserBox">
       <div class="navGuestHint">Log in to load your profile, pet, coins, and friends.</div>
     </div>
+    <div class="navGroupLabel">Core</div>
+    <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
+    <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play</button>
+    <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet</button>
 
-   <!-- CORE -->
-<button onclick="showSection('home')" id="navHome" class="active">
-  <span class="navIcon">🏠</span>Home
-</button>
+    <div class="navDivider"></div>
+    <div class="navGroupLabel">Battle</div>
+    <button onclick="openBattleHallDirect()" id="navBattleHall" class="battleBtn"><span class="navIcon">🏟️</span>Battle Hall</button>
+    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Private Battle</button>
 
-<button onclick="showSection('play')" id="navPlay">
-  <span class="navIcon">🎮</span>Play
-</button>
+    <div class="navDivider"></div>
+    <div class="navGroupLabel">Economy</div>
+    <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
+    <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
 
-<button onclick="showSection('pet')" id="navPet">
-  <span class="navIcon">🐾</span>Pet
-</button>
-
-<!-- BATTLE -->
-<button onclick="openPetBattleDirect()" id="navPetBattle">
-  <span class="navIcon">⚔️</span>Battle
-</button>
-
-<!-- ECONOMY -->
-<button onclick="openMarketDirect()" id="navMarket">
-  <span class="navIcon">🏪</span>Marketplace
-</button>
-
-<button onclick="openMyStall()" id="navStall">
-  <span class="navIcon">💰</span>My Stall
-</button>
-
-<button onclick="openInventory()" id="navInventory">
-  <span class="navIcon">🎒</span>Inventory
-</button>
+    <div class="navDivider"></div>
+    <div class="navGroupLabel">Social</div>
     <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span>Social <span id="socialNavBadge" class="socialNavBadge">0</span></button>
   </div>
 
@@ -2054,7 +2058,6 @@ body.gameMode #gameArea .danger{
           <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
           <button class="purple" onclick="openBattleHallDirect()">Battle Hall</button>
           <button class="purple" onclick="openPetBattleDirect()">Private Battle</button>
-          <button class="primary" onclick="showSection('shop')">Visit Shop</button>
           <button class="gold" onclick="openMarketDirect()">Marketplace</button>
         </div>
       </div>
@@ -2272,64 +2275,6 @@ function showToast(text,kind){
   setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2850);
 }
 
-function openMyStall(){
-  if(!me){
-    alert('Log in first.');
-    showSection('home');
-    return;
-  }
-
-  document.body.classList.remove('gameMode');
-  showSection('play');
-  document.body.classList.add('directGameMode');
-
-  setFrameLoading(true,'Loading Your Stall','Managing your listings.');
-
-  gameFrame.onload=function(){
-    setFrameLoading(false);
-  };
-
-  gameFrame.src='/games/market.html?mode=stall&v='+Date.now();
-
-  gameArea.classList.remove('hidden');
-  gameAreaTitle.innerText='My Stall';
-  gameHint.innerText='Manage your items, listings, and sales.';
-
-  roomChatPanel.classList.add('hidden');
-}
-
-function openMyStall(){
-  if(!me){
-    alert('Log in first.');
-    showSection('home');
-    return;
-  }
-
-  // leave any game mode
-  document.body.classList.remove('gameMode');
-
-  // go to play section (like other direct pages)
-  showSection('play');
-
-  // enter direct mode (full screen iframe)
-  document.body.classList.add('directGameMode');
-
-  setFrameLoading(true,'Loading Your Stall','Managing your listings.');
-
-  gameFrame.onload=function(){
-    setFrameLoading(false);
-  };
-
-  // 🔥 KEY PART: mode=stall
-  gameFrame.src='/games/market.html?mode=stall&v='+Date.now();
-
-  gameArea.classList.remove('hidden');
-  gameAreaTitle.innerText='My Stall';
-  gameHint.innerText='Manage your listings and sales.';
-
-  roomChatPanel.classList.add('hidden');
-}
-  
 function setFrameLoading(on,title,sub){
   let box=document.getElementById('frameLoading');
   if(!box)return;
@@ -2653,7 +2598,6 @@ function showSection(id){
       home:'navHome',
       play:'navPlay',
       pet:'navPet',
-      shop:'navShop',
       inventory:'navInventory',
       social:'navSocial'
     };
@@ -3662,14 +3606,40 @@ function openPetBattleDirect(){
 }
 
 function openMarketDirect(){
-  let g=games.find(x=>x.id==='market');
-
-  if(!g){
-    alert('Marketplace is not in games.json yet.');
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
     return;
   }
 
-  launchSoloGame(g);
+  let g=games.find(x=>x.id==='market');
+
+  // Prefer games.json when available, but keep Marketplace usable even if the game list
+  // has not loaded yet or the entry changes during development.
+  if(g){
+    launchSoloGame(g);
+    return;
+  }
+
+  document.body.classList.remove('gameMode');
+  showSection('play');
+  document.body.classList.add('directGameMode');
+
+  setFrameLoading(true,'Loading Marketplace','Opening the public economy hub.');
+  gameFrame.onload=function(){
+    setFrameLoading(false);
+    updateGameExitButton();
+  };
+
+  gameFrame.removeAttribute('srcdoc');
+  gameFrame.src='/games/market.html?v='+Date.now();
+
+  gameArea.classList.remove('hidden');
+  gameAreaTitle.innerText='Marketplace';
+  gameHint.innerText='Browse listings, buy items, and manage economy actions.';
+  roomChatPanel.classList.add('hidden');
+  directGameKey='market|'+me;
+  updateGameExitButton();
 }
 
 function openInventory(){
@@ -4220,13 +4190,18 @@ async function petPlay(){
 }
 
 function drawShop(){
+  // Shop used to be a standalone section, but Marketplace is now the economy entry point.
+  // Keep this function as a safe no-op for older pet/shop refresh calls.
+  let panel=document.getElementById('shopPanel');
+  if(!panel)return;
+
   if(!me){
-    shopPanel.innerHTML='<p class="muted">Log in to use the shop.</p>';
+    panel.innerHTML='<p class="muted">Log in to use the shop.</p>';
     return;
   }
 
   if(!petShop||!Object.keys(petShop).length){
-    shopPanel.innerHTML='<p class="muted">Shop unavailable.</p>';
+    panel.innerHTML='<p class="muted">Shop unavailable.</p>';
     return;
   }
 
@@ -4243,7 +4218,7 @@ function drawShop(){
     html+='</div>';
   });
 
-  shopPanel.innerHTML=html;
+  panel.innerHTML=html;
 }
 
 async function buyItem(itemId){
