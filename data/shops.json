@@ -465,5 +465,95 @@
     "keeperImage": "/assets/shops/battle_shop_keeper.png",
     "forceOpen": false,
     "forceClosed": false
+  },
+  "game_shop": {
+    "id": "game_shop",
+    "name": "Game Shop",
+    "icon": "\ud83c\udfae",
+    "theme": "games",
+    "description": "Game cartridges and table unlocks. Buy one to host that game from the launcher.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "game_tictactoe": {
+        "price": 12,
+        "stock": "infinite"
+      },
+      "game_gofish": {
+        "price": 14,
+        "stock": "infinite"
+      },
+      "game_yahtzee": {
+        "price": 16,
+        "stock": "infinite"
+      },
+      "game_connect4": {
+        "price": 18,
+        "stock": "infinite"
+      },
+      "game_battleship": {
+        "price": 20,
+        "stock": "infinite"
+      },
+      "game_uno": {
+        "price": 22,
+        "stock": "infinite"
+      },
+      "game_chess": {
+        "price": 24,
+        "stock": "infinite"
+      },
+      "game_squares": {
+        "price": 26,
+        "stock": "infinite"
+      },
+      "game_miner": {
+        "price": 28,
+        "stock": "infinite"
+      },
+      "game_mancala": {
+        "price": 30,
+        "stock": "infinite"
+      },
+      "game_hangman": {
+        "price": 32,
+        "stock": "infinite"
+      },
+      "game_trouble": {
+        "price": 34,
+        "stock": "infinite"
+      },
+      "game_shadowtrace": {
+        "price": 36,
+        "stock": "infinite"
+      },
+      "game_doomlike": {
+        "price": 40,
+        "stock": "infinite"
+      },
+      "game_othello": {
+        "price": 45,
+        "stock": "infinite"
+      },
+      "game_pixelquest": {
+        "price": 50,
+        "stock": "infinite"
+      },
+      "game_battleship2": {
+        "price": 55,
+        "stock": "infinite"
+      },
+      "gameforge_master_key": {
+        "price": 99,
+        "stock": "infinite"
+      }
+    },
+    "openHour": 0,
+    "closeHour": 24,
+    "bannerImage": "/assets/shops/game_shop_banner.png",
+    "keeperImage": "/assets/shops/game_shop_keeper.png",
+    "forceOpen": true,
+    "forceClosed": false
   }
 }
