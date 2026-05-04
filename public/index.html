@@ -2011,6 +2011,115 @@ body.gameMode #gameArea .danger{
   body.directGameMode #gameArea iframe,body.gameMode #gameArea iframe{border-radius:13px!important;border-width:1px!important;}
 }
 
+
+
+/* ===== HOME COMMAND CENTER v1 =====
+   Replaces redundant middle Account/Companion cards with action-oriented hub content.
+   Login/profile/pet identity stay in the header/nav/right rail; Home focuses on momentum. */
+.homeCommandGrid{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);
+  gap:14px;
+  align-items:stretch;
+  margin-bottom:14px;
+}
+.homeCommandCard{
+  min-height:100%;
+  position:relative;
+  overflow:hidden;
+}
+.homeCommandCard:after{
+  content:"";
+  position:absolute;
+  inset:auto -70px -90px auto;
+  width:190px;
+  height:190px;
+  border-radius:999px;
+  background:radial-gradient(circle,rgba(56,189,248,.14),transparent 65%);
+  pointer-events:none;
+}
+.activityFeed{
+  display:grid;
+  gap:9px;
+  margin-top:10px;
+  position:relative;
+  z-index:1;
+}
+.activityItem{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border-radius:17px;
+  border:1px solid rgba(148,163,184,.20);
+  background:rgba(2,6,23,.46);
+}
+.activityIcon{
+  width:36px;
+  height:36px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.07);
+  box-shadow:inset 0 0 18px rgba(255,255,255,.03);
+}
+.activityTitle{
+  color:#fff;
+  font-weight:1000;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.activitySub{
+  margin-top:2px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.activityAction{
+  margin:0!important;
+  padding:7px 9px!important;
+  border-radius:999px!important;
+  font-size:12px!important;
+  white-space:nowrap;
+}
+.nextStepGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:10px;
+  position:relative;
+  z-index:1;
+}
+.nextStepBtn{
+  min-height:76px;
+  margin:0!important;
+  padding:11px!important;
+  border-radius:18px!important;
+  text-align:left!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  align-items:flex-start!important;
+  gap:6px!important;
+}
+.nextStepBtn b{font-size:14px;line-height:1.1}
+.nextStepBtn span{font-size:11px;color:rgba(226,232,240,.78);line-height:1.25;font-weight:800}
+.homeCompatibilityNodes{display:none!important}
+@media(max-width:900px){
+  .homeCommandGrid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .nextStepGrid{grid-template-columns:1fr}
+  .activityItem{grid-template-columns:auto minmax(0,1fr)}
+  .activityItem .activityAction{grid-column:1/-1;width:100%}
+}
+
 </style>
 </head>
 
@@ -2083,35 +2192,52 @@ body.gameMode #gameArea .danger{
         </div>
       </div>
 
-      <div class="grid2">
-        <div class="card accountBox glow" id="auth">
+      <div class="homeCommandGrid">
+        <div class="card glow homeCommandCard">
           <div class="cardHeader">
-            <h3>Account</h3>
-            <span id="accountStatePill" class="pill">Offline</span>
+            <div>
+              <h3>Live Activity</h3>
+              <p class="muted">What is happening around GameForge right now.</p>
+            </div>
+            <button class="ghost" onclick="showSection('social')">Social</button>
           </div>
-
-          <div class="row" id="loginControls">
-            <input id="user" placeholder="username">
-            <input id="pass" type="password" placeholder="password">
-            <button onclick="register()">Create Account</button>
-            <button onclick="login()" class="primary">Login</button>
+          <div id="homeActivityFeed" class="activityFeed">
+            <div class="activityItem">
+              <div class="activityIcon">✨</div>
+              <div>
+                <div class="activityTitle">Loading activity...</div>
+                <div class="activitySub">Rooms, friends, mail, and battle alerts will appear here.</div>
+              </div>
+            </div>
           </div>
-
-          <div class="row hidden" id="loggedInControls">
-            <span id="loggedInLabel" class="pill"></span>
-            <button onclick="logout()">Logout</button>
-          </div>
-
-          <p id="authStatus" class="muted"></p>
         </div>
 
-        <div class="card glow">
+        <div class="card glow homeCommandCard">
           <div class="cardHeader">
-            <h3>Your Companion</h3>
-            <button class="ghost" onclick="openPetWorldDirect()">Open</button>
+            <div>
+              <h3>Next Move</h3>
+              <p class="muted">Fast paths into the core loop.</p>
+            </div>
           </div>
-          <div id="homePet"><p class="muted">Log in to load your pet.</p></div>
+          <div id="homeNextSteps" class="nextStepGrid">
+            <button class="nextStepBtn battleBtn" onclick="openBattleHallDirect()"><b>🏟️ Battle Hall</b><span>Find a public fight</span></button>
+            <button class="nextStepBtn purple" onclick="openPetBattleDirect()"><b>⚔️ Private Battle</b><span>Challenge or planned match</span></button>
+            <button class="nextStepBtn gold" onclick="openPetWorldDirect()"><b>🐾 Pet World</b><span>Care, train, and grow</span></button>
+            <button class="nextStepBtn primary" onclick="showSection('play')"><b>🎮 Game Table</b><span>Rooms and arcade games</span></button>
+          </div>
         </div>
+      </div>
+
+      <!-- Hidden compatibility nodes: login/account UI moved to the header/modal, but existing auth JS still updates these IDs. -->
+      <div id="auth" class="homeCompatibilityNodes">
+        <span id="accountStatePill" class="pill">Offline</span>
+        <div id="loginControls">
+          <input id="user" placeholder="username">
+          <input id="pass" type="password" placeholder="password">
+        </div>
+        <div id="loggedInControls" class="hidden"><span id="loggedInLabel"></span></div>
+        <p id="authStatus"></p>
+        <div id="homePet"></div>
       </div>
 
       <div class="grid3">
@@ -2421,6 +2547,7 @@ function updateTopStatus(){
   updateTopMailButton();
   drawBattleReadyAlert();
   drawTopFriendsDropdown();
+  drawHomeActivity();
 }
 
 
@@ -2678,6 +2805,104 @@ function drawContinueCard(){
     '</div>';
 }
 
+
+function drawHomeActivity(){
+  let feed=document.getElementById('homeActivityFeed');
+  if(!feed)return;
+
+  let items=[];
+  let unread=Number((socialData&&socialData.counts&&socialData.counts.unreadMail)||0);
+
+  if(liveBattleChallenge&&liveBattleChallenge.status==='pending'){
+    let other=liveBattleChallenge.role==='outgoing'
+      ? liveBattleChallenge.challenged
+      : liveBattleChallenge.challenger;
+    items.push({
+      icon:'⚔️',
+      title:liveBattleChallenge.role==='outgoing'?'Waiting for '+other:'Battle challenge from '+other,
+      sub:'Live challenge expires soon.',
+      action:'Open',
+      onclick:'openBattleChallengeFromHeader()'
+    });
+  }else if(readyBattleAlert&&readyBattleAlert.url){
+    items.push({
+      icon:'🏁',
+      title:'Battle is ready',
+      sub:'Your private battle instance is waiting.',
+      action:'Join',
+      onclick:'joinReadyBattle()'
+    });
+  }
+
+  if(unread>0){
+    items.push({
+      icon:'📬',
+      title:unread+' unread mail'+(unread===1?'':'s'),
+      sub:'Open Social Center to read your latest threads.',
+      action:'Mail',
+      onclick:'openMailFromHeader()'
+    });
+  }
+
+  let publicRooms=(latestPresenceRooms||[]).filter(function(r){return !r.private;});
+  if(publicRooms.length){
+    let r=publicRooms[0];
+    let gameName=r.selectedGame?(r.selectedGame.name||'selected game'):'waiting for a game';
+    items.push({
+      icon:'🏛️',
+      title:'Open room '+r.id,
+      sub:(r.players||[]).length+' player(s) · '+gameName,
+      action:'Join',
+      onclick:'joinRoomFromPresence(\''+escapeAttr(r.id)+'\')'
+    });
+  }
+
+  let onlineFriends=(socialData&&Array.isArray(socialData.friends))
+    ? socialData.friends.filter(function(f){return f.online;})
+    : [];
+  if(onlineFriends.length){
+    let f=onlineFriends[0];
+    items.push({
+      icon:'👥',
+      title:(f.username||f.name||'A friend')+' is online',
+      sub:'Open friends to view profile, mail, or challenge.',
+      action:'Friends',
+      onclick:'toggleTopFriends()'
+    });
+  }
+
+  if(me&&petProfile){
+    let pet=null;
+    try{pet=activePet&&activePet();}catch(e){pet=null;}
+    if(pet){
+      let stage=pet.stage||'pet';
+      items.push({
+        icon:pet.emoji||'🐾',
+        title:(pet.name||'Your pet')+' is ready',
+        sub:'Stage: '+stage+(pet.type?' · '+pet.type:''),
+        action:'Care',
+        onclick:'openPetWorldDirect()'
+      });
+    }
+  }
+
+  items.push({
+    icon:'🎮',
+    title:'Game table ready',
+    sub:'Create or join a room from the launcher.',
+    action:'Play',
+    onclick:'showSection(\'play\')'
+  });
+
+  feed.innerHTML=items.slice(0,5).map(function(item){
+    return '<div class="activityItem">'+
+      '<div class="activityIcon">'+escapeHtml(item.icon)+'</div>'+
+      '<div><div class="activityTitle">'+escapeHtml(item.title)+'</div><div class="activitySub">'+escapeHtml(item.sub)+'</div></div>'+
+      (item.action?'<button class="activityAction primary" onclick="'+item.onclick+'">'+escapeHtml(item.action)+'</button>':'')+
+    '</div>';
+  }).join('');
+}
+
 function commandButtonsHtml(){
   return '<div class="commandGrid">'+
     '<button class="gold" onclick="openPetWorldDirect()">🐾 Pet World</button>'+
@@ -2891,6 +3116,7 @@ function drawAuth(){
   }
   updateTopStatus();
   drawTopFriendsDropdown();
+  drawHomeActivity();
 }
 
 async function register(){
@@ -4015,6 +4241,7 @@ function updateQuickStats(){
   quickUserCount.innerText=latestPresenceUsers.length||0;
   quickRoomCount.innerText=latestPresenceRooms.length||0;
   quickGameCount.innerText=games.filter(function(g){return !['petworld','petbattle'].includes(g.id);}).length||0;
+  drawHomeActivity();
 }
 
 /* ===== PET / SHOP / INVENTORY ===== */
