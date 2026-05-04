@@ -118,6 +118,9 @@ games.json               → Game definitions
 * If either player is already in battle, the challenge is blocked
 * Accepting a challenge creates a private server-locked battle instance
 * Battle-type mail threads may still be used for slower/social history, but live challenge popups/header state must not depend on mail
+* Incoming live challenges should open a modal immediately; clicking outside only hides the modal, while the header alert remains available
+* Challenger waiting state should be shown in the top header and should provide a cancel option from the challenge modal
+* Accepting a challenge should auto-load both players into the created battle instance
 * The top header can show waiting/respond/join alerts for live challenge state
 
 ---
