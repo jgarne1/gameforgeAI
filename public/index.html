@@ -1722,6 +1722,52 @@ body.gameMode #gameArea{
   }
 }
 
+
+
+/* ===== SOCIAL CENTER ===== */
+.socialNavBadge{
+  margin-left:auto;
+  min-width:22px;
+  height:22px;
+  padding:0 7px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ef4444,#f97316);
+  color:white;
+  font-size:11px;
+  font-weight:1000;
+  box-shadow:0 0 18px rgba(239,68,68,.35);
+}
+.socialNavBadge.show{display:inline-flex}
+.socialShell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start}
+.socialMenu{display:grid;gap:8px}
+.socialMenu button{justify-content:flex-start;text-align:left}
+.socialMenu button.active{background:linear-gradient(135deg,#2563eb,#7c3aed);border-color:rgba(96,165,250,.8)}
+.socialPanel{display:none}.socialPanel.active{display:block}
+.profileBanner{
+  border:1px solid rgba(148,163,184,.24);
+  border-radius:24px;
+  padding:16px;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(56,189,248,.18),transparent 28%),
+    radial-gradient(circle at 82% 14%,rgba(250,204,21,.12),transparent 24%),
+    rgba(2,6,23,.56);
+}
+.profileBanner h3{margin:0 0 6px;font-size:28px;letter-spacing:-.9px}
+.socialStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.socialStat{border:1px solid rgba(148,163,184,.20);background:rgba(15,23,42,.7);border-radius:18px;padding:11px}
+.socialStat b{display:block;font-size:22px}.socialStat span{font-size:12px;color:var(--muted)}
+.socialComposer{display:grid;gap:8px}.socialComposer textarea{width:100%;min-height:92px;resize:vertical;border-radius:16px;border:1px solid rgba(148,163,184,.32);background:#020617;color:var(--text);padding:11px;font-family:inherit}
+.socialList{display:grid;gap:10px}.socialItem{border:1px solid rgba(148,163,184,.22);border-radius:18px;padding:12px;background:rgba(2,6,23,.48)}
+.socialItem.unread{border-color:rgba(250,204,21,.55);box-shadow:0 0 22px rgba(250,204,21,.08)}
+.socialTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.socialActions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.socialActions button{padding:7px 9px;font-size:12px}.socialSearchRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-bottom:10px}
+.friendGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.friendCard{border:1px solid rgba(148,163,184,.22);border-radius:20px;padding:13px;background:linear-gradient(180deg,rgba(15,23,42,.74),rgba(2,6,23,.66))}
+.friendCard h4{margin:0 0 5px}.onlineDot{display:inline-flex;width:9px;height:9px;border-radius:999px;background:#64748b;margin-right:6px}.onlineDot.on{background:#22c55e;box-shadow:0 0 12px rgba(34,197,94,.65)}
+@media(max-width:900px){.socialShell{grid-template-columns:1fr}.socialStats{grid-template-columns:repeat(2,1fr)}.socialTop{flex-direction:column}.socialActions{justify-content:flex-start}}
+
 </style>
 </head>
 
@@ -1741,6 +1787,7 @@ body.gameMode #gameArea{
     <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
     <button onclick="showSection('shop')" id="navShop"><span class="navIcon">🛒</span>Shop</button>
     <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
+    <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span>Social <span id="socialNavBadge" class="socialNavBadge">0</span></button>
     <button onclick="openAdmin()" id="navAdmin" class="hidden"><span class="navIcon">🛡</span>Admin</button>
 
     <div class="navUser" id="navUserBox">
@@ -1875,6 +1922,76 @@ body.gameMode #gameArea{
       <div id="inventoryPanel" class="card"><p class="muted">Log in to load inventory.</p></div>
     </div>
 
+    <div id="social" class="section">
+      <div class="hero">
+        <h2>Social Center</h2>
+        <p>Your gamer profile, friends, and short mail messages live here. Mail history is capped at 25 messages per user.</p>
+        <div class="heroActions">
+          <button class="primary" onclick="showSocialTab('profile')">Profile</button>
+          <button class="purple" onclick="showSocialTab('friends')">Friends</button>
+          <button class="gold" onclick="showSocialTab('mail')">Mail <span id="socialHeroBadge"></span></button>
+        </div>
+      </div>
+
+      <div class="socialShell">
+        <div class="card glow socialMenu">
+          <button id="socialTabProfile" class="active" onclick="showSocialTab('profile')">🧑 Profile</button>
+          <button id="socialTabFriends" onclick="showSocialTab('friends')">👥 Friends</button>
+          <button id="socialTabMail" onclick="showSocialTab('mail')">✉ Mail</button>
+          <button class="ghost" onclick="loadSocialCenter()">Refresh Social</button>
+        </div>
+
+        <div>
+          <div id="socialProfilePanel" class="socialPanel active">
+            <div class="card glow">
+              <div class="profileBanner" id="profileSummary"><p class="muted">Log in to load your profile.</p></div>
+            </div>
+            <div class="card glow">
+              <div class="cardHeader"><h3>Change Password</h3><span class="pill">Account Security</span></div>
+              <div class="row">
+                <input id="profileOldPassword" type="password" placeholder="current password">
+                <input id="profileNewPassword" type="password" placeholder="new password">
+                <input id="profileNewPassword2" type="password" placeholder="confirm new password">
+                <button class="gold" onclick="changeOwnPassword()">Update Password</button>
+              </div>
+              <p class="muted">Every user can change their own password here, regardless of admin role.</p>
+            </div>
+          </div>
+
+          <div id="socialFriendsPanel" class="socialPanel">
+            <div class="card glow">
+              <div class="cardHeader"><h3>Find Players</h3><span class="pill">Friend Requests</span></div>
+              <div class="socialSearchRow">
+                <input id="friendSearchInput" placeholder="search username" onkeydown="if(event.key==='Enter')searchSocialUsers()">
+                <button class="primary" onclick="searchSocialUsers()">Search</button>
+              </div>
+              <div id="friendSearchResults" class="socialList"></div>
+            </div>
+            <div class="grid2">
+              <div class="card glow"><div class="cardHeader"><h3>Incoming Requests</h3></div><div id="incomingFriendRequests" class="socialList"></div></div>
+              <div class="card glow"><div class="cardHeader"><h3>Outgoing Requests</h3></div><div id="outgoingFriendRequests" class="socialList"></div></div>
+            </div>
+            <div class="card glow"><div class="cardHeader"><h3>Friends</h3><span id="friendCountPill" class="pill">0 friends</span></div><div id="friendsList" class="friendGrid"></div></div>
+          </div>
+
+          <div id="socialMailPanel" class="socialPanel">
+            <div class="card glow">
+              <div class="cardHeader"><h3>Send Mail</h3><span class="pill">Short message</span></div>
+              <div class="socialComposer">
+                <input id="mailTo" placeholder="recipient username">
+                <textarea id="mailText" maxlength="500" placeholder="Write a short message..."></textarea>
+                <div class="row"><button class="primary" onclick="sendSocialMail()">Send Mail</button><button class="ghost" onclick="clearMailComposer()">Clear</button></div>
+              </div>
+            </div>
+            <div class="card glow">
+              <div class="cardHeader"><h3>Inbox / History</h3><button class="ghost" onclick="markAllMailRead()">Mark All Read</button></div>
+              <div id="mailList" class="socialList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div class="side">
@@ -1952,6 +2069,8 @@ let pendingGameToSelect='';
 let gameLibraryForcedOpen=false; // Keeps the library open only when the user explicitly chooses Change Game after selecting a room game.
 let roomReadyStatus={}; // Cosmetic lobby readiness by username. It is relayed as a gameMove, but it intentionally does not block Start Game.
 let readyRoomId=''; // Tracks which room the cosmetic ready map belongs to so old ready flags do not leak between rooms.
+let socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[]};
+let accountProfile=null;
 
 
 function showToast(text,kind){
@@ -2039,7 +2158,8 @@ function showSection(id){
       play:'navPlay',
       pet:'navPet',
       shop:'navShop',
-      inventory:'navInventory'
+      inventory:'navInventory',
+      social:'navSocial'
     };
 
     if(map[id]&&document.getElementById(map[id])){
@@ -2047,6 +2167,7 @@ function showSection(id){
     }
   }
 
+  if(id==='social')loadSocialCenter();
   updateTopStatus();
   drawContinueCard();
 }
@@ -2141,6 +2262,7 @@ function setLogin(d){
   drawAuth();
   connect();
   loadPet();
+  loadSocialCenter();
   updateTopStatus();
   drawContinueCard();
   showToast('Welcome, '+me,'good');
@@ -2155,6 +2277,8 @@ function logout(){
   petShop={};
   petMoves={};
   roomReadyStatus={};
+  socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[]};
+  accountProfile=null;
 
   localStorage.removeItem('gf_user');
   localStorage.removeItem('gf_admin');
@@ -2163,6 +2287,7 @@ function logout(){
   drawPet();
   drawShop();
   drawInventory();
+  drawSocialCenter();
   updateTopStatus();
   drawContinueCard();
   showToast('Logged out','warn');
@@ -2218,6 +2343,15 @@ function connect(){
       drawPet();
       drawInventory();
       drawShop();
+    }
+
+    if(m.type==='socialUpdate'){
+      if(m.unreadMail!==undefined){
+        socialData.counts=socialData.counts||{};
+        socialData.counts.unreadMail=Number(m.unreadMail||0);
+        drawSocialBadge();
+      }
+      loadSocialCenter({silent:true});
     }
 
     if(m.type==='roomClosed'){
@@ -3601,6 +3735,270 @@ function drawMobileLobby(){
   box.innerHTML=html;
 }
 
+
+/* ===== SOCIAL CENTER ===== */
+
+async function socialApi(url,opts){
+  let r=await fetch(url,opts);
+  let d=await r.json().catch(function(){return {};});
+  if(!r.ok||d.error)throw new Error(d.error||'Social request failed.');
+  return d;
+}
+
+async function loadSocialCenter(opts){
+  opts=opts||{};
+  if(!me){
+    socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[]};
+    accountProfile=null;
+    drawSocialCenter();
+    return;
+  }
+
+  try{
+    let account=await socialApi('/api/account/profile?user='+encodeURIComponent(me));
+    let social=await socialApi('/api/social/summary?user='+encodeURIComponent(me));
+    accountProfile=account;
+    socialData=social;
+    drawSocialCenter();
+  }catch(err){
+    if(!opts.silent)showToast(err.message||'Could not load social center.','warn');
+    drawSocialBadge();
+  }
+}
+
+function showSocialTab(tab){
+  ['profile','friends','mail'].forEach(function(id){
+    let panel=document.getElementById('social'+id.charAt(0).toUpperCase()+id.slice(1)+'Panel');
+    let btn=document.getElementById('socialTab'+id.charAt(0).toUpperCase()+id.slice(1));
+    if(panel)panel.classList.toggle('active',id===tab);
+    if(btn)btn.classList.toggle('active',id===tab);
+  });
+  if(tab==='mail'&&me)markAllMailRead(true);
+}
+
+function drawSocialCenter(){
+  drawSocialBadge();
+  drawProfilePanel();
+  drawFriendsPanel();
+  drawMailPanel();
+}
+
+function drawSocialBadge(){
+  let unread=Number((socialData.counts&&socialData.counts.unreadMail)||0);
+  let badge=document.getElementById('socialNavBadge');
+  let hero=document.getElementById('socialHeroBadge');
+  if(badge){
+    badge.innerText=unread>99?'99+':String(unread);
+    badge.classList.toggle('show',unread>0);
+  }
+  if(hero){
+    hero.innerText=unread>0?'('+unread+' unread)':'';
+  }
+}
+
+function drawProfilePanel(){
+  let box=document.getElementById('profileSummary');
+  if(!box)return;
+  if(!me||!accountProfile){
+    box.innerHTML='<p class="muted">Log in to load your profile.</p>';
+    return;
+  }
+
+  let u=accountProfile.user||{};
+  let pet=accountProfile.pet||null;
+  let counts=accountProfile.counts||socialData.counts||{};
+  box.innerHTML=
+    '<h3>'+escapeHtml(u.displayName||u.username||me)+'</h3>'+ 
+    '<p class="muted">@'+escapeHtml(u.username||me)+' · '+escapeHtml(u.title||'Player')+'</p>'+ 
+    '<p>'+escapeHtml(u.bio||'No profile bio yet.')+'</p>'+ 
+    '<div class="row" style="margin-top:10px">'+
+      '<span class="pill">🪙 '+Number(accountProfile.coins||0)+' coins</span>'+ 
+      '<span class="pill">🎒 '+Number(accountProfile.inventoryCount||0)+' items</span>'+ 
+      (pet?'<span class="pill">'+escapeHtml(pet.emoji||'🐾')+' '+escapeHtml(pet.name||'Pet')+' Lv '+Number(pet.level||1)+'</span>':'<span class="pill">No active pet</span>')+
+    '</div>'+ 
+    '<div class="socialStats">'+
+      '<div class="socialStat"><b>'+Number(counts.friends||0)+'</b><span>Friends</span></div>'+ 
+      '<div class="socialStat"><b>'+Number(counts.unreadMail||0)+'</b><span>Unread Mail</span></div>'+ 
+      '<div class="socialStat"><b>'+Number(u.wins||0)+'</b><span>Wins</span></div>'+ 
+      '<div class="socialStat"><b>'+Number(u.gamesPlayed||0)+'</b><span>Games Played</span></div>'+ 
+    '</div>';
+}
+
+function drawFriendsPanel(){
+  if(document.getElementById('friendCountPill'))friendCountPill.innerText=Number((socialData.friends||[]).length)+' friends';
+
+  let incoming=document.getElementById('incomingFriendRequests');
+  if(incoming){
+    incoming.innerHTML=(socialData.incomingRequests||[]).length?(socialData.incomingRequests||[]).map(function(p){
+      let name=p.user&&p.user.username?p.user.username:'';
+      return socialMiniCard(p,'<button class="good" onclick="respondFriendRequest(\''+escapeAttr(name)+'\',true)">Accept</button><button class="danger" onclick="respondFriendRequest(\''+escapeAttr(name)+'\',false)">Decline</button>');
+    }).join(''):'<div class="empty">No incoming requests.</div>';
+  }
+
+  let outgoing=document.getElementById('outgoingFriendRequests');
+  if(outgoing){
+    outgoing.innerHTML=(socialData.outgoingRequests||[]).length?(socialData.outgoingRequests||[]).map(function(p){
+      return socialMiniCard(p,'<span class="pill">Pending</span>');
+    }).join(''):'<div class="empty">No outgoing requests.</div>';
+  }
+
+  let friends=document.getElementById('friendsList');
+  if(friends){
+    friends.innerHTML=(socialData.friends||[]).length?(socialData.friends||[]).map(friendCard).join(''):'<div class="empty">No friends yet. Search a username to send a request.</div>';
+  }
+}
+
+function socialMiniCard(profile,actions){
+  profile=profile||{};
+  let u=profile.user||{};
+  let online=profile.online||{};
+  return '<div class="socialItem"><div class="socialTop"><div><b>'+escapeHtml(u.displayName||u.username||'Player')+'</b><br><span class="muted">@'+escapeHtml(u.username||'')+' · '+onlineLabel(online)+'</span></div><div class="socialActions">'+(actions||'')+'</div></div></div>';
+}
+
+function friendCard(profile){
+  let u=(profile&&profile.user)||{};
+  let online=(profile&&profile.online)||{};
+  let pet=(profile&&profile.activePet)||null;
+  let name=u.username||'';
+  return '<div class="friendCard">'+
+    '<h4><span class="onlineDot '+(online.online?'on':'')+'"></span>'+escapeHtml(u.displayName||name)+'</h4>'+ 
+    '<p class="muted">@'+escapeHtml(name)+' · '+onlineLabel(online)+'</p>'+ 
+    '<p class="muted">'+(pet?escapeHtml((pet.emoji||'🐾')+' '+(pet.name||'Pet')+' Lv '+(pet.level||1)):'No active pet')+'</p>'+ 
+    '<div class="socialActions"><button class="gold" onclick="prefillMail(\''+escapeAttr(name)+'\')">Mail</button><button class="danger" onclick="removeFriend(\''+escapeAttr(name)+'\')">Remove</button></div>'+ 
+  '</div>';
+}
+
+function onlineLabel(online){
+  online=online||{};
+  if(!online.online)return 'Offline';
+  if(online.roomId)return 'Online · Room '+online.roomId;
+  if(online.privateRoom)return 'Online · Private room';
+  return 'Online';
+}
+
+function drawMailPanel(){
+  let list=document.getElementById('mailList');
+  if(!list)return;
+  let mail=socialData.mail||[];
+  list.innerHTML=mail.length?mail.map(function(m){
+    let date=m.createdAt?new Date(m.createdAt).toLocaleString():'';
+    return '<div class="socialItem '+(!m.read?'unread':'')+'">'+
+      '<div class="socialTop"><div><b>'+(!m.read?'✉ ':'')+'From '+escapeHtml(m.from||'Unknown')+'</b><br><span class="muted">'+escapeHtml(date)+'</span></div>'+ 
+      '<div class="socialActions"><button onclick="prefillMail(\''+escapeAttr(m.from||'')+'\')">Reply</button><button class="danger" onclick="deleteSocialMail(\''+escapeAttr(m.id)+'\')">Delete</button></div></div>'+ 
+      '<p>'+escapeHtml(m.text||'')+'</p>'+ 
+    '</div>';
+  }).join(''):'<div class="empty">No mail yet.</div>';
+}
+
+async function searchSocialUsers(){
+  if(!me)return showToast('Log in first.','warn');
+  let q=(document.getElementById('friendSearchInput')&&friendSearchInput.value||'').trim();
+  let box=document.getElementById('friendSearchResults');
+  if(!q){if(box)box.innerHTML='<div class="empty">Type a username to search.</div>';return;}
+  try{
+    let data=await socialApi('/api/social/search?user='+encodeURIComponent(me)+'&q='+encodeURIComponent(q));
+    let results=data.results||[];
+    box.innerHTML=results.length?results.map(function(p){
+      let name=p.user&&p.user.username?p.user.username:'';
+      let rel=p.social||{};
+      let action=rel.isFriend?'<span class="pill">Already friends</span>':(rel.outgoingRequest?'<span class="pill">Request sent</span>':(rel.incomingRequest?'<button class="good" onclick="respondFriendRequest(\''+escapeAttr(name)+'\',true)">Accept</button>':'<button class="primary" onclick="sendFriendRequest(\''+escapeAttr(name)+'\')">Add Friend</button>'));
+      action+='<button class="gold" onclick="prefillMail(\''+escapeAttr(name)+'\')">Mail</button>';
+      return socialMiniCard(p,action);
+    }).join(''):'<div class="empty">No users found.</div>';
+  }catch(err){showToast(err.message||'Search failed.','warn');}
+}
+
+async function sendFriendRequest(target){
+  try{
+    let data=await socialApi('/api/social/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,target:target})});
+    showToast(data.message||'Request sent.','good');
+    await loadSocialCenter({silent:true});
+    searchSocialUsers();
+  }catch(err){showToast(err.message||'Request failed.','warn');}
+}
+
+async function respondFriendRequest(from,accept){
+  try{
+    let data=await socialApi('/api/social/respond',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,from:from,accept:!!accept})});
+    showToast(data.message||'Friend request updated.','good');
+    await loadSocialCenter({silent:true});
+  }catch(err){showToast(err.message||'Response failed.','warn');}
+}
+
+async function removeFriend(target){
+  if(!confirm('Remove '+target+' from friends?'))return;
+  try{
+    let data=await socialApi('/api/social/remove-friend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,target:target})});
+    showToast(data.message||'Friend removed.','warn');
+    await loadSocialCenter({silent:true});
+  }catch(err){showToast(err.message||'Remove failed.','warn');}
+}
+
+function prefillMail(to){
+  showSection('social');
+  showSocialTab('mail');
+  if(document.getElementById('mailTo'))mailTo.value=to||'';
+  if(document.getElementById('mailText'))mailText.focus();
+}
+
+function clearMailComposer(){
+  if(document.getElementById('mailTo'))mailTo.value='';
+  if(document.getElementById('mailText'))mailText.value='';
+}
+
+async function sendSocialMail(){
+  if(!me)return showToast('Log in first.','warn');
+  let to=(document.getElementById('mailTo')&&mailTo.value||'').trim();
+  let text=(document.getElementById('mailText')&&mailText.value||'').trim();
+  if(!to||!text)return showToast('Enter a recipient and message.','warn');
+  try{
+    let data=await socialApi('/api/social/send-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,to:to,text:text})});
+    showToast(data.message||'Mail sent.','good');
+    mailText.value='';
+    await loadSocialCenter({silent:true});
+  }catch(err){showToast(err.message||'Mail failed.','warn');}
+}
+
+async function markAllMailRead(silent){
+  if(!me)return;
+  if(!Number((socialData.counts&&socialData.counts.unreadMail)||0))return;
+  try{
+    let data=await socialApi('/api/social/read-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me})});
+    socialData.mail=data.mail||socialData.mail||[];
+    socialData.counts=data.counts||socialData.counts||{};
+    drawSocialCenter();
+    if(!silent)showToast('Mail marked read.','good');
+  }catch(err){if(!silent)showToast(err.message||'Could not mark mail read.','warn');}
+}
+
+async function deleteSocialMail(mailId){
+  try{
+    let data=await socialApi('/api/social/delete-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,mailId:mailId})});
+    socialData.mail=data.mail||[];
+    socialData.counts=data.counts||socialData.counts||{};
+    drawSocialCenter();
+    showToast(data.message||'Mail deleted.','warn');
+  }catch(err){showToast(err.message||'Delete failed.','warn');}
+}
+
+async function changeOwnPassword(){
+  if(!me)return showToast('Log in first.','warn');
+  let oldPassword=(document.getElementById('profileOldPassword')&&profileOldPassword.value)||'';
+  let newPassword=(document.getElementById('profileNewPassword')&&profileNewPassword.value)||'';
+  let confirmPassword=(document.getElementById('profileNewPassword2')&&profileNewPassword2.value)||'';
+  if(!oldPassword||!newPassword)return showToast('Enter current and new password.','warn');
+  if(newPassword!==confirmPassword)return showToast('New passwords do not match.','warn');
+  if(newPassword.length<4)return showToast('Password must be at least 4 characters.','warn');
+
+  try{
+    let data=await socialApi('/api/account/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,oldPassword:oldPassword,newPassword:newPassword})});
+    profileOldPassword.value='';
+    profileNewPassword.value='';
+    profileNewPassword2.value='';
+    showToast(data.message||'Password changed.','good');
+  }catch(err){showToast(err.message||'Password change failed.','warn');}
+}
+
 /* ===== UTILS ===== */
 
 function escapeHtml(s){
@@ -3626,10 +4024,12 @@ drawAuth();
 if(me){
   connect();
   loadPet();
+  loadSocialCenter({silent:true});
 }else{
   drawPet();
   drawShop();
   drawInventory();
+  drawSocialCenter();
 }
 
 loadGames();
