@@ -673,6 +673,27 @@ function applyPendingBattleSetup(){
 window.addEventListener('message',e=>{
   const msg=e.data||{};
   if(msg.type==='CREATE_BATTLE_ROOM')startBattleRoom();
+
+  if(msg.type==='PARENT_JOIN_ROOM'){
+    const code=normalizeRoomCode(msg.roomId);
+    if(!code)return;
+    if(room&&room.id===code){
+      log('You are already in room '+code+'.');
+      return;
+    }
+
+    // Parent shell right-panel joins use this path. Keep the same cleanup as the
+    // normal room-code input flow so old selected games/ready states do not leak
+    // into the newly joined table.
+    selectedGameId='';
+    readyByUser={};
+    previousPlayers=null;
+    previousSeats=null;
+    lastRoomId='';
+    if(el('joinCode'))el('joinCode').value=code;
+    send({type:'joinRoom',roomId:code,closeCurrent:true});
+    log('Joining room '+code+'...');
+  }
 });
 
 el('scrollUp').onclick=()=>el('gameList').scrollBy({top:-180,behavior:'smooth'});
