@@ -222,7 +222,7 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
 <script>
 (function(){
 'use strict';
-const EXCLUDED_GAME_IDS=new Set(['petworld','market','inventory']);
+const EXCLUDED_GAME_IDS=new Set(['petworld','petbattle','market','inventory','launcher']);
 const MASTER_KEYS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
 const GAME_ICONS={petbattle:'⚔️',tictactoe:'✕',connect4:'●',battleship:'⌖',battleship2:'⌖',hangman:'?',trouble:'★',uno:'◑',gofish:'🐟',yahtzee:'⚂',chess:'♞',othello:'◐',mancala:'●',squares:'□',miner:'⛏',shadowtrace:'◈',doomlike:'✦',pixelquest:'◆'};
 let me=localStorage.getItem('gf_user')||'';
@@ -330,17 +330,66 @@ function handleRoomDiff(nextRoom){
 function isHost(){return room&&room.owner===me;}
 function seatedCount(){return room&&Array.isArray(room.seats)?room.seats.filter(Boolean).length:0;}
 function mySeatIndex(){return room&&Array.isArray(room.seats)?room.seats.findIndex(s=>s&&s.name===me):-1;}
-function getInventory(){return (profile&&profile.inventory)||{};}
-function itemUnlocksGame(itemId,gameId){let item=itemCatalog[itemId]||{};return item.unlocksGame===gameId||item.gameId===gameId||item.hostsGame===gameId;}
+function getInventory(){
+  const inv=(profile&&profile.inventory)||{};
+  if(Array.isArray(inv)){
+    let out={};
+    inv.forEach(entry=>{
+      if(!entry)return;
+      if(typeof entry==='string')out[entry]=(out[entry]||0)+1;
+      else{
+        const id=entry.id||entry.itemId||entry.key;
+        if(id)out[id]=(out[id]||0)+Number(entry.quantity||entry.qty||entry.count||1);
+      }
+    });
+    return out;
+  }
+  return inv;
+}
+function inventoryQty(itemId){
+  const inv=getInventory();
+  const v=inv[itemId];
+  if(v===true)return 1;
+  if(typeof v==='object'&&v)return Number(v.quantity||v.qty||v.count||1);
+  return Number(v||0);
+}
+function itemHasUnlockEffect(item,gameId){
+  const effects=Array.isArray(item&&item.effects)?item.effects:[];
+  return effects.some(e=>e&&(e.type==='unlock'||e.type==='game_unlock')&&(e.target==='game'||e.target==='games'||e.target==='host_game')&&(e.value===gameId||e.gameId===gameId));
+}
+function itemUnlocksGame(itemId,gameId){
+  let item=itemCatalog[itemId]||{};
+  return itemUnlocksAll(itemId)||
+    itemId==='game_'+gameId||
+    item.id==='game_'+gameId||
+    item.unlocksGame===gameId||
+    item.gameId===gameId||
+    item.hostsGame===gameId||
+    item.unlockGame===gameId||
+    itemHasUnlockEffect(item,gameId);
+}
 function itemUnlocksAll(itemId){let item=itemCatalog[itemId]||{};return MASTER_KEYS.has(itemId)||item.unlocksAllGames===true||item.masterGameKey===true;}
 function canHostGame(gameId){
   if(gameId==='petbattle')return true;
   if(admin)return true;
   const inv=getInventory();
-  return Object.keys(inv).some(id=>Number(inv[id]||0)>0&&(itemUnlocksAll(id)||itemUnlocksGame(id,gameId)));
+  return Object.keys(inv).some(id=>inventoryQty(id)>0&&itemUnlocksGame(id,gameId));
+}
+function unlockItemNameForGame(gameId){
+  const conventional='game_'+gameId;
+  if(itemCatalog[conventional])return itemCatalog[conventional].name||conventional;
+  let found=Object.keys(itemCatalog).find(id=>itemUnlocksGame(id,gameId)&&!itemUnlocksAll(id));
+  return found?(itemCatalog[found].name||found):'Game Shop cartridge';
 }
 function playerText(g){let min=Number(g.minPlayers||1),max=Number(g.maxPlayers||g.seats||1);return min===max?min+' player'+(min===1?'':'s'):min+'–'+max+' players';}
-function normalizedGames(){return games.filter(g=>g&&!EXCLUDED_GAME_IDS.has(g.id));}
+function normalizedGames(){
+  return games.filter(g=>g&&!EXCLUDED_GAME_IDS.has(g.id)).sort((a,b)=>{
+    const au=canHostGame(a.id)?1:0;
+    const bu=canHostGame(b.id)?1:0;
+    if(au!==bu)return bu-au;
+    return String(a.name||a.id).localeCompare(String(b.name||b.id));
+  });
+}
 
 async function loadData(){
   try{games=await (await fetch('/api/games')).json();}catch(e){games=[];log('Could not load games.json from /api/games.');}
@@ -394,10 +443,10 @@ function drawGames(){
     let selected=selectedGameId===g.id;
     let b=document.createElement('button');
     b.className='gameCard '+(selected?'selected ':'')+(unlocked?'':'locked');
-    b.innerHTML='<div class="gameIcon">'+esc(GAME_ICONS[g.id]||'🎮')+'</div><div class="gameName">'+esc(g.name||g.id)+'</div><div class="gameMeta">'+esc(playerText(g))+'</div>'+(unlocked?'<div class="lockLine good">Hostable</div>':'<div class="lockLine">Locked · game item required</div>');
+    b.innerHTML='<div class="gameIcon">'+esc(GAME_ICONS[g.id]||'🎮')+'</div><div class="gameName">'+esc(g.name||g.id)+'</div><div class="gameMeta">'+esc(playerText(g))+'</div>'+(unlocked?'<div class="lockLine good">Unlocked · ready to host</div>':'<div class="lockLine">Locked · needs '+esc(unlockItemNameForGame(g.id))+'</div>');
     b.onclick=()=>{
       selectedGameId=g.id;
-      if(!unlocked){drawGames();drawTable('You do not own the host item for '+(g.name||g.id)+'.');return;}
+      if(!unlocked){drawGames();drawTable('You need '+unlockItemNameForGame(g.id)+' before you can host '+(g.name||g.id)+'.');return;}
       if(!room){log('Room is not ready yet.');return;}
       if(!isHost()){drawTable('Only the host can select the game.');return;}
       send({type:'selectGame',gameId:g.id});
