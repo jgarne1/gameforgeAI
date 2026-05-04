@@ -1637,6 +1637,91 @@ body.gameMode #gameArea{overflow:hidden}
 body.gameMode #gameArea .cardHeader,body.directGameMode #gameArea .cardHeader{background:rgba(2,6,23,.42);border:1px solid rgba(148,163,184,.18);border-radius:16px;padding:8px 10px!important;margin-bottom:8px}
 @media(max-width:760px){.topStatusBar{align-items:flex-start;flex-direction:column}.topStatusRight{width:100%;flex-wrap:wrap}.continueCard .continueGrid{grid-template-columns:1fr}.continueActions{justify-content:flex-start}.commandGrid{grid-template-columns:1fr}.frameLoading{inset:62px 10px 10px}}
 
+
+
+/* ===== GAME VIEWPORT FIT FIX v2 =====
+   Fixes games being clipped vertically inside the iframe.
+   Parent owns the full-screen frame; iframe gets exactly the remaining height. */
+body.directGameMode,
+body.gameMode{
+  overflow:hidden!important;
+}
+
+body.directGameMode #gameArea,
+body.gameMode #gameArea{
+  position:fixed!important;
+  inset:0!important;
+  z-index:5000!important;
+  margin:0!important;
+  padding:8px!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  gap:6px!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98))!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+body.directGameMode #gameArea .cardHeader,
+body.gameMode #gameArea .cardHeader{
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:6px 10px!important;
+  flex:0 0 auto!important;
+  border-radius:16px!important;
+  background:rgba(2,6,23,.42)!important;
+  border:1px solid rgba(148,163,184,.18)!important;
+}
+
+body.directGameMode #gameArea h2,
+body.gameMode #gameArea h2{
+  display:block!important;
+  margin:0!important;
+  font-size:16px!important;
+  line-height:1.15!important;
+}
+
+body.directGameMode #gameHint,
+body.gameMode #gameHint{
+  display:none!important;
+}
+
+body.directGameMode #gameFrame,
+body.gameMode #gameFrame,
+body.directGameMode #gameArea iframe,
+body.gameMode #gameArea iframe{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  display:block!important;
+  border-radius:18px!important;
+  border:2px solid #020617!important;
+  background:#020617!important;
+  overflow:hidden!important;
+}
+
+body.directGameMode #gameArea .danger,
+body.gameMode #gameArea .danger{
+  border-radius:999px!important;
+  padding:7px 12px!important;
+  margin:0!important;
+}
+
+body.gameMode #gameArea{
+  right:382px!important;
+}
+
+@media (max-width:1050px){
+  body.gameMode #gameArea{
+    right:0!important;
+  }
+}
+
 </style>
 </head>
 
@@ -1675,6 +1760,8 @@ body.gameMode #gameArea .cardHeader,body.directGameMode #gameArea .cardHeader{ba
     </div>
 
     <div id="home" class="section active">
+      <div id="continueCard" class="continueCard hidden"></div>
+
       <div class="hero">
         <h2>Welcome to GameForge</h2>
         <p>A multiplayer browser arcade with persistent pets, rooms, live chat, and account progression.</p>
