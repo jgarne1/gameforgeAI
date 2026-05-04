@@ -2147,6 +2147,35 @@ app.get('/api/admin/dashboard',(req,res)=>{
   });
 });
 
+
+app.post('/api/admin/users/reset-defaults',(req,res)=>{
+  let adminUser=requireAdmin(req,res);
+  if(!adminUser)return;
+
+  let allUsers=normalizeAllUsers();
+  let resetPets={};
+
+  Object.keys(allUsers).forEach(username=>{
+    resetPets[username]=defaultPetProfile(username);
+  });
+
+  writeJSON(petsFile,resetPets);
+
+  let mk=market();
+  mk.listings={};
+  saveMarket(mk);
+
+  Object.keys(resetPets).forEach(username=>{
+    sendToUser(username,{type:'petUpdate',profile:resetPets[username]});
+  });
+
+  res.json({
+    ok:true,
+    message:'All users reset to default coins, starter egg, and starter inventory. Marketplace listings were cleared.',
+    resetUsers:Object.keys(resetPets).length
+  });
+});
+
 app.get('/api/admin/player',(req,res)=>{
   let adminUser=requireAdmin(req,res);
   if(!adminUser)return;
