@@ -2022,7 +2022,7 @@ body.gameMode #gameArea .danger{
       <div id="gameArea" class="card hidden">
         <div class="cardHeader">
           <h2 id="gameAreaTitle">Game Area</h2>
-          <button class="danger" onclick="exitGameMode()">Exit Game</button>
+          <button id="gameExitBtn" class="danger" onclick="handleGameExitButton()">Exit Game</button>
         </div>
         <p id="gameHint" class="muted">The selected game will appear here after the table host starts the match.</p>
         <div id="frameLoading" class="frameLoading hidden"><div class="loaderOrb"></div><b id="frameLoadingTitle">Loading...</b><span id="frameLoadingSub">Preparing your GameForge screen.</span></div>
@@ -2524,6 +2524,7 @@ function joinReadyBattle(url){
   document.body.classList.add('directGameMode');
   gameArea.classList.remove('hidden');
   gameAreaTitle.innerText='Pet Battle';
+  updateGameExitButton();
   gameHint.innerText='Loading your private battle instance.';
   setFrameLoading(true,'Loading Pet Battle','Connecting to the server-locked battle instance.');
   if(roomChatPanel)roomChatPanel.classList.add('hidden');
@@ -3505,6 +3506,7 @@ async function maybeLoadGame(){
 
   gameHint.innerText=mySeated?'You are seated. Play below.':'You are watching this table.';
   gameAreaTitle.innerText=room.selectedGame.name;
+  updateGameExitButton();
 
   let key=room.id+'|'+room.selectedGame.file+'|'+room.started+'|'+room.seats.map(function(x){return x?x.name:'';}).join(',');
 
@@ -3626,6 +3628,7 @@ function openInventory(){
 
   gameArea.classList.remove('hidden');
   gameAreaTitle.innerText='Inventory';
+  updateGameExitButton();
   gameHint.innerText='Manage your items, pets, and future collectibles.';
 
   roomChatPanel.classList.add('hidden');
@@ -3647,6 +3650,7 @@ async function launchSoloGame(g){
 
   gameArea.classList.remove('hidden');
   gameAreaTitle.innerText=g.name||'Game';
+  updateGameExitButton();
   gameHint.innerText='Loading '+(g.name||'game')+'...';
   setFrameLoading(true,'Loading '+(g.name||'game'),'Preparing your GameForge screen.');
 
@@ -3718,6 +3722,32 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
   gameFrame.src='/games/'+file+'?v='+Date.now();
 }
 
+function isPetBattleActive(){
+  let title=(document.getElementById('gameAreaTitle')&&gameAreaTitle.innerText)||'';
+  let src=(document.getElementById('gameFrame')&&gameFrame.getAttribute('src'))||'';
+  return /pet battle/i.test(title)||/petbattle\.html/i.test(src);
+}
+
+function updateGameExitButton(){
+  let btn=document.getElementById('gameExitBtn');
+  if(!btn)return;
+  if(isPetBattleActive()){
+    btn.innerText='🏳 Forfeit Battle';
+    btn.title='End this battle as a forfeit. You can still safely return after results.';
+  }else{
+    btn.innerText='Exit Game';
+    btn.title='Exit the current game screen.';
+  }
+}
+
+function handleGameExitButton(){
+  if(isPetBattleActive()&&gameFrame&&gameFrame.contentWindow){
+    gameFrame.contentWindow.postMessage({type:'petBattleForfeitRequest'},'*');
+    return;
+  }
+  exitGameMode();
+}
+
 function exitGameMode(){
   document.body.classList.remove('gameMode');
   document.body.classList.remove('directGameMode');
@@ -3725,10 +3755,12 @@ function exitGameMode(){
   setFrameLoading(false);
   gameFrame.removeAttribute('srcdoc');
   gameFrame.removeAttribute('src');
+  if(document.getElementById('gameAreaTitle'))gameAreaTitle.innerText='Game Area';
   directGameKey='';
   loadedGameKey='';
   launcherLoadedGameKey='';
   showSection('play');
+  updateGameExitButton();
 }
 
 /* ===== CHAT / PRESENCE ===== */
@@ -4278,6 +4310,7 @@ async function handleLauncherStartGame(msg){
   gameArea.classList.remove('hidden');
   showSection('play');
   gameAreaTitle.innerText=game.name||'Game';
+  updateGameExitButton();
 
   let seats=(startedRoom&&Array.isArray(startedRoom.seats))?startedRoom.seats:((room&&Array.isArray(room.seats))?room.seats:[]);
   let players=seats.map(function(x,i){return x?{seat:i,name:x.name}:null;}).filter(Boolean);
@@ -4348,6 +4381,16 @@ window.addEventListener('message',function(e){
 
   if(msg.type==='petUpdated'||msg.type==='marketUpdated'){
     refreshPetUI();
+  }
+
+  if(msg.type==='petBattleReturn'){
+    exitGameMode();
+    if(msg.target==='battlehall'){
+      let g=games.find(x=>x.id==='battlehall'||x.file==='battlehall.html')||{id:'battlehall',name:'Battle Hall',file:'battlehall.html',maxPlayers:1,seats:1};
+      launchSoloGame(g);
+    }else{
+      showSection('home');
+    }
   }
 });
 
