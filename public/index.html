@@ -2469,11 +2469,20 @@ function drawNavPlayerCard(){
     '</div>';
 }
 
+function closeTopFriends(){
+  let drop=document.getElementById('topFriendDrop');
+  if(drop)drop.classList.remove('open');
+}
+
 function toggleTopFriends(){
   let drop=document.getElementById('topFriendDrop');
   if(!drop)return;
-  if(drop.classList.contains('open'))drop.classList.remove('open');
-  else{drawTopFriendsDropdown();drop.classList.add('open');}
+  if(drop.classList.contains('open')){
+    closeTopFriends();
+  }else{
+    drawTopFriendsDropdown();
+    drop.classList.add('open');
+  }
 }
 
 function drawTopFriendsDropdown(){
@@ -4105,6 +4114,24 @@ document.addEventListener('keydown',function(e){
   if(input&&document.activeElement===input){
     e.preventDefault();
     sendChat();
+  }
+});
+
+// Friends dropdown UX: clicking outside the popover or pressing Escape closes it.
+// This keeps the global header behavior consistent with modern modal/dropdown patterns
+// without changing the Social Center or friend profile modal logic.
+document.addEventListener('click',function(e){
+  let drop=document.getElementById('topFriendDrop');
+  let btn=document.getElementById('topFriendsBtn');
+  if(!drop||!drop.classList.contains('open'))return;
+  if(drop.contains(e.target)||(btn&&btn.contains(e.target)))return;
+  closeTopFriends();
+});
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    closeTopFriends();
+    closeFriendProfile();
   }
 });
 
