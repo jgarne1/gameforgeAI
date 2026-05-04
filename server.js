@@ -148,6 +148,123 @@ function syncLivePetDataFromRepo(options={}){
 syncLivePetDataFromRepo({force:false,reason:'startup'});
 
 function games(){return readJSON(gamesFile,[])}
+
+function saveGames(list){writeJSON(gamesFile,Array.isArray(list)?list:[])}
+function gameById(gameId){
+  gameId=String(gameId||'').trim();
+  return games().find(g=>g&&String(g.id||'')===gameId)||null;
+}
+function safeGameId(value){
+  return String(value||'').trim().toLowerCase().replace(/\.html$/,'').replace(/[^a-z0-9_-]/g,'_').replace(/^_+|_+$/g,'').slice(0,48);
+}
+function safeGameFile(value){
+  let raw=String(value||'').trim().replace(/\\/g,'/').split('/').pop();
+  raw=raw.replace(/[^a-zA-Z0-9_.-]/g,'_');
+  if(!raw.toLowerCase().endsWith('.html'))raw+='.html';
+  if(raw==='.'||raw==='..'||raw.includes('..'))return '';
+  return raw.slice(0,80);
+}
+function niceNameFromId(id){
+  return String(id||'game').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+}
+function normalizeGameEditorPayload(input){
+  input=input||{};
+  let file=safeGameFile(input.file||input.filename||'');
+  let id=safeGameId(input.id||file||'');
+  if(!file&&id)file=id+'.html';
+  if(!id&&file)id=safeGameId(file);
+  let min=Math.max(1,Math.min(12,Math.floor(Number(input.minPlayers||1))));
+  let max=Math.max(min,Math.min(12,Math.floor(Number(input.maxPlayers||input.seats||min))));
+  let seats=Math.max(max,Math.min(12,Math.floor(Number(input.seats||max))));
+  return {
+    id,
+    name:String(input.name||niceNameFromId(id)).trim().slice(0,60)||niceNameFromId(id),
+    file,
+    minPlayers:min,
+    maxPlayers:max,
+    seats,
+    icon:String(input.icon||'🎮').trim().slice(0,8)||'🎮',
+    showInLauncher:input.showInLauncher!==false,
+    requiresUnlock:input.requiresUnlock!==false,
+    enabled:input.enabled!==false,
+    price:Math.max(0,Math.min(999999,Math.floor(Number(input.price||50))))
+  };
+}
+function gameUnlockItemId(gameId){return 'game_'+safeGameId(gameId)}
+function gameUnlockItemDef(game){
+  let itemId=gameUnlockItemId(game.id);
+  return {
+    id:itemId,
+    name:game.name+' Game Cartridge',
+    category:'game',
+    type:'game_unlock',
+    itemType:'game_unlock',
+    rarity:'common',
+    description:'Unlocks hosting for '+game.name+' in the GameForge table launcher. Guests can still join your table.',
+    image:'/assets/items/'+itemId+'.png',
+    placeholderImage:'/assets/items/generic_item.png',
+    stackable:false,
+    usable:false,
+    unlocksGame:game.id,
+    gameId:game.id,
+    tags:['game','unlock','cartridge'],
+    defaultShopId:'game_shop',
+    basePrice:Number(game.price||50)
+  };
+}
+function adminGameListPayload(){
+  let itemCat=itemCatalog();
+  let shops=shopCatalog();
+  let gameShop=(shops&&shops.game_shop&&shops.game_shop.items)||{};
+  return games().map(g=>{
+    let id=String(g.id||'');
+    let itemId=gameUnlockItemId(id);
+    return Object.assign({},g,{
+      fileExists:!!(g.file&&fs.existsSync(path.join(__dirname,'games',safeGameFile(g.file)))),
+      unlockItemId:itemId,
+      hasUnlockItem:!!itemCat[itemId],
+      inGameShop:!!gameShop[itemId],
+      price:Number((gameShop[itemId]&&gameShop[itemId].price)||g.price||(itemCat[itemId]&&itemCat[itemId].basePrice)||50),
+      showInLauncher:g.showInLauncher!==false&&!CORE_FREE_GAME_IDS.has(id),
+      requiresUnlock:g.requiresUnlock!==false&&!CORE_FREE_GAME_IDS.has(id)
+    });
+  }).sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));
+}
+function scanGameFilesForAdmin(){
+  let gameDir=path.join(__dirname,'games');
+  let list=fs.existsSync(gameDir)?fs.readdirSync(gameDir).filter(f=>f.toLowerCase().endsWith('.html')).sort():[];
+  let byFile={};
+  games().forEach(g=>{if(g&&g.file)byFile[safeGameFile(g.file)]=g;});
+  let itemCat=itemCatalog();
+  let shops=shopCatalog();
+  let gameShop=(shops&&shops.game_shop&&shops.game_shop.items)||{};
+  return list.map(file=>{
+    let existing=byFile[file]||null;
+    let id=existing?existing.id:safeGameId(file);
+    let itemId=gameUnlockItemId(id);
+    let internal=CORE_FREE_GAME_IDS.has(id)||['launcher.html','market.html','inventory.html','petworld.html','petbattle.html'].includes(file);
+    let missing=[];
+    if(!existing)missing.push('games.json');
+    if(existing&&existing.showInLauncher===undefined&&!internal)missing.push('showInLauncher flag');
+    if(existing&&existing.requiresUnlock===undefined&&!internal)missing.push('requiresUnlock flag');
+    if(!internal&&(existing?existing.requiresUnlock!==false:true)&&!itemCat[itemId])missing.push('unlock item');
+    if(!internal&&(existing?existing.requiresUnlock!==false:true)&&!gameShop[itemId])missing.push('Game Shop entry');
+    return {
+      file,
+      id,
+      name:existing?existing.name:niceNameFromId(id),
+      existsInGamesJson:!!existing,
+      internal,
+      suggestedShowInLauncher:!internal,
+      suggestedRequiresUnlock:!internal,
+      itemId,
+      hasUnlockItem:!!itemCat[itemId],
+      inGameShop:!!gameShop[itemId],
+      missing,
+      needsSync:missing.length>0
+    };
+  });
+}
 function users(){return readJSON(usersFile,{})}
 function pets(){return readJSON(petsFile,{})}
 function moves(){return readJSON(movesFile,DEFAULT_MOVES)}
@@ -294,7 +411,8 @@ function canUsernameHostGame(username,gameId){
   gameId=String(gameId||'').trim();
 
   if(!gameId)return false;
-  if(CORE_FREE_GAME_IDS.has(gameId))return true;
+  let gameDef=gameById(gameId);
+  if(CORE_FREE_GAME_IDS.has(gameId)||(gameDef&&gameDef.requiresUnlock===false))return true;
   if(username&&admins().includes(username))return true;
 
   let profile=username?getPetProfile(username):null;
@@ -2145,6 +2263,185 @@ function requireAdmin(req,res,permission='dashboard'){
 
   return username;
 }
+
+
+/* ===== ADMIN GAME EDITOR API ===== */
+
+app.get('/api/admin/games/manage',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
+  res.json({ok:true,games:adminGameListPayload(),roles:ADMIN_ROLES.map(role=>({id:role,label:ADMIN_ROLE_LABELS[role]}))});
+});
+
+app.get('/api/admin/games/scan',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
+  res.json({ok:true,files:scanGameFilesForAdmin()});
+});
+
+app.post('/api/admin/games/save',async (req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
+  try{
+    let game=normalizeGameEditorPayload(req.body.game||req.body);
+    if(!game.id)return res.status(400).json({error:'Missing game id'});
+    if(!game.file)return res.status(400).json({error:'Missing HTML file name'});
+
+    if(CORE_FREE_GAME_IDS.has(game.id)){
+      game.showInLauncher=false;
+      game.requiresUnlock=false;
+    }
+
+    let list=games();
+    let idx=list.findIndex(g=>g&&String(g.id||'')===game.id);
+    let existing=idx>=0?list[idx]:{};
+    let next=Object.assign({},existing,{
+      id:game.id,
+      name:game.name,
+      file:game.file,
+      minPlayers:game.minPlayers,
+      maxPlayers:game.maxPlayers,
+      seats:game.seats,
+      icon:game.icon,
+      showInLauncher:!!game.showInLauncher,
+      requiresUnlock:!!game.requiresUnlock,
+      enabled:!!game.enabled
+    });
+
+    if(idx>=0)list[idx]=next;
+    else list.push(next);
+    list.sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));
+    saveGames(list);
+    await commitFileToGithub('games.json',Buffer.from(JSON.stringify(list,null,2)),'Admin game catalog update: '+game.id);
+
+    let items=itemCatalog();
+    let shops=shopCatalog();
+    shops.game_shop=shops.game_shop||{id:'game_shop',name:'Game Shop',icon:'🎮',theme:'games',description:'Game cartridges and table unlocks.',items:{}};
+    shops.game_shop.items=shops.game_shop.items||{};
+    let itemId=gameUnlockItemId(game.id);
+
+    if(game.requiresUnlock){
+      items[itemId]=Object.assign({},items[itemId]||{},gameUnlockItemDef(game));
+      shops.game_shop.items[itemId]=Object.assign({},shops.game_shop.items[itemId]||{}, {price:game.price,stock:'infinite'});
+      writeJSON(itemsFile,items);
+      writeJSON(shopsFile,shops);
+      await commitFileToGithub('data/items.json',Buffer.from(JSON.stringify(items,null,2)),'Admin game unlock item update: '+itemId);
+      await commitFileToGithub('data/shops.json',Buffer.from(JSON.stringify(shops,null,2)),'Admin Game Shop update: '+itemId);
+    }else if(shops.game_shop.items[itemId]){
+      delete shops.game_shop.items[itemId];
+      writeJSON(shopsFile,shops);
+      await commitFileToGithub('data/shops.json',Buffer.from(JSON.stringify(shops,null,2)),'Admin Game Shop removal: '+itemId);
+    }
+
+    res.json({ok:true,message:'Game saved and committed to GitHub.',game:next,games:adminGameListPayload()});
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message||'Game save failed'});
+  }
+});
+
+app.post('/api/admin/games/upload',async (req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
+  try{
+    let game=normalizeGameEditorPayload(req.body.game||{});
+    let html=String(req.body.html||'');
+    if(!game.id)return res.status(400).json({error:'Missing game id'});
+    if(!game.file)return res.status(400).json({error:'Missing HTML file name'});
+    if(!html.trim())return res.status(400).json({error:'Missing HTML file content'});
+    if(html.length>2_500_000)return res.status(400).json({error:'Game HTML must be under 2.5MB'});
+
+    let repoPath='games/'+game.file;
+    let localPath=path.join(__dirname,repoPath);
+    fs.mkdirSync(path.dirname(localPath),{recursive:true});
+    fs.writeFileSync(localPath,html);
+    await commitFileToGithub(repoPath,Buffer.from(html), 'Admin game file upload: '+game.file);
+
+    req.body.game=game;
+    req.body.html=undefined;
+
+    let list=games();
+    let idx=list.findIndex(g=>g&&String(g.id||'')===game.id);
+    let existing=idx>=0?list[idx]:{};
+    let next=Object.assign({},existing,{
+      id:game.id,
+      name:game.name,
+      file:game.file,
+      minPlayers:game.minPlayers,
+      maxPlayers:game.maxPlayers,
+      seats:game.seats,
+      icon:game.icon,
+      showInLauncher:!!game.showInLauncher,
+      requiresUnlock:!!game.requiresUnlock,
+      enabled:!!game.enabled
+    });
+    if(CORE_FREE_GAME_IDS.has(next.id)){next.showInLauncher=false;next.requiresUnlock=false;}
+    if(idx>=0)list[idx]=next; else list.push(next);
+    list.sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));
+    saveGames(list);
+    await commitFileToGithub('games.json',Buffer.from(JSON.stringify(list,null,2)),'Admin game catalog update: '+game.id);
+
+    let items=itemCatalog();
+    let shops=shopCatalog();
+    shops.game_shop=shops.game_shop||{id:'game_shop',name:'Game Shop',icon:'🎮',theme:'games',description:'Game cartridges and table unlocks.',items:{}};
+    shops.game_shop.items=shops.game_shop.items||{};
+    let itemId=gameUnlockItemId(game.id);
+    if(next.requiresUnlock){
+      items[itemId]=Object.assign({},items[itemId]||{},gameUnlockItemDef(Object.assign({},game,next)));
+      shops.game_shop.items[itemId]=Object.assign({},shops.game_shop.items[itemId]||{}, {price:game.price,stock:'infinite'});
+      writeJSON(itemsFile,items);
+      writeJSON(shopsFile,shops);
+      await commitFileToGithub('data/items.json',Buffer.from(JSON.stringify(items,null,2)),'Admin game unlock item update: '+itemId);
+      await commitFileToGithub('data/shops.json',Buffer.from(JSON.stringify(shops,null,2)),'Admin Game Shop update: '+itemId);
+    }else if(shops.game_shop.items[itemId]){
+      delete shops.game_shop.items[itemId];
+      writeJSON(shopsFile,shops);
+      await commitFileToGithub('data/shops.json',Buffer.from(JSON.stringify(shops,null,2)),'Admin Game Shop removal: '+itemId);
+    }
+
+    res.json({ok:true,message:'Game file, catalog, and unlock data committed to GitHub.',game:next,games:adminGameListPayload()});
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message||'Game upload failed'});
+  }
+});
+
+app.post('/api/admin/games/sync-missing',async (req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
+  try{
+    let selected=Array.isArray(req.body.files)?req.body.files.map(safeGameFile).filter(Boolean):[];
+    let scan=scanGameFilesForAdmin().filter(x=>selected.includes(x.file));
+    let list=games();
+    let items=itemCatalog();
+    let shops=shopCatalog();
+    shops.game_shop=shops.game_shop||{id:'game_shop',name:'Game Shop',icon:'🎮',theme:'games',description:'Game cartridges and table unlocks.',items:{}};
+    shops.game_shop.items=shops.game_shop.items||{};
+    let changedGames=false,changedItems=false,changedShops=false;
+
+    scan.forEach(row=>{
+      let game=normalizeGameEditorPayload({id:row.id,name:row.name,file:row.file,minPlayers:1,maxPlayers:2,seats:2,showInLauncher:row.suggestedShowInLauncher,requiresUnlock:row.suggestedRequiresUnlock,price:50,enabled:true});
+      let idx=list.findIndex(g=>g&&String(g.id||'')===game.id);
+      let next=Object.assign({},idx>=0?list[idx]:{},game);
+      delete next.price;
+      if(idx>=0)list[idx]=next; else list.push(next);
+      changedGames=true;
+      if(game.requiresUnlock){
+        let itemId=gameUnlockItemId(game.id);
+        if(!items[itemId]){items[itemId]=gameUnlockItemDef(game);changedItems=true;}
+        if(!shops.game_shop.items[itemId]){shops.game_shop.items[itemId]={price:game.price,stock:'infinite'};changedShops=true;}
+      }
+    });
+
+    if(changedGames){list.sort((a,b)=>String(a.name||a.id).localeCompare(String(b.name||b.id)));saveGames(list);await commitFileToGithub('games.json',Buffer.from(JSON.stringify(list,null,2)),'Admin game scan sync');}
+    if(changedItems){writeJSON(itemsFile,items);await commitFileToGithub('data/items.json',Buffer.from(JSON.stringify(items,null,2)),'Admin game scan unlock items sync');}
+    if(changedShops){writeJSON(shopsFile,shops);await commitFileToGithub('data/shops.json',Buffer.from(JSON.stringify(shops,null,2)),'Admin game scan Game Shop sync');}
+    res.json({ok:true,message:'Selected game files synced.',synced:scan.length,games:adminGameListPayload(),scan:scanGameFilesForAdmin()});
+  }catch(err){
+    console.error(err);
+    res.status(500).json({error:err.message||'Game sync failed'});
+  }
+});
 
 
 
