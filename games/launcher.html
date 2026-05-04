@@ -247,6 +247,7 @@ let pendingBattleSetup=false;
 let battleInviteAnnounced=false;
 
 const el=id=>document.getElementById(id);
+function noCacheUrl(url){return url+(url.includes('?')?'&':'?')+'_='+Date.now();}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function log(text,user){let d=document.createElement('div');d.className='logLine';d.innerHTML=user?'<b>'+esc(user)+':</b> '+esc(text):esc(text);el('log').appendChild(d);el('log').scrollTop=el('log').scrollHeight;}
 function send(obj){if(!socket||socket.readyState!==1){setTimeout(()=>send(obj),150);return;}socket.send(JSON.stringify(obj));}
@@ -423,10 +424,10 @@ function normalizedGames(){
 }
 
 async function loadData(){
-  try{games=await (await fetch('/api/games')).json();}catch(e){games=[];log('Could not load games.json from /api/games.');}
+  try{games=await (await fetch(noCacheUrl('/api/games'),{cache:'no-store'})).json();}catch(e){games=[];log('Could not load games.json from /api/games.');}
   if(me){
     try{
-      let r=await fetch('/api/pet/profile?user='+encodeURIComponent(me)+'&_='+Date.now());
+      let r=await fetch(noCacheUrl('/api/pet/profile?user='+encodeURIComponent(me)),{cache:'no-store'});
       let d=await r.json();
       if(!r.ok||d.error)throw new Error(d.error||'profile failed');
       profile=d.profile||null;
@@ -435,6 +436,25 @@ async function loadData(){
   }
   drawGames();drawPlayers();drawTable();
 }
+
+
+async function refreshUnlockData(){
+  if(!me)return;
+  try{
+    let r=await fetch(noCacheUrl('/api/pet/profile?user='+encodeURIComponent(me)),{cache:'no-store'});
+    let d=await r.json();
+    if(!r.ok||d.error)throw new Error(d.error||'profile failed');
+    profile=d.profile||profile;
+    itemCatalog=normalizeItemCatalog(d.shop||d.items||d.itemCatalog||itemCatalog||{});
+    drawGames();
+    drawTable();
+  }catch(e){
+    log('Could not refresh unlocks: '+(e.message||'server unavailable'));
+  }
+}
+
+window.addEventListener('focus',refreshUnlockData);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshUnlockData();});
 
 function connect(){
   if(!me){log('Log in from the main GameForge page first.');return;}
@@ -459,6 +479,9 @@ function connect(){
       readyByUser[m.data.username]=!!m.data.ready;drawTable();
     }
     if(m.type==='roomClosed'){room=null;previousPlayers=null;previousSeats=null;lastRoomId='';log('Room closed.');drawAll();}
+    if(m.type==='petUpdate'||m.type==='marketUpdated'){
+      refreshUnlockData();
+    }
     if(m.type==='error'){log(m.message||m.error||'Server error');}
   };
   socket.onclose=()=>{socket=null;log('Disconnected from table server.');};

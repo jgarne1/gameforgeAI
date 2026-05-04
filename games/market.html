@@ -952,8 +952,12 @@ function receiveSetup(setupPlayers,setupSeat){
   reloadAll();
 }
 
+function noCacheUrl(url){return url+(url.includes('?')?'&':'?')+'_='+Date.now();}
+
 async function api(url,opts){
-  let res=await fetch(url,opts);
+  opts=opts||{};
+  opts.cache='no-store';
+  let res=await fetch(noCacheUrl(url),opts);
   let text=await res.text();
   let data={};
 
