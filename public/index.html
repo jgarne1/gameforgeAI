@@ -1777,6 +1777,11 @@ body.gameMode #gameArea .danger{
 .friendCard h4{margin:0 0 5px}.onlineDot{display:inline-flex;width:9px;height:9px;border-radius:999px;background:#64748b;margin-right:6px}.onlineDot.on{background:#22c55e;box-shadow:0 0 12px rgba(34,197,94,.65)}
 @media(max-width:900px){.socialShell{grid-template-columns:1fr}.socialStats{grid-template-columns:repeat(2,1fr)}.socialTop{flex-direction:column}.socialActions{justify-content:flex-start}}
 
+
+
+/* ===== INDEX SHELL POLISH v1 ===== */
+.navBrand{padding:8px 8px 12px;margin-bottom:10px}.navBrand h1{font-size:21px;letter-spacing:-.8px;display:flex;align-items:center;gap:8px}.navBrand .mark{width:30px;height:30px;margin-right:0;border-radius:11px}.navBrand span{font-size:11px;margin-top:6px}.navUser{margin:0 0 12px;padding:12px;background:radial-gradient(circle at 15% 0%,rgba(56,189,248,.14),transparent 35%),rgba(2,6,23,.58);border:1px solid rgba(148,163,184,.24);border-radius:20px}.navPlayerTop{display:flex;align-items:center;gap:10px;margin-bottom:10px}.navPlayerAvatar{width:42px;height:42px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#3b82f6,#7c3aed);box-shadow:0 10px 24px rgba(59,130,246,.22);font-weight:1000}.navPlayerName{font-size:16px;font-weight:1000;color:#fff;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.navPlayerRole{font-size:12px;color:#cbd5e1;margin-top:3px}.navPlayerStats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.navMiniStat{border:1px solid rgba(148,163,184,.18);border-radius:13px;padding:8px;background:rgba(15,23,42,.62)}.navMiniStat b{display:block;color:#fff;font-size:13px;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.navMiniStat span{display:block;color:var(--muted);font-size:10px;margin-top:2px}.navGuestHint{color:var(--muted);font-size:12px;line-height:1.35}.navFooter{font-size:10px;opacity:.75}.topStatusBar{position:relative;padding:9px 10px;min-height:58px}.topStatusBrand{display:flex;align-items:center;gap:10px;min-width:0}.topStatusBrandTitle{font-size:15px;font-weight:1000;color:#fff;white-space:nowrap}.topStatusSub{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px}.topStatusActions{display:flex;align-items:center;gap:7px;position:relative;flex-wrap:wrap;justify-content:flex-end}.topStatusActions button{margin:0;padding:8px 10px;border-radius:999px;font-size:12px}.topStatusPill{max-width:210px}.topFriendDrop{display:none;position:absolute;right:82px;top:46px;width:min(360px,calc(100vw - 40px));max-height:420px;overflow:auto;z-index:9000;padding:10px;border-radius:20px;border:1px solid rgba(148,163,184,.28);background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98));box-shadow:0 24px 70px rgba(0,0,0,.55)}.topFriendDrop.open{display:block}.topFriendDrop h4{margin:2px 4px 8px;font-size:14px}.topFriendItem{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid rgba(148,163,184,.18);border-radius:15px;padding:9px;margin:7px 0;background:rgba(2,6,23,.52);cursor:pointer}.topFriendItem:hover{border-color:rgba(56,189,248,.38);background:rgba(30,41,59,.64)}.topFriendName{font-weight:1000;color:#fff}.topFriendMeta{font-size:11px;color:var(--muted);margin-top:2px}.topFriendActions{display:flex;gap:5px}.topFriendActions button{padding:6px 8px;font-size:11px}.loginModalShade{display:none;position:fixed;inset:0;z-index:10000;background:rgba(2,6,23,.72);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:18px}.loginModalShade.open{display:flex}.loginModal{width:min(470px,100%);border:1px solid rgba(148,163,184,.30);border-radius:26px;background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98));box-shadow:0 30px 90px rgba(0,0,0,.62);padding:18px}.loginModal h3{margin:0 0 5px;font-size:26px}.loginModal p{margin:0 0 14px;color:var(--muted)}.loginModal input{width:100%;margin:5px 0}.loginModalActions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}.loginModalActions button{margin:0}.friendProfileModal .loginModal{width:min(520px,100%)}.friendProfileHero{display:flex;gap:12px;align-items:center;margin:10px 0 12px}.friendProfileAvatar{width:56px;height:56px;border-radius:20px;background:linear-gradient(135deg,#2563eb,#a855f7);display:flex;align-items:center;justify-content:center;font-size:26px}.friendProfileName{font-size:24px;font-weight:1000;color:#fff}.friendProfileMeta{color:var(--muted);font-size:13px}.friendProfileStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.friendProfileStats .navMiniStat{padding:10px}@media(max-width:900px){.topStatusBar{align-items:stretch}.topStatusLeft,.topStatusRight{width:100%;justify-content:space-between}.topStatusSub{max-width:220px}.topFriendDrop{right:0;top:92px}.navPlayerStats{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -1786,7 +1791,11 @@ body.gameMode #gameArea .danger{
   <div class="nav">
     <div class="navBrand">
       <h1><span class="mark">✦</span>GameForge</h1>
-      <span>Games, rooms, pets, inventory, and account progression.</span>
+      <span>Arcade hub</span>
+    </div>
+
+    <div class="navUser" id="navUserBox">
+      <div class="navGuestHint">Log in to load your profile, pet, coins, and friends.</div>
     </div>
 
     <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
@@ -1799,9 +1808,6 @@ body.gameMode #gameArea .danger{
     <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span>Social <span id="socialNavBadge" class="socialNavBadge">0</span></button>
     <button onclick="openAdmin()" id="navAdmin" class="hidden"><span class="navIcon">🛡</span>Admin</button>
 
-    <div class="navUser" id="navUserBox">
-      Not logged in
-    </div>
 
     <div class="navFooter">
       Solo games open instantly. Multiplayer games use rooms, seats, and chat.
@@ -1811,8 +1817,21 @@ body.gameMode #gameArea .danger{
   <div class="main">
 
     <div id="topStatusBar" class="topStatusBar">
-      <div class="topStatusLeft"><span class="topStatusLogo">✦</span><span id="topStatusText">GameForge ready</span></div>
-      <div class="topStatusRight"><span id="topStatusPet" class="topStatusPill">No companion</span><span id="topStatusRoom" class="topStatusPill">No room</span></div>
+      <div class="topStatusLeft topStatusBrand">
+        <span class="topStatusLogo">✦</span>
+        <div>
+          <div class="topStatusBrandTitle">GameForge</div>
+          <div id="topStatusText" class="topStatusSub">GameForge ready</div>
+        </div>
+      </div>
+      <div class="topStatusRight topStatusActions">
+        <span id="topStatusPet" class="topStatusPill">No companion</span>
+        <span id="topStatusRoom" class="topStatusPill">No room</span>
+        <button id="topFriendsBtn" class="ghost hidden" onclick="toggleTopFriends()">👥 Friends</button>
+        <button id="topAdminBtn" class="purple hidden" onclick="openAdmin()">Admin</button>
+        <button id="topAuthBtn" class="primary" onclick="topAuthAction()">Login</button>
+        <div id="topFriendDrop" class="topFriendDrop"></div>
+      </div>
     </div>
 
     <div id="home" class="section active">
@@ -2050,6 +2069,26 @@ body.gameMode #gameArea .danger{
 
 <div id="toastRoot" class="toastRoot"></div>
 
+<div id="loginModalShade" class="loginModalShade" onclick="if(event.target===this)closeLoginModal()">
+  <div class="loginModal">
+    <h3>Login</h3>
+    <p>Enter your GameForge account to load pets, rooms, inventory, and social features.</p>
+    <input id="modalUser" placeholder="username" onkeydown="if(event.key==='Enter')modalLogin()">
+    <input id="modalPass" type="password" placeholder="password" onkeydown="if(event.key==='Enter')modalLogin()">
+    <div class="loginModalActions">
+      <button class="ghost" onclick="closeLoginModal()">Cancel</button>
+      <button onclick="modalRegister()">Create Account</button>
+      <button class="primary" onclick="modalLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
+<div id="friendProfileModalShade" class="loginModalShade friendProfileModal" onclick="if(event.target===this)closeFriendProfile()">
+  <div class="loginModal">
+    <div id="friendProfileContent"><p class="muted">Loading profile...</p></div>
+  </div>
+</div>
+
 <script>
 /*
 Runtime notes for future AI chats:
@@ -2101,24 +2140,37 @@ function setFrameLoading(on,title,sub){
   if(sub&&document.getElementById('frameLoadingSub'))frameLoadingSub.innerText=sub;
 }
 
+function activePetSummary(){
+  let pet=null;
+  try{pet=activePet&&activePet();}catch(e){pet=null;}
+  if(!pet&&accountProfile&&accountProfile.pet)pet=accountProfile.pet;
+  return pet||null;
+}
+
 function updateTopStatus(){
   let text=document.getElementById('topStatusText');
   let petPill=document.getElementById('topStatusPet');
   let roomPill=document.getElementById('topStatusRoom');
+  let authBtn=document.getElementById('topAuthBtn');
+  let adminBtn=document.getElementById('topAdminBtn');
+  let friendsBtn=document.getElementById('topFriendsBtn');
   if(!text||!petPill||!roomPill)return;
 
-  text.innerText=me?('Logged in as '+me):'Log in to unlock pets, rooms, and progression';
+  text.innerText=me?('Logged in as '+me+' · '+(admin?'Admin':'Player')):'Log in to unlock pets, rooms, and progression';
 
-  let pet=null;
-  try{pet=activePet&&activePet();}catch(e){pet=null;}
+  let pet=activePetSummary();
   if(pet){
     let level=(pet.stats&&pet.stats.level)||pet.level||1;
     petPill.innerText=(pet.emoji||'🐾')+' '+(pet.name||'Companion')+' · Lv '+level;
   }else{
-    petPill.innerText='No active pet';
+    petPill.innerText='No companion';
   }
 
   roomPill.innerText=currentRoom?('Room '+currentRoom):'No room';
+  if(authBtn)authBtn.innerText=me?'Logout':'Login';
+  if(adminBtn)adminBtn.classList.toggle('hidden',!admin);
+  if(friendsBtn)friendsBtn.classList.toggle('hidden',!me);
+  drawTopFriendsDropdown();
 }
 
 function drawContinueCard(){
@@ -2191,8 +2243,130 @@ function openAdmin(){
 window.refreshPetUI=async function(){
   if(!me)return;
   await loadPet();
+  drawNavPlayerCard();
+  updateTopStatus();
 };
 
+
+
+
+function topAuthAction(){
+  if(me)return logout();
+  openLoginModal();
+}
+
+function openLoginModal(){
+  let shade=document.getElementById('loginModalShade');
+  if(!shade)return;
+  shade.classList.add('open');
+  if(document.getElementById('modalUser')){
+    modalUser.value=(document.getElementById('user')&&user.value)||'';
+    modalPass.value='';
+    setTimeout(function(){modalUser.focus();},60);
+  }
+}
+
+function closeLoginModal(){
+  let shade=document.getElementById('loginModalShade');
+  if(shade)shade.classList.remove('open');
+}
+
+function syncModalToMainLogin(){
+  if(document.getElementById('user')&&document.getElementById('modalUser'))user.value=modalUser.value.trim();
+  if(document.getElementById('pass')&&document.getElementById('modalPass'))pass.value=modalPass.value;
+}
+
+function modalLogin(){syncModalToMainLogin();login();}
+function modalRegister(){syncModalToMainLogin();register();}
+
+function drawNavPlayerCard(){
+  let box=document.getElementById('navUserBox');
+  if(!box)return;
+  if(!me){
+    box.innerHTML='<div class="navGuestHint">Log in to load your profile, pet, coins, and friends.</div><button class="primary" style="width:100%;margin-top:10px" onclick="openLoginModal()">Login</button>';
+    return;
+  }
+  let pet=activePetSummary();
+  let coins=0;
+  if(accountProfile&&accountProfile.coins!==undefined)coins=Number(accountProfile.coins||0);
+  else if(petProfile)coins=Number(petProfile.money||0);
+  let unread=Number((socialData.counts&&socialData.counts.unreadMail)||0);
+  box.innerHTML=
+    '<div class="navPlayerTop">'+
+      '<div class="navPlayerAvatar">'+escapeHtml((pet&&pet.emoji)||'✦')+'</div>'+ 
+      '<div style="min-width:0"><div class="navPlayerName">'+escapeHtml(me)+'</div><div class="navPlayerRole">'+(admin?'Admin':'Player')+'</div></div>'+ 
+    '</div>'+ 
+    '<div class="navPlayerStats">'+
+      '<div class="navMiniStat"><b>🪙 '+coins+'</b><span>Coins</span></div>'+ 
+      '<div class="navMiniStat"><b>'+unread+'</b><span>Unread</span></div>'+ 
+      '<div class="navMiniStat"><b>'+(pet?escapeHtml(pet.name||'Pet'):'None')+'</b><span>Active Pet</span></div>'+ 
+      '<div class="navMiniStat"><b>'+Number((socialData.counts&&socialData.counts.friends)||0)+'</b><span>Friends</span></div>'+ 
+    '</div>';
+}
+
+function toggleTopFriends(){
+  let drop=document.getElementById('topFriendDrop');
+  if(!drop)return;
+  if(drop.classList.contains('open'))drop.classList.remove('open');
+  else{drawTopFriendsDropdown();drop.classList.add('open');}
+}
+
+function drawTopFriendsDropdown(){
+  let drop=document.getElementById('topFriendDrop');
+  if(!drop)return;
+  if(!me){drop.classList.remove('open');drop.innerHTML='';return;}
+  let friends=socialData.friends||[];
+  if(!friends.length){
+    drop.innerHTML='<h4>Friends</h4><div class="empty">No friends yet. Open Social to add players.</div><button class="primary" style="width:100%;margin-top:8px" onclick="showSection(\'social\');showSocialTab(\'friends\');topFriendDrop.classList.remove(\'open\')">Find Friends</button>';
+    return;
+  }
+  drop.innerHTML='<h4>Friends</h4>'+friends.map(function(profile){
+    let u=(profile&&profile.user)||{};
+    let online=(profile&&profile.online)||{};
+    let pet=(profile&&profile.activePet)||null;
+    let name=u.username||'';
+    return '<div class="topFriendItem" onclick="openFriendProfile(\''+escapeAttr(name)+'\')">'+
+      '<div style="min-width:0"><div class="topFriendName"><span class="onlineDot '+(online.online?'on':'')+'"></span>'+escapeHtml(u.displayName||name)+'</div><div class="topFriendMeta">'+escapeHtml(onlineLabel(online))+(pet?' · '+escapeHtml((pet.emoji||'🐾')+' '+(pet.name||'Pet')):'')+'</div></div>'+ 
+      '<div class="topFriendActions"><button class="gold" onclick="event.stopPropagation();prefillMail(\''+escapeAttr(name)+'\')">Mail</button></div>'+ 
+    '</div>';
+  }).join('')+'<button class="ghost" style="width:100%;margin-top:8px" onclick="showSection(\'social\');topFriendDrop.classList.remove(\'open\')">Open Social Center</button>';
+}
+
+function closeFriendProfile(){
+  let shade=document.getElementById('friendProfileModalShade');
+  if(shade)shade.classList.remove('open');
+}
+
+async function openFriendProfile(username){
+  if(!username||!me)return;
+  let shade=document.getElementById('friendProfileModalShade');
+  let box=document.getElementById('friendProfileContent');
+  if(!shade||!box)return;
+  shade.classList.add('open');
+  box.innerHTML='<p class="muted">Loading profile...</p>';
+  try{
+    let data=await socialApi('/api/social/user?user='+encodeURIComponent(me)+'&target='+encodeURIComponent(username));
+    let p=data.profile||{};
+    let u=p.user||{};
+    let online=p.online||{};
+    let pet=p.activePet||null;
+    let rel=p.social||{};
+    box.innerHTML=
+      '<div class="friendProfileHero"><div class="friendProfileAvatar">'+escapeHtml((pet&&pet.emoji)||'👤')+'</div><div><div class="friendProfileName">'+escapeHtml(u.displayName||u.username||username)+'</div><div class="friendProfileMeta">@'+escapeHtml(u.username||username)+' · '+escapeHtml(onlineLabel(online))+'</div></div></div>'+ 
+      '<p class="muted">'+escapeHtml(u.bio||'No profile bio yet.')+'</p>'+ 
+      '<div class="friendProfileStats">'+
+        '<div class="navMiniStat"><b>'+(pet?escapeHtml(pet.name||'Pet'):'No pet')+'</b><span>Active Pet</span></div>'+ 
+        '<div class="navMiniStat"><b>Lv '+Number((pet&&pet.level)||1)+'</b><span>Pet Level</span></div>'+ 
+        '<div class="navMiniStat"><b>'+Number(u.wins||0)+'</b><span>Wins</span></div>'+ 
+        '<div class="navMiniStat"><b>'+Number(u.gamesPlayed||0)+'</b><span>Games Played</span></div>'+ 
+      '</div>'+ 
+      '<div class="loginModalActions"><button class="ghost" onclick="closeFriendProfile()">Close</button><button class="gold" onclick="closeFriendProfile();prefillMail(\''+escapeAttr(u.username||username)+'\')">Mail</button>'+ 
+      (rel&&rel.isFriend?'<button class="danger" onclick="closeFriendProfile();removeFriend(\''+escapeAttr(u.username||username)+'\')">Remove Friend</button>':'')+
+      '</div>';
+  }catch(err){
+    box.innerHTML='<p class="muted">Could not load profile.</p><div class="loginModalActions"><button onclick="closeFriendProfile()">Close</button></div>';
+  }
+}
 
 /* ===== ACCOUNT ===== */
 
@@ -2205,7 +2379,7 @@ function drawAuth(){
     accountStatePill.innerText='Online';
     accountStatePill.style.color='#86efac';
 
-    navUserBox.innerHTML='<b>'+escapeHtml(me)+'</b><br><span>'+(admin?'Admin':'Player')+'</span>';
+    drawNavPlayerCard();
 
     if(admin){
       navAdmin.classList.remove('hidden');
@@ -2220,9 +2394,11 @@ function drawAuth(){
     accountStatePill.innerText='Offline';
     accountStatePill.style.color='#cbd5e1';
 
-    navUserBox.innerText='Not logged in';
+    drawNavPlayerCard();
     navAdmin.classList.add('hidden');
   }
+  updateTopStatus();
+  drawTopFriendsDropdown();
 }
 
 async function register(){
@@ -3801,6 +3977,9 @@ function drawSocialCenter(){
   drawProfilePanel();
   drawFriendsPanel();
   drawMailPanel();
+  drawNavPlayerCard();
+  updateTopStatus();
+  drawTopFriendsDropdown();
 }
 
 function drawSocialBadge(){
@@ -3884,7 +4063,7 @@ function friendCard(profile){
     '<h4><span class="onlineDot '+(online.online?'on':'')+'"></span>'+escapeHtml(u.displayName||name)+'</h4>'+ 
     '<p class="muted">@'+escapeHtml(name)+' · '+onlineLabel(online)+'</p>'+ 
     '<p class="muted">'+(pet?escapeHtml((pet.emoji||'🐾')+' '+(pet.name||'Pet')+' Lv '+(pet.level||1)):'No active pet')+'</p>'+ 
-    '<div class="socialActions"><button class="gold" onclick="prefillMail(\''+escapeAttr(name)+'\')">Mail</button><button class="danger" onclick="removeFriend(\''+escapeAttr(name)+'\')">Remove</button></div>'+ 
+    '<div class="socialActions"><button onclick="openFriendProfile(\''+escapeAttr(name)+'\')">Profile</button><button class="gold" onclick="prefillMail(\''+escapeAttr(name)+'\')">Mail</button><button class="danger" onclick="removeFriend(\''+escapeAttr(name)+'\')">Remove</button></div>'+ 
   '</div>';
 }
 
