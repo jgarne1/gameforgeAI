@@ -2330,6 +2330,9 @@ function joinReadyBattle(url){
   gameFrame.onload=function(){setFrameLoading(false);};
   gameFrame.removeAttribute('srcdoc');
   gameFrame.src=battleUrl+(battleUrl.includes('?')?'&':'?')+'v='+Date.now();
+  // CLEAR READY ALERT AFTER JOIN
+  readyBattleAlert=null;
+  drawBattleReadyAlert();
   readyBattleAlert=null;
   drawBattleReadyAlert();
   window.scrollTo(0,0);
