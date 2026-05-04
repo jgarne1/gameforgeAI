@@ -2062,15 +2062,6 @@ body.gameMode #gameArea .danger{
         <div id="petPanel"><p class="muted">Log in to load your pet.</p></div>
       </div>
     </div>
-
-    <div id="shop" class="section">
-      <div class="hero">
-        <h2>Shop</h2>
-        <p>Buy food, care tools, and training supplies for your companion.</p>
-      </div>
-      <div id="shopPanel" class="card"><p class="muted">Log in to load the shop.</p></div>
-    </div>
-
     <div id="inventory" class="section">
       <div class="hero">
         <h2>Inventory</h2>
@@ -2281,6 +2272,32 @@ function showToast(text,kind){
   setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2850);
 }
 
+function openMyStall(){
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
+    return;
+  }
+
+  document.body.classList.remove('gameMode');
+  showSection('play');
+  document.body.classList.add('directGameMode');
+
+  setFrameLoading(true,'Loading Your Stall','Managing your listings.');
+
+  gameFrame.onload=function(){
+    setFrameLoading(false);
+  };
+
+  gameFrame.src='/games/market.html?mode=stall&v='+Date.now();
+
+  gameArea.classList.remove('hidden');
+  gameAreaTitle.innerText='My Stall';
+  gameHint.innerText='Manage your items, listings, and sales.';
+
+  roomChatPanel.classList.add('hidden');
+}
+  
 function setFrameLoading(on,title,sub){
   let box=document.getElementById('frameLoading');
   if(!box)return;
