@@ -1843,6 +1843,109 @@ body.gameMode #gameArea .danger{
 
 
 
+/* ===== DESKTOP NAV FIT PATCH v1 =====
+   Keeps the grouped left nav polished without a visible scrollbar.
+   Mobile bottom-nav sizing is controlled in the mobile media query below. */
+@media (min-width:761px){
+  .nav{
+    scrollbar-width:none;
+    padding:12px 14px;
+  }
+
+  .nav::-webkit-scrollbar{
+    display:none;
+  }
+
+  .navBrand{
+    padding:6px 6px 10px;
+    margin-bottom:8px;
+  }
+
+  .navBrand h1{
+    font-size:20px;
+  }
+
+  .navBrand .mark{
+    width:28px;
+    height:28px;
+    border-radius:10px;
+  }
+
+  .navBrand span{
+    font-size:10px;
+    margin-top:4px;
+  }
+
+  .navUser{
+    padding:10px;
+    margin-bottom:9px;
+    border-radius:17px;
+  }
+
+  .navPlayerTop{
+    gap:8px;
+    margin-bottom:7px;
+  }
+
+  .navPlayerAvatar{
+    width:36px;
+    height:36px;
+    border-radius:13px;
+  }
+
+  .navPlayerName{
+    font-size:14px;
+  }
+
+  .navPlayerRole{
+    font-size:11px;
+  }
+
+  .navPlayerStats{
+    gap:5px;
+    margin-top:6px;
+  }
+
+  .navMiniStat{
+    padding:6px;
+    border-radius:11px;
+  }
+
+  .navMiniStat b{
+    font-size:12px;
+  }
+
+  .navMiniStat span{
+    font-size:9px;
+  }
+
+  .navGroupLabel{
+    margin:8px 6px 3px;
+    font-size:9px;
+    letter-spacing:.65px;
+  }
+
+  .navDivider{
+    margin:7px 4px 6px;
+  }
+
+  .nav button{
+    margin:4px 0;
+    padding:9px 11px;
+    border-radius:14px;
+    gap:8px;
+    font-size:13px;
+  }
+
+  .navIcon{
+    width:24px;
+    height:24px;
+    border-radius:9px;
+    font-size:13px;
+  }
+}
+
+
 /* ===== AI MOBILE USABILITY PATCH v1 =====
    Mobile-only layout safety pass. Desktop styles above remain the source of truth.
    Goal: make the app usable on phones without changing game/social logic. */
