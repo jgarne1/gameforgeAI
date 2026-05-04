@@ -1624,6 +1624,7 @@ body.gameMode #gameArea .danger{
     <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
     <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play</button>
     <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet</button>
+    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Battle</button>
     <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
     <button onclick="showSection('shop')" id="navShop"><span class="navIcon">🛒</span>Shop</button>
     <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
@@ -1647,6 +1648,7 @@ body.gameMode #gameArea .danger{
         <div class="heroActions">
           <button class="primary" onclick="showSection('play')">Play a Game</button>
           <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+          <button class="purple" onclick="openPetBattleDirect()">Pet Battle</button>
           <button class="gold" onclick="openMarketDirect()">Visit Marketplace</button>
         </div>
       </div>
@@ -1726,6 +1728,7 @@ body.gameMode #gameArea .danger{
         <p>Your account companion. Care, grow, train, and prepare for future battles.</p>
         <div class="heroActions">
           <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
+          <button class="purple" onclick="openPetBattleDirect()">Pet Battle</button>
           <button class="primary" onclick="showSection('shop')">Visit Shop</button>
           <button class="gold" onclick="openMarketDirect()">Marketplace</button>
         </div>
@@ -2271,7 +2274,6 @@ function clearActiveGameFrame(){
   gameHint.innerText='Select a game, sit at the table, and wait for the room owner to start. The game screen will appear here only when it is ready.';
   gameFrame.onload=null;
   gameFrame.removeAttribute('srcdoc');
-  gameFrame.removeAttribute('src');
   loadedGameKey='';
   directGameKey='';
 }
@@ -2549,6 +2551,16 @@ function openPetWorldDirect(){
   launchSoloGame(g);
 }
 
+function openPetBattleDirect(){
+  let g=games.find(x=>x.id==='petbattle'||x.file==='petbattle.html');
+
+  if(!g){
+    g={id:'petbattle',name:'Pet Battle',file:'petbattle.html',maxPlayers:1,seats:1};
+  }
+
+  launchSoloGame(g);
+}
+
 function openMarketDirect(){
   let g=games.find(x=>x.id==='market');
 
@@ -2635,20 +2647,38 @@ async function launchSoloGame(g){
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
-  let roomId=currentRoom||((room&&room.id)||'');
-  let activeSeats=(room&&Array.isArray(room.seats))?room.seats:[];
-  let gameContext=await buildGameContext(players,mySeatIndex,roomId,activeSeats);
+  let gameContext=await buildGameContext(players,mySeatIndex,currentRoom||'',room&&Array.isArray(room.seats)?room.seats:[]);
   let file=g.file||g.id;
   if(!file)throw new Error('Game file is missing.');
 
-  // Use a real iframe URL for every game instead of srcdoc injection.
-  // srcdoc was the main source of blank/background-only games because many of the
-  // game files expect to run as normal /games/*.html pages with their own scripts,
-  // paths, storage, and postMessage listeners intact.
-  gameFrame.onload=function(){
-    if(!gameFrame.contentWindow)return;
+  let res=await fetch('/games/'+file+'?v='+Date.now());
+  if(!res.ok)throw new Error('Could not fetch /games/'+file+' ('+res.status+').');
 
-    function postSetup(){
+  let html=await res.text();
+  if(!html||!html.trim())throw new Error('/games/'+file+' returned an empty file.');
+
+  let inject =
+    '<script>'+ 
+    'window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';'+
+    'window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';'+
+    'window.GAME_CONTEXT='+JSON.stringify(gameContext).replace(/</g,'\\u003c')+';'+
+    'window.addEventListener("message",function(event){'+
+      'var msg=event.data||{};'+
+      'if(msg.type==="gameMove"&&window.onMove){window.onMove(msg.data);}'+
+      'if(msg.type==="gameSetup"&&window.onMove){window.onMove(msg);}'+
+      'if(msg.type==="GAME_CONTEXT"&&window.onMove){window.onMove(msg);}'+
+      'if(msg.type==="gameSaveData"&&window.onSaveData){window.onSaveData(msg.data);}'+
+    '});'+
+    '<\\/script>';
+
+  if(html.includes('<head>')){
+    html=html.replace('<head>','<head>'+inject);
+  }else{
+    html=inject+html;
+  }
+
+  gameFrame.onload=function(){
+    if(gameFrame.contentWindow){
       gameFrame.contentWindow.postMessage({
         type:'GAME_CONTEXT',
         data:gameContext
@@ -2663,15 +2693,10 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
         username:gameContext.username
       },'*');
     }
-
-    // Send once immediately and once shortly after load so older games that attach
-    // their message listener near the bottom of the file still receive setup data.
-    postSetup();
-    setTimeout(postSetup,120);
   };
 
-  gameFrame.removeAttribute('srcdoc');
-  gameFrame.src='/games/'+file+'?v='+Date.now();
+  gameFrame.removeAttribute('src');
+  gameFrame.srcdoc=html;
 }
 
 function exitGameMode(){
@@ -2679,7 +2704,6 @@ function exitGameMode(){
   document.body.classList.remove('directGameMode');
   gameArea.classList.add('hidden');
   gameFrame.removeAttribute('srcdoc');
-  gameFrame.removeAttribute('src');
   directGameKey='';
   loadedGameKey='';
   launcherLoadedGameKey='';
@@ -2991,6 +3015,7 @@ function drawPet(){
       mini+
       '<div class="petActions">'+
         '<button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>'+
+        '<button class="purple" onclick="openPetBattleDirect()">Battle</button>'+
       '</div>';
   }
 
@@ -3010,7 +3035,7 @@ function drawPet(){
     html+='<div>Light: <b>'+Number(t.light||0)+'</b></div>';
     html+='<div>Dark: <b>'+Number(t.dark||0)+'</b></div>';
     html+='</div>';
-    html+='<div class="petActions"><button onclick="openPetWorldDirect()" class="gold">Care in Pet World</button></div>';
+    html+='<div class="petActions"><button onclick="openPetWorldDirect()" class="gold">Care in Pet World</button><button onclick="openPetBattleDirect()" class="purple">Battle</button></div>';
     html+='</div>';
   }else{
     html+='<div class="card"><h3>Stats</h3>';
@@ -3022,6 +3047,7 @@ function drawPet(){
     html+='<button onclick="petUseItem(\'berry\')" class="good">Feed</button>';
     html+='<button onclick="petPlay()" class="primary">Play</button>';
     html+='<button onclick="openPetWorldDirect()" class="gold">Open Pet World</button>';
+    html+='<button onclick="openPetBattleDirect()" class="purple">Battle</button>';
     html+='</div>';
     html+='</div>';
 
