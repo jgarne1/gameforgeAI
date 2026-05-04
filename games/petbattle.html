@@ -328,6 +328,65 @@ button:disabled{
 }
 @media (max-width:420px){.moves{grid-template-columns:1fr!important}.petSprite{width:104px;height:104px}}
 
+
+
+/* ===== BATTLE END / NO-TRAP RESULT UI ===== */
+.forfeitBtn{
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  color:#fff;
+  border-color:#fecaca;
+}
+.battleActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.resultOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  background:rgba(2,6,23,.72);
+  backdrop-filter:blur(16px);
+}
+.resultOverlay.show{display:flex;animation:resultFade .18s ease-out both}
+@keyframes resultFade{from{opacity:0}to{opacity:1}}
+.resultCard{
+  width:min(520px,100%);
+  border-radius:28px;
+  padding:22px;
+  background:
+    radial-gradient(circle at 20% 0%,rgba(56,189,248,.18),transparent 32%),
+    radial-gradient(circle at 90% 20%,rgba(250,204,21,.16),transparent 30%),
+    linear-gradient(180deg,rgba(255,255,255,.96),rgba(248,250,252,.94));
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 30px 90px rgba(15,23,42,.36);
+  text-align:center;
+}
+.resultTitle{font-size:34px;letter-spacing:-1px;margin:0 0 6px;color:#0f172a}
+.resultReason{margin:0 0 14px;color:#64748b;font-weight:900}
+.resultMatchup{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:14px 0}
+.resultPet{
+  border:1px solid rgba(148,163,184,.32);
+  border-radius:20px;
+  padding:12px;
+  background:rgba(255,255,255,.7);
+}
+.resultPet b{display:block;color:#0f172a}.resultPet span{color:#64748b;font-size:12px;font-weight:900}.resultVs{font-weight:1000;color:#7c3aed}
+.rewardBox{
+  margin:14px 0;
+  padding:14px;
+  border-radius:20px;
+  background:rgba(2,6,23,.06);
+  border:1px solid rgba(148,163,184,.25);
+}
+.rewardGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.rewardItem{border-radius:16px;background:#fff;padding:10px;border:1px solid rgba(148,163,184,.25)}
+.rewardItem b{display:block;font-size:22px;color:#0f172a}.rewardItem span{font-size:12px;color:#64748b;font-weight:900}
+.resultActions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.resultActions button{min-width:145px}
+.safeExitNote{font-size:12px;color:#64748b;margin-top:10px;line-height:1.35}
+@media(max-width:640px){.battleActions{width:100%;justify-content:space-between}.resultTitle{font-size:26px}.resultMatchup{grid-template-columns:1fr}.resultVs{display:none}.rewardGrid{grid-template-columns:1fr}.resultActions button{width:100%}}
+
 </style>
 </head>
 
@@ -338,9 +397,10 @@ button:disabled{
       <h1>Pet Battle Arena</h1>
       <div class="muted">Turn-based companion battles with initiative, status effects, and slower pacing.</div>
     </div>
-    <div>
+    <div class="battleActions">
       <span id="meBadge" class="badge">Loading</span>
       <span id="turnBadge" class="badge">Waiting</span>
+      <button id="forfeitBtn" class="forfeitBtn" onclick="requestForfeitBattle()">🏳 Forfeit Battle</button>
     </div>
   </div>
 
@@ -402,6 +462,10 @@ button:disabled{
   </div>
 </div>
 
+<div id="resultOverlay" class="resultOverlay" role="dialog" aria-modal="true">
+  <div class="resultCard" id="resultCard"></div>
+</div>
+
 <script>
 var GAME_META={id:'petbattle',name:'Pet Battle Arena',minPlayers:2,maxPlayers:2,seats:2};
 
@@ -414,6 +478,8 @@ var ready=false;
 var battleInstanceId=new URLSearchParams(location.search).get('battleInstance')||'';
 var instanceSocket=null;
 var lockedInstance=null;
+var battleEnded=false;
+var lastServerResult=null;
 
 function el(id){return document.getElementById(id);}
 
@@ -528,6 +594,11 @@ function connectBattleInstance(){
 
     if(msg.type==='battleInstanceSetup'){
       loadLockedInstance(msg.instance);
+      return;
+    }
+
+    if(msg.type==='battleInstanceResult'){
+      handleServerBattleResult(msg.result,msg.role,msg.reward);
       return;
     }
 
@@ -770,7 +841,7 @@ function drawMoves(){
   }
 
   if(state.winner!==null){
-    moveButtons.innerHTML='<button class="gold" onclick="newBattle()">New Battle</button>';
+    moveButtons.innerHTML='<button class="gold" onclick="showLocalBattleResult()">Show Results</button><button onclick="returnToHub()">Return to Hub</button>';
     return;
   }
 
@@ -1052,6 +1123,7 @@ function checkWinner(actor,target){
     addLog(state.pets[target].name+' fainted.');
     addLog(players[actor].name+' wins!');
     addRewardPreview(actor,target);
+    submitBattleComplete(actor);
     return;
   }
 
@@ -1060,12 +1132,12 @@ function checkWinner(actor,target){
     addLog(state.pets[actor].name+' fainted.');
     addLog(players[target].name+' wins!');
     addRewardPreview(target,actor);
+    submitBattleComplete(target);
   }
 }
 
 function addRewardPreview(winner,loser){
-  addLog('Rewards preview: winner should receive XP and coins; loser should receive small XP.');
-  addLog('Server reward endpoint can be added next so battle results persist.');
+  addLog('Battle complete. Results are being finalized by the server.');
 }
 
 function pulseAction(actor,target){
@@ -1101,6 +1173,161 @@ function addLog(t){
 function setStatus(a,b){
   statusTitle.innerText=a;
   statusText.innerText=b||'';
+}
+
+function currentUsername(){
+  return localStorage.getItem('gf_user')||'';
+}
+
+function myPlayerName(){
+  if(mySeat!==null&&mySeat!==undefined&&players[mySeat])return players[mySeat].name;
+  return currentUsername();
+}
+
+function opponentName(){
+  if(mySeat===0&&players[1])return players[1].name;
+  if(mySeat===1&&players[0])return players[0].name;
+  return 'Opponent';
+}
+
+function resultPetLine(seat){
+  var pet=state&&state.pets?state.pets[seat]:null;
+  var player=players[seat]?players[seat].name:'Seat '+(seat+1);
+  if(!pet)return {player:player,pet:'Unknown pet',sub:''};
+  return {player:player,pet:pet.name||'Pet',sub:'Lv '+(pet.stats&&pet.stats.level||1)+' · '+(pet.type||'normal')};
+}
+
+function requestForfeitBattle(){
+  if(battleEnded){
+    showLocalBattleResult();
+    return;
+  }
+  if(!ready||!players.length){
+    returnToHub();
+    return;
+  }
+  if(!confirm('Forfeit this battle? This counts as a loss, but you will not be trapped in the game.'))return;
+  forfeitBattle();
+}
+
+function forfeitBattle(){
+  battleEnded=true;
+  if(state){
+    var loser=(mySeat===0||mySeat===1)?mySeat:0;
+    var winner=loser===0?1:0;
+    state.winner=winner;
+    state.forfeit={by:myPlayerName(),seat:loser,time:Date.now()};
+    addLog(myPlayerName()+' forfeited the battle.');
+    draw();
+  }
+
+  if(battleInstanceId&&instanceSocket&&instanceSocket.readyState===1){
+    instanceSocket.send(JSON.stringify({type:'battleInstanceForfeit',instanceId:battleInstanceId,state:state}));
+    return;
+  }
+
+  window.sendMove({type:'battleForfeit',by:myPlayerName(),seat:mySeat,state:state});
+  showLocalBattleResult({forfeit:true,forfeiter:myPlayerName(),winner:opponentName(),loser:myPlayerName(),message:'You forfeited the battle.'});
+}
+
+function submitBattleComplete(winnerSeat){
+  if(battleEnded)return;
+  battleEnded=true;
+  if(battleInstanceId&&instanceSocket&&instanceSocket.readyState===1){
+    instanceSocket.send(JSON.stringify({type:'battleInstanceComplete',instanceId:battleInstanceId,winnerSeat:winnerSeat,state:state}));
+  }else{
+    setTimeout(function(){showLocalBattleResult();},450);
+  }
+}
+
+function handleServerBattleResult(result,role,reward){
+  if(!result)return;
+  lastServerResult=result;
+  battleEnded=true;
+  if(state&&result.winner){
+    var winnerIndex=players.findIndex(function(p){return p&&p.name===result.winner;});
+    if(winnerIndex>=0)state.winner=winnerIndex;
+    if(result.forfeit&&result.forfeiter)addLog(result.forfeiter+' forfeited the battle.');
+    draw();
+  }
+  setTimeout(function(){showBattleResults(result);},350);
+}
+
+function showLocalBattleResult(extra){
+  if(lastServerResult){showBattleResults(lastServerResult);return;}
+  if(!state||state.winner===null){
+    showBattleResults(extra||{winner:opponentName(),loser:myPlayerName(),forfeit:true,forfeiter:myPlayerName(),rewards:null,reason:'forfeit'});
+    return;
+  }
+  var winner=players[state.winner]?players[state.winner].name:'Winner';
+  var loser=players[state.winner===0?1:0]?players[state.winner===0?1:0].name:'Loser';
+  showBattleResults(Object.assign({winner:winner,loser:loser,forfeit:false,turns:state.round||1,rewards:null},extra||{}));
+}
+
+function showBattleResults(result){
+  result=result||{};
+  var mine=myPlayerName();
+  var isWinner=result.winner===mine;
+  var isForfeiter=result.forfeiter===mine;
+  var title=isWinner?'🏆 You Win':'Battle Result';
+  if(!isWinner)title=isForfeiter?'🏳 You Forfeited':'😔 You Lost';
+
+  var reason=result.message||'';
+  if(result.forfeit&&!reason){
+    reason=result.forfeiter ? result.forfeiter+' forfeited the battle.' : 'Battle ended by forfeit.';
+  }
+  if(!reason)reason='Battle complete.';
+
+  var p0=resultPetLine(0);
+  var p1=resultPetLine(1);
+  var rewards=result.rewards||null;
+  var myReward=null;
+  if(rewards){
+    if(rewards.winner&&rewards.winner.username===mine)myReward=rewards.winner;
+    if(rewards.loser&&rewards.loser.username===mine)myReward=rewards.loser;
+  }
+  var xp=myReward?Number(myReward.xp||0):0;
+  var coins=myReward?Number(myReward.coins||0):0;
+  var scale=rewards&&rewards.scale?Math.round(Number(rewards.scale||1)*100):100;
+
+  var rewardHtml=rewards
+    ? '<div class="rewardBox"><b>Your Rewards</b><div class="rewardGrid"><div class="rewardItem"><b>+'+xp+'</b><span>XP</span></div><div class="rewardItem"><b>+'+coins+'</b><span>Coins</span></div></div><div class="muted" style="margin-top:8px">Reward scale: '+scale+'%</div></div>'
+    : '<div class="rewardBox"><b>Practice Result</b><div class="muted" style="margin-top:6px">Rewards are finalized for server-locked Battle Hall and live challenge battles.</div></div>';
+
+  resultCard.innerHTML=
+    '<h2 class="resultTitle">'+escapeHtml(title)+'</h2>'+ 
+    '<p class="resultReason">'+escapeHtml(reason)+'</p>'+ 
+    '<div class="resultMatchup">'+ 
+      '<div class="resultPet"><b>'+escapeHtml(p0.player)+'</b><span>'+escapeHtml(p0.pet)+' · '+escapeHtml(p0.sub)+'</span></div>'+ 
+      '<div class="resultVs">VS</div>'+ 
+      '<div class="resultPet"><b>'+escapeHtml(p1.player)+'</b><span>'+escapeHtml(p1.pet)+' · '+escapeHtml(p1.sub)+'</span></div>'+ 
+    '</div>'+ 
+    rewardHtml+ 
+    '<div class="resultActions"><button class="primary" onclick="returnToBattleHall()">Battle Again</button><button class="gold" onclick="returnToHub()">Return to Hub</button></div>'+ 
+    '<div class="safeExitNote">No trap rule: this screen always has a safe way back. If a battle connection ends, use Return to Hub.</div>';
+  resultOverlay.classList.add('show');
+}
+
+function returnToBattleHall(){
+  notifyBattleLeave();
+  try{parent.postMessage({type:'petBattleReturn',target:'battlehall'},'*');}catch(e){}
+  location.href='/games/battlehall.html?v='+Date.now();
+}
+
+function returnToHub(){
+  notifyBattleLeave();
+  try{parent.postMessage({type:'petBattleReturn',target:'home'},'*');}catch(e){}
+  // If embedded in the GameForge shell, the parent will exit the iframe. If not,
+  // this fallback prevents standalone players from being trapped.
+  setTimeout(function(){
+    if(window.parent===window)location.href='/';
+  },120);
+}
+
+function notifyBattleLeave(){
+  if(battleInstanceId&&instanceSocket&&instanceSocket.readyState===1){
+    instanceSocket.send(JSON.stringify({type:'battleInstanceLeave',instanceId:battleInstanceId}));
+  }
 }
 
 function newBattle(){
@@ -1141,6 +1368,19 @@ window.onMove=function(data){
     state=data.state;
     draw();
   }
+
+  if(data.type==='battleForfeit'){
+    battleEnded=true;
+    if(data.state)state=data.state;
+    var forfeiter=data.by||'Opponent';
+    var winnerSeat=(data.seat===0||data.seat===1)?(data.seat===0?1:0):mySeat;
+    if(state){
+      state.winner=winnerSeat;
+      addLog(forfeiter+' forfeited the battle.');
+      draw();
+    }
+    showLocalBattleResult({forfeit:true,forfeiter:forfeiter,message:forfeiter+' forfeited the battle.'});
+  }
 };
 
 window.addEventListener('message',function(event){
@@ -1152,6 +1392,14 @@ window.addEventListener('message',function(event){
 
   if(data.type==='gameMove'&&window.onMove){
     window.onMove(data.data);
+  }
+
+  if(data.type==='petBattleForfeitRequest'){
+    requestForfeitBattle();
+  }
+
+  if(data.type==='petBattleShowResults'){
+    showLocalBattleResult();
   }
 });
 
