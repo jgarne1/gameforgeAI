@@ -1,749 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Othello</title>
 <style>
-:root{--bg:#052e1b;--panel:#064e3b;--line:#10b981;--gold:#facc15;--dark:#111827;--light:#f8fafc;--blue:#38bdf8;--muted:#cbd5e1}
+:root{
+  --bg0:#020617;--bg1:#0f172a;--panel:rgba(15,23,42,.90);--border:rgba(56,189,248,.42);--borderSoft:rgba(148,163,184,.24);--text:#e5e7eb;--muted:#94a3b8;--accent:#38bdf8;--accent2:#a78bfa;--green:#10b981;--gold:#facc15;--darkDisc:#111827;--lightDisc:#f8fafc;--good:#22c55e;--danger:#fb7185;--cell:clamp(32px,7.1vmin,58px);
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#047857,#022c22);color:white;text-align:center;overflow:hidden}
-.wrap{height:100vh;min-height:650px;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto;gap:8px}
-.top,.status,.game,.bottom{background:rgba(6,78,59,.92);border:1px solid rgba(255,255,255,.18);border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.28)}
-.top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
-h2,h3{margin:0}
-button{padding:9px 12px;border-radius:11px;border:1px solid #94a3b8;background:#f8fafc;color:#111;font-weight:bold;cursor:pointer}
-button.gold{background:var(--gold)}
-.status{padding:8px}
-.statusMain{font-size:20px;font-weight:bold}
-.muted{font-size:12px;color:var(--muted)}
-.game{display:grid;grid-template-columns:1fr 340px;gap:12px;padding:12px;min-height:0}
-.boardPanel,.sidePanel{background:rgba(2,44,34,.82);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;min-height:0}
-.board{display:grid;grid-template-columns:repeat(8,64px);grid-template-rows:repeat(8,64px);gap:5px;justify-content:center;margin:auto;background:#042f24;border:7px solid #4a2a12;border-radius:22px;padding:12px;box-shadow:inset 0 0 30px rgba(0,0,0,.4),0 18px 35px rgba(0,0,0,.35)}
-.cell{width:64px;height:64px;border-radius:10px;background:#059669;border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
-.cell:hover{outline:3px solid var(--gold)}
-.cell.disabled{cursor:not-allowed}
-.disc{width:48px;height:48px;border-radius:50%;box-shadow:inset -8px -8px 14px rgba(0,0,0,.28),inset 5px 5px 10px rgba(255,255,255,.18),0 4px 8px rgba(0,0,0,.35);animation:pop .22s ease}
-.disc.dark{background:#111827}
-.disc.light{background:#f8fafc}
-@keyframes pop{0%{transform:scale(.2) rotateY(90deg)}100%{transform:scale(1) rotateY(0)}}
-.legal:after{content:"";width:18px;height:18px;border-radius:50%;background:rgba(250,204,21,.75);box-shadow:0 0 12px rgba(250,204,21,.9)}
-.last{outline:4px solid var(--blue)}
-.card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px;margin-bottom:10px}
-.scoreGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.scoreBox{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px}
-.bigScore{font-size:36px;font-weight:900}
-.player{padding:8px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);margin:6px 0}
-.player.turn{outline:3px solid var(--gold)}
-.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:12px}
-.log{height:78px;overflow:auto;text-align:left;background:#fffbea;color:#1f2937;border-radius:10px;padding:8px;font-size:13px}
-.rulesMini{text-align:left;font-size:13px;line-height:1.35;color:#e5e7eb}
-@media(max-width:900px){.game{grid-template-columns:1fr}.board{grid-template-columns:repeat(8,40px);grid-template-rows:repeat(8,40px);gap:3px;padding:8px}.cell{width:40px;height:40px;border-radius:7px}.disc{width:30px;height:30px}.sidePanel{max-height:290px;overflow:auto}}
+body{margin:0;font-family:Arial,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(56,189,248,.20),transparent 32%),radial-gradient(circle at 80% 20%,rgba(167,139,250,.22),transparent 35%),linear-gradient(180deg,var(--bg1),var(--bg0));color:var(--text);overflow:hidden}
+.gameShell{height:100vh;display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:10px}
+.gameHeader,.gamePanel,.gameLog{background:var(--panel);border:1px solid var(--border);border-radius:18px;box-shadow:0 16px 42px rgba(0,0,0,.32),inset 0 0 24px rgba(56,189,248,.04)}
+.gameHeader{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;padding:10px}
+.playerCard{display:flex;align-items:center;gap:10px;min-width:0;padding:9px;border-radius:15px;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.72));border:1px solid var(--borderSoft);position:relative;overflow:hidden}
+.playerCard:before{content:"";position:absolute;inset:-2px;opacity:.12;background:radial-gradient(circle at top left,var(--accent),transparent 42%);pointer-events:none}
+.playerCard.active{border-color:var(--gold);box-shadow:0 0 18px rgba(250,204,21,.26),inset 0 0 16px rgba(250,204,21,.08)}
+.playerCard.light.active{border-color:var(--accent);box-shadow:0 0 18px rgba(56,189,248,.26),inset 0 0 16px rgba(56,189,248,.08)}
+.petBadge{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border-radius:16px;background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.25);z-index:1}.petBadge img{max-width:50px;max-height:50px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}.petFallback{font-size:24px}.playerInfo{min-width:0;z-index:1}.playerName{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playerMeta,.petName{color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.petName{color:#cbd5e1}
+.discDot{width:12px;height:12px;display:inline-block;border-radius:50%;margin-right:5px;vertical-align:-1px;border:1px solid rgba(255,255,255,.55)}.discDot.dark{background:radial-gradient(circle at 35% 28%,#6b7280,#111827 62%,#020617)}.discDot.light{background:radial-gradient(circle at 35% 28%,#fff,#e5e7eb 62%,#94a3b8)}
+.centerStatus{width:min(280px,32vw);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;padding:8px 10px;border-radius:16px;background:rgba(2,6,23,.45);border:1px solid rgba(148,163,184,.20)}.title{font-weight:1000;letter-spacing:.3px;font-size:clamp(15px,2vw,20px)}.statusText{color:#cbd5e1;font-size:12px;line-height:1.25}.scoreLine{color:var(--muted);font-size:12px}.buttonRow{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}.smallBtn{font-size:11px;padding:7px 9px;border-radius:10px}.hintToggle.off{background:linear-gradient(135deg,#64748b,#334155);color:#e5e7eb}
+.gamePanel{min-height:0;display:grid;place-items:center;padding:12px;overflow:hidden}.gameSurface{width:min(96vw,660px);height:100%;max-height:100%;display:flex;align-items:center;justify-content:center;border-radius:22px;background:radial-gradient(circle at 50% 0%,rgba(16,185,129,.15),transparent 45%),linear-gradient(135deg,rgba(15,23,42,.98),rgba(2,6,23,.86));border:1px solid rgba(148,163,184,.20);padding:clamp(8px,2vh,18px)}
+.boardShell{max-width:100%;max-height:100%;padding:clamp(8px,1.8vmin,14px);border-radius:28px;background:linear-gradient(145deg,rgba(16,185,129,.24),rgba(56,189,248,.11));border:1px solid rgba(16,185,129,.28);box-shadow:0 24px 60px rgba(0,0,0,.40),inset 0 0 32px rgba(255,255,255,.04)}
+.board{display:grid;grid-template-columns:repeat(8,var(--cell));grid-template-rows:repeat(8,var(--cell));gap:clamp(3px,.8vmin,6px);padding:clamp(7px,1.6vmin,12px);border-radius:22px;background:linear-gradient(145deg,#064e3b,#022c22);border:5px solid rgba(120,53,15,.82);box-shadow:inset 0 0 30px rgba(0,0,0,.42)}
+.cell{width:var(--cell);height:var(--cell);border:0;border-radius:clamp(7px,1.3vmin,12px);background:linear-gradient(145deg,#059669,#047857);box-shadow:inset 0 0 12px rgba(0,0,0,.34),0 6px 12px rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer;position:relative}.cell.disabled{cursor:not-allowed}.cell:not(.disabled):hover{outline:3px solid var(--gold);transform:translateY(-1px)}.cell.legal:after{content:"";width:30%;height:30%;border-radius:50%;background:rgba(250,204,21,.72);box-shadow:0 0 14px rgba(250,204,21,.75)}.cell.last{outline:3px solid rgba(56,189,248,.75)}
+.disc{width:74%;height:74%;border-radius:50%;animation:pop .2s ease;box-shadow:inset -8px -8px 14px rgba(0,0,0,.30),inset 5px 5px 10px rgba(255,255,255,.18),0 5px 9px rgba(0,0,0,.34)}.disc.dark{background:radial-gradient(circle at 34% 28%,#6b7280,#111827 60%,#020617)}.disc.light{background:radial-gradient(circle at 34% 28%,#fff,#f8fafc 62%,#94a3b8)}@keyframes pop{0%{transform:scale(.25) rotateY(90deg)}100%{transform:scale(1) rotateY(0)}}
+.gameLog{min-height:54px;max-height:72px;overflow:auto;padding:8px 10px;color:#cbd5e1;font-size:12px;line-height:1.35}.logEntry{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}button{border:0;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:800;color:#06111f;background:linear-gradient(135deg,var(--accent),var(--accent2))}button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:760px),(max-height:560px){:root{--cell:clamp(28px,10.2vw,43px)}.gameShell{gap:7px;padding:7px}.gameHeader{grid-template-columns:1fr 1fr;padding:8px}.centerStatus{grid-column:1 / -1;grid-row:2;width:100%;order:3}.petBadge{width:42px;height:42px;flex-basis:42px;border-radius:13px}.petBadge img{max-width:40px;max-height:40px}.playerMeta,.petName,.scoreLine{font-size:11px}.gamePanel{padding:8px}.gameLog{max-height:58px}.board{border-width:3px}}
 </style>
 </head>
-
 <body>
-<div class="wrap">
-  <div class="top">
-    <h2>Othello</h2>
-    <div>
-      <span id="meLabel" class="badge"></span>
-      <button class="gold" onclick="newGame(true)">New Game</button>
-    </div>
-  </div>
-
-  <div class="status">
-    <div id="statusMain" class="statusMain">Loading players...</div>
-    <div id="statusHelp" class="muted">Place a disc to trap opponent discs between your pieces.</div>
-  </div>
-
-  <div class="game">
-    <div class="boardPanel">
-      <div id="board" class="board"></div>
-    </div>
-
-    <div class="sidePanel">
-      <div class="card">
-        <h3>Score</h3>
-        <div class="scoreGrid">
-          <div class="scoreBox">
-            <div class="muted" id="darkName">Dark</div>
-            <div class="bigScore" id="darkScore">2</div>
-          </div>
-          <div class="scoreBox">
-            <div class="muted" id="lightName">Light</div>
-            <div class="bigScore" id="lightScore">2</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Players</h3>
-        <div id="playersPanel"></div>
-      </div>
-
-      <div class="card">
-        <h3>Quick Rules</h3>
-        <div class="rulesMini">
-          Place on a highlighted space.<br>
-          Your move must flip at least one enemy disc.<br>
-          If you have no legal move, your turn is passed.<br>
-          Most discs at the end wins.
-        </div>
+<div class="gameShell">
+  <header class="gameHeader">
+    <div id="player0" class="playerCard"></div>
+    <div class="centerStatus">
+      <div class="title">Othello</div>
+      <div id="status" class="statusText">Loading players...</div>
+      <div id="scoreLine" class="scoreLine">Dark: 2 · Light: 2</div>
+      <div class="buttonRow">
+        <button class="smallBtn hintToggle" id="hintToggle" onclick="toggleHints()">Hints: On</button>
+        <button class="smallBtn" onclick="newGame(true)">New Game</button>
       </div>
     </div>
-  </div>
-
-  <div class="bottom">
-    <div id="log" class="log"></div>
-  </div>
+    <div id="player1" class="playerCard"></div>
+  </header>
+  <main class="gamePanel"><div class="gameSurface"><div class="boardShell"><div id="board" class="board"></div></div></div></main>
+  <footer class="gameLog" id="log"><div class="logEntry">Game loaded.</div></footer>
 </div>
-
 <script>
-var GAME_META={id:'othello',name:'Othello',minPlayers:2,maxPlayers:2,seats:2};
-
-var SIZE=8;
-var EMPTY=0;
-var DARK=1;
-var LIGHT=2;
-
-var players=[];
-var mySeat=null;
-var state=null;
-
-var dirs=[
-  [-1,-1],[-1,0],[-1,1],
-  [0,-1],        [0,1],
-  [1,-1], [1,0], [1,1]
-];
-
-function el(id){return document.getElementById(id);}
-
-window.onerror=function(msg){
-  if(el('statusMain'))el('statusMain').innerText='Game error: '+msg;
-};
-
-function receiveSetup(setupPlayers,setupSeat){
-  if(setupPlayers&&setupPlayers.length){
-    players=[];
-    for(var i=0;i<setupPlayers.length&&i<2;i++){
-      players.push({
-        seat:Number(setupPlayers[i].seat),
-        name:setupPlayers[i].name||('Seat '+(Number(setupPlayers[i].seat)+1))
-      });
-    }
-  }
-
-  mySeat=setupSeat===null||setupSeat===undefined?null:Number(setupSeat);
-
-  if(players.length<2){
-    showWaiting();
-    return;
-  }
-
-  players.sort(function(a,b){return a.seat-b.seat;});
-
-  if(!state)state=fresh();
-
-  draw();
-}
-
-function showWaiting(){
-  el('statusMain').innerText='Waiting for 2 players...';
-  el('statusHelp').innerText='Othello needs exactly 2 seated players.';
-  el('board').innerHTML='';
-  el('playersPanel').innerHTML='';
-  el('log').innerHTML='';
-  el('meLabel').innerText='';
-}
-
-function fresh(){
-  var board=[];
-
-  for(var r=0;r<SIZE;r++){
-    board[r]=[];
-    for(var c=0;c<SIZE;c++)board[r][c]=EMPTY;
-  }
-
-  board[3][3]=LIGHT;
-  board[3][4]=DARK;
-  board[4][3]=DARK;
-  board[4][4]=LIGHT;
-
-  return {
-    board:board,
-    turn:DARK,
-    darkSeat:players[0].seat,
-    lightSeat:players[1].seat,
-    gameOver:false,
-    winner:null,
-    passCount:0,
-    lastMove:null,
-    log:['New Othello game started. Dark goes first.']
-  };
-}
-
-function draw(){
-  if(!state||players.length<2){
-    showWaiting();
-    return;
-  }
-
-  var myColor=colorForSeat(mySeat);
-  var turnSeat=seatForColor(state.turn);
-  var turnName=name(turnSeat);
-  var legal=legalMoves(state.board,state.turn);
-
-  el('meLabel').innerText=mySeat===null||mySeat===undefined?'Watching':'You are '+colorName(myColor)+' - '+name(mySeat);
-
-  if(state.gameOver){
-    var msg=winnerText();
-    el('statusMain').innerText='Game Over — '+msg;
-    el('statusHelp').innerText='Start a new game to play again.';
-  }else{
-    el('statusMain').innerText='Current Turn: '+turnName+' ('+colorName(state.turn)+')';
-    el('statusHelp').innerText=myColor===state.turn
-      ? 'Your move. Place on a highlighted space.'
-      : 'Waiting for '+turnName+'.';
-  }
-
-  drawBoard(legal,myColor);
-  drawScores();
-  drawPlayers();
-  drawLog();
-
-  if(!state.gameOver&&legal.length===0){
-    setTimeout(function(){autoPassIfNeeded();},250);
-  }
-}
-
-function drawBoard(legal,myColor){
-  el('board').innerHTML='';
-
-  for(var r=0;r<SIZE;r++){
-    for(var c=0;c<SIZE;c++){
-      var cell=document.createElement('div');
-      var isLegal=containsMove(legal,r,c);
-      var isLast=state.lastMove&&state.lastMove.r===r&&state.lastMove.c===c;
-      var canClick=!state.gameOver&&myColor===state.turn&&isLegal;
-
-      cell.className='cell '+(isLegal&&!state.gameOver?'legal ':'')+(isLast?'last ':'')+(canClick?'':'disabled ');
-      cell.onclick=(function(rr,cc){return function(){playMove(rr,cc);};})(r,c);
-
-      if(state.board[r][c]!==EMPTY){
-        var disc=document.createElement('div');
-        disc.className='disc '+(state.board[r][c]===DARK?'dark':'light');
-        cell.appendChild(disc);
-      }
-
-      el('board').appendChild(cell);
-    }
-  }
-}
-
-function drawScores(){
-  var counts=countDiscs();
-
-  el('darkName').innerText=name(state.darkSeat)+' - Dark';
-  el('lightName').innerText=name(state.lightSeat)+' - Light';
-  el('darkScore').innerText=counts.dark;
-  el('lightScore').innerText=counts.light;
-}
-
-function drawPlayers(){
-  var html='';
-  var turnSeat=seatForColor(state.turn);
-
-  html+='<div class="player '+(turnSeat===state.darkSeat&&!state.gameOver?'turn':'')+'"><b>'+escapeHtml(name(state.darkSeat))+'</b><br><span class="muted">Dark discs'+(state.darkSeat===mySeat?' · You':'')+'</span></div>';
-  html+='<div class="player '+(turnSeat===state.lightSeat&&!state.gameOver?'turn':'')+'"><b>'+escapeHtml(name(state.lightSeat))+'</b><br><span class="muted">Light discs'+(state.lightSeat===mySeat?' · You':'')+'</span></div>';
-
-  el('playersPanel').innerHTML=html;
-}
-
-function drawLog(){
-  var html='';
-  var start=Math.max(0,state.log.length-8);
-
-  for(var i=start;i<state.log.length;i++){
-    html+='• '+escapeHtml(state.log[i])+'<br>';
-  }
-
-  el('log').innerHTML=html;
-  el('log').scrollTop=el('log').scrollHeight;
-}
-
-function playMove(r,c){
-  if(state.gameOver)return;
-
-  var myColor=colorForSeat(mySeat);
-  if(myColor!==state.turn)return;
-
-  var flips=getFlips(state.board,r,c,state.turn);
-  if(flips.length===0)return;
-
-  state.board[r][c]=state.turn;
-
-  for(var i=0;i<flips.length;i++){
-    state.board[flips[i].r][flips[i].c]=state.turn;
-  }
-
-  state.lastMove={r:r,c:c};
-  state.passCount=0;
-
-  add(name(mySeat)+' placed '+colorName(state.turn)+' at '+coord(r,c)+' and flipped '+flips.length+' disc(s).');
-
-  state.turn=opposite(state.turn);
-
-  finishOrContinue();
-
-  draw();
-  sync();
-}
-
-function autoPassIfNeeded(){
-  if(state.gameOver)return;
-
-  var legal=legalMoves(state.board,state.turn);
-  if(legal.length>0)return;
-
-  var turnSeat=seatForColor(state.turn);
-  add(name(turnSeat)+' has no legal move and passes.');
-
-  state.passCount++;
-  state.turn=opposite(state.turn);
-
-  finishOrContinue();
-
-  draw();
-  sync();
-}
-
-function finishOrContinue(){
-  var darkLegal=legalMoves(state.board,DARK).length;
-  var lightLegal=legalMoves(state.board,LIGHT).length;
-  var counts=countDiscs();
-
-  if(darkLegal===0&&lightLegal===0 || counts.empty===0 || state.passCount>=2){
-    state.gameOver=true;
-
-    if(counts.dark>counts.light)state.winner=state.darkSeat;
-    else if(counts.light>counts.dark)state.winner=state.lightSeat;
-    else state.winner='tie';
-
-    add('Game over. '+winnerText()+'.');
-  }
-}
-
-function legalMoves(board,color){
-  var out=[];
-
-  for(var r=0;r<SIZE;r++){
-    for(var c=0;c<SIZE;c++){
-      if(board[r][c]===EMPTY&&getFlips(board,r,c,color).length>0){
-        out.push({r:r,c:c});
-      }
-    }
-  }
-
-  return out;
-}
-
-function getFlips(board,r,c,color){
-  if(r<0||r>=SIZE||c<0||c>=SIZE)return [];
-  if(board[r][c]!==EMPTY)return [];
-
-  var enemy=opposite(color);
-  var flips=[];
-
-  for(var d=0;d<dirs.length;d++){
-    var dr=dirs[d][0];
-    var dc=dirs[d][1];
-    var rr=r+dr;
-    var cc=c+dc;
-    var line=[];
-
-    while(rr>=0&&rr<SIZE&&cc>=0&&cc<SIZE&&board[rr][cc]===enemy){
-      line.push({r:rr,c:cc});
-      rr+=dr;
-      cc+=dc;
-    }
-
-    if(line.length&&rr>=0&&rr<SIZE&&cc>=0&&cc<SIZE&&board[rr][cc]===color){
-      flips=flips.concat(line);
-    }
-  }
-
-  return flips;
-}
-
-function countDiscs(){
-  var dark=0;
-  var light=0;
-  var empty=0;
-
-  for(var r=0;r<SIZE;r++){
-    for(var c=0;c<SIZE;c++){
-      if(state.board[r][c]===DARK)dark++;
-      else if(state.board[r][c]===LIGHT)light++;
-      else empty++;
-    }
-  }
-
-  return {dark:dark,light:light,empty:empty};
-}
-
-function colorForSeat(seat){
-  if(seat===state.darkSeat)return DARK;
-  if(seat===state.lightSeat)return LIGHT;
-  return EMPTY;
-}
-
-function seatForColor(color){
-  return color===DARK?state.darkSeat:state.lightSeat;
-}
-
-function opposite(color){
-  return color===DARK?LIGHT:DARK;
-}
-
-function colorName(color){
-  if(color===DARK)return 'Dark';
-  if(color===LIGHT)return 'Light';
-  return 'Spectator';
-}
-
-function containsMove(moves,r,c){
-  for(var i=0;i<moves.length;i++){
-    if(moves[i].r===r&&moves[i].c===c)return true;
-  }
-  return false;
-}
-
-function winnerText(){
-  var counts=countDiscs();
-
-  if(state.winner==='tie'){
-    return 'Tie game at '+counts.dark+'-'+counts.light;
-  }
-
-  return name(state.winner)+' wins '+counts.dark+'-'+counts.light;
-}
-
-function coord(r,c){
-  return String.fromCharCode(65+c)+(r+1);
-}
-
-function newGame(sendIt){
-  if(players.length<2){
-    showWaiting();
-    return;
-  }
-
-  state=fresh();
-  draw();
-
-  if(sendIt)sync();
-}
-
-function sync(){
-  window.sendMove({type:'state',state:state});
-}
-
-window.sendMove=function(data){
-  parent.postMessage({type:'move',data:data},'*');
-};
-
-window.onMove=function(data){
-  if(!data)return;
-
-  if(data.type==='gameSetup'){
-    receiveSetup(data.players,data.mySeat);
-    return;
-  }
-
-  if(data.type==='state'){
-    state=data.state;
-    draw();
-  }
-};
-
-window.addEventListener('message',function(event){
-  var data=event.data||{};
-  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat);
-  if(data.type==='gameMove'&&window.onMove)window.onMove(data.data);
-});
-
-function name(seat){
-  for(var i=0;i<players.length;i++){
-    if(players[i].seat===seat)return players[i].name;
-  }
-  return 'Seat '+(Number(seat)+1);
-}
-
-function add(t){
-  state.log.push(t);
-  if(state.log.length>80)state.log.shift();
-}
-
-function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g,function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
-}
-
-function safeBoot(){
-  try{
-    showWaiting();
-    receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
-    setTimeout(function(){
-      receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
-    },350);
-  }catch(e){
-    if(el('statusMain'))el('statusMain').innerText='Game error: '+e.message;
-  }
-}
-
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',safeBoot);
-}else{
-  safeBoot();
-}
+const GAME_ID='othello';
+const GAME_META={id:'othello',name:'Othello',minPlayers:2,maxPlayers:2,seats:2};
+const SIZE=8,EMPTY=0,DARK=1,LIGHT=2;
+let GAME_CONTEXT={username:'',roomId:'',players:[],seats:[],mySeat:null,activePets:{}};
+let players=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];
+let mySeat=null,setupReceived=false,lastResultKey='';
+let showHints=localStorage.getItem('othelloShowHints')!=='0';
+let dirs=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+let state=freshState();
+function emptyBoard(){let b=[];for(let r=0;r<SIZE;r++){b[r]=[];for(let c=0;c<SIZE;c++)b[r][c]=EMPTY;}return b;}
+function freshState(){let b=emptyBoard();b[3][3]=LIGHT;b[3][4]=DARK;b[4][3]=DARK;b[4][4]=LIGHT;return{board:b,turn:DARK,darkSeat:(players[0]?players[0].seat:0),lightSeat:(players[1]?players[1].seat:1),gameOver:false,winner:null,passCount:0,lastMove:null,round:1,log:['New Othello game started. Dark goes first.']};}
+function normalizePlayers(input){let arr=[];if(Array.isArray(input)){input.forEach((p,i)=>{if(!p)return;if(typeof p==='string')arr.push({seat:i,name:p});else arr.push({seat:Number(p.seat!==undefined?p.seat:i),name:p.name||p.username||('Seat '+(i+1))});});}if(!arr.length)arr=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];arr=arr.slice(0,2).map((p,i)=>({seat:Number.isFinite(Number(p.seat))?Number(p.seat):i,name:p.name||('Seat '+(i+1))})).sort((a,b)=>a.seat-b.seat);while(arr.length<2)arr.push({seat:arr.length,name:'Waiting...'});return arr;}
+function receiveContext(ctx){ctx=ctx||{};GAME_CONTEXT=Object.assign({},GAME_CONTEXT,ctx);if(ctx.players)players=normalizePlayers(ctx.players);if(ctx.mySeat!==undefined&&ctx.mySeat!==null)mySeat=Number(ctx.mySeat);else mySeat=null;setupReceived=true;if(!state)state=freshState();state.darkSeat=players[0].seat;state.lightSeat=players[1].seat;draw();}
+function receiveSetup(newPlayers,newSeat,msg){receiveContext({username:(msg&&msg.username)||GAME_CONTEXT.username||'',roomId:(msg&&msg.roomId)||GAME_CONTEXT.roomId||'',players:newPlayers||GAME_CONTEXT.players||players,mySeat:newSeat,activePets:(msg&&msg.activePets)||GAME_CONTEXT.activePets||{}});}
+function draw(){if(!state||players.length<2){showWaiting();return;}let legal=legalMoves(state.board,state.turn);drawPlayers();drawBoard(legal);drawScore();drawHintToggle();if(state.gameOver){document.getElementById('status').innerText='Game Over — '+winnerText();}else{let turnSeat=seatForColor(state.turn);let myColor=colorForSeat(mySeat);document.getElementById('status').innerText=(myColor===state.turn?(showHints?'Your move. Place on a gold space.':'Your move. Legal spaces are hidden.'):nameOf(turnSeat)+"'s turn. Waiting...");}drawLog();if(!state.gameOver&&legal.length===0)setTimeout(autoPassIfNeeded,250);}
+function showWaiting(){document.getElementById('status').innerText='Waiting for 2 players...';document.getElementById('board').innerHTML='';drawPlayers();drawScore();drawHintToggle();}
+function drawPlayers(){[0,1].forEach(index=>{let el=document.getElementById('player'+index);let p=players[index]||{seat:index,name:'Waiting...'};let color=index===0?DARK:LIGHT;let pet=getPetForPlayer(p);let isActive=!state.gameOver&&seatForColor(state.turn)===p.seat;el.className='playerCard '+(color===LIGHT?'light ':'')+(isActive?'active':'');el.innerHTML='<div class="petBadge">'+petHtml(pet)+'</div><div class="playerInfo"><div class="playerName">'+escapeHtml(p.name)+'</div><div class="playerMeta"><span class="discDot '+(color===DARK?'dark':'light')+'"></span>Seat '+(p.seat+1)+' · '+colorName(color)+(mySeat===p.seat?' · You':'')+'</div><div class="petName">'+(pet?escapeHtml(pet.name||'Active Pet')+' Lv.'+Number(pet.level||1):'No active pet')+'</div></div>';});}
+function normalizePetMap(raw){let map={};if(!raw)return map;if(Array.isArray(raw)){raw.forEach(item=>{if(!item)return;let n=item.username||item.user||item.owner||item.player||item.name;if(n){map[n]=item;map[String(n).toLowerCase()]=item;}if(item.seat!=null)map['seat:'+item.seat]=item;});return map;}Object.keys(raw).forEach(k=>{map[k]=raw[k];map[String(k).toLowerCase()]=raw[k];});return map;}
+function getPetForPlayer(p){let pets=normalizePetMap(GAME_CONTEXT.activePets||GAME_CONTEXT.pets||GAME_CONTEXT.playerPets||{});return pets[p.name]||pets[String(p.name||'').toLowerCase()]||pets['seat:'+p.seat]||null;}
+function petHtml(pet){if(!pet)return '<span class="petFallback">✦</span>';let emoji=pet.emoji||'🐾';let img=pet.image||pet.img||pet.sprite||pet.photo||pet.icon||pet.src||pet.imageUrl||pet.url;if(img)return '<img src="'+escapeAttr(img)+'" alt="'+escapeAttr(pet.name||'Pet')+'" onerror="this.outerHTML=\'<span class=&quot;petFallback&quot;>'+escapeHtml(emoji)+'</span>\'">';return '<span class="petFallback">'+escapeHtml(emoji)+'</span>';}
+function drawBoard(legal){let board=document.getElementById('board');board.innerHTML='';let myColor=colorForSeat(mySeat);for(let r=0;r<SIZE;r++){for(let c=0;c<SIZE;c++){let cell=document.createElement('button');let isLegal=containsMove(legal,r,c);let isLast=state.lastMove&&state.lastMove.r===r&&state.lastMove.c===c;let canClick=!state.gameOver&&myColor===state.turn&&isLegal;cell.className='cell '+(isLegal&&!state.gameOver&&showHints?'legal ':'')+(isLast?'last ':'')+(canClick?'':'disabled ');cell.disabled=!canClick;cell.onclick=()=>playMove(r,c);if(state.board[r][c]!==EMPTY){let disc=document.createElement('div');disc.className='disc '+(state.board[r][c]===DARK?'dark':'light');cell.appendChild(disc);}board.appendChild(cell);}}}
+function drawScore(){let counts=countDiscs();document.getElementById('scoreLine').innerText='Dark: '+counts.dark+' · Light: '+counts.light+' · Empty: '+counts.empty;}
+function drawHintToggle(){let btn=document.getElementById('hintToggle');if(!btn)return;btn.textContent='Hints: '+(showHints?'On':'Off');btn.className='smallBtn hintToggle '+(showHints?'':'off');}
+function toggleHints(){showHints=!showHints;localStorage.setItem('othelloShowHints',showHints?'1':'0');draw();}
+function drawLog(){let log=document.getElementById('log');log.innerHTML='';let start=Math.max(0,(state.log||[]).length-6);for(let i=start;i<state.log.length;i++){let div=document.createElement('div');div.className='logEntry';div.textContent='• '+state.log[i];log.appendChild(div);}log.scrollTop=log.scrollHeight;}
+function playMove(r,c){if(state.gameOver)return;let myColor=colorForSeat(mySeat);if(myColor!==state.turn)return;let flips=getFlips(state.board,r,c,state.turn);if(!flips.length)return;state.board[r][c]=state.turn;flips.forEach(f=>state.board[f.r][f.c]=state.turn);state.lastMove={r:r,c:c};state.passCount=0;addLog(nameOf(mySeat)+' placed '+colorName(state.turn)+' at '+coord(r,c)+' and flipped '+flips.length+'.');state.turn=opposite(state.turn);finishOrContinue();draw();sync();}
+function autoPassIfNeeded(){if(state.gameOver)return;let legal=legalMoves(state.board,state.turn);if(legal.length>0)return;let turnSeat=seatForColor(state.turn);addLog(nameOf(turnSeat)+' has no legal move and passes.');state.passCount++;state.turn=opposite(state.turn);finishOrContinue();draw();sync();}
+function finishOrContinue(){let darkLegal=legalMoves(state.board,DARK).length,lightLegal=legalMoves(state.board,LIGHT).length,counts=countDiscs();if((darkLegal===0&&lightLegal===0)||counts.empty===0||state.passCount>=2){state.gameOver=true;if(counts.dark>counts.light)state.winner=state.darkSeat;else if(counts.light>counts.dark)state.winner=state.lightSeat;else state.winner='tie';addLog('Game over. '+winnerText()+'.');reportResult(state.winner==='tie'?'tie':'win',state.winner==='tie'?null:state.winner);}}
+function legalMoves(board,color){let out=[];for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(board[r][c]===EMPTY&&getFlips(board,r,c,color).length>0)out.push({r:r,c:c});return out;}
+function getFlips(board,r,c,color){if(r<0||r>=SIZE||c<0||c>=SIZE||board[r][c]!==EMPTY)return[];let enemy=opposite(color),flips=[];for(let d of dirs){let rr=r+d[0],cc=c+d[1],line=[];while(rr>=0&&rr<SIZE&&cc>=0&&cc<SIZE&&board[rr][cc]===enemy){line.push({r:rr,c:cc});rr+=d[0];cc+=d[1];}if(line.length&&rr>=0&&rr<SIZE&&cc>=0&&cc<SIZE&&board[rr][cc]===color)flips=flips.concat(line);}return flips;}
+function countDiscs(){let dark=0,light=0,empty=0;for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){if(state.board[r][c]===DARK)dark++;else if(state.board[r][c]===LIGHT)light++;else empty++;}return{dark,light,empty};}
+function colorForSeat(seat){if(!state)return EMPTY;if(seat===state.darkSeat)return DARK;if(seat===state.lightSeat)return LIGHT;return EMPTY;}function seatForColor(color){return color===DARK?state.darkSeat:state.lightSeat;}function opposite(color){return color===DARK?LIGHT:DARK;}function colorName(color){return color===DARK?'Dark':color===LIGHT?'Light':'Spectator';}function containsMove(moves,r,c){return moves.some(m=>m.r===r&&m.c===c);}function coord(r,c){return String.fromCharCode(65+c)+(r+1);}function playerBySeat(seat){return players.find(p=>p&&p.seat===seat)||null;}function nameOf(seat){let p=playerBySeat(seat);return p?p.name:'Seat '+(Number(seat)+1);}function winnerText(){let counts=countDiscs();if(state.winner==='tie')return 'Tie game at '+counts.dark+'-'+counts.light;return nameOf(state.winner)+' wins '+counts.dark+'-'+counts.light;}
+function newGame(sendIt){let nextRound=(state&&state.round?state.round:1)+1;state=freshState();state.round=nextRound;lastResultKey='';addLog('Round '+nextRound+' started.');draw();if(sendIt)sync();}
+function addLog(t){if(!state.log)state.log=[];state.log.push(t);if(state.log.length>80)state.log.shift();}
+function reportResult(result,winnerSeat){let key=state.round+'|'+result+'|'+winnerSeat;if(lastResultKey===key)return;lastResultKey=key;let winner=winnerSeat!==null&&winnerSeat!==undefined?playerBySeat(winnerSeat):null;let loser=result==='win'?players.find(p=>p&&p.seat!==winnerSeat):null;parent.postMessage({type:'gameResult',data:{game:GAME_ID,roomId:GAME_CONTEXT.roomId||'',result:result,winner:winner?winner.name:null,loser:loser?loser.name:null,round:state.round}},'*');}
+function sync(){parent.postMessage({type:'move',data:{type:'state',game:GAME_ID,state:state}},'*');}
+window.onMove=function(data){data=data||{};if(data.game&&data.game!==GAME_ID)return;if(data.type==='state'){state=data.state||state;draw();}if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat,data);if(data.type==='GAME_CONTEXT')receiveContext(data.data||data);};
+window.addEventListener('message',function(event){let msg=event.data||{};if(msg.type==='GAME_CONTEXT'||msg.type==='gameContext')receiveContext(msg.data||msg);if(msg.type==='gameSetup')receiveSetup(msg.players,msg.mySeat,msg);if(msg.type==='gameMove')window.onMove(msg.data||{});});
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}function escapeAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'');}
+parent.postMessage({type:'gameReady',game:GAME_ID},'*');
+setTimeout(function(){if(!setupReceived){if(window.GAME_CONTEXT)receiveContext(window.GAME_CONTEXT);else if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length)receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT,{});else draw();}},80);
 </script>
-
-
-<!-- ===== GameForge Standard Compatibility HUD v1 =====
-     Safe overlay: does not own chat and does not change gameplay logic.
-     Reads GAME_CONTEXT/gameSetup payloads from parent and displays room, players, seats, and active pets when provided.
--->
-<style id="gfStandardHudStyle">
-  :root{
-    --gf-hud-bg:rgba(2,6,23,.72);
-    --gf-hud-panel:rgba(15,23,42,.82);
-    --gf-hud-line:rgba(56,189,248,.30);
-    --gf-hud-text:#e5e7eb;
-    --gf-hud-muted:#94a3b8;
-    --gf-hud-accent:#38bdf8;
-    --gf-hud-gold:#facc15;
-  }
-  #gfStandardHud{
-    position:fixed;
-    left:10px;
-    right:10px;
-    top:8px;
-    z-index:99990;
-    pointer-events:none;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:8px 10px;
-    border:1px solid var(--gf-hud-line);
-    border-radius:18px;
-    color:var(--gf-hud-text);
-    background:linear-gradient(135deg,rgba(15,23,42,.78),rgba(2,6,23,.70));
-    box-shadow:0 14px 38px rgba(0,0,0,.24);
-    backdrop-filter:blur(8px);
-    font-family:Arial,Helvetica,sans-serif;
-  }
-  #gfStandardHud .gfHudTitle{
-    display:flex;
-    flex-direction:column;
-    min-width:120px;
-    max-width:210px;
-  }
-  #gfStandardHud .gfHudTitle b{
-    font-size:14px;
-    letter-spacing:.2px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #gfStandardHud .gfHudTitle span{
-    color:var(--gf-hud-muted);
-    font-size:11px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #gfStandardHud .gfHudPlayers{
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    gap:7px;
-    min-width:0;
-    overflow:hidden;
-  }
-  #gfStandardHud .gfHudPlayer{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    min-width:0;
-    max-width:210px;
-    padding:6px 8px;
-    border-radius:999px;
-    border:1px solid rgba(148,163,184,.22);
-    background:rgba(2,6,23,.55);
-  }
-  #gfStandardHud .gfHudPlayer.me{
-    border-color:rgba(56,189,248,.65);
-    box-shadow:0 0 16px rgba(56,189,248,.14);
-  }
-  #gfStandardHud .gfHudPet{
-    width:28px;
-    height:28px;
-    border-radius:10px;
-    object-fit:contain;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.08);
-    flex:0 0 auto;
-  }
-  #gfStandardHud .gfHudAvatar{
-    width:28px;
-    height:28px;
-    border-radius:10px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(124,58,237,.20));
-    border:1px solid rgba(255,255,255,.08);
-    flex:0 0 auto;
-  }
-  #gfStandardHud .gfHudInfo{
-    display:flex;
-    flex-direction:column;
-    min-width:0;
-    line-height:1.1;
-  }
-  #gfStandardHud .gfHudName{
-    font-size:12px;
-    font-weight:900;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #gfStandardHud .gfHudSub{
-    color:var(--gf-hud-muted);
-    font-size:10px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  @media(max-width:700px){
-    #gfStandardHud{left:6px;right:6px;top:6px;padding:7px;border-radius:15px;gap:6px}
-    #gfStandardHud .gfHudTitle{min-width:88px;max-width:120px}
-    #gfStandardHud .gfHudPlayer{max-width:120px;padding:5px 6px;gap:5px}
-    #gfStandardHud .gfHudPet,#gfStandardHud .gfHudAvatar{width:24px;height:24px;border-radius:8px}
-    #gfStandardHud .gfHudName{font-size:11px}
-    #gfStandardHud .gfHudSub{font-size:9px}
-  }
-</style>
-<script id="gfStandardHudScript">
-(function(){
-  var GAME_TITLE = 'Othello';
-  window.GAME_CONTEXT = window.GAME_CONTEXT || {username:'',roomId:'',players:[],seats:[],mySeat:-1,activePets:{}};
-
-  function esc(s){
-    return String(s==null?'':s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});
-  }
-
-  function normPlayers(input){
-    var list = input || window.GAME_PLAYERS || [];
-    return (Array.isArray(list)?list:[]).map(function(p,i){
-      if(typeof p==='string')return {name:p,seat:i};
-      return {name:p&&p.name?p.name:('Seat '+(i+1)), seat:(p&&p.seat!=null?p.seat:i)};
-    });
-  }
-
-  function absorbContext(raw){
-    var data = raw || {};
-    if(data.data) data = data.data;
-    var ctx = window.GAME_CONTEXT || {};
-    ctx.username = data.username || data.me || ctx.username || '';
-    ctx.roomId = data.roomId || data.room || data.roomCode || ctx.roomId || '';
-    ctx.players = normPlayers(data.players || ctx.players);
-    ctx.seats = data.seats || ctx.seats || [];
-    ctx.mySeat = data.mySeat!=null ? Number(data.mySeat) : (window.GAME_MY_SEAT!=null ? Number(window.GAME_MY_SEAT) : (ctx.mySeat!=null?ctx.mySeat:-1));
-    ctx.activePets = data.activePets || ctx.activePets || {};
-    window.GAME_CONTEXT = ctx;
-    render();
-  }
-
-  function normalizePetMap(raw){
-    var map={};
-    if(!raw)return map;
-    if(Array.isArray(raw)){
-      raw.forEach(function(item){
-        if(!item)return;
-        var name=item.username||item.user||item.owner||item.player||item.name;
-        if(name){ map[name]=item; map[String(name).toLowerCase()]=item; }
-        if(item.seat!=null)map['seat:'+item.seat]=item;
-      });
-      return map;
-    }
-    Object.keys(raw).forEach(function(k){
-      map[k]=raw[k];
-      map[String(k).toLowerCase()]=raw[k];
-    });
-    return map;
-  }
-
-  function playerPet(player){
-    var ctx=window.GAME_CONTEXT||{};
-    var name=typeof player==='string'?player:(player&&player.name)||'';
-    var seat=typeof player==='object'&&player?player.seat:null;
-    var pets=normalizePetMap(ctx.activePets || ctx.pets || ctx.playerPets || {});
-    return pets[name] || pets[String(name||'').toLowerCase()] || (seat!=null?pets['seat:'+seat]:null) || ctx.activePet || ctx.pet || null;
-  }
-
-  function petImage(pet){
-    if(!pet)return '';
-    if(typeof pet==='string')return pet;
-    return pet.image || pet.img || pet.sprite || pet.photo || pet.icon || pet.src || pet.imageUrl || pet.url || '';
-  }
-
-  function render(){
-    var hud=document.getElementById('gfStandardHud');
-    if(!hud){
-      hud=document.createElement('div');
-      hud.id='gfStandardHud';
-      document.body.appendChild(hud);
-    }
-    var ctx=window.GAME_CONTEXT||{};
-    var players=normPlayers(ctx.players);
-    if(!players.length && window.GAME_PLAYERS) players=normPlayers(window.GAME_PLAYERS);
-    var room=ctx.roomId || '';
-    var mySeat=ctx.mySeat;
-    var playerHtml=players.slice(0,4).map(function(p){
-      var pet=playerPet(p);
-      var img=petImage(pet);
-      var petName=pet && pet.name ? pet.name : '';
-      var seatText='Seat '+(Number(p.seat)+1);
-      var isMe=(Number(p.seat)===Number(mySeat)) || (ctx.username && p.name===ctx.username);
-      return '<div class="gfHudPlayer '+(isMe?'me':'')+'">'+
-        (img?'<img class="gfHudPet" src="'+esc(img)+'" alt="">':'<span class="gfHudAvatar">🎮</span>')+
-        '<span class="gfHudInfo"><span class="gfHudName">'+esc(p.name||'Player')+'</span><span class="gfHudSub">'+esc(seatText+(petName?' · '+petName:''))+'</span></span>'+ 
-      '</div>';
-    }).join('');
-    if(!playerHtml){
-      playerHtml='<div class="gfHudPlayer"><span class="gfHudAvatar">🎮</span><span class="gfHudInfo"><span class="gfHudName">Solo / Local</span><span class="gfHudSub">Waiting for room context</span></span></div>';
-    }
-    hud.innerHTML='<div class="gfHudTitle"><b>'+esc(GAME_TITLE)+'</b><span>'+(room?'Room '+esc(room):'GameForge table')+'</span></div><div class="gfHudPlayers">'+playerHtml+'</div>';
-  }
-
-  window.addEventListener('message',function(e){
-    var msg=e.data||{};
-    if(msg.type==='GAME_CONTEXT' || msg.type==='gameSetup' || msg.type==='gameContext'){
-      absorbContext(msg);
-    }
-  });
-
-  window.addEventListener('load',function(){
-    absorbContext({});
-    try{ parent.postMessage({type:'gameReady'},'*'); }catch(e){}
-  });
-
-  setTimeout(function(){absorbContext({});},250);
-  setTimeout(function(){absorbContext({});},900);
-})();
-</script>
-
 </body>
 </html>
