@@ -900,6 +900,132 @@ function publicBattleInstance(instance,viewer){
 }
 
 
+function clampBattleRewardScale(value){
+  value=Number(value||0);
+  if(!Number.isFinite(value))value=0;
+  return Math.max(0.25,Math.min(1,value));
+}
+
+function battleTurnsFromState(state){
+  if(!state||typeof state!=='object')return 1;
+  let round=Number(state.round||state.turns||1);
+  if(!Number.isFinite(round)||round<1)round=1;
+  return Math.max(1,Math.floor(round));
+}
+
+function calculateBattleRewards({forfeit=false,turns=1,winner='',loser=''}){
+  /*
+    Server-side reward math only. The browser can display the result, but it
+    cannot choose XP/coin values. Forfeits are scaled by progress so quitting
+    early cannot become a farming shortcut.
+  */
+  let expectedTurns=8;
+  let scale=forfeit ? clampBattleRewardScale(Number(turns||1)/expectedTurns) : 1;
+  let winnerXp=Math.max(6,Math.floor(30*scale));
+  let winnerCoins=Math.max(4,Math.floor(22*scale));
+  let loserXp=forfeit ? Math.max(1,Math.floor(4*scale)) : 8;
+
+  return {
+    scale,
+    expectedTurns,
+    winner:{username:winner,xp:winnerXp,coins:winnerCoins},
+    loser:{username:loser,xp:loserXp,coins:0}
+  };
+}
+
+function grantBattleReward(username,reward,petId){
+  username=String(username||'').trim();
+  reward=reward||{};
+  if(!username)return null;
+
+  let all=pets();
+  let profile=normalizePetProfile(all[username]||defaultPetProfile(username),username);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
+  let xpResult=null;
+
+  profile.money=Number(profile.money||0)+Number(reward.coins||0);
+
+  if(pet&&pet.stage!=='egg'&&Number(reward.xp||0)>0){
+    xpResult=addPetXp(pet,Number(reward.xp||0));
+  }
+
+  all[username]=normalizePetProfile(profile,username);
+  writeJSON(petsFile,all);
+  sendToUser(username,{type:'petUpdate',profile:all[username]});
+
+  return {profile:all[username],xpResult};
+}
+
+function clearBattleSocketsForInstance(instanceId){
+  clients.forEach(c=>{
+    if(c.battleInstanceId===instanceId){
+      c.battleInstanceId='';
+      c.location='Home';
+    }
+  });
+  pushPresence();
+}
+
+function finishBattleInstance(instance,outcome={}){
+  if(!instance)throw new Error('Battle instance not found.');
+  if(instance.status==='ended')return instance.result;
+
+  let players=(instance.players||[]);
+  let winnerName=String(outcome.winner||'').trim();
+  let loserName=String(outcome.loser||'').trim();
+
+  if(!winnerName||!players.some(p=>p.username===winnerName))throw new Error('Invalid battle winner.');
+  if(!loserName)loserName=players.find(p=>p.username!==winnerName)?.username||'';
+  if(!loserName||!players.some(p=>p.username===loserName))throw new Error('Invalid battle loser.');
+
+  let turns=Math.max(1,Math.floor(Number(outcome.turns||battleTurnsFromState(instance.state)||1)));
+  let forfeit=!!outcome.forfeit;
+  let rewards=calculateBattleRewards({forfeit,turns,winner:winnerName,loser:loserName});
+
+  let winnerEntry=players.find(p=>p.username===winnerName)||{};
+  let loserEntry=players.find(p=>p.username===loserName)||{};
+  let winnerGrant=grantBattleReward(winnerName,rewards.winner,winnerEntry.lockedPet&&winnerEntry.lockedPet.id);
+  let loserGrant=grantBattleReward(loserName,rewards.loser,loserEntry.lockedPet&&loserEntry.lockedPet.id);
+
+  let result={
+    id:instance.id,
+    source:instance.source||'battleInstance',
+    status:'ended',
+    reason:forfeit?'forfeit':'complete',
+    message:outcome.message||'',
+    winner:winnerName,
+    loser:loserName,
+    forfeiter:outcome.forfeiter||'',
+    turns,
+    forfeit,
+    rewards,
+    grants:{
+      [winnerName]:winnerGrant?{xpResult:winnerGrant.xpResult}:null,
+      [loserName]:loserGrant?{xpResult:loserGrant.xpResult}:null
+    },
+    endedAt:Date.now()
+  };
+
+  instance.status='ended';
+  instance.endedAt=result.endedAt;
+  instance.result=result;
+
+  players.forEach(p=>{
+    sendToUser(p.username,{
+      type:'battleInstanceResult',
+      instanceId:instance.id,
+      result,
+      role:p.username===winnerName?'winner':'loser',
+      reward:p.username===winnerName?rewards.winner:rewards.loser
+    });
+  });
+
+  clearBattleSocketsForInstance(instance.id);
+  return result;
+}
+
+
 function isUserOnline(username){
   username=String(username||'').trim();
   if(!username)return false;
@@ -4066,7 +4192,8 @@ app.post('/api/pet/claim-quest',(req,res)=>{
 
   let questId=String(req.body.questId||'');
   let profile=getPetProfile(username);
-  let pet=activePet(profile);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
   let daily=normalizeDaily(profile);
   let quest=daily.quests.find(q=>q.id===questId);
 
@@ -4093,7 +4220,8 @@ app.post('/api/pet/rename',(req,res)=>{
   if(!username)return;
 
   let profile=getPetProfile(username);
-  let pet=activePet(profile);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
   let name=String(req.body.name||'').trim().slice(0,24);
 
   if(!name)return res.json({error:'Missing name'});
@@ -4111,7 +4239,8 @@ app.post('/api/pet/care-egg',(req,res)=>{
 
   let action=String(req.body.action||'');
   let profile=getPetProfile(username);
-  let pet=activePet(profile);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
 
   if(!pet||pet.stage!=='egg')return res.json({error:'Active pet is not an egg'});
 
@@ -4202,7 +4331,8 @@ app.post('/api/pet/use-item',(req,res)=>{
 
   if((profile.inventory[itemId]||0)<=0)return res.json({error:'You do not have this item'});
 
-  let pet=activePet(profile);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
   let effects=Array.isArray(item.effects)?item.effects:[];
   let hatched=false;
   let messages=[];
@@ -4371,7 +4501,8 @@ app.post('/api/pet/play',(req,res)=>{
   if(!username)return;
 
   let profile=getPetProfile(username);
-  let pet=activePet(profile);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
 
   pet.needs.happiness=clamp((pet.needs.happiness||0)+12,0,100);
   pet.needs.energy=clamp((pet.needs.energy||0)-8,0,100);
@@ -4404,7 +4535,8 @@ app.post('/api/pet/train',(req,res)=>{
   if(!TRAINABLE_STATS.includes(stat))return res.json({error:'Invalid training stat'});
 
   let profile=getPetProfile(username);
-  let pet=activePet(profile);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
 
   if(!pet||pet.stage==='egg')return res.json({error:'Eggs cannot train yet'});
   if(Number(pet.needs.energy||0)<8)return res.json({error:pet.name+' is too tired to train'});
@@ -4441,7 +4573,8 @@ function handleExploreRequest(req,res){
 
   let zoneId=String(req.body.zoneId||'meadow');
   let profile=getPetProfile(username);
-  let pet=activePet(profile);
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
   let result=resolveExplore(profile,pet,zoneId);
 
   if(result.error)return res.json({error:result.error});
@@ -5079,11 +5212,75 @@ wss.on('connection',ws=>{
       pushPresence();
     }
 
+    if(m.type==='battleInstanceForfeit'){
+      let name=ws.username||'Guest';
+      let instance=battleHall.instances[String(m.instanceId||ws.battleInstanceId||'')];
+      let pub=publicBattleInstance(instance,name);
+      if(!pub){ws.send(JSON.stringify({type:'error',message:'Battle instance not found or not allowed.'}));return;}
+      if(instance.status==='ended'){ws.send(JSON.stringify({type:'battleInstanceResult',instanceId:instance.id,result:instance.result,role:instance.result&&instance.result.winner===name?'winner':'loser'}));return;}
+      let opponent=(instance.players||[]).find(p=>p.username!==name);
+      if(!opponent){ws.send(JSON.stringify({type:'error',message:'No opponent found for this battle.'}));return;}
+      try{
+        if(m.state&&typeof m.state==='object')instance.state=m.state;
+        let result=finishBattleInstance(instance,{
+          winner:opponent.username,
+          loser:name,
+          forfeiter:name,
+          forfeit:true,
+          turns:battleTurnsFromState(instance.state),
+          message:name+' forfeited the battle.'
+        });
+        ws.send(JSON.stringify({type:'battleInstanceResult',instanceId:instance.id,result,role:'loser'}));
+      }catch(err){
+        ws.send(JSON.stringify({type:'error',message:err.message||'Could not forfeit battle.'}));
+      }
+      return;
+    }
+
+    if(m.type==='battleInstanceComplete'){
+      let name=ws.username||'Guest';
+      let instance=battleHall.instances[String(m.instanceId||ws.battleInstanceId||'')];
+      let pub=publicBattleInstance(instance,name);
+      if(!pub)return;
+      if(instance.status==='ended')return;
+      if(m.state&&typeof m.state==='object')instance.state=m.state;
+      let winnerSeat=Number(m.winnerSeat);
+      if(!Number.isInteger(winnerSeat)||winnerSeat<0||winnerSeat>1)winnerSeat=Number(instance.state&&instance.state.winner);
+      let winner=(instance.players||[]).find(p=>Number(p.seat)===winnerSeat);
+      let loser=(instance.players||[]).find(p=>p.username!==(winner&&winner.username));
+      if(!winner||!loser){ws.send(JSON.stringify({type:'error',message:'Could not determine battle result.'}));return;}
+      try{
+        finishBattleInstance(instance,{
+          winner:winner.username,
+          loser:loser.username,
+          forfeit:false,
+          turns:battleTurnsFromState(instance.state),
+          message:'Battle completed.'
+        });
+      }catch(err){
+        ws.send(JSON.stringify({type:'error',message:err.message||'Could not finish battle.'}));
+      }
+      return;
+    }
+
+    if(m.type==='battleInstanceLeave'){
+      if(ws.battleInstanceId===String(m.instanceId||ws.battleInstanceId||'')){
+        ws.battleInstanceId='';
+        ws.location='Home';
+        pushPresence();
+      }
+      return;
+    }
+
     if(m.type==='battleInstanceMove'){
       let name=ws.username||'Guest';
       let instance=battleHall.instances[String(m.instanceId||ws.battleInstanceId||'')];
       let pub=publicBattleInstance(instance,name);
       if(!pub)return;
+      if(instance.status==='ended'){
+        ws.send(JSON.stringify({type:'battleInstanceResult',instanceId:instance.id,result:instance.result,role:instance.result&&instance.result.winner===name?'winner':'loser'}));
+        return;
+      }
       if(m.data&&(m.data.type==='state'||m.data.type==='battleState')){
         instance.state=m.data.state||m.data.battleState||m.data;
         instance.version=(instance.version||0)+1;

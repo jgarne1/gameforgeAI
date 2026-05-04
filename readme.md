@@ -78,6 +78,11 @@ games.json               → Game definitions
   * stat tampering
   * pet swapping mid-battle
   * unauthorized battle entry
+* Battle endings are server-finalized for locked battle instances
+* Forfeit is a battle event, not a simple UI exit
+* Results should display for both players with rewards granted by the server
+* Forfeit rewards scale by battle progress so early quitting cannot be farmed
+* No trapped screens: every battle state, modal, result screen, loading state, and full-screen game mode must provide a safe path back to the hub/home
 
 ---
 
@@ -123,7 +128,16 @@ games.json               → Game definitions
 * Accepting a challenge should auto-load both players into the created battle instance
 * The top header can show waiting/respond/join alerts for live challenge state
 
+
 ---
+
+### 📱 Mobile Support
+
+* All UI changes must include mobile responsiveness for phone-sized screens
+* Do not simply shrink desktop UI when it hurts usability; use mobile-specific layouts, drawers, bottom actions, or single-panel flows
+* Core actions must remain visible and tappable on phones
+* Test major flows on mobile before committing: Home, Play, Pet World, Battle Hall, Mail/Friends, Marketplace, and Pet Battle results
+* Mobile fixes must not ruin the desktop website layout
 
 ### 🛒 Marketplace
 
