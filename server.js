@@ -843,6 +843,31 @@ function createBattleInstanceFromSeats(source,table,seats){
   return battleHall.instances[id];
 }
 
+function createBattleInstanceFromUsers(source,usernames){
+  let clean=uniqueStrings(usernames).slice(0,2);
+  if(clean.length!==2)throw new Error('A private battle needs exactly two players.');
+
+  let id='B'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,6).toUpperCase();
+  let players=clean.map((username,index)=>({
+    username,
+    seat:index,
+    lockedPet:lockedBattlePetSnapshot(username,'')
+  }));
+
+  battleHall.instances[id]={
+    id,
+    source:source||'challenge',
+    tableId:'',
+    status:'ready',
+    createdAt:Date.now(),
+    players,
+    state:null,
+    version:0
+  };
+
+  return battleHall.instances[id];
+}
+
 function publicBattleInstance(instance,viewer){
   if(!instance)return null;
   let allowed=(instance.players||[]).some(p=>p.username===viewer);
@@ -1020,6 +1045,26 @@ function normalizeSocialUser(entry,username){
       .sort((a,b)=>Number(a.createdAt||0)-Number(b.createdAt||0))
       .slice(-50);
     t.updatedAt=Number(t.updatedAt||(t.messages.length?t.messages[t.messages.length-1].createdAt:t.createdAt));
+
+    // Battle challenge metadata is stored on battle-type mail threads so the
+    // Social Center can render Accept / Pending states without a separate inbox.
+    // Keep this metadata small and server-owned; the client may display it but
+    // the server validates challenger, recipient, and active pets again on accept.
+    if(t.type==='battle'&&t.challenge&&typeof t.challenge==='object'){
+      t.challenge={
+        id:String(t.challenge.id||t.id),
+        from:String(t.challenge.from||''),
+        to:String(t.challenge.to||''),
+        status:['pending','accepted','declined','expired'].includes(String(t.challenge.status||''))?String(t.challenge.status):'pending',
+        instanceId:String(t.challenge.instanceId||''),
+        url:String(t.challenge.url||''),
+        createdAt:Number(t.challenge.createdAt||t.createdAt||Date.now()),
+        updatedAt:Number(t.challenge.updatedAt||t.updatedAt||Date.now())
+      };
+    }else{
+      delete t.challenge;
+    }
+
     entry.mailThreads[t.id]=t;
     if(t.id!==id)delete entry.mailThreads[id];
   });
@@ -1070,7 +1115,8 @@ function mailThreadListForUser(entry,username){
       updatedAt:t.updatedAt,
       unread,
       lastMessage:last?{from:last.from,text:last.text,createdAt:last.createdAt}:null,
-      messages
+      messages,
+      challenge:t.challenge||null
     };
   });
 }
@@ -2595,6 +2641,144 @@ app.post('/api/social/send-mail',(req,res)=>{
 
   sendToUser(to,{type:'socialUpdate',reason:'mail',from:username,unreadMail:socialCounts(to).unreadMail});
   res.json({ok:true,message:'Mail sent.',counts:socialCounts(username),mailThreads:mailThreadListForUser(sender,username),threadId});
+});
+
+
+app.post('/api/social/battle-challenge',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let to=String(req.body.to||'').trim();
+  let note=String(req.body.text||'').trim().slice(0,240);
+  let u=normalizeAllUsers();
+
+  if(!username||!to)return res.status(400).json({error:'Missing challenger or target'});
+  if(username===to)return res.status(400).json({error:'You cannot challenge yourself.'});
+  if(!u[username])return res.status(404).json({error:'Challenger not found'});
+  if(!u[to])return res.status(404).json({error:'Target user not found'});
+
+  let store=social();
+  let sender=getSocialUser(store,username);
+  let recipient=getSocialUser(store,to);
+
+  // Friend challenges are intentionally limited to friends for the first pass.
+  // This keeps spam down and makes the feature feel social/planned instead of random matchmaking.
+  if(!sender.friends.includes(to))return res.status(403).json({error:'You can only challenge friends right now.'});
+
+  let now=Date.now();
+  let subject='Battle Invite';
+  let threadId=mailThreadKey(username,to,'battle',subject);
+  let challenge={
+    id:'challenge_'+now.toString(36)+'_'+Math.random().toString(36).slice(2,7),
+    from:username,
+    to,
+    status:'pending',
+    instanceId:'',
+    url:'',
+    createdAt:now,
+    updatedAt:now
+  };
+  let text=note || (username+' challenged you to a Pet Battle.');
+  let msg={
+    id:'msg_'+now.toString(36)+'_'+Math.random().toString(36).slice(2,8),
+    from:username,
+    to,
+    text:'⚔️ '+text,
+    createdAt:now,
+    readBy:[username]
+  };
+
+  [sender,recipient].forEach(entry=>{
+    let t=entry.mailThreads[threadId];
+    if(!t){
+      t={
+        id:threadId,
+        type:'battle',
+        subject,
+        participants:uniqueStrings([username,to]),
+        createdAt:now,
+        updatedAt:now,
+        messages:[]
+      };
+    }
+    t.type='battle';
+    t.subject=subject;
+    t.participants=uniqueStrings([username,to]);
+    t.messages=Array.isArray(t.messages)?t.messages:[];
+    t.messages.push({...msg});
+    t.messages=t.messages.sort((a,b)=>Number(a.createdAt||0)-Number(b.createdAt||0)).slice(-50);
+    t.challenge={...challenge};
+    t.updatedAt=now;
+    entry.mailThreads[threadId]=t;
+    trimMailThreads(entry);
+  });
+
+  saveSocial(store);
+  sendToUser(to,{type:'socialUpdate',reason:'battleChallenge',from:username,unreadMail:socialCounts(to).unreadMail});
+  res.json({ok:true,message:'Battle challenge sent.',counts:socialCounts(username),mailThreads:mailThreadListForUser(sender,username),threadId,challenge});
+});
+
+app.post('/api/social/battle-challenge/accept',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let threadId=String(req.body.threadId||'').trim();
+  let u=normalizeAllUsers();
+
+  if(!username||!threadId)return res.status(400).json({error:'Missing username or challenge thread'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+
+  let store=social();
+  let mine=getSocialUser(store,username);
+  let t=mine.mailThreads[threadId];
+  if(!t||t.type!=='battle'||!t.challenge)return res.status(404).json({error:'Battle challenge not found.'});
+
+  let challenge=t.challenge;
+  if(challenge.to!==username)return res.status(403).json({error:'Only the challenged player can accept this battle.'});
+  if(challenge.status==='accepted'&&challenge.instanceId){
+    return res.json({ok:true,message:'Battle already ready.',url:challenge.url,instanceId:challenge.instanceId,counts:socialCounts(username),mailThreads:mailThreadListForUser(mine,username)});
+  }
+  if(challenge.status!=='pending')return res.status(400).json({error:'This challenge is no longer pending.'});
+
+  let challenger=challenge.from;
+  if(!u[challenger])return res.status(404).json({error:'Challenger not found'});
+
+  try{
+    // The server locks both active pets at accept time. This keeps direct friend
+    // challenges aligned with Battle Hall: client intent starts the flow, but
+    // server snapshots determine the actual battle participants and pets.
+    let instance=createBattleInstanceFromUsers('challenge',[challenger,username]);
+    let url='/games/petbattle.html?battleInstance='+encodeURIComponent(instance.id);
+    let now=Date.now();
+    let acceptedMsg={
+      id:'msg_'+now.toString(36)+'_'+Math.random().toString(36).slice(2,8),
+      from:'System',
+      to:'',
+      text:'⚔️ Battle accepted. Your private battle is ready.',
+      createdAt:now,
+      readBy:[username]
+    };
+
+    [username,challenger].forEach(user=>{
+      let entry=getSocialUser(store,user);
+      let thread=entry.mailThreads[threadId];
+      if(thread){
+        thread.challenge={...challenge,status:'accepted',instanceId:instance.id,url,updatedAt:now};
+        thread.messages=Array.isArray(thread.messages)?thread.messages:[];
+        thread.messages.push({...acceptedMsg});
+        thread.updatedAt=now;
+        entry.mailThreads[threadId]=thread;
+      }
+    });
+
+    saveSocial(store);
+
+    instance.players.forEach(p=>{
+      let opponent=instance.players.find(x=>x.username!==p.username)?.username||'Opponent';
+      sendToUser(p.username,{type:'battleReady',instanceId:instance.id,opponent,url,source:'challenge'});
+      sendToUser(p.username,{type:'socialUpdate',reason:'battleChallengeAccepted',from:username,unreadMail:socialCounts(p.username).unreadMail});
+    });
+
+    res.json({ok:true,message:'Battle ready.',url,instanceId:instance.id,counts:socialCounts(username),mailThreads:mailThreadListForUser(getSocialUser(store,username),username)});
+  }catch(err){
+    res.status(400).json({error:err.message||'Could not create battle.'});
+  }
 });
 
 app.post('/api/social/read-mail',(req,res)=>{

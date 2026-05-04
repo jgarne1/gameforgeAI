@@ -103,9 +103,18 @@ games.json               → Game definitions
 * Max 25 threads per user (oldest auto-deleted silently)
 * Designed to support:
 
-  * battle invites
+  * battle invites / friend challenges
   * trade requests
   * system notifications
+
+---
+
+### ⚔️ Friend Challenges
+
+* Friends can challenge each other from social/friend UI surfaces
+* Battle challenge notifications are delivered through battle-type mail threads
+* Accepting a challenge creates a private server-locked battle instance
+* The top header can show a battle-ready Join alert when a private battle is ready
 
 ---
 
@@ -166,7 +175,9 @@ http://localhost:3000
   * keep UI consistent across pages
   * comment major logic clearly
   * avoid duplicate data structures
+  * update this README when a feature changes architecture, major user flow, deployment assumptions, or future-AI handoff rules
 
+* Future AI/code assistants must read this README before making changes and maintain it as part of feature work.
 * Follow `ARCHITECTURE.md` strictly for all major changes
 
 ---
