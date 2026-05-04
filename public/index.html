@@ -2297,6 +2297,38 @@ function openMyStall(){
 
   roomChatPanel.classList.add('hidden');
 }
+
+function openMyStall(){
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
+    return;
+  }
+
+  // leave any game mode
+  document.body.classList.remove('gameMode');
+
+  // go to play section (like other direct pages)
+  showSection('play');
+
+  // enter direct mode (full screen iframe)
+  document.body.classList.add('directGameMode');
+
+  setFrameLoading(true,'Loading Your Stall','Managing your listings.');
+
+  gameFrame.onload=function(){
+    setFrameLoading(false);
+  };
+
+  // 🔥 KEY PART: mode=stall
+  gameFrame.src='/games/market.html?mode=stall&v='+Date.now();
+
+  gameArea.classList.remove('hidden');
+  gameAreaTitle.innerText='My Stall';
+  gameHint.innerText='Manage your listings and sales.';
+
+  roomChatPanel.classList.add('hidden');
+}
   
 function setFrameLoading(on,title,sub){
   let box=document.getElementById('frameLoading');
