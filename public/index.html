@@ -3088,13 +3088,51 @@ function openPetWorldDirect(){
 }
 
 function openPetBattleDirect(){
-  let g=games.find(x=>x.id==='petbattle'||x.file==='petbattle.html');
-
-  if(!g){
-    g={id:'petbattle',name:'Pet Battle',file:'petbattle.html',maxPlayers:1,seats:1};
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
+    return;
   }
 
-  launchSoloGame(g);
+  // Pet Battle is a table experience, not a direct solo iframe.
+  // Open the launcher and ask it to prepare a private Pet Battle room with seats.
+  document.body.classList.remove('directGameMode','gameMode');
+  showSection('play');
+
+  if(gameArea)gameArea.classList.add('hidden');
+  if(gameFrame){
+    gameFrame.removeAttribute('srcdoc');
+    gameFrame.removeAttribute('src');
+  }
+  loadedGameKey='';
+  directGameKey='';
+  launcherLoadedGameKey='';
+
+  let frame=document.getElementById('launcherFrame');
+  if(!frame){
+    showToast('Launcher is not available yet.','warn');
+    return;
+  }
+
+  function requestBattleRoom(){
+    try{
+      frame.contentWindow.postMessage({type:'CREATE_BATTLE_ROOM'},'*');
+      showToast('Opening Pet Battle table.','good');
+    }catch(err){
+      console.warn('Could not message launcher for battle room:',err);
+      showToast('Could not open battle table.','warn');
+    }
+  }
+
+  if(!frame.contentWindow||!frame.src||frame.src==='about:blank'){
+    frame.onload=function(){
+      setTimeout(requestBattleRoom,150);
+    };
+    reloadLauncherFrame();
+  }else{
+    requestBattleRoom();
+    setTimeout(requestBattleRoom,350);
+  }
 }
 
 function openMarketDirect(){
