@@ -3167,7 +3167,8 @@ function roomPublic(r){
     started:r.started,
     seats:r.seats,
     players:r.players,
-    chat:r.chat.slice(-50)
+    chat:r.chat.slice(-50),
+    ready:r.ready||{}
   };
 }
 
@@ -3218,11 +3219,22 @@ wss.on('connection',ws=>{
     }
 
     if(m.type==='createRoom'){
+      let name=ws.username||'Guest';
+      let oldRoom=rooms[ws.roomId];
+
+      if(oldRoom&&oldRoom.id){
+        oldRoom.players=oldRoom.players.filter(p=>p!==name);
+        oldRoom.seats=oldRoom.seats.map(s=>s&&s.name===name?null:s);
+        if(oldRoom.ready)delete oldRoom.ready[name];
+        if(oldRoom.ready)delete oldRoom.ready[name];
+        broadcastRoom(oldRoom.id,{type:'roomUpdate',room:roomPublic(oldRoom)});
+      }
+
       let rid=id();
 
       rooms[rid]={
         id:rid,
-        owner:ws.username||'Guest',
+        owner:name,
         private:!!m.private,
         closed:false,
         selectedGame:null,
@@ -3233,12 +3245,13 @@ wss.on('connection',ws=>{
         gameState:null,
         gameStateType:'state',
         gameVersion:0,
-        gameUpdatedAt:0
+        gameUpdatedAt:0,
+        ready:{}
       };
 
       ws.roomId=rid;
       ws.location='Room';
-      rooms[rid].players.push(ws.username||'Guest');
+      rooms[rid].players.push(name);
 
       ws.send(JSON.stringify({type:'roomJoined',room:roomPublic(rooms[rid])}));
       pushPresence();
@@ -3318,6 +3331,7 @@ wss.on('connection',ws=>{
       if(r){
         r.players=r.players.filter(p=>p!==(ws.username||'Guest'));
         r.seats=r.seats.map(s=>s&&s.name===(ws.username||'Guest')?null:s);
+        if(r.ready)delete r.ready[ws.username||'Guest'];
         broadcastRoom(r.id,{type:'roomUpdate',room:roomPublic(r)});
       }
 
@@ -3338,6 +3352,7 @@ wss.on('connection',ws=>{
         r.gameStateType='state';
         r.gameVersion=0;
         r.gameUpdatedAt=0;
+        r.ready={};
         broadcastRoom(r.id,{type:'roomUpdate',room:roomPublic(r),scroll:'table'});
         pushPresence();
       }
@@ -3353,6 +3368,7 @@ wss.on('connection',ws=>{
       let name=ws.username||'Guest';
 
       r.seats=r.seats.map(s=>s&&s.name===name?null:s);
+      if(r.ready)delete r.ready[name];
 
       if(!r.seats[seat])r.seats[seat]={name};
 
@@ -3384,6 +3400,18 @@ wss.on('connection',ws=>{
             message:'Not enough players to start. Need '+minPlayers+', seated '+seated+'.'
           }));
           return;
+        }
+
+        if(r.selectedGame.id==='petbattle'){
+          let seatedNames=r.seats.filter(Boolean).map(s=>s.name);
+          let notReady=seatedNames.filter(name=>!(r.ready&&r.ready[name]));
+          if(notReady.length){
+            ws.send(JSON.stringify({
+              type:'error',
+              message:'Both battlers must ready up before Pet Battle starts. Waiting on: '+notReady.join(', ')+'.'
+            }));
+            return;
+          }
         }
 
         r.started=true;
@@ -3445,6 +3473,12 @@ wss.on('connection',ws=>{
 
       if(r){
         ws.location='Game';
+
+        if(m.data&&m.data.type==='lobbyReady'){
+          r.ready=r.ready||{};
+          r.ready[m.data.username||ws.username||'Guest']=!!m.data.ready;
+          broadcastRoom(r.id,{type:'roomUpdate',room:roomPublic(r)});
+        }
 
         if(m.data&&(m.data.type==='state'||m.data.type==='battleState')){
           r.gameState=m.data.state||m.data.battleState||m.data;
