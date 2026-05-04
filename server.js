@@ -36,7 +36,8 @@ function ensurePersistentStorage(){
     'items.json',
     'shops.json',
     'pet_moves.json',
-    'pet_species.json'
+    'pet_species.json',
+    'social.json'
   ];
 
   seedFiles.forEach(file=>{
@@ -57,6 +58,7 @@ const adminsFile=path.join(DATA,'admins.json');
 const petsFile=path.join(DATA,'pets.json');
 const movesFile=path.join(DATA,'pet_moves.json');
 const marketFile=path.join(DATA,'market.json');
+const socialFile=path.join(DATA,'social.json');
 // Static game-design catalogs should come from the deployed repo, not the persistent disk.
 // Player/runtime data stays on DATA; item/shop definitions update when GitHub deploys.
 const itemsFile=path.join(REPO_DATA,'items.json');
@@ -151,6 +153,8 @@ function pets(){return readJSON(petsFile,{})}
 function moves(){return readJSON(movesFile,DEFAULT_MOVES)}
 function market(){return readJSON(marketFile,{listings:{},nextId:1})}
 function saveMarket(m){writeJSON(marketFile,m)}
+function social(){return normalizeSocial(readJSON(socialFile,{users:{}}))}
+function saveSocial(s){writeJSON(socialFile,normalizeSocial(s))}
 
 function itemCatalog(){
   return readJSON(itemsFile,SHOP_ITEMS);
@@ -567,6 +571,109 @@ function safeUser(u){
     gamesPlayed:u.gamesPlayed||0,
     favoriteGame:u.favoriteGame||'',
     forumStats:u.forumStats||{posts:0,replies:0,likesReceived:0,reputation:0}
+  };
+}
+
+
+function normalizeSocial(raw){
+  raw=raw&&typeof raw==='object'?raw:{};
+  raw.users=raw.users&&typeof raw.users==='object'?raw.users:{};
+
+  Object.keys(raw.users).forEach(username=>{
+    raw.users[username]=normalizeSocialUser(raw.users[username],username);
+  });
+
+  return raw;
+}
+
+function normalizeSocialUser(entry,username){
+  entry=entry&&typeof entry==='object'?entry:{};
+  entry.friends=Array.isArray(entry.friends)?uniqueStrings(entry.friends).filter(x=>x!==username):[];
+  entry.incomingRequests=Array.isArray(entry.incomingRequests)?uniqueStrings(entry.incomingRequests).filter(x=>x!==username):[];
+  entry.outgoingRequests=Array.isArray(entry.outgoingRequests)?uniqueStrings(entry.outgoingRequests).filter(x=>x!==username):[];
+  entry.mail=Array.isArray(entry.mail)?entry.mail:[];
+  entry.mail=entry.mail
+    .filter(m=>m&&typeof m==='object')
+    .map(m=>({
+      id:String(m.id||('m_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8))),
+      from:String(m.from||''),
+      to:String(m.to||username),
+      text:String(m.text||'').slice(0,500),
+      createdAt:Number(m.createdAt||Date.now()),
+      read:!!m.read
+    }))
+    .sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0))
+    .slice(0,25);
+  return entry;
+}
+
+function uniqueStrings(arr){
+  return [...new Set((arr||[]).map(x=>String(x||'').trim()).filter(Boolean))];
+}
+
+function getSocialUser(store,username){
+  username=String(username||'').trim();
+  if(!username)return normalizeSocialUser({},'');
+  store.users=store.users||{};
+  store.users[username]=normalizeSocialUser(store.users[username],username);
+  return store.users[username];
+}
+
+function socialCounts(username){
+  let store=social();
+  let su=getSocialUser(store,username);
+  return {
+    friends:su.friends.length,
+    incomingRequests:su.incomingRequests.length,
+    outgoingRequests:su.outgoingRequests.length,
+    mail:su.mail.length,
+    unreadMail:su.mail.filter(m=>!m.read).length
+  };
+}
+
+function publicUserProfile(username,viewer){
+  let u=normalizeAllUsers()[username];
+  if(!u)return null;
+  let profile=getPetProfile(username);
+  let pet=null;
+  try{pet=activePet(profile);}catch(e){pet=null;}
+  let onlineInfo=presenceForUser(username,viewer);
+  let s=social();
+  let viewerSocial=getSocialUser(s,viewer||'');
+  return {
+    user:safeUser(u),
+    social:{
+      isFriend:viewerSocial.friends.includes(username),
+      incomingRequest:viewerSocial.incomingRequests.includes(username),
+      outgoingRequest:viewerSocial.outgoingRequests.includes(username)
+    },
+    online:onlineInfo,
+    activePet:pet?{
+      id:pet.id,
+      name:pet.name,
+      emoji:pet.emoji,
+      species:pet.species,
+      stage:pet.stage,
+      level:Number((pet.stats&&pet.stats.level)||pet.level||1)
+    }:null
+  };
+}
+
+function presenceForUser(username,viewer){
+  username=String(username||'').trim();
+  let matches=[...clients].filter(c=>c.username===username);
+  let online=matches.length>0;
+  let client=matches.find(c=>c.roomId)||matches[0]||null;
+  let roomId=client&&client.roomId?client.roomId:'';
+  let r=roomId&&rooms[roomId]?rooms[roomId]:null;
+  let privateRoom=!!(r&&r.private);
+  let canShowRoom=!!(roomId&&(!privateRoom||username===viewer));
+  return {
+    online,
+    location:client?(client.location||'Home'):'Offline',
+    roomId:canShowRoom?roomId:'',
+    privateRoom:!!(roomId&&privateRoom),
+    gameId:client?(client.gameId||''):''
   };
 }
 
@@ -1791,6 +1898,223 @@ app.post('/api/account/change-password',(req,res)=>{
   writeJSON(usersFile,u);
 
   res.json({ok:true,message:'Password changed.'});
+});
+
+
+
+/* ===== SOCIAL / ACCOUNT PROFILE ===== */
+
+app.get('/api/account/profile',(req,res)=>{
+  let username=String(req.query.user||'').trim();
+  let u=normalizeAllUsers();
+
+  if(!username)return res.status(400).json({error:'Missing username'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+
+  let profile=getPetProfile(username);
+  let pet=null;
+  try{pet=activePet(profile);}catch(e){pet=null;}
+
+  res.json({
+    ok:true,
+    user:safeUser(u[username]),
+    counts:socialCounts(username),
+    pet:pet?{
+      id:pet.id,
+      name:pet.name,
+      emoji:pet.emoji,
+      species:pet.species,
+      stage:pet.stage,
+      level:Number((pet.stats&&pet.stats.level)||pet.level||1)
+    }:null,
+    coins:Number(profile.money||0),
+    inventoryCount:Object.values(profile.inventory||{}).reduce((sum,n)=>sum+Number(n||0),0)
+  });
+});
+
+app.get('/api/social/summary',(req,res)=>{
+  let username=String(req.query.user||'').trim();
+  let u=normalizeAllUsers();
+  if(!username)return res.status(400).json({error:'Missing username'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+
+  let store=social();
+  let meSocial=getSocialUser(store,username);
+  saveSocial(store);
+
+  let friendProfiles=meSocial.friends.map(friend=>publicUserProfile(friend,username)).filter(Boolean);
+  let incoming=meSocial.incomingRequests.map(name=>publicUserProfile(name,username)).filter(Boolean);
+  let outgoing=meSocial.outgoingRequests.map(name=>publicUserProfile(name,username)).filter(Boolean);
+
+  res.json({
+    ok:true,
+    counts:socialCounts(username),
+    friends:friendProfiles,
+    incomingRequests:incoming,
+    outgoingRequests:outgoing,
+    mail:meSocial.mail
+  });
+});
+
+app.get('/api/social/search',(req,res)=>{
+  let username=String(req.query.user||'').trim();
+  let q=String(req.query.q||'').trim().toLowerCase();
+  let u=normalizeAllUsers();
+  if(!username)return res.status(400).json({error:'Missing username'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+  if(q.length<1)return res.json({ok:true,results:[]});
+
+  let results=Object.keys(u)
+    .filter(name=>name!==username)
+    .filter(name=>name.toLowerCase().includes(q)||String(u[name].displayName||'').toLowerCase().includes(q))
+    .slice(0,12)
+    .map(name=>publicUserProfile(name,username));
+
+  res.json({ok:true,results});
+});
+
+app.get('/api/social/user',(req,res)=>{
+  let username=String(req.query.user||'').trim();
+  let target=String(req.query.target||req.query.username||'').trim();
+  let u=normalizeAllUsers();
+  if(!username)return res.status(400).json({error:'Missing username'});
+  if(!target)return res.status(400).json({error:'Missing target'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+  if(!u[target])return res.status(404).json({error:'Target not found'});
+  res.json({ok:true,profile:publicUserProfile(target,username)});
+});
+
+app.post('/api/social/request',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let target=String(req.body.target||'').trim();
+  let u=normalizeAllUsers();
+  if(!username||!target)return res.status(400).json({error:'Missing username or target'});
+  if(username===target)return res.status(400).json({error:'You cannot friend yourself.'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+  if(!u[target])return res.status(404).json({error:'Target user not found'});
+
+  let store=social();
+  let mine=getSocialUser(store,username);
+  let theirs=getSocialUser(store,target);
+
+  if(mine.friends.includes(target))return res.json({ok:true,message:'Already friends.',counts:socialCounts(username)});
+
+  if(mine.incomingRequests.includes(target)){
+    mine.incomingRequests=mine.incomingRequests.filter(x=>x!==target);
+    theirs.outgoingRequests=theirs.outgoingRequests.filter(x=>x!==username);
+    mine.friends=uniqueStrings([...mine.friends,target]);
+    theirs.friends=uniqueStrings([...theirs.friends,username]);
+    saveSocial(store);
+    return res.json({ok:true,message:'Friend request accepted.',counts:socialCounts(username)});
+  }
+
+  mine.outgoingRequests=uniqueStrings([...mine.outgoingRequests,target]);
+  theirs.incomingRequests=uniqueStrings([...theirs.incomingRequests,username]);
+  saveSocial(store);
+
+  sendToUser(target,{type:'socialUpdate',reason:'friendRequest',from:username});
+  res.json({ok:true,message:'Friend request sent.',counts:socialCounts(username)});
+});
+
+app.post('/api/social/respond',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let from=String(req.body.from||'').trim();
+  let accept=req.body.accept===true||req.body.action==='accept';
+  let u=normalizeAllUsers();
+  if(!username||!from)return res.status(400).json({error:'Missing username or request user'});
+  if(!u[username]||!u[from])return res.status(404).json({error:'User not found'});
+
+  let store=social();
+  let mine=getSocialUser(store,username);
+  let theirs=getSocialUser(store,from);
+
+  mine.incomingRequests=mine.incomingRequests.filter(x=>x!==from);
+  theirs.outgoingRequests=theirs.outgoingRequests.filter(x=>x!==username);
+
+  if(accept){
+    mine.friends=uniqueStrings([...mine.friends,from]);
+    theirs.friends=uniqueStrings([...theirs.friends,username]);
+  }
+
+  saveSocial(store);
+  sendToUser(from,{type:'socialUpdate',reason:accept?'friendAccepted':'friendDeclined',from:username});
+  res.json({ok:true,message:accept?'Friend added.':'Request declined.',counts:socialCounts(username)});
+});
+
+app.post('/api/social/remove-friend',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let target=String(req.body.target||'').trim();
+  let u=normalizeAllUsers();
+  if(!username||!target)return res.status(400).json({error:'Missing username or target'});
+  if(!u[username]||!u[target])return res.status(404).json({error:'User not found'});
+
+  let store=social();
+  let mine=getSocialUser(store,username);
+  let theirs=getSocialUser(store,target);
+  mine.friends=mine.friends.filter(x=>x!==target);
+  theirs.friends=theirs.friends.filter(x=>x!==username);
+  mine.incomingRequests=mine.incomingRequests.filter(x=>x!==target);
+  mine.outgoingRequests=mine.outgoingRequests.filter(x=>x!==target);
+  theirs.incomingRequests=theirs.incomingRequests.filter(x=>x!==username);
+  theirs.outgoingRequests=theirs.outgoingRequests.filter(x=>x!==username);
+  saveSocial(store);
+
+  res.json({ok:true,message:'Friend removed.',counts:socialCounts(username)});
+});
+
+app.post('/api/social/send-mail',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let to=String(req.body.to||'').trim();
+  let text=String(req.body.text||'').trim().slice(0,500);
+  let u=normalizeAllUsers();
+  if(!username||!to)return res.status(400).json({error:'Missing sender or recipient'});
+  if(!text)return res.status(400).json({error:'Message is empty'});
+  if(!u[username])return res.status(404).json({error:'Sender not found'});
+  if(!u[to])return res.status(404).json({error:'Recipient not found'});
+
+  let store=social();
+  let recipient=getSocialUser(store,to);
+  let mail={
+    id:'m_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),
+    from:username,
+    to,
+    text,
+    createdAt:Date.now(),
+    read:false
+  };
+  recipient.mail=[mail,...recipient.mail].sort((a,b)=>Number(b.createdAt)-Number(a.createdAt)).slice(0,25);
+  saveSocial(store);
+
+  sendToUser(to,{type:'socialUpdate',reason:'mail',from:username,unreadMail:socialCounts(to).unreadMail});
+  res.json({ok:true,message:'Mail sent.',counts:socialCounts(username)});
+});
+
+app.post('/api/social/read-mail',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let mailId=String(req.body.mailId||'').trim();
+  let u=normalizeAllUsers();
+  if(!username)return res.status(400).json({error:'Missing username'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+
+  let store=social();
+  let mine=getSocialUser(store,username);
+  mine.mail.forEach(m=>{if(!mailId||m.id===mailId)m.read=true;});
+  saveSocial(store);
+  res.json({ok:true,message:'Mail marked read.',counts:socialCounts(username),mail:mine.mail});
+});
+
+app.post('/api/social/delete-mail',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let mailId=String(req.body.mailId||'').trim();
+  let u=normalizeAllUsers();
+  if(!username||!mailId)return res.status(400).json({error:'Missing username or mail id'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+
+  let store=social();
+  let mine=getSocialUser(store,username);
+  mine.mail=mine.mail.filter(m=>m.id!==mailId);
+  saveSocial(store);
+  res.json({ok:true,message:'Mail deleted.',counts:socialCounts(username),mail:mine.mail});
 });
 
 app.get('/api/admin/rooms',(req,res)=>{
