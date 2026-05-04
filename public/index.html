@@ -2947,12 +2947,33 @@ function createRoom(){
 }
 
 function joinRoom(code){
-  let c=(code||roomCode.value||'').trim().toUpperCase();
+  let fallbackInput=document.getElementById('roomCode');
+  let c=(code||(fallbackInput?fallbackInput.value:'')).trim().toUpperCase();
 
   if(!c)return alert('Enter a room code.');
 
   send({type:'joinRoom',roomId:c});
   showSection('play');
+}
+
+function joinRoomFromPresence(roomId){
+  // The right-side Online Users panel lives in the parent shell, while the actual
+  // room/table UI now lives inside games/launcher.html. When a player clicks
+  // "Click to join room", both shells need to know about the join.
+  //
+  // The parent joins so global room chat/presence stays synced, and the launcher
+  // iframe joins so the visible table updates instead of leaving the user on the
+  // launcher home screen.
+  let c=String(roomId||'').trim().toUpperCase();
+  if(!c)return;
+
+  showSection('play');
+  send({type:'joinRoom',roomId:c});
+
+  let frame=document.getElementById('launcherFrame');
+  if(frame&&frame.contentWindow){
+    frame.contentWindow.postMessage({type:'PARENT_JOIN_ROOM',roomId:c},'*');
+  }
 }
 
 function leaveRoom(){
@@ -3559,7 +3580,7 @@ function drawPresence(users,roomsList){
       '</span>'+
       (canJoin?'<br><small>Click to join room</small>':'');
 
-    if(canJoin)d.onclick=function(){joinRoom(u.roomId);};
+    if(canJoin)d.onclick=function(){joinRoomFromPresence(u.roomId);};
 
     presence.appendChild(d);
   });
