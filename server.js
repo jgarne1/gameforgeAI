@@ -57,8 +57,10 @@ const adminsFile=path.join(DATA,'admins.json');
 const petsFile=path.join(DATA,'pets.json');
 const movesFile=path.join(DATA,'pet_moves.json');
 const marketFile=path.join(DATA,'market.json');
-const itemsFile=path.join(DATA,'items.json');
-const shopsFile=path.join(DATA,'shops.json');
+// Static game-design catalogs should come from the deployed repo, not the persistent disk.
+// Player/runtime data stays on DATA; item/shop definitions update when GitHub deploys.
+const itemsFile=path.join(REPO_DATA,'items.json');
+const shopsFile=path.join(REPO_DATA,'shops.json');
 const gamesFile=path.join(__dirname,'games.json');
 const petSpeciesFile=path.join(DATA,'pet_species.json');
 const repoPetSpeciesFile=path.join(REPO_DATA,'pet_species.json');
