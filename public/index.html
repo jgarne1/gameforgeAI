@@ -1750,6 +1750,16 @@ body.gameMode #gameArea .danger{
   box-shadow:0 0 18px rgba(239,68,68,.35);
 }
 .socialNavBadge.show{display:inline-flex}
+
+/* Header mail button + battle-ready alert. Keep these small so the global header stays consistent across all pages. */
+.topMailBtn{position:relative;display:inline-flex;align-items:center;gap:7px}
+.topMailDot{display:none;position:absolute;right:8px;top:5px;width:9px;height:9px;border-radius:999px;background:#38bdf8;box-shadow:0 0 0 3px rgba(56,189,248,.14),0 0 14px rgba(56,189,248,.85)}
+.topMailBtn.hasUnread .topMailDot{display:block}
+.topBattleAlert{display:none;align-items:center;gap:8px;max-width:270px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-color:rgba(250,204,21,.55)!important;background:linear-gradient(135deg,rgba(250,204,21,.20),rgba(124,58,237,.20))!important;color:#fff!important;box-shadow:0 0 24px rgba(250,204,21,.10)}
+.topBattleAlert.show{display:inline-flex}
+.mailChallengeBox{margin:10px 12px 0;border:1px solid rgba(250,204,21,.32);background:linear-gradient(135deg,rgba(250,204,21,.12),rgba(124,58,237,.10));border-radius:17px;padding:11px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mailChallengeBox b{color:#fff}.mailChallengeBox span{color:var(--muted);font-size:12px}
+
 .socialShell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start}
 .socialMenu{display:grid;gap:8px}
 .socialMenu button{justify-content:flex-start;text-align:left}
@@ -1844,6 +1854,8 @@ body.gameMode #gameArea .danger{
       <div class="topStatusRight topStatusActions">
         <span id="topStatusPet" class="topStatusPill">No companion</span>
         <span id="topStatusRoom" class="topStatusPill">No room</span>
+        <button id="topBattleAlert" class="topStatusPill topBattleAlert" onclick="joinReadyBattle()">⚔️ Battle ready</button>
+        <button id="topMailBtn" class="ghost topMailBtn hidden" onclick="openMailFromTop()">✉️ Mail <span id="topMailDot" class="topMailDot"></span></button>
         <button id="topFriendsBtn" class="ghost hidden" onclick="toggleTopFriends()">👥 Friends</button>
         <button id="topAdminBtn" class="purple hidden" onclick="openAdmin()">Admin</button>
         <button id="topAuthBtn" class="primary" onclick="topAuthAction()">Login</button>
@@ -1972,7 +1984,7 @@ body.gameMode #gameArea .danger{
     <div id="social" class="section">
       <div class="hero">
         <h2>Social Center</h2>
-        <p>Your gamer profile, friends, and short mail messages live here. Mail history is capped at 25 messages per user.</p>
+        <p>Your gamer profile, friends, and short mail messages live here. Mail history is grouped into typed threads and capped at 25 threads per user.</p>
         <div class="heroActions">
           <button class="primary" onclick="showSocialTab('profile')">Profile</button>
           <button class="purple" onclick="showSocialTab('friends')">Friends</button>
@@ -2146,6 +2158,7 @@ let roomReadyStatus={}; // Cosmetic lobby readiness by username. It is relayed a
 let readyRoomId=''; // Tracks which room the cosmetic ready map belongs to so old ready flags do not leak between rooms.
 let socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[],mailThreads:[]};
 let selectedMailThreadId=''; // Active conversation in the Social Center two-pane mail viewer.
+let readyBattleAlert=null; // Set when the server creates a private BattleInstance for this user. Header Join button reads this.
 let accountProfile=null;
 
 
@@ -2182,6 +2195,7 @@ function updateTopStatus(){
   let authBtn=document.getElementById('topAuthBtn');
   let adminBtn=document.getElementById('topAdminBtn');
   let friendsBtn=document.getElementById('topFriendsBtn');
+  let mailBtn=document.getElementById('topMailBtn');
   if(!text||!petPill||!roomPill)return;
 
   text.innerText=me?('Logged in as '+me+' · '+(admin?'Admin':'Player')):'Log in to unlock pets, rooms, and progression';
@@ -2198,7 +2212,59 @@ function updateTopStatus(){
   if(authBtn)authBtn.innerText=me?'Logout':'Login';
   if(adminBtn)adminBtn.classList.toggle('hidden',!admin);
   if(friendsBtn)friendsBtn.classList.toggle('hidden',!me);
+  if(mailBtn)mailBtn.classList.toggle('hidden',!me);
+  updateTopMailButton();
+  drawBattleReadyAlert();
   drawTopFriendsDropdown();
+}
+
+
+function updateTopMailButton(){
+  let btn=document.getElementById('topMailBtn');
+  if(!btn)return;
+  let unread=Number((socialData.counts&&socialData.counts.unreadMail)||0);
+  btn.classList.toggle('hasUnread',unread>0);
+  btn.title=unread>0?(unread+' unread mail'):'Mail';
+}
+
+function openMailFromTop(){
+  if(!me){showSection('home');return;}
+  showSection('social');
+  showSocialTab('mail');
+}
+
+function drawBattleReadyAlert(){
+  let btn=document.getElementById('topBattleAlert');
+  if(!btn)return;
+  if(readyBattleAlert&&readyBattleAlert.url){
+    btn.classList.add('show');
+    btn.innerText='⚔️ Battle with '+(readyBattleAlert.opponent||'Opponent')+' ready — Join';
+  }else{
+    btn.classList.remove('show');
+    btn.innerText='⚔️ Battle ready';
+  }
+}
+
+function joinReadyBattle(url){
+  let battleUrl=url||(readyBattleAlert&&readyBattleAlert.url)||'';
+  if(!battleUrl)return;
+  document.body.classList.remove('gameMode');
+  showSection('play');
+  document.body.classList.add('directGameMode');
+  gameArea.classList.remove('hidden');
+  gameAreaTitle.innerText='Pet Battle';
+  gameHint.innerText='Loading your private battle instance.';
+  setFrameLoading(true,'Loading Pet Battle','Connecting to the server-locked battle instance.');
+  if(roomChatPanel)roomChatPanel.classList.add('hidden');
+  directGameKey='battleInstance|'+battleUrl+'|'+me;
+  loadedGameKey='';
+  launcherLoadedGameKey='';
+  gameFrame.onload=function(){setFrameLoading(false);};
+  gameFrame.removeAttribute('srcdoc');
+  gameFrame.src=battleUrl+(battleUrl.includes('?')?'&':'?')+'v='+Date.now();
+  readyBattleAlert=null;
+  drawBattleReadyAlert();
+  window.scrollTo(0,0);
 }
 
 function drawContinueCard(){
@@ -2355,7 +2421,7 @@ function drawTopFriendsDropdown(){
     let name=u.username||'';
     return '<div class="topFriendItem" onclick="openFriendProfile(\''+escapeAttr(name)+'\')">'+
       '<div style="min-width:0"><div class="topFriendName"><span class="onlineDot '+(online.online?'on':'')+'"></span>'+escapeHtml(u.displayName||name)+'</div><div class="topFriendMeta">'+escapeHtml(onlineLabel(online))+(pet?' · '+escapeHtml((pet.emoji||'🐾')+' '+(pet.name||'Pet')):'')+'</div></div>'+ 
-      '<div class="topFriendActions"><button class="gold" onclick="event.stopPropagation();prefillMail(\''+escapeAttr(name)+'\')">Mail</button></div>'+ 
+      '<div class="topFriendActions"><button class="purple" onclick="event.stopPropagation();sendBattleChallenge(\''+escapeAttr(name)+'\')">Challenge</button><button class="gold" onclick="event.stopPropagation();prefillMail(\''+escapeAttr(name)+'\')">Mail</button></div>'+ 
     '</div>';
   }).join('')+'<button class="ghost" style="width:100%;margin-top:8px" onclick="showSection(\'social\');topFriendDrop.classList.remove(\'open\')">Open Social Center</button>';
 }
@@ -2388,7 +2454,9 @@ async function openFriendProfile(username){
         '<div class="navMiniStat"><b>'+Number(u.wins||0)+'</b><span>Wins</span></div>'+ 
         '<div class="navMiniStat"><b>'+Number(u.gamesPlayed||0)+'</b><span>Games Played</span></div>'+ 
       '</div>'+ 
-      '<div class="loginModalActions"><button class="ghost" onclick="closeFriendProfile()">Close</button><button class="gold" onclick="closeFriendProfile();prefillMail(\''+escapeAttr(u.username||username)+'\')">Mail</button>'+ 
+      '<div class="loginModalActions"><button class="ghost" onclick="closeFriendProfile()">Close</button>'+
+      (rel&&rel.isFriend?'<button class="purple" onclick="closeFriendProfile();sendBattleChallenge(\''+escapeAttr(u.username||username)+'\')">Challenge</button>':'')+
+      '<button class="gold" onclick="closeFriendProfile();prefillMail(\''+escapeAttr(u.username||username)+'\')">Mail</button>'+ 
       (rel&&rel.isFriend?'<button class="danger" onclick="closeFriendProfile();removeFriend(\''+escapeAttr(u.username||username)+'\')">Remove Friend</button>':'')+
       '</div>';
   }catch(err){
@@ -2574,6 +2642,12 @@ function connect(){
         drawSocialBadge();
       }
       loadSocialCenter({silent:true});
+    }
+
+    if(m.type==='battleReady'){
+      readyBattleAlert={url:m.url||('/games/petbattle.html?battleInstance='+encodeURIComponent(m.instanceId||'')),instanceId:m.instanceId||'',opponent:m.opponent||'Opponent'};
+      drawBattleReadyAlert();
+      showToast('Battle with '+readyBattleAlert.opponent+' is ready.','good');
     }
 
     if(m.type==='roomClosed'){
@@ -4071,6 +4145,7 @@ function drawSocialBadge(){
   if(hero){
     hero.innerText=unread>0?'('+unread+' unread)':'';
   }
+  updateTopMailButton();
 }
 
 function drawProfilePanel(){
@@ -4141,7 +4216,7 @@ function friendCard(profile){
     '<h4><span class="onlineDot '+(online.online?'on':'')+'"></span>'+escapeHtml(u.displayName||name)+'</h4>'+ 
     '<p class="muted">@'+escapeHtml(name)+' · '+onlineLabel(online)+'</p>'+ 
     '<p class="muted">'+(pet?escapeHtml((pet.emoji||'🐾')+' '+(pet.name||'Pet')+' Lv '+(pet.level||1)):'No active pet')+'</p>'+ 
-    '<div class="socialActions"><button onclick="openFriendProfile(\''+escapeAttr(name)+'\')">Profile</button><button class="gold" onclick="prefillMail(\''+escapeAttr(name)+'\')">Mail</button><button class="danger" onclick="removeFriend(\''+escapeAttr(name)+'\')">Remove</button></div>'+ 
+    '<div class="socialActions"><button onclick="openFriendProfile(\''+escapeAttr(name)+'\')">Profile</button><button class="purple" onclick="sendBattleChallenge(\''+escapeAttr(name)+'\')">Challenge</button><button class="gold" onclick="prefillMail(\''+escapeAttr(name)+'\')">Mail</button><button class="danger" onclick="removeFriend(\''+escapeAttr(name)+'\')">Remove</button></div>'+ 
   '</div>';
 }
 
@@ -4174,6 +4249,52 @@ function getSelectedMailThread(){
   return threads.find(function(t){return t.id===selectedMailThreadId;})||threads[0]||null;
 }
 
+
+function mailChallengeActions(t){
+  if(!t||t.type!=='battle'||!t.challenge)return '';
+  let ch=t.challenge||{};
+  let other=mailThreadOtherName(t);
+  if(ch.status==='pending'&&ch.to===me){
+    return '<div class="mailChallengeBox"><div><b>Battle challenge from '+escapeHtml(other)+'</b><br><span>Accepting locks both active pets and creates a private Pet Battle.</span></div><button class="purple" onclick="acceptBattleChallenge(\''+escapeAttr(t.id)+'\')">Accept Battle</button></div>';
+  }
+  if(ch.status==='pending'&&ch.from===me){
+    return '<div class="mailChallengeBox"><div><b>Battle challenge pending</b><br><span>Waiting for '+escapeHtml(other)+' to accept.</span></div><span class="pill gold">Pending</span></div>';
+  }
+  if(ch.status==='accepted'&&ch.url){
+    return '<div class="mailChallengeBox"><div><b>Battle ready</b><br><span>This private battle instance has been created.</span></div><button class="gold" onclick="joinReadyBattle(\''+escapeAttr(ch.url)+'\')">Join Battle</button></div>';
+  }
+  return '';
+}
+
+async function sendBattleChallenge(target){
+  if(!me)return showToast('Log in first.','warn');
+  if(!target)return;
+  try{
+    let data=await socialApi('/api/social/battle-challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,to:target})});
+    selectedMailThreadId=data.threadId||selectedMailThreadId;
+    showToast(data.message||'Battle challenge sent.','good');
+    await loadSocialCenter({silent:true});
+    showSection('social');
+    showSocialTab('mail');
+  }catch(err){showToast(err.message||'Challenge failed.','warn');}
+}
+
+async function acceptBattleChallenge(threadId){
+  if(!me)return showToast('Log in first.','warn');
+  try{
+    let data=await socialApi('/api/social/battle-challenge/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,threadId:threadId})});
+    socialData.mailThreads=data.mailThreads||socialData.mailThreads||[];
+    socialData.counts=data.counts||socialData.counts||{};
+    selectedMailThreadId=threadId;
+    if(data.url){
+      readyBattleAlert={url:data.url,instanceId:data.instanceId,opponent:mailThreadOtherName(getSelectedMailThread()||{})};
+      drawBattleReadyAlert();
+    }
+    drawSocialCenter();
+    showToast(data.message||'Battle ready.','good');
+  }catch(err){showToast(err.message||'Could not accept battle.','warn');}
+}
+
 function drawMailPanel(){
   let root=document.getElementById('mailList');
   if(!root)return;
@@ -4204,6 +4325,7 @@ function drawMailPanel(){
     viewerHtml='<div class="mailViewer">'+
       '<div class="mailViewerHead"><div><b>'+escapeHtml(active.subject||'Mail')+'</b><br><span class="muted">'+escapeHtml(mailTypeLabel(active.type))+' with '+escapeHtml(mailThreadOtherName(active))+'</span></div>'+
       '<div class="socialActions"><button onclick="prefillMailFromThread(\''+escapeAttr(active.id)+'\')">Reply</button><button class="danger" onclick="deleteSocialMail(\''+escapeAttr(active.id)+'\')">Delete</button></div></div>'+
+      mailChallengeActions(active)+
       '<div class="mailMessages" id="mailMessages">'+messages.map(function(m){
         let mine=m.from===me;
         let date=m.createdAt?new Date(m.createdAt).toLocaleString():'';
