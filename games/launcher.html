@@ -31,7 +31,7 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
 .brand{display:flex;align-items:center;gap:12px;min-width:0}.brandBadge{height:36px;width:36px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#fbbf24,#fb7185);color:#111827;font-weight:900}.brand h1{font-size:18px;margin:0;white-space:nowrap}.brand span{font-size:12px;color:var(--muted)}
 .roomTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}.joinBox{display:flex;align-items:center;gap:6px}.joinBox input{width:112px;border:1px solid var(--line);background:rgba(15,23,42,.95);color:var(--text);border-radius:999px;padding:8px 10px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;outline:none}.roomCode{font-size:13px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.1);border-radius:999px;padding:9px 12px}.roomCode b{color:#fde68a;letter-spacing:1px}.toggle{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#cbd5e1;user-select:none}.toggle input{width:16px;height:16px;accent-color:#38bdf8}.smallBtn{padding:8px 10px;border-radius:999px;font-size:12px}.danger{background:rgba(127,29,29,.8)}.primary{background:linear-gradient(135deg,#2563eb,#7c3aed)}.start{background:linear-gradient(135deg,#16a34a,#22c55e);color:#052e16}.ghost{background:rgba(15,23,42,.72);border:1px solid var(--line)}
 .main{min-height:0;display:grid;grid-template-columns:236px 1fr 236px;gap:10px}.panel{min-height:0;border:1px solid var(--line);background:var(--panel);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.panelHead{padding:13px 14px;border-bottom:1px solid var(--line);background:rgba(2,6,23,.35)}.panelHead h2{font-size:15px;margin:0}.panelHead p{font-size:12px;margin:4px 0 0;color:var(--muted);line-height:1.25}
-.gameRail{display:grid;grid-template-rows:46px 1fr 46px;height:calc(100% - 62px);padding:10px;gap:8px}.arrowBtn{font-size:18px;background:rgba(15,23,42,.85);border:1px solid var(--line)}.gameList{overflow:hidden;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}.gameCard{position:relative;text-align:left;min-height:76px;padding:12px;border-radius:18px;border:1px solid rgba(148,163,184,.18);background:linear-gradient(135deg,rgba(30,41,59,.96),rgba(15,23,42,.88));box-shadow:none}.gameCard.selected{border-color:rgba(56,189,248,.75);box-shadow:0 0 0 2px rgba(56,189,248,.12) inset}.gameCard.locked{filter:grayscale(.9);opacity:.48}.gameCard.locked:hover{transform:none;background:linear-gradient(135deg,rgba(30,41,59,.96),rgba(15,23,42,.88))}.gameName{font-size:15px;font-weight:900}.gameMeta{font-size:12px;color:var(--muted);margin-top:5px}.lockLine{font-size:11px;color:#fcd34d;margin-top:6px}.gameIcon{position:absolute;right:12px;top:10px;font-size:25px;opacity:.72}
+.gameRail{display:grid;grid-template-rows:46px 1fr 46px;height:calc(100% - 62px);padding:10px;gap:8px}.arrowBtn{font-size:18px;background:rgba(15,23,42,.85);border:1px solid var(--line)}.gameList{overflow:hidden;overflow-y:auto;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;padding-right:2px}.gameGroup{display:flex;flex-direction:column;gap:8px}.gameGroupTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 0;color:#cbd5e1;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.gameGroupTitle span{color:var(--muted);font-weight:800;text-transform:none;letter-spacing:0}.gameCard{width:100%;position:relative;text-align:left;min-height:104px;padding:11px;border-radius:18px;border:1px solid rgba(148,163,184,.18);background:linear-gradient(135deg,rgba(30,41,59,.96),rgba(15,23,42,.88));box-shadow:none;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start}.gameCard.selected{border-color:rgba(56,189,248,.75);box-shadow:0 0 0 2px rgba(56,189,248,.12) inset}.gameCard.unlocked{border-color:rgba(34,197,94,.28);background:linear-gradient(135deg,rgba(21,128,61,.18),rgba(15,23,42,.92) 48%,rgba(2,6,23,.88))}.gameCard.locked{opacity:.66;background:linear-gradient(135deg,rgba(30,41,59,.70),rgba(15,23,42,.70));border-color:rgba(148,163,184,.14)}.gameCard.locked:hover{transform:none;background:linear-gradient(135deg,rgba(30,41,59,.70),rgba(15,23,42,.70))}.gameIcon{width:34px;height:34px;border-radius:13px;display:grid;place-items:center;font-size:19px;background:rgba(2,6,23,.52);border:1px solid rgba(148,163,184,.18);opacity:.95}.gameInfo{min-width:0;display:flex;flex-direction:column;gap:5px}.gameName{font-size:14px;font-weight:900;line-height:1.12;white-space:normal;overflow-wrap:anywhere}.gameMeta{font-size:11px;color:var(--muted);line-height:1.25}.lockLine{font-size:10px;color:#fcd34d;line-height:1.25;overflow-wrap:anywhere}.lockLine.good{color:#86efac}.gameActionHint{margin-top:3px;font-size:10px;color:#cbd5e1;line-height:1.2}.gameCard.locked .gameName,.gameCard.locked .gameMeta{color:#9ca3af}
 .tablePanel{position:relative;display:grid;grid-template-rows:78px 1fr 82px;height:100%;background:radial-gradient(circle at center,rgba(56,189,248,.1),transparent 44%),var(--panel)}.tableTitle{padding:16px 18px;text-align:center;border-bottom:1px solid var(--line)}.tableTitle h2{font-size:22px;margin:0}.tableTitle p{font-size:12px;margin:7px 0 0;color:var(--muted)}.tableStage{position:relative;display:grid;place-items:center;min-height:0;padding:14px}.tableStage.flashJoin{animation:roomJoinPulse 1.05s ease}.tableStage.flashLeave{animation:roomLeavePulse 1.05s ease}.seat.seatPulseJoin{animation:seatJoinPulse 1.15s ease}.seat.seatPulseLeave{animation:seatLeavePulse 1.15s ease}.seat.seatPulseSit{animation:seatSitPulse 1.15s ease}.roomFloat{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:20;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:900;letter-spacing:.2px;pointer-events:none;box-shadow:0 12px 28px rgba(0,0,0,.32);animation:roomFloatUp 1.45s ease forwards;white-space:nowrap}.roomFloat.join{background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.6);color:#bbf7d0}.roomFloat.leave{background:rgba(251,113,133,.18);border:1px solid rgba(251,113,133,.62);color:#fecdd3}.roomFloat.sit{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.62);color:#fde68a}@keyframes roomJoinPulse{0%{box-shadow:0 0 0 rgba(34,197,94,0)}25%{box-shadow:0 0 0 3px rgba(34,197,94,.20),0 0 34px rgba(34,197,94,.28)}100%{box-shadow:0 0 0 rgba(34,197,94,0)}}@keyframes roomLeavePulse{0%{box-shadow:0 0 0 rgba(251,113,133,0)}25%{box-shadow:0 0 0 3px rgba(251,113,133,.20),0 0 34px rgba(251,113,133,.26)}100%{box-shadow:0 0 0 rgba(251,113,133,0)}}@keyframes seatJoinPulse{0%{border-color:rgba(148,163,184,.22)}30%{border-color:rgba(34,197,94,.85);box-shadow:0 0 0 3px rgba(34,197,94,.18),0 0 24px rgba(34,197,94,.28)}100%{border-color:rgba(34,197,94,.45)}}@keyframes seatLeavePulse{0%{border-color:rgba(148,163,184,.22)}30%{border-color:rgba(251,113,133,.85);box-shadow:0 0 0 3px rgba(251,113,133,.18),0 0 24px rgba(251,113,133,.26)}100%{border-color:rgba(148,163,184,.22)}}@keyframes seatSitPulse{0%{transform:scale(1)}35%{box-shadow:0 0 0 3px rgba(251,191,36,.22),0 0 24px rgba(251,191,36,.30)}100%{transform:scale(1)}}@keyframes roomFloatUp{0%{opacity:0;transform:translate(-50%,8px)}12%{opacity:1;transform:translate(-50%,0)}75%{opacity:1;transform:translate(-50%,-3px)}100%{opacity:0;transform:translate(-50%,-16px)}}.felt{width:min(620px,80%);height:min(340px,62%);min-height:220px;border-radius:46%;background:radial-gradient(circle at 50% 42%,rgba(34,197,94,.28),rgba(15,118,110,.25) 40%,rgba(15,23,42,.94) 75%);border:2px solid rgba(251,191,36,.38);box-shadow:inset 0 0 70px rgba(0,0,0,.45),0 24px 70px rgba(0,0,0,.35);display:grid;place-items:center;text-align:center;padding:26px}.felt b{font-size:19px}.felt span{display:block;color:var(--muted);font-size:13px;margin-top:8px;max-width:380px;line-height:1.4}.seat{position:absolute;width:150px;min-height:74px;border-radius:20px;border:1px solid var(--line);background:rgba(15,23,42,.94);box-shadow:0 14px 32px rgba(0,0,0,.28);padding:10px;text-align:center}.seat.filled{border-color:rgba(34,197,94,.45)}.seat.me{box-shadow:0 0 0 2px rgba(56,189,248,.25),0 14px 32px rgba(0,0,0,.28)}.seatName{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.seatLabel{font-size:11px;color:var(--muted);margin-bottom:4px}.seat button{font-size:11px;padding:6px 8px;margin-top:7px;border-radius:999px}.readyBadge{display:inline-block;margin-top:5px;padding:4px 7px;border-radius:999px;background:rgba(148,163,184,.14);font-size:11px;color:#cbd5e1}.readyBadge.ready{background:rgba(34,197,94,.18);color:#86efac}.seat0{top:20px;left:50%;transform:translateX(-50%)}.seat1{right:22px;top:50%;transform:translateY(-50%)}.seat2{bottom:20px;left:50%;transform:translateX(-50%)}.seat3{left:22px;top:50%;transform:translateY(-50%)}.seat5{right:22px;bottom:20px}.seat4{left:22px;bottom:20px}.tableActions{display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-top:1px solid var(--line);background:rgba(2,6,23,.35)}.statusText{font-size:12px;color:var(--muted);max-width:440px;line-height:1.3}
 .playersList{padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto;height:calc(100% - 62px)}.playerRow{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:11px;border-radius:16px;background:rgba(15,23,42,.78);border:1px solid rgba(148,163,184,.12)}.playerName{font-weight:900;overflow:hidden;text-overflow:ellipsis}.playerRole{font-size:11px;color:var(--muted)}
 .chatPanel{border:1px solid var(--line);background:var(--panel);border-radius:22px;box-shadow:var(--shadow);display:grid;grid-template-rows:1fr 40px;overflow:hidden}.log{padding:10px 12px;overflow:auto;font-size:13px;line-height:1.35}.logLine{margin-bottom:5px}.logLine b{color:#bfdbfe}.chatInput{display:grid;grid-template-columns:1fr 80px;gap:8px;border-top:1px solid var(--line);padding:8px;background:rgba(2,6,23,.38)}.chatInput input{border:1px solid var(--line);background:rgba(15,23,42,.95);color:var(--text);border-radius:13px;padding:9px 11px;outline:none}.chatInput button{padding:8px 10px}
@@ -102,16 +102,20 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
     font-size:16px;
     border-radius:12px;
   }
-  .gameList{gap:6px;padding-bottom:2px;}
+  .gameList{gap:8px;padding-bottom:2px;}
+  .gameGroupTitle{font-size:9px;padding:3px 2px 0;}
   .gameCard{
-    min-height:62px;
-    padding:9px;
+    min-height:96px;
+    padding:8px;
     border-radius:14px;
+    grid-template-columns:28px minmax(0,1fr);
+    gap:7px;
   }
-  .gameName{font-size:12px;padding-right:20px;}
-  .gameMeta{font-size:10px;margin-top:3px;}
-  .lockLine{font-size:9px;margin-top:4px;}
-  .gameIcon{right:7px;top:7px;font-size:18px;}
+  .gameIcon{width:28px;height:28px;border-radius:10px;font-size:15px;}
+  .gameName{font-size:11px;line-height:1.15;}
+  .gameMeta{font-size:9px;line-height:1.18;}
+  .lockLine{font-size:8.5px;line-height:1.18;}
+  .gameActionHint{font-size:8.5px;}
   .tablePanel{grid-template-rows:auto minmax(0,1fr) auto;}
   .tableTitle{padding:10px;}
   .tableTitle h2{font-size:15px;}
@@ -346,6 +350,15 @@ function getInventory(){
   }
   return inv;
 }
+function normalizeItemCatalog(raw){
+  if(Array.isArray(raw)){
+    const out={};
+    raw.forEach(item=>{if(item&&(item.id||item.itemId))out[item.id||item.itemId]=item;});
+    return out;
+  }
+  return raw&&typeof raw==='object'?raw:{};
+}
+function ownedGameItemId(gameId){return 'game_'+String(gameId||'').trim();}
 function inventoryQty(itemId){
   const inv=getInventory();
   const v=inv[itemId];
@@ -358,21 +371,25 @@ function itemHasUnlockEffect(item,gameId){
   return effects.some(e=>e&&(e.type==='unlock'||e.type==='game_unlock')&&(e.target==='game'||e.target==='games'||e.target==='host_game')&&(e.value===gameId||e.gameId===gameId));
 }
 function itemUnlocksGame(itemId,gameId){
+  itemId=String(itemId||'').trim();
+  gameId=String(gameId||'').trim();
   let item=itemCatalog[itemId]||{};
   return itemUnlocksAll(itemId)||
-    itemId==='game_'+gameId||
-    item.id==='game_'+gameId||
-    item.unlocksGame===gameId||
-    item.gameId===gameId||
-    item.hostsGame===gameId||
-    item.unlockGame===gameId||
+    itemId===ownedGameItemId(gameId)||
+    String(item.id||'')===ownedGameItemId(gameId)||
+    String(item.unlocksGame||'')===gameId||
+    String(item.gameId||'')===gameId||
+    String(item.hostsGame||'')===gameId||
+    String(item.unlockGame||'')===gameId||
     itemHasUnlockEffect(item,gameId);
 }
 function itemUnlocksAll(itemId){let item=itemCatalog[itemId]||{};return MASTER_KEYS.has(itemId)||item.unlocksAllGames===true||item.masterGameKey===true;}
 function canHostGame(gameId){
+  gameId=String(gameId||'').trim();
   if(gameId==='petbattle')return true;
   if(admin)return true;
   const inv=getInventory();
+  if(inventoryQty(ownedGameItemId(gameId))>0)return true;
   return Object.keys(inv).some(id=>inventoryQty(id)>0&&itemUnlocksGame(id,gameId));
 }
 function unlockItemNameForGame(gameId){
@@ -395,10 +412,12 @@ async function loadData(){
   try{games=await (await fetch('/api/games')).json();}catch(e){games=[];log('Could not load games.json from /api/games.');}
   if(me){
     try{
-      let d=await (await fetch('/api/pet/profile?username='+encodeURIComponent(me))).json();
+      let r=await fetch('/api/pet/profile?user='+encodeURIComponent(me)+'&_='+Date.now());
+      let d=await r.json();
+      if(!r.ok||d.error)throw new Error(d.error||'profile failed');
       profile=d.profile||null;
-      itemCatalog=d.shop||{};
-    }catch(e){log('Could not load inventory. Games will appear locked until server data is available.');}
+      itemCatalog=normalizeItemCatalog(d.shop||d.items||d.itemCatalog||{});
+    }catch(e){log('Could not load inventory: '+(e.message||'server data unavailable')+'. Games will appear locked until server data is available.');}
   }
   drawGames();drawPlayers();drawTable();
 }
@@ -436,24 +455,49 @@ function drawHeader(){
   el('roomCodeText').innerText=room?room.id:'----';
   el('hostLabel').innerText=room?'Host: '+(room.owner||'')+(room.private?' · Private':' · Public')+' · '+playerCount()+' player'+(playerCount()===1?'':'s'):'Creating private room...';
 }
+function makeGameCard(g,unlocked){
+  let selected=selectedGameId===g.id;
+  let b=document.createElement('button');
+  b.className='gameCard '+(selected?'selected ':'')+(unlocked?'unlocked':'locked');
+  const required=unlockItemNameForGame(g.id);
+  b.innerHTML=
+    '<div class="gameIcon">'+esc(GAME_ICONS[g.id]||'🎮')+'</div>'+
+    '<div class="gameInfo">'+
+      '<div class="gameName">'+esc(g.name||g.id)+'</div>'+
+      '<div class="gameMeta">'+esc(playerText(g))+'</div>'+
+      (unlocked
+        ? '<div class="lockLine good">Unlocked · ready to host</div><div class="gameActionHint">Tap to prepare this table.</div>'
+        : '<div class="lockLine">Locked · needs '+esc(required)+'</div><div class="gameActionHint">Buy it in Game Shop to host.</div>'
+      )+
+    '</div>';
+  b.onclick=()=>{
+    selectedGameId=g.id;
+    if(!unlocked){drawGames();drawTable('You need '+required+' before you can host '+(g.name||g.id)+'.');return;}
+    if(!room){log('Room is not ready yet.');return;}
+    if(!isHost()){drawTable('Only the host can select the game.');return;}
+    send({type:'selectGame',gameId:g.id});
+    drawGames();
+  };
+  return b;
+}
+function appendGameGroup(list,title,items,unlocked){
+  if(!items.length)return;
+  let group=document.createElement('div');
+  group.className='gameGroup';
+  let head=document.createElement('div');
+  head.className='gameGroupTitle';
+  head.innerHTML='<b>'+esc(title)+'</b><span>'+items.length+'</span>';
+  group.appendChild(head);
+  items.forEach(g=>group.appendChild(makeGameCard(g,unlocked)));
+  list.appendChild(group);
+}
 function drawGames(){
   const list=el('gameList');list.innerHTML='';
-  normalizedGames().forEach(g=>{
-    let unlocked=canHostGame(g.id);
-    let selected=selectedGameId===g.id;
-    let b=document.createElement('button');
-    b.className='gameCard '+(selected?'selected ':'')+(unlocked?'':'locked');
-    b.innerHTML='<div class="gameIcon">'+esc(GAME_ICONS[g.id]||'🎮')+'</div><div class="gameName">'+esc(g.name||g.id)+'</div><div class="gameMeta">'+esc(playerText(g))+'</div>'+(unlocked?'<div class="lockLine good">Unlocked · ready to host</div>':'<div class="lockLine">Locked · needs '+esc(unlockItemNameForGame(g.id))+'</div>');
-    b.onclick=()=>{
-      selectedGameId=g.id;
-      if(!unlocked){drawGames();drawTable('You need '+unlockItemNameForGame(g.id)+' before you can host '+(g.name||g.id)+'.');return;}
-      if(!room){log('Room is not ready yet.');return;}
-      if(!isHost()){drawTable('Only the host can select the game.');return;}
-      send({type:'selectGame',gameId:g.id});
-      drawGames();
-    };
-    list.appendChild(b);
-  });
+  const all=normalizedGames();
+  const unlocked=all.filter(g=>canHostGame(g.id));
+  const locked=all.filter(g=>!canHostGame(g.id));
+  appendGameGroup(list,'Unlocked Games',unlocked,true);
+  appendGameGroup(list,'Locked Games',locked,false);
   if(!list.innerHTML)list.innerHTML='<div class="muted" style="padding:12px">No table games found.</div>';
 }
 function drawPlayers(){
