@@ -1,185 +1,196 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Connect 4</title>
 <style>
-/*
-GameForge AI game file notes:
-- Self-contained iframe game.
-- Preserve wrapper contract:
-  receiveSetup(players,mySeat)
-  parent.postMessage({type:'move',data},'*')
-  window.onMove(data)
-- Multiplayer sync sends full state with {type:'state',state}.
-*/
-
 :root{
-  --bg:#050816;
-  --panel:#0f172a;
-  --line:rgba(255,255,255,.14);
-  --text:#f8fafc;
+  --bg0:#020617;
+  --bg1:#0f172a;
+  --panel:rgba(15,23,42,.90);
+  --panel2:rgba(30,41,59,.78);
+  --border:rgba(56,189,248,.42);
+  --borderSoft:rgba(148,163,184,.24);
+  --text:#e5e7eb;
   --muted:#94a3b8;
-  --blue:#2563eb;
-  --blue2:#1d4ed8;
-  --cyan:#38bdf8;
-  --red:#ef4444;
+  --accent:#38bdf8;
+  --accent2:#a78bfa;
+  --red:#fb7185;
   --yellow:#facc15;
-  --green:#22c55e;
-  --cell:clamp(36px,7.2vmin,58px);
+  --good:#22c55e;
+  --danger:#fb7185;
+  --cell:clamp(34px,7.1vmin,58px);
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  color:var(--text);
-  text-align:center;
-  overflow:hidden;
+  font-family:Arial, sans-serif;
   background:
-    radial-gradient(circle at 12% 10%,rgba(56,189,248,.25),transparent 28%),
-    radial-gradient(circle at 86% 14%,rgba(250,204,21,.18),transparent 24%),
-    linear-gradient(135deg,#020617,#0f172a 55%,#111827);
+    radial-gradient(circle at 20% 0%,rgba(56,189,248,.20),transparent 32%),
+    radial-gradient(circle at 80% 20%,rgba(167,139,250,.22),transparent 35%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  color:var(--text);
+  overflow:hidden;
 }
-
-.wrap{
-  height:650px;
-  padding:8px;
+.gameShell{
+  height:100vh;
   display:grid;
-  grid-template-rows:auto auto minmax(0,1fr) auto;
-  gap:7px;
+  grid-template-rows:auto 1fr auto;
+  gap:10px;
+  padding:10px;
 }
-
-.top,.statusBox,.player{
-  background:linear-gradient(180deg,rgba(15,23,42,.94),rgba(2,6,23,.90));
-  border:1px solid var(--line);
+.gameHeader,.gamePanel,.gameLog{
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:18px;
-  box-shadow:0 10px 28px rgba(0,0,0,.28);
+  box-shadow:0 16px 42px rgba(0,0,0,.32), inset 0 0 24px rgba(56,189,248,.04);
 }
-
-.top{
-  min-height:54px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:7px 10px;
+.gameHeader{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:10px;
+  align-items:stretch;
+  padding:10px;
 }
-
-.brand{
+.playerCard{
   display:flex;
   align-items:center;
-  gap:9px;
+  gap:10px;
   min-width:0;
+  padding:9px;
+  border-radius:15px;
+  background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.72));
+  border:1px solid var(--borderSoft);
+  position:relative;
+  overflow:hidden;
 }
-
-.logo{
-  width:32px;
-  height:32px;
-  border-radius:12px;
+.playerCard:before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  opacity:.12;
+  background:radial-gradient(circle at top left,var(--accent),transparent 42%);
+  pointer-events:none;
+}
+.playerCard.active{
+  border-color:var(--red);
+  box-shadow:0 0 18px rgba(251,113,133,.26), inset 0 0 16px rgba(251,113,133,.08);
+}
+.playerCard.yellow.active{
+  border-color:var(--yellow);
+  box-shadow:0 0 18px rgba(250,204,21,.25), inset 0 0 16px rgba(250,204,21,.08);
+}
+.petBadge{
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
   display:grid;
   place-items:center;
-  font-size:18px;
-  background:linear-gradient(135deg,var(--blue),var(--cyan));
-  box-shadow:0 0 18px rgba(56,189,248,.35);
-  flex:0 0 auto;
+  border-radius:16px;
+  background:rgba(2,6,23,.55);
+  border:1px solid rgba(148,163,184,.25);
+  z-index:1;
 }
-
-h2{
-  margin:0;
-  font-size:20px;
-  letter-spacing:-.4px;
-  line-height:1;
+.petBadge img{
+  max-width:50px;
+  max-height:50px;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));
 }
-
-.subtitle{
-  display:none;
-}
-
-button{
-  padding:8px 11px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.18);
-  background:rgba(255,255,255,.08);
-  color:white;
-  cursor:pointer;
+.petFallback{font-size:24px}
+.playerInfo{min-width:0;z-index:1}
+.playerName{
   font-weight:900;
-  transition:.15s ease;
   white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-
-button:hover{
-  transform:translateY(-1px);
-  border-color:rgba(56,189,248,.45);
-}
-
-button.primary{
-  background:linear-gradient(135deg,var(--blue),var(--blue2));
-  border-color:#60a5fa;
-}
-
-.statusBox{
-  padding:7px 10px;
-  display:grid;
-  grid-template-columns:1fr auto;
-  align-items:center;
-  gap:8px;
-  text-align:left;
-}
-
-.status{
-  font-size:16px;
-  font-weight:1000;
-}
-
-.muted{
-  font-size:12px;
+.playerMeta,.petName{
   color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.petName{color:#cbd5e1}
+.discDot{
+  width:11px;
+  height:11px;
+  display:inline-block;
+  border-radius:50%;
+  margin-right:5px;
+  vertical-align:-1px;
+  border:1px solid rgba(255,255,255,.55);
+}
+.discDot.red{background:radial-gradient(circle at 35% 28%,#fecaca,#ef4444 58%,#7f1d1d)}
+.discDot.yellow{background:radial-gradient(circle at 35% 28%,#fef9c3,#facc15 58%,#854d0e)}
+.centerStatus{
+  width:min(250px,30vw);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:4px;
+  padding:8px 10px;
+  border-radius:16px;
+  background:rgba(2,6,23,.45);
+  border:1px solid rgba(148,163,184,.20);
+}
+.title{
+  font-weight:1000;
+  letter-spacing:.3px;
+  font-size:clamp(15px,2vw,20px);
+}
+.statusText{
+  color:#cbd5e1;
+  font-size:12px;
   line-height:1.25;
 }
-
-.turnBadge{
-  justify-self:end;
-  display:inline-flex;
-  align-items:center;
-  padding:6px 10px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.14);
+.scoreLine{
+  color:var(--muted);
   font-size:12px;
-  font-weight:900;
-  white-space:nowrap;
 }
-
-.boardStage{
+.gamePanel{
   min-height:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  display:grid;
+  place-items:center;
+  padding:12px;
   overflow:hidden;
 }
-
+.gameSurface{
+  width:min(96vw,650px);
+  height:100%;
+  max-height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(56,189,248,.15),transparent 45%),
+    linear-gradient(135deg,rgba(15,23,42,.98),rgba(2,6,23,.86));
+  border:1px solid rgba(148,163,184,.20);
+  padding:clamp(8px,2vh,18px);
+}
 .boardShell{
   position:relative;
-  padding:9px;
-  border-radius:24px;
   max-width:100%;
-  background:linear-gradient(180deg,rgba(30,64,175,.95),rgba(30,58,138,.98));
-  border:1px solid rgba(255,255,255,.20);
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.22),
-    inset 0 -14px 24px rgba(0,0,0,.24),
-    0 20px 44px rgba(0,0,0,.42);
+  max-height:100%;
+  padding:clamp(7px,1.8vmin,12px);
+  border-radius:26px;
+  background:linear-gradient(145deg,rgba(56,189,248,.24),rgba(167,139,250,.17));
+  border:1px solid rgba(56,189,248,.28);
+  box-shadow:0 24px 60px rgba(0,0,0,.40), inset 0 0 32px rgba(255,255,255,.04);
 }
-
 .columnHints{
   display:grid;
   grid-template-columns:repeat(7,var(--cell));
-  gap:5px;
-  margin:0 auto 5px;
+  gap:clamp(4px,1vmin,7px);
+  margin:0 auto clamp(5px,1vmin,8px);
 }
-
 .dropHint{
-  height:12px;
+  height:clamp(10px,1.8vmin,14px);
   border-radius:999px;
   background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.10);
@@ -187,35 +198,26 @@ button.primary{
   position:relative;
   overflow:hidden;
 }
-
 .dropHint:after{
   content:"";
   position:absolute;
-  inset:3px 23%;
+  inset:3px 24%;
   border-radius:999px;
-  background:rgba(255,255,255,.30);
+  background:rgba(255,255,255,.34);
   opacity:0;
 }
-
-.dropHint.active:after,
-.dropHint:hover:after{
-  opacity:1;
-}
-
+.dropHint.active:after,.dropHint:hover:after{opacity:1}
 .board{
   display:grid;
   grid-template-columns:repeat(7,var(--cell));
   grid-template-rows:repeat(6,var(--cell));
-  gap:5px;
-  padding:7px;
-  border-radius:20px;
-  background:linear-gradient(135deg,rgba(59,130,246,.95),rgba(29,78,216,.98));
+  gap:clamp(4px,1vmin,7px);
+  padding:clamp(6px,1.4vmin,10px);
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(37,99,235,.94),rgba(30,64,175,.98));
   border:3px solid rgba(15,23,42,.88);
-  box-shadow:
-    inset 0 9px 15px rgba(255,255,255,.16),
-    inset 0 -15px 25px rgba(0,0,0,.25);
+  box-shadow:inset 0 9px 15px rgba(255,255,255,.16), inset 0 -15px 25px rgba(0,0,0,.25);
 }
-
 .cell{
   width:var(--cell);
   height:var(--cell);
@@ -226,394 +228,277 @@ button.primary{
   border:3px solid rgba(15,23,42,.88);
   box-shadow:inset 0 6px 10px rgba(0,0,0,.48);
   cursor:pointer;
-  transition:.14s ease;
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
   position:relative;
 }
-
 .cell:not(.disabled):hover{
   transform:translateY(-2px) scale(1.03);
-  box-shadow:inset 0 6px 10px rgba(0,0,0,.48),0 0 14px rgba(56,189,248,.50);
+  box-shadow:inset 0 6px 10px rgba(0,0,0,.48),0 0 18px rgba(56,189,248,.42);
 }
-
-.cell.red,
-.cell.yellow{
-  animation:discDrop .22s ease-out;
-}
-
+.cell.red,.cell.yellow{animation:discDrop .22s ease-out}
 .cell.red{
   background:radial-gradient(circle at 35% 28%,#fecaca 0 13%,#fb7185 24%,#ef4444 62%,#7f1d1d 100%);
   border-color:#7f1d1d;
 }
-
 .cell.yellow{
   background:radial-gradient(circle at 35% 28%,#fef9c3 0 13%,#fde047 25%,#facc15 62%,#854d0e 100%);
   border-color:#854d0e;
 }
-
-.cell.last{
-  outline:3px solid white;
-  z-index:2;
-}
-
+.cell.last{outline:3px solid white;z-index:2}
 .cell.win{
-  outline:4px solid var(--green);
-  box-shadow:0 0 18px rgba(34,197,94,.80);
+  outline:4px solid var(--good);
+  box-shadow:0 0 22px rgba(34,197,94,.75), inset 0 6px 10px rgba(0,0,0,.36);
   z-index:3;
   animation:winPulse 1s ease-in-out infinite;
 }
-
-.cell.disabled{
-  cursor:not-allowed;
-}
-
-@keyframes discDrop{
-  from{transform:translateY(-18px) scale(.9);opacity:.55}
-  to{transform:translateY(0) scale(1);opacity:1}
-}
-
-@keyframes winPulse{
-  0%,100%{filter:brightness(1)}
-  50%{filter:brightness(1.18)}
-}
-
-.players{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
-}
-
-.player{
-  min-height:50px;
-  padding:7px 9px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  text-align:left;
-  min-width:0;
-}
-
-.player.turn{
-  outline:2px solid var(--green);
-  box-shadow:0 0 18px rgba(34,197,94,.24);
-}
-
-.playerLeft{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  min-width:0;
-}
-
-.playerName{
-  font-weight:1000;
-  font-size:13px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.playerRole{
-  color:var(--muted);
-  font-size:11px;
-}
-
-.dot{
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  flex:0 0 auto;
-  border:2px solid rgba(255,255,255,.75);
-}
-
-.dot.red{
-  background:radial-gradient(circle at 35% 28%,#fecaca,#ef4444 58%,#7f1d1d);
-}
-
-.dot.yellow{
-  background:radial-gradient(circle at 35% 28%,#fef9c3,#facc15 58%,#854d0e);
-}
-
-.pill{
-  display:inline-flex;
-  padding:4px 7px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.14);
+.cell.disabled{cursor:not-allowed}
+.gameLog{
+  min-height:54px;
+  max-height:72px;
+  overflow:auto;
+  padding:8px 10px;
   color:#cbd5e1;
-  font-size:11px;
-  font-weight:900;
-  white-space:nowrap;
+  font-size:12px;
+  line-height:1.35;
 }
-
-@media(max-width:720px){
-  :root{
-    --cell:clamp(32px,11.2vw,48px);
-  }
-
-  .wrap{
-    padding:6px;
-    gap:6px;
-  }
-
-  .top{
-    min-height:48px;
-  }
-
-  h2{
-    font-size:18px;
-  }
-
-  .statusBox{
-    grid-template-columns:1fr;
-    text-align:center;
-  }
-
-  .turnBadge{
-    display:none;
-  }
-
-  .boardShell{
-    padding:7px;
-    border-radius:20px;
-  }
-
-  .board{
-    gap:4px;
-    padding:6px;
-    border-radius:17px;
-  }
-
-  .columnHints{
-    gap:4px;
-  }
-
-  .players{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .player{
-    min-height:44px;
-    padding:6px 7px;
-  }
-
-  .playerName{
-    font-size:12px;
-  }
-
-  .pill{
-    display:none;
-  }
+.logEntry{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{
+  border:0;
+  border-radius:12px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-weight:800;
+  color:#06111f;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+@keyframes discDrop{from{transform:translateY(-18px) scale(.9);opacity:.55}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes winPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+@media(max-width:760px), (max-height:560px){
+  :root{--cell:clamp(30px,11vw,48px)}
+  .gameShell{gap:7px;padding:7px}
+  .gameHeader{grid-template-columns:1fr 1fr;padding:8px}
+  .centerStatus{grid-column:1 / -1;grid-row:2;width:100%;order:3}
+  .petBadge{width:42px;height:42px;flex-basis:42px;border-radius:13px}
+  .petBadge img{max-width:40px;max-height:40px}
+  .playerMeta,.petName,.scoreLine{font-size:11px}
+  .gamePanel{padding:8px}
+  .gameLog{max-height:58px}
+  .boardShell{border-radius:20px}
+  .board{border-radius:17px}
 }
 </style>
 </head>
-
 <body>
-<div class="wrap">
-  <div class="top">
-    <div class="brand">
-      <div class="logo">●</div>
-      <div>
-        <h2>Connect 4</h2>
-        <div class="subtitle">Drop discs. Connect four.</div>
+<div class="gameShell">
+  <header class="gameHeader">
+    <div id="player0" class="playerCard"></div>
+    <div class="centerStatus">
+      <div class="title">Connect 4</div>
+      <div id="status" class="statusText">Loading players...</div>
+      <div id="scoreLine" class="scoreLine">Wins: 0 - 0 · Draws: 0</div>
+    </div>
+    <div id="player1" class="playerCard"></div>
+  </header>
+
+  <main class="gamePanel">
+    <div class="gameSurface">
+      <div class="boardShell">
+        <div class="columnHints" id="columnHints"></div>
+        <div class="board" id="board"></div>
       </div>
     </div>
-    <button class="primary" onclick="newGame(true)">New Game</button>
-  </div>
+  </main>
 
-  <div class="statusBox">
-    <div>
-      <div class="status" id="status">Loading players...</div>
-      <div class="muted" id="hint">Drop a disc into a column. First to connect 4 wins.</div>
-    </div>
-    <div class="turnBadge" id="turnBadge">Waiting</div>
-  </div>
-
-  <div class="boardStage">
-    <div class="boardShell">
-      <div class="columnHints" id="columnHints"></div>
-      <div class="board" id="board"></div>
-    </div>
-  </div>
-
-  <div class="players" id="playerPanel"></div>
+  <footer class="gameLog" id="log"><div class="logEntry">Game loaded.</div></footer>
 </div>
 
 <script>
+const GAME_ID='connect4';
 const GAME_META={id:'connect4',name:'Connect 4',minPlayers:2,maxPlayers:2,seats:2};
-
 const ROWS=6;
 const COLS=7;
 
-let players=[];
+let GAME_CONTEXT={username:'',roomId:'',players:[],seats:[],mySeat:null,activePets:{}};
+let players=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];
 let mySeat=null;
-let state=null;
+let setupReceived=false;
+let lastResultKey='';
+let state=freshState();
 
-function el(id){
-  return document.getElementById(id);
-}
-
-function setStatus(title,msg){
-  el('status').innerText=title;
-  el('hint').innerText=msg||'';
-}
-
-window.onerror=function(msg){
-  setStatus('Game error: '+msg,'Check the browser console for details.');
-};
-
-function receiveSetup(setupPlayers,setupSeat){
-  if(Array.isArray(setupPlayers)&&setupPlayers.length){
-    players=setupPlayers.slice(0,2).map(p=>({
-      seat:Number(p.seat),
-      name:p.name||('Seat '+(Number(p.seat)+1))
-    }));
-  }
-
-  mySeat=setupSeat===null||setupSeat===undefined?null:Number(setupSeat);
-
-  if(players.length<2){
-    setStatus('Waiting for 2 players...','Both seats must be filled before starting.');
-    drawEmptyBoard();
-    return;
-  }
-
-  if(!state){
-    state=fresh();
-  }else{
-    normalizeState();
-  }
-
-  draw();
-}
-
-function fresh(){
+function freshState(){
+  let firstSeat=(players[0]&&Number.isFinite(Number(players[0].seat)))?Number(players[0].seat):0;
   return {
-    board:Array.from({length:ROWS},()=>Array(COLS).fill(null)),
-    turn:players[0].seat,
+    board:Array.from({length:ROWS},function(){return Array(COLS).fill(null);}),
+    turn:firstSeat,
+    scores:{},
+    draws:0,
     winner:null,
     draw:false,
     lastMove:null,
     winCells:[],
-    version:1
+    round:1,
+    message:'New game. '+nameOf(firstSeat)+' drops first.'
   };
 }
 
-function normalizeState(){
-  if(!state.board)state.board=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+function normalizePlayers(input){
+  let arr=[];
+  if(Array.isArray(input)){
+    input.forEach(function(p,i){
+      if(!p)return;
+      if(typeof p==='string')arr.push({seat:i,name:p});
+      else arr.push({seat:Number(p.seat!==undefined?p.seat:i),name:p.name||p.username||('Seat '+(i+1))});
+    });
+  }
+  if(!arr.length)arr=[{seat:0,name:'Player 1'},{seat:1,name:'Player 2'}];
+  arr=arr.slice(0,2).map(function(p,i){return {seat:Number.isFinite(Number(p.seat))?Number(p.seat):i,name:p.name||('Seat '+(i+1))};}).sort(function(a,b){return a.seat-b.seat;});
+  while(arr.length<2)arr.push({seat:arr.length,name:'Waiting...'});
+  return arr;
+}
+
+function receiveContext(ctx){
+  ctx=ctx||{};
+  if(ctx.data)ctx=ctx.data;
+  GAME_CONTEXT=Object.assign({},GAME_CONTEXT,ctx);
+  if(ctx.players)players=normalizePlayers(ctx.players);
+  if(ctx.mySeat!==undefined&&ctx.mySeat!==null)mySeat=Number(ctx.mySeat);
+  else if(window.GAME_MY_SEAT!==undefined&&window.GAME_MY_SEAT!==null)mySeat=Number(window.GAME_MY_SEAT);
+  else mySeat=null;
+  setupReceived=true;
+  ensureStateShape();
+  if(!players.some(function(p){return p.seat===state.turn;}))state.turn=players[0].seat;
+  draw();
+}
+
+function receiveSetup(newPlayers,newSeat,msg){
+  receiveContext({
+    username:(msg&&msg.username)||GAME_CONTEXT.username||'',
+    roomId:(msg&&msg.roomId)||GAME_CONTEXT.roomId||'',
+    players:newPlayers||GAME_CONTEXT.players||players,
+    mySeat:newSeat,
+    activePets:(msg&&msg.activePets)||GAME_CONTEXT.activePets||{}
+  });
+}
+
+function ensureStateShape(){
+  if(!state)state=freshState();
+  if(!Array.isArray(state.board)||state.board.length!==ROWS)state.board=Array.from({length:ROWS},function(){return Array(COLS).fill(null);});
+  for(let r=0;r<ROWS;r++)if(!Array.isArray(state.board[r])||state.board[r].length!==COLS)state.board[r]=Array(COLS).fill(null);
+  if(!state.scores)state.scores={};
+  if(state.draws===undefined)state.draws=state.ties||0;
   if(!Array.isArray(state.winCells))state.winCells=[];
+  if(!state.round)state.round=1;
   if(state.turn===undefined||state.turn===null)state.turn=players[0].seat;
-  state.version=Number(state.version||1);
+  players.forEach(function(p){if(state.scores[p.seat]===undefined)state.scores[p.seat]=0;});
 }
 
 function draw(){
-  if(!state||players.length<2){
-    drawEmptyBoard();
-    return;
-  }
-
-  normalizeState();
+  ensureStateShape();
+  drawPlayers();
   drawColumnHints();
   drawBoard();
-  drawPlayers();
+  drawScore();
 
-  if(state.winner!==null){
-    setStatus(name(state.winner)+' wins!','Four connected. Start a new game to play again.');
-    el('turnBadge').innerText='Winner';
+  let status=document.getElementById('status');
+  if(players.length<2||players.some(function(p){return p.name==='Waiting...';})){
+    status.innerText='Waiting for 2 players.';
+  }else if(state.winner!==null&&state.winner!==undefined){
+    status.innerText=state.message||nameOf(state.winner)+' wins!';
   }else if(state.draw){
-    setStatus('Draw game!','No more open spaces.');
-    el('turnBadge').innerText='Draw';
+    status.innerText=state.message||'Draw game!';
+  }else if(mySeat===null){
+    status.innerText=nameOf(state.turn)+"'s turn. Watching live.";
+  }else if(mySeat===state.turn){
+    status.innerText='Your turn. Drop a disc.';
   }else{
-    let yourTurn=state.turn===mySeat;
-    setStatus(
-      yourTurn?'Your Turn':'Current Turn: '+name(state.turn),
-      yourTurn?'Choose any open column.':'Waiting for '+name(state.turn)+'.'
-    );
-    el('turnBadge').innerText=yourTurn?'Your move':'Waiting';
+    status.innerText=nameOf(state.turn)+"'s turn. Waiting...";
   }
 }
 
-function drawEmptyBoard(){
-  el('columnHints').innerHTML='';
-  el('board').innerHTML='';
+function drawPlayers(){
+  [0,1].forEach(function(index){
+    let el=document.getElementById('player'+index);
+    let p=players[index]||{seat:index,name:'Waiting...'};
+    let color=index===0?'red':'yellow';
+    let pet=findPetForPlayer(p);
+    let isActive=!state.winner&&!state.draw&&state.turn===p.seat;
+    el.className='playerCard '+(color==='yellow'?'yellow ':'')+(isActive?'active':'');
+    el.innerHTML=
+      '<div class="petBadge">'+petHtml(pet)+'</div>'+
+      '<div class="playerInfo">'+
+        '<div class="playerName">'+escapeHtml(p.name)+'</div>'+
+        '<div class="playerMeta"><span class="discDot '+color+'"></span>Seat '+(Number(p.seat)+1)+' · '+cap(color)+(mySeat===p.seat?' · You':'')+'</div>'+
+        '<div class="petName">'+(pet?escapeHtml(pet.name||'Active Pet')+' Lv.'+Number(pet.level||1):'No active pet')+'</div>'+
+      '</div>';
+  });
+}
 
-  for(let c=0;c<COLS;c++){
-    let hint=document.createElement('div');
-    hint.className='dropHint';
-    el('columnHints').appendChild(hint);
+function normalizePetMap(raw){
+  let map={};
+  if(!raw)return map;
+  if(Array.isArray(raw)){
+    raw.forEach(function(item){
+      if(!item)return;
+      let key=item.username||item.user||item.owner||item.player||item.name;
+      if(key){map[key]=item;map[String(key).toLowerCase()]=item;}
+      if(item.seat!==undefined&&item.seat!==null)map['seat:'+item.seat]=item;
+    });
+    return map;
   }
+  Object.keys(raw).forEach(function(k){map[k]=raw[k];map[String(k).toLowerCase()]=raw[k];});
+  return map;
+}
 
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      let cell=document.createElement('div');
-      cell.className='cell disabled';
-      el('board').appendChild(cell);
-    }
-  }
+function findPetForPlayer(player){
+  let pets=normalizePetMap(GAME_CONTEXT.activePets||GAME_CONTEXT.pets||GAME_CONTEXT.playerPets||{});
+  let name=player&&player.name?player.name:'';
+  return pets[name]||pets[String(name).toLowerCase()]||pets['seat:'+player.seat]||null;
+}
 
-  el('playerPanel').innerHTML='';
-  el('turnBadge').innerText='Waiting';
+function petHtml(pet){
+  if(!pet)return '<span class="petFallback">✦</span>';
+  let emoji=pet.emoji||'🐾';
+  let img=pet.image||pet.img||pet.sprite||pet.photo||pet.icon||pet.src||pet.imageUrl||pet.url||'';
+  if(img)return '<img src="'+escapeAttr(img)+'" alt="'+escapeAttr(pet.name||'Pet')+'" onerror="this.outerHTML=\'<span class=&quot;petFallback&quot;>'+escapeHtml(emoji)+'</span>\'">';
+  return '<span class="petFallback">'+escapeHtml(emoji)+'</span>';
 }
 
 function drawColumnHints(){
-  el('columnHints').innerHTML='';
-
+  let hints=document.getElementById('columnHints');
+  hints.innerHTML='';
   for(let c=0;c<COLS;c++){
     let hint=document.createElement('div');
-    let active=canPlayColumn(c);
-    hint.className='dropHint '+(active?'active':'');
+    hint.className='dropHint '+(canPlayColumn(c)?'active':'');
     hint.onclick=function(){drop(c);};
-    el('columnHints').appendChild(hint);
+    hints.appendChild(hint);
   }
 }
 
 function drawBoard(){
-  el('board').innerHTML='';
-
+  let board=document.getElementById('board');
+  board.innerHTML='';
   for(let r=0;r<ROWS;r++){
     for(let c=0;c<COLS;c++){
       let cell=document.createElement('div');
       let v=state.board[r][c];
       let isLast=state.lastMove&&state.lastMove.row===r&&state.lastMove.col===c;
-      let isWin=(state.winCells||[]).some(x=>x.row===r&&x.col===c);
-
-      cell.className='cell '+
-        (v!==null?colorForSeat(v):'')+
-        (isLast?' last':'')+
-        (isWin?' win':'')+
-        (!canInteract()?' disabled':'');
-
+      let isWin=(state.winCells||[]).some(function(x){return x.row===r&&x.col===c;});
+      cell.className='cell '+(v!==null?colorForSeat(v):'')+(isLast?' last':'')+(isWin?' win':'')+(!canInteract()?' disabled':'');
       cell.onclick=function(){drop(c);};
-      el('board').appendChild(cell);
+      board.appendChild(cell);
     }
   }
 }
 
-function drawPlayers(){
-  el('playerPanel').innerHTML='';
-
-  players.forEach((p,i)=>{
-    let d=document.createElement('div');
-    d.className='player '+(state.turn===p.seat&&!state.winner&&!state.draw?'turn':'');
-    d.innerHTML=
-      '<div class="playerLeft">'+
-        '<span class="dot '+(i===0?'red':'yellow')+'"></span>'+
-        '<div>'+
-          '<div class="playerName">'+escapeHtml(p.name)+'</div>'+
-          '<div class="playerRole">'+(p.seat===mySeat?'You':'Opponent')+'</div>'+
-        '</div>'+
-      '</div>'+
-      '<span class="pill">'+(i===0?'Red':'Yellow')+'</span>';
-
-    el('playerPanel').appendChild(d);
-  });
+function drawScore(){
+  let a=players[0]?state.scores[players[0].seat]||0:0;
+  let b=players[1]?state.scores[players[1].seat]||0:0;
+  document.getElementById('scoreLine').innerText='Wins: '+a+' - '+b+' · Draws: '+(state.draws||0);
 }
 
 function canInteract(){
-  return state&&
-    state.winner===null&&
-    !state.draw&&
-    state.turn===mySeat;
+  return state&&state.winner===null&&!state.draw&&state.turn===mySeat;
 }
 
 function canPlayColumn(col){
@@ -624,410 +509,137 @@ function canPlayColumn(col){
 function drop(col){
   if(!canInteract())return;
   if(state.board[0][col]!==null)return;
-
   let row=-1;
-
   for(let r=ROWS-1;r>=0;r--){
-    if(state.board[r][col]===null){
-      row=r;
-      break;
-    }
+    if(state.board[r][col]===null){row=r;break;}
   }
-
   if(row<0)return;
 
   state.board[row][col]=mySeat;
-  state.lastMove={row,col,seat:mySeat};
+  state.lastMove={row:row,col:col,seat:mySeat};
   state.winCells=[];
+  addLog(nameOf(mySeat)+' dropped a '+colorForSeat(mySeat)+' disc.');
 
   let winCells=findWin(row,col,mySeat);
-
   if(winCells.length>=4){
     state.winner=mySeat;
     state.winCells=winCells;
-  }else if(isFull()){
-    state.draw=true;
-  }else{
-    nextTurn();
+    state.scores[mySeat]=(state.scores[mySeat]||0)+1;
+    state.message=nameOf(mySeat)+' connects four! New round starting soon.';
+    reportResult('win',mySeat);
+    draw();
+    sync();
+    setTimeout(function(){newGame(true);},2200);
+    return;
   }
 
-  state.version=Number(state.version||1)+1;
+  if(isFull()){
+    state.draw=true;
+    state.draws=(state.draws||0)+1;
+    state.message='Board full. Draw game! New round starting soon.';
+    reportResult('draw',null);
+    draw();
+    sync();
+    setTimeout(function(){newGame(true);},2200);
+    return;
+  }
 
+  nextTurn();
+  state.message=nameOf(state.turn)+' is next.';
   draw();
   sync();
 }
 
 function nextTurn(){
-  let currentIndex=players.findIndex(p=>p.seat===state.turn);
+  let currentIndex=players.findIndex(function(p){return p.seat===state.turn;});
+  if(currentIndex<0)currentIndex=0;
   state.turn=players[(currentIndex+1)%players.length].seat;
 }
 
 function findWin(row,col,seat){
-  let lines=[
-    [[0,1],[0,-1]],
-    [[1,0],[-1,0]],
-    [[1,1],[-1,-1]],
-    [[1,-1],[-1,1]]
-  ];
-
+  let lines=[[[0,1],[0,-1]],[[1,0],[-1,0]],[[1,1],[-1,-1]],[[1,-1],[-1,1]]];
   for(let pair of lines){
-    let cells=[{row,col}];
-
-    pair.forEach(dir=>{
-      let dr=dir[0];
-      let dc=dir[1];
-      let r=row+dr;
-      let c=col+dc;
-
+    let cells=[{row:row,col:col}];
+    pair.forEach(function(dir){
+      let r=row+dir[0];
+      let c=col+dir[1];
       while(r>=0&&r<ROWS&&c>=0&&c<COLS&&state.board[r][c]===seat){
         cells.push({row:r,col:c});
-        r+=dr;
-        c+=dc;
+        r+=dir[0];
+        c+=dir[1];
       }
     });
-
-    if(cells.length>=4){
-      return cells;
-    }
+    if(cells.length>=4)return cells;
   }
-
   return [];
 }
 
-function isFull(){
-  return state.board[0].every(x=>x!==null);
-}
+function isFull(){return state.board[0].every(function(x){return x!==null;});}
 
 function newGame(sendIt){
-  if(players.length<2){
-    setStatus('Waiting for 2 players...','Both seats must be filled before starting.');
-    drawEmptyBoard();
-    return;
-  }
-
-  state=fresh();
+  let oldScores=state&&state.scores?state.scores:{};
+  let oldDraws=state&&state.draws?state.draws:0;
+  let nextRound=(state&&state.round?state.round:1)+1;
+  state=freshState();
+  state.scores=oldScores;
+  state.draws=oldDraws;
+  state.round=nextRound;
+  state.message='Round '+nextRound+'. '+nameOf(state.turn)+' drops first.';
+  lastResultKey='';
+  ensureStateShape();
   draw();
-
+  addLog('Round '+nextRound+' started.');
   if(sendIt)sync();
 }
 
-function sync(){
-  window.sendMove({type:'state',state});
+function reportResult(result,winnerSeat){
+  let key=state.round+'|'+result+'|'+winnerSeat;
+  if(lastResultKey===key)return;
+  lastResultKey=key;
+  let winner=winnerSeat!==null&&winnerSeat!==undefined?playerBySeat(winnerSeat):null;
+  let loser=null;
+  if(result==='win')loser=players.find(function(p){return p&&p.seat!==winnerSeat;})||null;
+  parent.postMessage({type:'gameResult',data:{game:GAME_ID,roomId:GAME_CONTEXT.roomId||'',result:result,winner:winner?winner.name:null,loser:loser?loser.name:null,round:state.round}},'*');
 }
 
-window.sendMove=function(data){
-  parent.postMessage({type:'move',data:data},'*');
-};
+function sync(){parent.postMessage({type:'move',data:{type:'state',game:GAME_ID,state:state}},'*');}
 
 window.onMove=function(data){
-  if(!data)return;
-
-  if(data.type==='gameSetup'){
-    receiveSetup(data.players,data.mySeat);
-    return;
-  }
-
+  data=data||{};
+  if(data.game&&data.game!==GAME_ID)return;
   if(data.type==='state'){
-    state=data.state;
-    normalizeState();
+    state=data.state||state;
+    ensureStateShape();
     draw();
   }
+  if(data.type==='gameSetup')receiveSetup(data.players,data.mySeat,data);
+  if(data.type==='GAME_CONTEXT')receiveContext(data.data||data);
 };
 
 window.addEventListener('message',function(event){
-  let data=event.data||{};
-
-  if(data.type==='gameSetup'){
-    receiveSetup(data.players,data.mySeat);
-  }
-
-  if(data.type==='gameMove'&&window.onMove){
-    window.onMove(data.data);
-  }
+  let msg=event.data||{};
+  if(msg.type==='GAME_CONTEXT'||msg.type==='gameContext')receiveContext(msg.data||msg);
+  if(msg.type==='gameSetup')receiveSetup(msg.players,msg.mySeat,msg);
+  if(msg.type==='gameMove')window.onMove(msg.data||{});
 });
 
-function colorForSeat(seat){
-  let i=players.findIndex(p=>p.seat===seat);
-  return i===0?'red':'yellow';
-}
+function playerBySeat(seat){return players.find(function(p){return p&&p.seat===seat;})||null;}
+function nameOf(seat){let p=playerBySeat(seat);return p?p.name:'Seat '+(Number(seat)+1);}
+function colorForSeat(seat){let i=players.findIndex(function(p){return p.seat===seat;});return i===0?'red':'yellow';}
+function cap(s){return String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1);}
+function addLog(text){let log=document.getElementById('log');let div=document.createElement('div');div.className='logEntry';div.textContent=text;log.appendChild(div);while(log.children.length>6)log.removeChild(log.children[0]);log.scrollTop=log.scrollHeight;}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function escapeAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'');}
 
-function name(seat){
-  let p=players.find(x=>x.seat===seat);
-  return p?p.name:'Seat '+(Number(seat)+1);
-}
+parent.postMessage({type:'gameReady',game:GAME_ID},'*');
 
-function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g,c=>({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#39;'
-  }[c]));
-}
-
-function init(){
-  drawEmptyBoard();
-  receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
-
-  setTimeout(function(){
-    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
-  },100);
-
-  setTimeout(function(){
-    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
-
-    if(el('status').innerText==='Loading players...'){
-      if(players.length>=2){
-        if(!state)state=fresh();
-        draw();
-      }else{
-        setStatus('Waiting for 2 players...','Both seats must be filled before starting.');
-        drawEmptyBoard();
-      }
-    }
-  },350);
-}
-
-init();
+setTimeout(function(){
+  if(!setupReceived){
+    if(window.GAME_CONTEXT)receiveContext(window.GAME_CONTEXT);
+    else if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length)receiveSetup(window.GAME_PLAYERS,window.GAME_MY_SEAT,{});
+    else{ensureStateShape();draw();}
+  }
+},80);
 </script>
-
-
-<!-- ===== GameForge Standard Compatibility HUD v1 =====
-     Safe overlay: does not own chat and does not change gameplay logic.
-     Reads GAME_CONTEXT/gameSetup payloads from parent and displays room, players, seats, and active pets when provided.
--->
-<style id="gfStandardHudStyle">
-  :root{
-    --gf-hud-bg:rgba(2,6,23,.72);
-    --gf-hud-panel:rgba(15,23,42,.82);
-    --gf-hud-line:rgba(56,189,248,.30);
-    --gf-hud-text:#e5e7eb;
-    --gf-hud-muted:#94a3b8;
-    --gf-hud-accent:#38bdf8;
-    --gf-hud-gold:#facc15;
-  }
-  #gfStandardHud{
-    position:fixed;
-    left:10px;
-    right:10px;
-    top:8px;
-    z-index:99990;
-    pointer-events:none;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:8px 10px;
-    border:1px solid var(--gf-hud-line);
-    border-radius:18px;
-    color:var(--gf-hud-text);
-    background:linear-gradient(135deg,rgba(15,23,42,.78),rgba(2,6,23,.70));
-    box-shadow:0 14px 38px rgba(0,0,0,.24);
-    backdrop-filter:blur(8px);
-    font-family:Arial,Helvetica,sans-serif;
-  }
-  #gfStandardHud .gfHudTitle{
-    display:flex;
-    flex-direction:column;
-    min-width:120px;
-    max-width:210px;
-  }
-  #gfStandardHud .gfHudTitle b{
-    font-size:14px;
-    letter-spacing:.2px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #gfStandardHud .gfHudTitle span{
-    color:var(--gf-hud-muted);
-    font-size:11px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #gfStandardHud .gfHudPlayers{
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    gap:7px;
-    min-width:0;
-    overflow:hidden;
-  }
-  #gfStandardHud .gfHudPlayer{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    min-width:0;
-    max-width:210px;
-    padding:6px 8px;
-    border-radius:999px;
-    border:1px solid rgba(148,163,184,.22);
-    background:rgba(2,6,23,.55);
-  }
-  #gfStandardHud .gfHudPlayer.me{
-    border-color:rgba(56,189,248,.65);
-    box-shadow:0 0 16px rgba(56,189,248,.14);
-  }
-  #gfStandardHud .gfHudPet{
-    width:28px;
-    height:28px;
-    border-radius:10px;
-    object-fit:contain;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.08);
-    flex:0 0 auto;
-  }
-  #gfStandardHud .gfHudAvatar{
-    width:28px;
-    height:28px;
-    border-radius:10px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(124,58,237,.20));
-    border:1px solid rgba(255,255,255,.08);
-    flex:0 0 auto;
-  }
-  #gfStandardHud .gfHudInfo{
-    display:flex;
-    flex-direction:column;
-    min-width:0;
-    line-height:1.1;
-  }
-  #gfStandardHud .gfHudName{
-    font-size:12px;
-    font-weight:900;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #gfStandardHud .gfHudSub{
-    color:var(--gf-hud-muted);
-    font-size:10px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  @media(max-width:700px){
-    #gfStandardHud{left:6px;right:6px;top:6px;padding:7px;border-radius:15px;gap:6px}
-    #gfStandardHud .gfHudTitle{min-width:88px;max-width:120px}
-    #gfStandardHud .gfHudPlayer{max-width:120px;padding:5px 6px;gap:5px}
-    #gfStandardHud .gfHudPet,#gfStandardHud .gfHudAvatar{width:24px;height:24px;border-radius:8px}
-    #gfStandardHud .gfHudName{font-size:11px}
-    #gfStandardHud .gfHudSub{font-size:9px}
-  }
-</style>
-<script id="gfStandardHudScript">
-(function(){
-  var GAME_TITLE = 'Connect Four';
-  window.GAME_CONTEXT = window.GAME_CONTEXT || {username:'',roomId:'',players:[],seats:[],mySeat:-1,activePets:{}};
-
-  function esc(s){
-    return String(s==null?'':s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});
-  }
-
-  function normPlayers(input){
-    var list = input || window.GAME_PLAYERS || [];
-    return (Array.isArray(list)?list:[]).map(function(p,i){
-      if(typeof p==='string')return {name:p,seat:i};
-      return {name:p&&p.name?p.name:('Seat '+(i+1)), seat:(p&&p.seat!=null?p.seat:i)};
-    });
-  }
-
-  function absorbContext(raw){
-    var data = raw || {};
-    if(data.data) data = data.data;
-    var ctx = window.GAME_CONTEXT || {};
-    ctx.username = data.username || data.me || ctx.username || '';
-    ctx.roomId = data.roomId || data.room || data.roomCode || ctx.roomId || '';
-    ctx.players = normPlayers(data.players || ctx.players);
-    ctx.seats = data.seats || ctx.seats || [];
-    ctx.mySeat = data.mySeat!=null ? Number(data.mySeat) : (window.GAME_MY_SEAT!=null ? Number(window.GAME_MY_SEAT) : (ctx.mySeat!=null?ctx.mySeat:-1));
-    ctx.activePets = data.activePets || ctx.activePets || {};
-    window.GAME_CONTEXT = ctx;
-    render();
-  }
-
-  function normalizePetMap(raw){
-    var map={};
-    if(!raw)return map;
-    if(Array.isArray(raw)){
-      raw.forEach(function(item){
-        if(!item)return;
-        var name=item.username||item.user||item.owner||item.player||item.name;
-        if(name){ map[name]=item; map[String(name).toLowerCase()]=item; }
-        if(item.seat!=null)map['seat:'+item.seat]=item;
-      });
-      return map;
-    }
-    Object.keys(raw).forEach(function(k){
-      map[k]=raw[k];
-      map[String(k).toLowerCase()]=raw[k];
-    });
-    return map;
-  }
-
-  function playerPet(player){
-    var ctx=window.GAME_CONTEXT||{};
-    var name=typeof player==='string'?player:(player&&player.name)||'';
-    var seat=typeof player==='object'&&player?player.seat:null;
-    var pets=normalizePetMap(ctx.activePets || ctx.pets || ctx.playerPets || {});
-    return pets[name] || pets[String(name||'').toLowerCase()] || (seat!=null?pets['seat:'+seat]:null) || ctx.activePet || ctx.pet || null;
-  }
-
-  function petImage(pet){
-    if(!pet)return '';
-    if(typeof pet==='string')return pet;
-    return pet.image || pet.img || pet.sprite || pet.photo || pet.icon || pet.src || pet.imageUrl || pet.url || '';
-  }
-
-  function render(){
-    var hud=document.getElementById('gfStandardHud');
-    if(!hud){
-      hud=document.createElement('div');
-      hud.id='gfStandardHud';
-      document.body.appendChild(hud);
-    }
-    var ctx=window.GAME_CONTEXT||{};
-    var players=normPlayers(ctx.players);
-    if(!players.length && window.GAME_PLAYERS) players=normPlayers(window.GAME_PLAYERS);
-    var room=ctx.roomId || '';
-    var mySeat=ctx.mySeat;
-    var playerHtml=players.slice(0,4).map(function(p){
-      var pet=playerPet(p);
-      var img=petImage(pet);
-      var petName=pet && pet.name ? pet.name : '';
-      var seatText='Seat '+(Number(p.seat)+1);
-      var isMe=(Number(p.seat)===Number(mySeat)) || (ctx.username && p.name===ctx.username);
-      return '<div class="gfHudPlayer '+(isMe?'me':'')+'">'+
-        (img?'<img class="gfHudPet" src="'+esc(img)+'" alt="">':'<span class="gfHudAvatar">🎮</span>')+
-        '<span class="gfHudInfo"><span class="gfHudName">'+esc(p.name||'Player')+'</span><span class="gfHudSub">'+esc(seatText+(petName?' · '+petName:''))+'</span></span>'+ 
-      '</div>';
-    }).join('');
-    if(!playerHtml){
-      playerHtml='<div class="gfHudPlayer"><span class="gfHudAvatar">🎮</span><span class="gfHudInfo"><span class="gfHudName">Solo / Local</span><span class="gfHudSub">Waiting for room context</span></span></div>';
-    }
-    hud.innerHTML='<div class="gfHudTitle"><b>'+esc(GAME_TITLE)+'</b><span>'+(room?'Room '+esc(room):'GameForge table')+'</span></div><div class="gfHudPlayers">'+playerHtml+'</div>';
-  }
-
-  window.addEventListener('message',function(e){
-    var msg=e.data||{};
-    if(msg.type==='GAME_CONTEXT' || msg.type==='gameSetup' || msg.type==='gameContext'){
-      absorbContext(msg);
-    }
-  });
-
-  window.addEventListener('load',function(){
-    absorbContext({});
-    try{ parent.postMessage({type:'gameReady'},'*'); }catch(e){}
-  });
-
-  setTimeout(function(){absorbContext({});},250);
-  setTimeout(function(){absorbContext({});},900);
-})();
-</script>
-
 </body>
 </html>
