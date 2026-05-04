@@ -3264,17 +3264,38 @@ wss.on('connection',ws=>{
     }
 
     if(m.type==='joinRoom'){
-      let r=rooms[String(m.roomId||'').toUpperCase()];
+      let targetId=String(m.roomId||'').toUpperCase();
+      let r=rooms[targetId];
 
       if(!r||r.closed){
         ws.send(JSON.stringify({type:'error',message:'Room not found'}));
         return;
       }
 
+      let name=ws.username||'Guest';
+      let oldRoom=rooms[ws.roomId];
+
+      if(oldRoom&&oldRoom.id!==r.id){
+        oldRoom.players=oldRoom.players.filter(p=>p!==name);
+        oldRoom.seats=oldRoom.seats.map(s=>s&&s.name===name?null:s);
+
+        if(oldRoom.owner===name||m.closeCurrent){
+          oldRoom.closed=true;
+          broadcastRoom(oldRoom.id,{type:'roomClosed'});
+          wss.clients.forEach(c=>{
+            if(c.readyState===1&&c.roomId===oldRoom.id){
+              c.roomId='';
+              c.location='Home';
+            }
+          });
+        }else{
+          broadcastRoom(oldRoom.id,{type:'roomUpdate',room:roomPublic(oldRoom)});
+        }
+      }
+
       ws.roomId=r.id;
       ws.location='Room';
 
-      let name=ws.username||'Guest';
       if(!r.players.includes(name))r.players.push(name);
 
       ws.send(JSON.stringify({type:'roomJoined',room:roomPublic(r)}));
