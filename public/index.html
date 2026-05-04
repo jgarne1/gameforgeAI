@@ -1915,12 +1915,6 @@ body.gameMode #gameArea .danger{
     <button onclick="showSection('shop')" id="navShop"><span class="navIcon">🛒</span>Shop</button>
     <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
     <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span>Social <span id="socialNavBadge" class="socialNavBadge">0</span></button>
-    <button onclick="openAdmin()" id="navAdmin" class="hidden"><span class="navIcon">🛡</span>Admin</button>
-
-
-    <div class="navFooter">
-      Solo games open instantly. Multiplayer games use rooms, seats, and chat.
-    </div>
   </div>
 
   <div class="main">
@@ -2762,11 +2756,9 @@ function drawAuth(){
 
     drawNavPlayerCard();
 
-    if(admin){
-      navAdmin.classList.remove('hidden');
-    }else{
-      navAdmin.classList.add('hidden');
-    }
+    // Admin remains available from the compact top header only; it is intentionally removed from the left nav.
+    let navAdminBtn=document.getElementById('navAdmin');
+    if(navAdminBtn)navAdminBtn.classList.toggle('hidden',!admin);
   }else{
     loginControls.classList.remove('hidden');
     loggedInControls.classList.add('hidden');
@@ -2776,7 +2768,8 @@ function drawAuth(){
     accountStatePill.style.color='#cbd5e1';
 
     drawNavPlayerCard();
-    navAdmin.classList.add('hidden');
+    let navAdminBtn=document.getElementById('navAdmin');
+    if(navAdminBtn)navAdminBtn.classList.add('hidden');
   }
   updateTopStatus();
   drawTopFriendsDropdown();
