@@ -289,6 +289,15 @@ textarea.adminTextArea{
 @media(max-width:1180px){.editorLayout{grid-template-columns:1fr}.stageGrid{grid-template-columns:1fr}}
 @media(max-width:760px){.editorFormGrid{grid-template-columns:1fr}}
 
+.gameEditorGrid{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(0,1.25fr);gap:14px;align-items:start}
+.gameFormGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gameFormGrid input,.gameFormGrid select{width:100%}
+.checkRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.checkRow label{cursor:pointer}
+.gameFileBox{border:1px dashed rgba(148,163,184,.38);border-radius:18px;padding:12px;background:rgba(2,6,23,.38)}
+.gameListRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(148,163,184,.20);border-radius:18px;padding:12px;background:rgba(2,6,23,.48)}
+.gameFlags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.syncRow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(148,163,184,.18);border-radius:16px;padding:10px;background:rgba(2,6,23,.42)}
+.syncRow input{width:18px;height:18px}.syncMissing{font-size:12px;color:#fde68a;margin-top:4px}.gameHelp{font-size:12px;color:var(--muted);line-height:1.38;margin-top:6px}
+@media(max-width:1050px){.gameEditorGrid{grid-template-columns:1fr}.gameFormGrid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -306,6 +315,7 @@ textarea.adminTextArea{
     <button id="navItems" onclick="showSection('items')"><span class="navIcon">🎁</span>Item Editor</button>
     <button id="navPets" onclick="showSection('pets')"><span class="navIcon">🐾</span>Pet Editor</button>
     <button id="navAssets" onclick="showSection('assets')"><span class="navIcon">🖼️</span>Media Uploads</button>
+    <button id="navGames" onclick="showSection('games')"><span class="navIcon">🕹️</span>Game Editor</button>
     <button onclick="location.href='/'"><span class="navIcon">🏠</span>Back to GameForge</button>
     <div class="navUser" id="navUserBox"></div>
   </div>
@@ -643,6 +653,70 @@ textarea.adminTextArea{
       </div>
     </div>
 
+    <div id="games" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Game Editor</h3>
+            <p class="muted">Upload or edit table games. Normal games can create a Game Shop item automatically.</p>
+          </div>
+          <div class="row">
+            <button class="primary" onclick="loadGameEditor()">Refresh</button>
+            <button class="gold" onclick="scanGameFiles()">Scan Files</button>
+          </div>
+        </div>
+
+        <div class="gameEditorGrid">
+          <div class="editorStack">
+            <div class="toolBox">
+              <h4>Game Details</h4>
+              <div class="gameFormGrid">
+                <input id="gameEditId" placeholder="game id">
+                <input id="gameEditName" placeholder="display name">
+                <input id="gameEditFile" placeholder="file, ex: checkers.html">
+                <input id="gameEditIcon" placeholder="icon, ex: 🎮">
+                <input id="gameEditMin" type="number" min="1" max="12" value="1" placeholder="min players">
+                <input id="gameEditMax" type="number" min="1" max="12" value="2" placeholder="max players">
+                <input id="gameEditSeats" type="number" min="1" max="12" value="2" placeholder="seats">
+                <input id="gameEditPrice" type="number" min="0" max="999999" value="50" placeholder="unlock price">
+              </div>
+              <div class="checkRow">
+                <label class="pill"><input id="gameEditEnabled" type="checkbox" checked> Enabled</label>
+                <label class="pill"><input id="gameEditShow" type="checkbox" checked> Show in launcher</label>
+                <label class="pill"><input id="gameEditUnlock" type="checkbox" checked> Requires item</label>
+              </div>
+              <p class="gameHelp">Item id is automatic: <code id="gameEditItemId">game_id</code>. Internal pages should not show in launcher and should not require an item.</p>
+              <div class="row" style="margin-top:10px">
+                <button class="good" onclick="saveGameMetadataOnly()">Save Metadata</button>
+                <button class="ghost" onclick="clearGameEditorForm()">New Game</button>
+              </div>
+            </div>
+
+            <div class="gameFileBox">
+              <h4 style="margin:0 0 8px">Upload HTML</h4>
+              <input id="gameHtmlFile" class="fileInput" type="file" accept=".html,text/html" onchange="loadSelectedGameHtml()">
+              <p class="gameHelp" id="gameUploadHelp">Choose a .html file. Same filename replaces the existing game file after upload.</p>
+              <div class="row">
+                <button class="gold" onclick="uploadGameHtml()">Upload + Commit</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="editorStack">
+            <div class="toolBox">
+              <div class="cardHeader"><h4 style="margin:0">Current Games</h4><span class="pill" id="gameCountPill">0 games</span></div>
+              <div id="gameEditorList" class="list"></div>
+            </div>
+            <div class="toolBox">
+              <div class="cardHeader"><h4 style="margin:0">Scan Missing Setup</h4><button class="good" onclick="syncSelectedScannedGames()">Sync Checked</button></div>
+              <p class="muted">Finds HTML files in <code>/games</code> that are missing launcher metadata, unlock items, or Game Shop entries.</p>
+              <div id="gameScanList" class="list"><div class="empty">Click Scan Files.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="assets" class="section">
       <div class="card glow">
         <div class="cardHeader">
@@ -737,6 +811,10 @@ let selectedPlayer=null;
 let itemCatalog=[];
 let adminRoles=[];
 let adminRoleOptions=[{id:'full_admin',label:'Full Admin'},{id:'item_admin',label:'Item Admin'},{id:'moderator',label:'Moderator'}];
+let gameEditorGames=[];
+let gameScanRows=[];
+let selectedGameHtml='';
+let selectedGameHtmlName='';
 let ws=null;
 
 const $=id=>document.getElementById(id);
@@ -773,6 +851,7 @@ function showSection(id){
   if(id==='items')drawItemEditor();
   if(id==='pets')drawPetEditor();
   if(id==='assets')loadPendingAssets();
+  if(id==='games')loadGameEditor();
 }
 
 async function api(url,opts){
@@ -895,6 +974,165 @@ function resetUserPasswordFromForm(){
   if(!confirm('Reset password for '+target+'?'))return;
   resetUserPassword(target,pw);
 }
+
+
+function safeGameIdClient(value){
+  return String(value||'').trim().toLowerCase().replace(/\.html$/,'').replace(/[^a-z0-9_-]/g,'_').replace(/^_+|_+$/g,'').slice(0,48);
+}
+function niceGameNameClient(id){return String(id||'game').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
+function currentGamePayload(){
+  let id=safeGameIdClient($('gameEditId').value||$('gameEditFile').value);
+  let file=String($('gameEditFile').value||'').trim();
+  if(file&&!file.toLowerCase().endsWith('.html'))file+='.html';
+  if(!file&&id)file=id+'.html';
+  let min=Math.max(1,Number($('gameEditMin').value||1));
+  let max=Math.max(min,Number($('gameEditMax').value||min));
+  let seats=Math.max(max,Number($('gameEditSeats').value||max));
+  return {
+    id,
+    name:String($('gameEditName').value||niceGameNameClient(id)).trim(),
+    file,
+    icon:String($('gameEditIcon').value||'🎮').trim()||'🎮',
+    minPlayers:min,
+    maxPlayers:max,
+    seats,
+    price:Number($('gameEditPrice').value||50),
+    enabled:$('gameEditEnabled').checked,
+    showInLauncher:$('gameEditShow').checked,
+    requiresUnlock:$('gameEditUnlock').checked
+  };
+}
+function updateGameItemLabel(){
+  let id=safeGameIdClient($('gameEditId')&&$('gameEditId').value||$('gameEditFile')&&$('gameEditFile').value||'id');
+  if($('gameEditItemId'))$('gameEditItemId').innerText='game_'+(id||'id');
+}
+async function loadGameEditor(){
+  if(!$('gameEditorList'))return;
+  try{
+    let data=await api('/api/admin/games/manage?user='+encodeURIComponent(adminUser));
+    gameEditorGames=data.games||[];
+    drawGameEditorList();
+    updateGameItemLabel();
+  }catch(err){toast(err.message||'Game editor load failed.');}
+}
+function drawGameEditorList(){
+  if(!$('gameEditorList'))return;
+  $('gameCountPill').innerText=(gameEditorGames||[]).length+' games';
+  $('gameEditorList').innerHTML=(gameEditorGames||[]).length?(gameEditorGames||[]).map(g=>{
+    let flags='';
+    flags+='<span class="badge '+(g.fileExists?'good':'bad')+'">'+(g.fileExists?'File OK':'Missing file')+'</span>';
+    flags+='<span class="badge '+(g.showInLauncher?'good':'warn')+'">'+(g.showInLauncher?'Launcher':'Hidden')+'</span>';
+    flags+='<span class="badge '+(g.requiresUnlock?'warn':'good')+'">'+(g.requiresUnlock?'Item required':'Free')+'</span>';
+    if(g.requiresUnlock)flags+='<span class="badge '+(g.hasUnlockItem&&g.inGameShop?'good':'bad')+'">'+(g.hasUnlockItem&&g.inGameShop?'Shop OK':'Shop missing')+'</span>';
+    return '<div class="gameListRow"><div><div class="itemTitle">'+esc(g.icon||'🎮')+' '+esc(g.name||g.id)+'</div><div class="itemMeta">ID: '+esc(g.id)+' · File: '+esc(g.file)+' · Players: '+Number(g.minPlayers||1)+'-'+Number(g.maxPlayers||1)+' · Seats: '+Number(g.seats||1)+'</div><div class="gameFlags">'+flags+'</div></div><div class="actions"><button class="primary gameEditPick" data-game="'+escAttr(g.id)+'">Edit</button></div></div>';
+  }).join(''):'<div class="empty">No games found.</div>';
+  document.querySelectorAll('.gameEditPick').forEach(btn=>btn.onclick=()=>pickGameEditor(btn.dataset.game));
+}
+function pickGameEditor(id){
+  let g=(gameEditorGames||[]).find(x=>x.id===id);
+  if(!g)return;
+  $('gameEditId').value=g.id||'';
+  $('gameEditName').value=g.name||'';
+  $('gameEditFile').value=g.file||'';
+  $('gameEditIcon').value=g.icon||'🎮';
+  $('gameEditMin').value=Number(g.minPlayers||1);
+  $('gameEditMax').value=Number(g.maxPlayers||g.seats||1);
+  $('gameEditSeats').value=Number(g.seats||g.maxPlayers||1);
+  $('gameEditPrice').value=Number(g.price||50);
+  $('gameEditEnabled').checked=g.enabled!==false;
+  $('gameEditShow').checked=g.showInLauncher!==false;
+  $('gameEditUnlock').checked=g.requiresUnlock!==false;
+  selectedGameHtml='';selectedGameHtmlName='';
+  if($('gameHtmlFile'))$('gameHtmlFile').value='';
+  if($('gameUploadHelp'))$('gameUploadHelp').innerText='Editing '+(g.file||g.id+'.html')+'. Choose a file only if you want to replace the HTML.';
+  updateGameItemLabel();
+  toast('Loaded '+(g.name||g.id)+'.');
+}
+function clearGameEditorForm(){
+  ['gameEditId','gameEditName','gameEditFile'].forEach(id=>$(id).value='');
+  $('gameEditIcon').value='🎮';$('gameEditMin').value=1;$('gameEditMax').value=2;$('gameEditSeats').value=2;$('gameEditPrice').value=50;
+  $('gameEditEnabled').checked=true;$('gameEditShow').checked=true;$('gameEditUnlock').checked=true;
+  selectedGameHtml='';selectedGameHtmlName='';if($('gameHtmlFile'))$('gameHtmlFile').value='';
+  if($('gameUploadHelp'))$('gameUploadHelp').innerText='Choose a .html file. Same filename replaces the existing game file after upload.';
+  updateGameItemLabel();
+}
+async function saveGameMetadataOnly(){
+  let game=currentGamePayload();
+  if(!game.id||!game.file)return toast('Game id and file are required.');
+  if(!confirm('Save game metadata for '+game.name+'?'))return;
+  try{
+    let data=await api('/api/admin/games/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,game})});
+    gameEditorGames=data.games||gameEditorGames;
+    drawGameEditorList();
+    toast(data.message||'Game saved.');
+  }catch(err){toast(err.message||'Game save failed.');}
+}
+function loadSelectedGameHtml(){
+  let file=$('gameHtmlFile').files&&$('gameHtmlFile').files[0];
+  selectedGameHtml='';selectedGameHtmlName='';
+  if(!file)return;
+  if(!file.name.toLowerCase().endsWith('.html')){toast('Choose an HTML file.');$('gameHtmlFile').value='';return;}
+  let id=safeGameIdClient(file.name);
+  selectedGameHtmlName=file.name.replace(/[^a-zA-Z0-9_.-]/g,'_');
+  if(!$('gameEditId').value)$('gameEditId').value=id;
+  if(!$('gameEditName').value)$('gameEditName').value=niceGameNameClient(id);
+  $('gameEditFile').value=selectedGameHtmlName;
+  updateGameItemLabel();
+  let reader=new FileReader();
+  reader.onload=()=>{selectedGameHtml=String(reader.result||'');$('gameUploadHelp').innerText='Loaded '+selectedGameHtmlName+' · '+Math.round(selectedGameHtml.length/1024)+' KB. Upload will replace same filename.';};
+  reader.onerror=()=>toast('Could not read file.');
+  reader.readAsText(file);
+}
+async function uploadGameHtml(){
+  let game=currentGamePayload();
+  if(!selectedGameHtml)return toast('Choose an HTML file first.');
+  if(!game.id||!game.file)return toast('Game id and file are required.');
+  if(!confirm('Upload and commit '+game.file+'? Same filename will be replaced.'))return;
+  try{
+    let data=await api('/api/admin/games/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,game,html:selectedGameHtml})});
+    gameEditorGames=data.games||gameEditorGames;
+    drawGameEditorList();
+    selectedGameHtml='';selectedGameHtmlName='';$('gameHtmlFile').value='';
+    toast(data.message||'Game uploaded.');
+  }catch(err){toast(err.message||'Game upload failed.');}
+}
+async function scanGameFiles(){
+  try{
+    let data=await api('/api/admin/games/scan?user='+encodeURIComponent(adminUser));
+    gameScanRows=data.files||[];
+    drawGameScanRows();
+    toast('Scan complete.');
+  }catch(err){toast(err.message||'Game scan failed.');}
+}
+function drawGameScanRows(){
+  if(!$('gameScanList'))return;
+  let rows=gameScanRows||[];
+  $('gameScanList').innerHTML=rows.length?rows.map((r,i)=>{
+    let checked=r.needsSync&&!r.internal?'checked':'';
+    let disabled=r.internal?'disabled':'';
+    let miss=(r.missing||[]).length?'<div class="syncMissing">Missing: '+esc((r.missing||[]).join(', '))+'</div>':'<div class="itemMeta">No missing setup found.</div>';
+    return '<div class="syncRow"><input type="checkbox" class="gameScanCheck" data-file="'+escAttr(r.file)+'" '+checked+' '+disabled+'><div><div class="itemTitle">'+esc(r.name)+' <span class="badge '+(r.needsSync?'warn':'good')+'">'+(r.needsSync?'Needs sync':'OK')+'</span> '+(r.internal?'<span class="badge">Internal</span>':'')+'</div><div class="itemMeta">File: '+esc(r.file)+' · ID: '+esc(r.id)+' · Item: '+esc(r.itemId)+'</div>'+miss+'</div><button class="ghost gameScanLoad" data-index="'+i+'">Load</button></div>';
+  }).join(''):'<div class="empty">No game files found.</div>';
+  document.querySelectorAll('.gameScanLoad').forEach(btn=>btn.onclick=()=>loadScannedGame(Number(btn.dataset.index)));
+}
+function loadScannedGame(index){
+  let r=(gameScanRows||[])[index];if(!r)return;
+  $('gameEditId').value=r.id;$('gameEditName').value=r.name;$('gameEditFile').value=r.file;$('gameEditIcon').value='🎮';
+  $('gameEditMin').value=1;$('gameEditMax').value=2;$('gameEditSeats').value=2;$('gameEditPrice').value=50;
+  $('gameEditEnabled').checked=true;$('gameEditShow').checked=!!r.suggestedShowInLauncher;$('gameEditUnlock').checked=!!r.suggestedRequiresUnlock;
+  updateGameItemLabel();toast('Loaded scan suggestion.');
+}
+async function syncSelectedScannedGames(){
+  let files=[...document.querySelectorAll('.gameScanCheck:checked')].map(x=>x.dataset.file).filter(Boolean);
+  if(!files.length)return toast('Check at least one file.');
+  if(!confirm('Sync setup for '+files.length+' selected game file(s)?'))return;
+  try{
+    let data=await api('/api/admin/games/sync-missing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,files})});
+    gameEditorGames=data.games||gameEditorGames;gameScanRows=data.scan||gameScanRows;
+    drawGameEditorList();drawGameScanRows();toast(data.message||'Games synced.');
+  }catch(err){toast(err.message||'Game sync failed.');}
+}
+['gameEditId','gameEditFile'].forEach(id=>setTimeout(()=>{let n=$(id);if(n)n.addEventListener('input',updateGameItemLabel);},0));
 
 function drawOverview(){
   let c=dashboard&&dashboard.counts?dashboard.counts:{};
