@@ -384,9 +384,23 @@ function itemUnlocksGame(itemId,gameId){
     itemHasUnlockEffect(item,gameId);
 }
 function itemUnlocksAll(itemId){let item=itemCatalog[itemId]||{};return MASTER_KEYS.has(itemId)||item.unlocksAllGames===true||item.masterGameKey===true;}
+function gameDef(gameId){
+  gameId=String(gameId||'').trim();
+  return games.find(g=>g&&String(g.id||'')===gameId)||{};
+}
+function gameRequiresUnlock(gameId){
+  const g=gameDef(gameId);
+  if(EXCLUDED_GAME_IDS.has(gameId))return false;
+  return g.requiresUnlock!==false;
+}
+function gameShowsInLauncher(g){
+  if(!g||!g.id)return false;
+  if(EXCLUDED_GAME_IDS.has(g.id))return false;
+  return g.enabled!==false&&g.showInLauncher!==false;
+}
 function canHostGame(gameId){
   gameId=String(gameId||'').trim();
-  if(gameId==='petbattle')return true;
+  if(!gameRequiresUnlock(gameId))return true;
   if(admin)return true;
   const inv=getInventory();
   if(inventoryQty(ownedGameItemId(gameId))>0)return true;
@@ -400,7 +414,7 @@ function unlockItemNameForGame(gameId){
 }
 function playerText(g){let min=Number(g.minPlayers||1),max=Number(g.maxPlayers||g.seats||1);return min===max?min+' player'+(min===1?'':'s'):min+'–'+max+' players';}
 function normalizedGames(){
-  return games.filter(g=>g&&!EXCLUDED_GAME_IDS.has(g.id)).sort((a,b)=>{
+  return games.filter(gameShowsInLauncher).sort((a,b)=>{
     const au=canHostGame(a.id)?1:0;
     const bu=canHostGame(b.id)?1:0;
     if(au!==bu)return bu-au;
@@ -461,12 +475,12 @@ function makeGameCard(g,unlocked){
   b.className='gameCard '+(selected?'selected ':'')+(unlocked?'unlocked':'locked');
   const required=unlockItemNameForGame(g.id);
   b.innerHTML=
-    '<div class="gameIcon">'+esc(GAME_ICONS[g.id]||'🎮')+'</div>'+
+    '<div class="gameIcon">'+esc(g.icon||GAME_ICONS[g.id]||'🎮')+'</div>'+
     '<div class="gameInfo">'+
       '<div class="gameName">'+esc(g.name||g.id)+'</div>'+
       '<div class="gameMeta">'+esc(playerText(g))+'</div>'+
       (unlocked
-        ? '<div class="lockLine good">Unlocked · ready to host</div><div class="gameActionHint">Tap to prepare this table.</div>'
+        ? '<div class="lockLine good">'+(gameRequiresUnlock(g.id)?'Unlocked':'Free')+' · ready to host</div><div class="gameActionHint">Tap to prepare this table.</div>'
         : '<div class="lockLine">Locked · needs '+esc(required)+'</div><div class="gameActionHint">Buy it in Game Shop to host.</div>'
       )+
     '</div>';
