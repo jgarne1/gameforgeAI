@@ -1906,14 +1906,36 @@ body.gameMode #gameArea .danger{
       <div class="navGuestHint">Log in to load your profile, pet, coins, and friends.</div>
     </div>
 
-    <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
-    <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play</button>
-    <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet</button>
-    <button onclick="openBattleHallDirect()" id="navBattleHall"><span class="navIcon">🏟️</span>Battle Hall</button>
-    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Private Battle</button>
-    <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
-    <button onclick="showSection('shop')" id="navShop"><span class="navIcon">🛒</span>Shop</button>
-    <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
+   <!-- CORE -->
+<button onclick="showSection('home')" id="navHome" class="active">
+  <span class="navIcon">🏠</span>Home
+</button>
+
+<button onclick="showSection('play')" id="navPlay">
+  <span class="navIcon">🎮</span>Play
+</button>
+
+<button onclick="showSection('pet')" id="navPet">
+  <span class="navIcon">🐾</span>Pet
+</button>
+
+<!-- BATTLE -->
+<button onclick="openPetBattleDirect()" id="navPetBattle">
+  <span class="navIcon">⚔️</span>Battle
+</button>
+
+<!-- ECONOMY -->
+<button onclick="openMarketDirect()" id="navMarket">
+  <span class="navIcon">🏪</span>Marketplace
+</button>
+
+<button onclick="openMyStall()" id="navStall">
+  <span class="navIcon">💰</span>My Stall
+</button>
+
+<button onclick="openInventory()" id="navInventory">
+  <span class="navIcon">🎒</span>Inventory
+</button>
     <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span>Social <span id="socialNavBadge" class="socialNavBadge">0</span></button>
   </div>
 
