@@ -2271,6 +2271,7 @@ function clearActiveGameFrame(){
   gameHint.innerText='Select a game, sit at the table, and wait for the room owner to start. The game screen will appear here only when it is ready.';
   gameFrame.onload=null;
   gameFrame.removeAttribute('srcdoc');
+  gameFrame.removeAttribute('src');
   loadedGameKey='';
   directGameKey='';
 }
@@ -2634,38 +2635,20 @@ async function launchSoloGame(g){
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
-  let gameContext=await buildGameContext(players,mySeatIndex,currentRoom||'',room&&Array.isArray(room.seats)?room.seats:[]);
+  let roomId=currentRoom||((room&&room.id)||'');
+  let activeSeats=(room&&Array.isArray(room.seats))?room.seats:[];
+  let gameContext=await buildGameContext(players,mySeatIndex,roomId,activeSeats);
   let file=g.file||g.id;
   if(!file)throw new Error('Game file is missing.');
 
-  let res=await fetch('/games/'+file+'?v='+Date.now());
-  if(!res.ok)throw new Error('Could not fetch /games/'+file+' ('+res.status+').');
-
-  let html=await res.text();
-  if(!html||!html.trim())throw new Error('/games/'+file+' returned an empty file.');
-
-  let inject =
-    '<script>'+ 
-    'window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';'+
-    'window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';'+
-    'window.GAME_CONTEXT='+JSON.stringify(gameContext).replace(/</g,'\\u003c')+';'+
-    'window.addEventListener("message",function(event){'+
-      'var msg=event.data||{};'+
-      'if(msg.type==="gameMove"&&window.onMove){window.onMove(msg.data);}'+
-      'if(msg.type==="gameSetup"&&window.onMove){window.onMove(msg);}'+
-      'if(msg.type==="GAME_CONTEXT"&&window.onMove){window.onMove(msg);}'+
-      'if(msg.type==="gameSaveData"&&window.onSaveData){window.onSaveData(msg.data);}'+
-    '});'+
-    '<\\/script>';
-
-  if(html.includes('<head>')){
-    html=html.replace('<head>','<head>'+inject);
-  }else{
-    html=inject+html;
-  }
-
+  // Use a real iframe URL for every game instead of srcdoc injection.
+  // srcdoc was the main source of blank/background-only games because many of the
+  // game files expect to run as normal /games/*.html pages with their own scripts,
+  // paths, storage, and postMessage listeners intact.
   gameFrame.onload=function(){
-    if(gameFrame.contentWindow){
+    if(!gameFrame.contentWindow)return;
+
+    function postSetup(){
       gameFrame.contentWindow.postMessage({
         type:'GAME_CONTEXT',
         data:gameContext
@@ -2680,10 +2663,15 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
         username:gameContext.username
       },'*');
     }
+
+    // Send once immediately and once shortly after load so older games that attach
+    // their message listener near the bottom of the file still receive setup data.
+    postSetup();
+    setTimeout(postSetup,120);
   };
 
-  gameFrame.removeAttribute('src');
-  gameFrame.srcdoc=html;
+  gameFrame.removeAttribute('srcdoc');
+  gameFrame.src='/games/'+file+'?v='+Date.now();
 }
 
 function exitGameMode(){
@@ -2691,6 +2679,7 @@ function exitGameMode(){
   document.body.classList.remove('directGameMode');
   gameArea.classList.add('hidden');
   gameFrame.removeAttribute('srcdoc');
+  gameFrame.removeAttribute('src');
   directGameKey='';
   loadedGameKey='';
   launcherLoadedGameKey='';
