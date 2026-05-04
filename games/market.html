@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>GameForge Marketplace</title>
 <!--
 GameForge AI Marketplace maintainer notes:
@@ -742,6 +743,33 @@ input,select{
     min-height:560px;
   }
 }
+
+
+/* ===== AI MOBILE USABILITY PATCH v1 =====
+   Phone layout only. Desktop bazaar/map stays unchanged. */
+@media (max-width:760px){
+  html,body{height:auto;min-height:100%;overflow:auto;}
+  .wrap{height:auto;min-height:100dvh;overflow:visible;padding:8px;gap:8px;}
+  .topBar{border-radius:18px;padding:10px;gap:8px;}
+  .title h1{font-size:22px}.title p{font-size:12px;}
+  .wallet{width:100%;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;}
+  .wallet::-webkit-scrollbar{display:none;}
+  .main{display:grid;grid-template-columns:1fr!important;gap:8px;overflow:visible;}
+  .mapPanel,.panel{border-radius:20px;}
+  .marketMap{min-height:620px!important;border-radius:18px;overflow:hidden;}
+  .building{width:calc(50% - 18px)!important;min-height:114px!important;padding:10px!important;border-radius:18px;}
+  .building h2{font-size:15px!important}.building p{font-size:10px!important;line-height:1.2;}
+  .building:before{font-size:42px!important;}
+  .plaza{width:96px!important;height:96px!important;}
+  .shopRow,.itemRow{grid-template-columns:48px 1fr!important;gap:8px;}
+  .shopRow button,.itemRow button{grid-column:1/-1;}
+  button,input,select{font-size:15px;}
+}
+@media (max-width:460px){
+  .marketMap{min-height:650px!important;}
+  .building{width:calc(100% - 24px)!important;left:12px!important;right:12px!important;}
+}
+
 </style>
 </head>
 <body>

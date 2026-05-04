@@ -22,6 +22,24 @@ button,select,input{font-family:inherit}button{border:0;border-radius:14px;backg
 @keyframes tablePulse{0%,100%{box-shadow:0 0 0 rgba(251,191,36,0)}50%{box-shadow:0 0 0 3px rgba(251,191,36,.1),0 0 34px rgba(251,191,36,.12)}}@keyframes toast{0%{opacity:0;transform:translate(-50%,8px)}12%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}@keyframes startPop{from{opacity:0;transform:translateX(-50%) scale(.86)}to{opacity:1;transform:translateX(-50%) scale(1)}}
 @media(max-width:1000px){.hall{grid-template-rows:auto 1fr 170px}.main{grid-template-columns:1fr}.side{display:none}.tables{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.actions{width:100%;justify-content:space-between}select{max-width:100%;flex:1}.hall{padding:7px;gap:7px}.arena{border-radius:20px;padding:9px}.table{min-height:205px}.seat{min-height:130px;padding:8px}.petAvatar{width:40px;height:40px;border-radius:15px;font-size:23px}.petName{font-size:12px}.petSub,.badge{font-size:9px}.brand p{display:none}.chatDock{border-radius:20px}.chatHead{padding:8px 10px}.chatFeed{padding:7px 10px}.chatForm{padding:8px 10px}.legend{display:none}}
 @media(max-width:560px){.seats{grid-template-columns:1fr;gap:8px}.centerVS{height:20px}.startLayer{position:static;transform:none;margin:4px auto 8px;display:flex;justify-content:center}.table{min-height:0}.actions button{padding:8px 9px}.pill{font-size:11px}.hall{grid-template-rows:auto 1fr 160px}}
+
+
+/* ===== AI MOBILE USABILITY PATCH v1 =====
+   Small phone polish on top of the existing Battle Hall responsive rules. */
+@media(max-width:560px){
+  html,body{overflow:auto;height:auto;min-height:100%;}
+  .hall{height:auto;min-height:100dvh;grid-template-rows:auto auto auto!important;padding:8px;}
+  .top{border-radius:18px;padding:10px;}
+  h1{font-size:18px}.crest{width:36px;height:36px;border-radius:13px;}
+  .actions{gap:6px}.actions button,.pill,select{font-size:12px;}
+  .main{display:grid;grid-template-columns:1fr!important;}
+  .arena{overflow:visible;}.tables{overflow:visible;}
+  .chatDock{min-height:190px;}
+  .chatFeed{max-height:96px;}
+  .modalShade{padding:8px;align-items:start;overflow:auto;}.modal{max-height:none;margin-top:8px;}
+  .gridList{grid-template-columns:1fr!important;}
+}
+
 </style>
 </head>
 <body>

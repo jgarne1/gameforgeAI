@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta charset="UTF-8">
 <title>Pet World</title>
 <style>
@@ -916,6 +917,38 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   .journalDock{padding:5px 8px}
   .journalTitle{font-size:11px;margin-bottom:3px}
   .log{height:42px;max-height:42px;font-size:10px;line-height:1.2}
+}
+
+
+
+/* ===== AI MOBILE USABILITY PATCH v1 =====
+   Mobile-only pass: keeps the pet visible and actions reachable on phones. */
+@media (max-width:680px){
+  html,body{height:auto;min-height:100%;overflow:auto;}
+  .wrap{height:auto;min-height:100dvh;grid-template-rows:auto auto auto!important;padding:8px!important;gap:8px!important;overflow:visible;}
+  .top{border-radius:18px;padding:9px 10px!important;gap:8px;}
+  .brand h1{font-size:18px!important}.brand span{display:none;}
+  .topRight{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;scrollbar-width:none;}
+  .topRight::-webkit-scrollbar{display:none;}
+  .hud{display:grid;grid-template-columns:1fr!important;gap:8px;min-height:0;}
+  .stageShell{min-height:520px!important;border-radius:20px;grid-template-rows:minmax(0,1fr) auto auto!important;}
+  .petStage{min-height:360px!important;padding:10px;}
+  .petOrb{width:min(230px,74vw)!important;height:min(230px,74vw)!important;}
+  .petImg{width:min(160px,52vw)!important;height:min(160px,52vw)!important;}
+  .petEmoji{font-size:96px!important;}
+  .speech{left:10px;right:10px;bottom:10px;max-width:none;font-size:12px;padding:8px 10px;}
+  .stageVitals{left:8px;right:8px;top:8px;justify-content:center;}
+  .stageProgressBox{top:44px;width:calc(100% - 20px)!important;}
+  .actionDock{position:relative;margin:6px!important;padding:7px!important;border-radius:18px;}
+  .dockTop{grid-template-columns:1fr!important;gap:6px!important;}
+  .dockActions,.dockActions.egg,.dockActions.compact{grid-template-columns:1fr 1fr!important;gap:6px!important;}
+  .dockBtn{min-height:42px!important;padding:7px!important;}
+  .dockBtn strong{font-size:12px}.dockBtn span{font-size:10px;}
+  .tabs{grid-template-columns:1fr 1fr!important;}
+  .panel,.journalDock{border-radius:18px;}
+  .log{height:80px!important;max-height:80px!important;}
+  .detailGrid,.petOverview{grid-template-columns:1fr!important;}
+  button,input,select{font-size:15px;}
 }
 
 </style>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pet Battle Arena</title>
 <style>
 :root{
@@ -305,6 +306,28 @@ button:disabled{
   .arena{grid-template-columns:1fr}
   .moves{grid-template-columns:1fr 1fr}
 }
+
+
+/* ===== AI MOBILE USABILITY PATCH v1 =====
+   Phone layout only. Keeps the battle readable in the iframe. */
+@media (max-width:700px){
+  html,body{height:auto;min-height:100%;overflow:auto;}
+  .wrap{height:auto;min-height:100dvh;padding:8px;gap:8px;}
+  .top{align-items:flex-start;flex-direction:column;border-radius:18px;padding:10px;}
+  .top h1{font-size:20px;margin-bottom:4px;}
+  .arena{grid-template-columns:1fr!important;gap:8px;}
+  .side,.log,.controls{border-radius:18px;padding:10px;}
+  .side h2{font-size:17px;margin:0 0 4px;}
+  .petSprite{width:120px;height:120px;}
+  .moves{grid-template-columns:1fr 1fr!important;gap:7px;}
+  .moveBtn{min-height:68px;padding:9px;border-radius:14px;}
+  .moveBtn strong{font-size:13px}.moveBtn span{font-size:11px;}
+  .statGrid{grid-template-columns:1fr 1fr;}
+  .winner{font-size:18px;}
+  button{font-size:15px;}
+}
+@media (max-width:420px){.moves{grid-template-columns:1fr!important}.petSprite{width:104px;height:104px}}
+
 </style>
 </head>
 
