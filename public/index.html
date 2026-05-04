@@ -1801,7 +1801,8 @@ body.gameMode #gameArea .danger{
     <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
     <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play</button>
     <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet</button>
-    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Battle</button>
+    <button onclick="openBattleHallDirect()" id="navBattleHall"><span class="navIcon">🏟️</span>Battle Hall</button>
+    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Private Battle</button>
     <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
     <button onclick="showSection('shop')" id="navShop"><span class="navIcon">🛒</span>Shop</button>
     <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
@@ -1843,7 +1844,8 @@ body.gameMode #gameArea .danger{
         <div class="heroActions">
           <button class="primary" onclick="showSection('play')">Play a Game</button>
           <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
-          <button class="purple" onclick="openPetBattleDirect()">Pet Battle</button>
+          <button class="purple" onclick="openBattleHallDirect()">Battle Hall</button>
+          <button class="purple" onclick="openPetBattleDirect()">Private Battle</button>
           <button class="gold" onclick="openMarketDirect()">Visit Marketplace</button>
         </div>
       </div>
@@ -1924,7 +1926,8 @@ body.gameMode #gameArea .danger{
         <p>Your account companion. Care, grow, train, and prepare for future battles.</p>
         <div class="heroActions">
           <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
-          <button class="purple" onclick="openPetBattleDirect()">Pet Battle</button>
+          <button class="purple" onclick="openBattleHallDirect()">Battle Hall</button>
+          <button class="purple" onclick="openPetBattleDirect()">Private Battle</button>
           <button class="primary" onclick="showSection('shop')">Visit Shop</button>
           <button class="gold" onclick="openMarketDirect()">Marketplace</button>
         </div>
@@ -2627,7 +2630,7 @@ function drawGames(){
 
   container.innerHTML='';
 
-  const companionIds=['petworld','market','petbattle'];
+  const companionIds=['petworld','market','petbattle','battlehall'];
   const groups=[
     {key:'classic',title:'Classic Tables',hint:'Fast competitive favorites',ids:['tictactoe','connect4','battleship','battleship2','hangman','trouble']},
     {key:'card',title:'Cards & Dice',hint:'Tabletop game night',ids:['uno','gofish','yahtzee']},
@@ -3087,6 +3090,18 @@ function openPetWorldDirect(){
   launchSoloGame(g);
 }
 
+
+function openBattleHallDirect(){
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
+    return;
+  }
+
+  let g=games.find(x=>x.id==='battlehall')||{id:'battlehall',name:'Battle Hall',file:'battlehall.html'};
+  launchSoloGame(g);
+}
+
 function openPetBattleDirect(){
   if(!me){
     alert('Log in first.');
@@ -3199,7 +3214,7 @@ async function launchSoloGame(g){
 
   // Companion/system pages should load as real pages, not srcdoc.
   // This protects PetWorld/Marketplace from blank iframe issues caused by injected wrappers.
-  if(g.id==='petworld'||g.id==='market'||g.id==='petbattle'||g.file==='petworld.html'||g.file==='market.html'||g.file==='petbattle.html'){
+  if(g.id==='petworld'||g.id==='market'||g.id==='petbattle'||g.id==='battlehall'||g.file==='petworld.html'||g.file==='market.html'||g.file==='petbattle.html'||g.file==='battlehall.html'){
     gameFrame.onload=function(){
       setFrameLoading(false);
       gameHint.innerText='Account experience. Progress is tied to your username.';
