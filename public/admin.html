@@ -300,6 +300,7 @@ textarea.adminTextArea{
     </div>
     <button id="navOverview" class="active" onclick="showSection('overview')"><span class="navIcon">📊</span>Overview</button>
     <button id="navPlayers" onclick="showSection('players')"><span class="navIcon">👤</span>Players</button>
+    <button id="navAdmins" onclick="showSection('admins')"><span class="navIcon">🛡️</span>Admins</button>
     <button id="navRooms" onclick="showSection('rooms')"><span class="navIcon">🎮</span>Rooms</button>
     <button id="navMarket" onclick="showSection('market')"><span class="navIcon">🏪</span>Marketplace</button>
     <button id="navItems" onclick="showSection('items')"><span class="navIcon">🎁</span>Item Editor</button>
@@ -332,6 +333,37 @@ textarea.adminTextArea{
         </div>
       </div>
     </div>
+    <div id="admins" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Admin Roles</h3>
+            <p class="muted">Full Admins can manage roles and reset passwords. Item Admins can manage item, pet, shop, and media tools. Moderators are reserved for future forum/chat moderation.</p>
+          </div>
+          <button class="primary" onclick="loadAdminList()">Refresh Admins</button>
+        </div>
+        <div id="adminRoleList" class="list"></div>
+      </div>
+
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Add or Update Admin</h3>
+            <p class="muted">Only Full Admins can change roles. Users must already have a normal account.</p>
+          </div>
+        </div>
+        <div class="row">
+          <input id="adminRoleTarget" placeholder="username">
+          <select id="adminRoleSelect">
+            <option value="full_admin">Full Admin</option>
+            <option value="item_admin">Item Admin</option>
+            <option value="moderator">Moderator</option>
+          </select>
+          <button class="good" onclick="setAdminRoleFromForm()">Save Role</button>
+        </div>
+      </div>
+    </div>
+
 
     <div id="players" class="section">
       <div class="card glow">
@@ -347,6 +379,15 @@ textarea.adminTextArea{
           <h4>Testing Reset</h4>
           <p class="muted">Resets every user back to the default pet profile: 100 coins, one Mystery Egg, and starter inventory. This also clears marketplace listings so old listings do not point to wiped inventory.</p>
           <button class="danger" onclick="resetAllUsersToDefault()">Reset All Users to Default</button>
+        </div>
+        <div class="toolBox" style="margin-top:12px">
+          <h4>Password Recovery</h4>
+          <p class="muted">Full Admin only. Reset a selected user's password when they are locked out.</p>
+          <div class="row">
+            <input id="resetPasswordTarget" placeholder="username">
+            <input id="resetPasswordValue" placeholder="new password" type="text">
+            <button class="gold" onclick="resetUserPasswordFromForm()">Reset Password</button>
+          </div>
         </div>
       </div>
 
@@ -694,6 +735,8 @@ let pendingAssets=[];
 let lastAssetUpload=null;
 let selectedPlayer=null;
 let itemCatalog=[];
+let adminRoles=[];
+let adminRoleOptions=[{id:'full_admin',label:'Full Admin'},{id:'item_admin',label:'Item Admin'},{id:'moderator',label:'Moderator'}];
 let ws=null;
 
 const $=id=>document.getElementById(id);
@@ -706,7 +749,7 @@ function init(){
     }
 
     $('app').classList.remove('hidden');
-    $('navUserBox').innerHTML='<b>'+esc(adminUser)+'</b><br><span>Admin session active</span>';
+    $('navUserBox').innerHTML='<b>'+esc(adminUser)+'</b><br><span id="navRoleLabel">Admin session active</span>';
     updateAssetSlotOptions();
     refreshAll();
     connectAdminSocket();
@@ -724,6 +767,7 @@ function showSection(id){
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   let sec=$(id); if(sec)sec.classList.add('active');
   let nav=$('nav'+id.charAt(0).toUpperCase()+id.slice(1)); if(nav)nav.classList.add('active');
+  if(id==='admins')loadAdminList();
   if(id==='rooms')loadRooms();
   if(id==='market')loadMarket();
   if(id==='items')drawItemEditor();
@@ -746,9 +790,12 @@ async function refreshAll(){
     rooms=dashboard.rooms||[];
     itemCatalog=dashboard.items||[];
     petSpeciesCatalog=dashboard.petSpecies||petSpeciesCatalog||[];
+    adminRoles=dashboard.adminRoles||adminRoles||[];
+    if(dashboard.adminRole&&$('navRoleLabel'))$('navRoleLabel').innerText='Role: '+formatRole(dashboard.adminRole);
     if(petSpeciesCatalog.length)PET_EDITOR_SPECIES=petSpeciesCatalog;
     drawOverview();
     drawRooms();
+    drawAdminList();
     await loadMarket(false);
     buildAssetDropdowns();
     initEditorDropdowns();
@@ -761,6 +808,92 @@ async function refreshAll(){
       $('denied').classList.remove('hidden');
     }
   }
+}
+
+
+function formatRole(role){
+  role=String(role||'').trim();
+  let found=(adminRoleOptions||[]).find(r=>r.id===role);
+  if(found)return found.label;
+  if(role==='full_admin')return 'Full Admin';
+  if(role==='item_admin')return 'Item Admin';
+  if(role==='moderator')return 'Moderator';
+  return role||'Player';
+}
+
+async function loadAdminList(){
+  try{
+    let data=await api('/api/admin/admins?user='+encodeURIComponent(adminUser));
+    adminRoles=data.admins||[];
+    adminRoleOptions=data.roles||adminRoleOptions;
+    drawAdminList();
+  }catch(err){toast(err.message||'Admin role load failed.');}
+}
+
+function drawAdminList(){
+  if(!$('adminRoleList'))return;
+  let list=adminRoles||[];
+  $('adminRoleList').innerHTML=list.length?list.map(a=>{
+    let roleSelect='<select id="role_'+escAttr(a.username)+'">'+(adminRoleOptions||[]).map(r=>'<option value="'+escAttr(r.id)+'" '+(r.id===a.role?'selected':'')+'>'+esc(r.label||r.id)+'</option>').join('')+'</select>';
+    let owner=a.owner?'<span class="badge warn">Owner</span>':'';
+    let missing=!a.exists?'<span class="badge danger">Missing user</span>':'';
+    let last=a.lastLoginAt?new Date(a.lastLoginAt).toLocaleString():'Never';
+    return cardHtml(
+      esc(a.username)+' <span class="badge good">'+esc(formatRole(a.role))+'</span> '+owner+' '+missing,
+      'Last login: '+esc(last),
+      roleSelect+'<button class="good" onclick="setAdminRole(''+escAttr(a.username)+'',document.getElementById('role_'+escAttr(a.username)+'').value)">Save Role</button><button class="gold" onclick="resetUserPasswordPrompt(''+escAttr(a.username)+'')">Reset Password</button>'+(a.owner?'':'<button class="danger" onclick="removeAdminRole(''+escAttr(a.username)+'')">Remove Admin</button>')
+    );
+  }).join(''):'<div class="empty">No admins found.</div>';
+}
+
+function setAdminRoleFromForm(){
+  let target=$('adminRoleTarget').value.trim();
+  let role=$('adminRoleSelect').value;
+  if(!target)return toast('Type a username first.');
+  setAdminRole(target,role);
+}
+
+async function setAdminRole(target,role){
+  try{
+    let data=await api('/api/admin/admins/role',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,target,role})});
+    adminRoles=data.admins||adminRoles;
+    drawAdminList();
+    toast(data.message||'Admin role updated.');
+  }catch(err){toast(err.message||'Role update failed.');}
+}
+
+async function removeAdminRole(target){
+  if(!confirm('Remove admin access from '+target+'?'))return;
+  try{
+    let data=await api('/api/admin/admins/role',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,target,remove:true})});
+    adminRoles=data.admins||adminRoles;
+    drawAdminList();
+    toast(data.message||'Admin access removed.');
+  }catch(err){toast(err.message||'Remove admin failed.');}
+}
+
+async function resetUserPassword(target,newPassword){
+  try{
+    let data=await api('/api/admin/users/'+encodeURIComponent(target)+'/password-reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,newPassword})});
+    toast(data.message||'Password reset.');
+    $('resetPasswordValue')&&($('resetPasswordValue').value='');
+  }catch(err){toast(err.message||'Password reset failed.');}
+}
+
+function resetUserPasswordPrompt(target){
+  let pw=prompt('New password for '+target+':');
+  if(pw===null)return;
+  if(String(pw).length<4)return toast('Password must be at least 4 characters.');
+  resetUserPassword(target,String(pw));
+}
+
+function resetUserPasswordFromForm(){
+  let target=$('resetPasswordTarget').value.trim()||($('targetUser')&&$('targetUser').value.trim())||'';
+  let pw=$('resetPasswordValue').value;
+  if(!target)return toast('Type a username first.');
+  if(String(pw).length<4)return toast('Password must be at least 4 characters.');
+  if(!confirm('Reset password for '+target+'?'))return;
+  resetUserPassword(target,pw);
 }
 
 function drawOverview(){
@@ -883,6 +1016,7 @@ function drawPlayer(){
   let active=p.pets&&p.activePetId?p.pets[p.activePetId]:null;
   $('playerSummary').innerHTML='<h3>'+esc(u.username)+' '+(selectedPlayer.admin?'<span class="badge warn">Admin</span>':'')+'</h3>'+"<p class='muted'>Games played: "+(u.gamesPlayed||0)+' · Wins: '+(u.wins||0)+' · Losses: '+(u.losses||0)+' · Ties: '+(u.ties||0)+'</p><p><span class="pill">🪙 '+Number(p.money||0)+' coins</span> '+(active?'<span class="pill">🐾 '+esc(active.name)+'</span>':'')+'</p>';
   $('coinPill').innerText='🪙 '+Number(p.money||0)+' coins';
+  if($('resetPasswordTarget'))$('resetPasswordTarget').value=u.username||'';
 
   drawItemSelect();
   drawPetSelect();
