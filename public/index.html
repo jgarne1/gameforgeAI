@@ -1773,9 +1773,25 @@ body.gameMode #gameArea .danger{
 .socialItem.unread{border-color:rgba(250,204,21,.55);box-shadow:0 0 22px rgba(250,204,21,.08)}
 .socialTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.socialActions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .socialActions button{padding:7px 9px;font-size:12px}.socialSearchRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-bottom:10px}
+.mailThreadShell{display:grid;grid-template-columns:minmax(220px,320px) minmax(0,1fr);gap:12px;min-height:430px}
+.mailThreadList{display:grid;gap:8px;align-content:start;max-height:540px;overflow:auto;padding-right:2px}
+.mailThreadItem{border:1px solid rgba(148,163,184,.20);border-radius:17px;padding:11px;background:rgba(2,6,23,.45);cursor:pointer;transition:.18s ease}
+.mailThreadItem:hover{border-color:rgba(56,189,248,.42);transform:translateY(-1px)}
+.mailThreadItem.active{border-color:rgba(250,204,21,.68);background:linear-gradient(135deg,rgba(37,99,235,.24),rgba(124,58,237,.18));box-shadow:0 0 24px rgba(250,204,21,.08)}
+.mailThreadItem.unread{border-color:rgba(250,204,21,.52)}
+.mailThreadTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:1000;color:#fff}
+.mailThreadPreview{font-size:12px;color:var(--muted);margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mailViewer{border:1px solid rgba(148,163,184,.20);border-radius:20px;background:rgba(2,6,23,.42);min-height:430px;display:flex;flex-direction:column;overflow:hidden}
+.mailViewerHead{padding:12px 13px;border-bottom:1px solid rgba(148,163,184,.14);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.mailMessages{padding:12px;display:flex;flex-direction:column;gap:10px;overflow:auto;min-height:250px;max-height:365px}
+.mailBubble{max-width:82%;border:1px solid rgba(148,163,184,.20);border-radius:17px;padding:10px 11px;background:rgba(15,23,42,.72)}
+.mailBubble.mine{margin-left:auto;background:linear-gradient(135deg,rgba(37,99,235,.32),rgba(124,58,237,.22));border-color:rgba(96,165,250,.35)}
+.mailBubbleMeta{font-size:11px;color:var(--muted);margin-bottom:4px}.mailBubbleText{white-space:pre-wrap;line-height:1.35}
+.mailReplyBox{border-top:1px solid rgba(148,163,184,.14);padding:11px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.mailReplyBox textarea{min-height:48px;max-height:120px;resize:vertical}
+.mailComposerGrid{display:grid;grid-template-columns:minmax(130px,1fr) minmax(130px,1fr);gap:8px}.mailComposerGrid .wide{grid-column:1/-1}
 .friendGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.friendCard{border:1px solid rgba(148,163,184,.22);border-radius:20px;padding:13px;background:linear-gradient(180deg,rgba(15,23,42,.74),rgba(2,6,23,.66))}
 .friendCard h4{margin:0 0 5px}.onlineDot{display:inline-flex;width:9px;height:9px;border-radius:999px;background:#64748b;margin-right:6px}.onlineDot.on{background:#22c55e;box-shadow:0 0 12px rgba(34,197,94,.65)}
-@media(max-width:900px){.socialShell{grid-template-columns:1fr}.socialStats{grid-template-columns:repeat(2,1fr)}.socialTop{flex-direction:column}.socialActions{justify-content:flex-start}}
+@media(max-width:900px){.socialShell{grid-template-columns:1fr}.socialStats{grid-template-columns:repeat(2,1fr)}.socialTop{flex-direction:column}.socialActions{justify-content:flex-start}.mailThreadShell{grid-template-columns:1fr}.mailMessages{max-height:280px}.mailBubble{max-width:94%}}
 
 
 
@@ -2007,16 +2023,24 @@ body.gameMode #gameArea .danger{
 
           <div id="socialMailPanel" class="socialPanel">
             <div class="card glow">
-              <div class="cardHeader"><h3>Send Mail</h3><span class="pill">Short message</span></div>
+              <div class="cardHeader"><h3>Send Mail</h3><span class="pill">Typed threads</span></div>
               <div class="socialComposer">
-                <input id="mailTo" placeholder="recipient username">
-                <textarea id="mailText" maxlength="500" placeholder="Write a short message..."></textarea>
+                <div class="mailComposerGrid">
+                  <input id="mailTo" placeholder="recipient username">
+                  <select id="mailType" title="Thread type">
+                    <option value="chat">General Chat</option>
+                    <option value="battle">Battle</option>
+                    <option value="trade">Trade</option>
+                  </select>
+                  <input id="mailSubject" class="wide" maxlength="80" placeholder="subject / thread name, optional">
+                  <textarea id="mailText" class="wide" maxlength="500" placeholder="Write a short message..."></textarea>
+                </div>
                 <div class="row"><button class="primary" onclick="sendSocialMail()">Send Mail</button><button class="ghost" onclick="clearMailComposer()">Clear</button></div>
               </div>
             </div>
             <div class="card glow">
               <div class="cardHeader"><h3>Inbox / History</h3><button class="ghost" onclick="markAllMailRead()">Mark All Read</button></div>
-              <div id="mailList" class="socialList"></div>
+              <div id="mailList" class="mailThreadShell"></div>
             </div>
           </div>
         </div>
@@ -2120,7 +2144,8 @@ let pendingGameToSelect='';
 let gameLibraryForcedOpen=false; // Keeps the library open only when the user explicitly chooses Change Game after selecting a room game.
 let roomReadyStatus={}; // Cosmetic lobby readiness by username. It is relayed as a gameMove, but it intentionally does not block Start Game.
 let readyRoomId=''; // Tracks which room the cosmetic ready map belongs to so old ready flags do not leak between rooms.
-let socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[]};
+let socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[],mailThreads:[]};
+let selectedMailThreadId=''; // Active conversation in the Social Center two-pane mail viewer.
 let accountProfile=null;
 
 
@@ -2473,7 +2498,7 @@ function clearRuntimeState(){
   petProfile=null;
   petShop={};
   petMoves={};
-  socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[]};
+  socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[],mailThreads:[]};
   accountProfile=null;
   latestPresenceUsers=[];
   latestPresenceRooms=[];
@@ -3997,7 +4022,7 @@ async function socialApi(url,opts){
 async function loadSocialCenter(opts){
   opts=opts||{};
   if(!me){
-    socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[]};
+    socialData={counts:{unreadMail:0,friends:0,incomingRequests:0},friends:[],incomingRequests:[],outgoingRequests:[],mail:[],mailThreads:[]};
     accountProfile=null;
     drawSocialCenter();
     return;
@@ -4128,18 +4153,82 @@ function onlineLabel(online){
   return 'Online';
 }
 
+function mailTypeLabel(type){
+  type=String(type||'chat');
+  if(type==='battle')return '⚔️ Battle';
+  if(type==='trade')return '🤝 Trade';
+  if(type==='system')return '📣 System';
+  return '💬 Chat';
+}
+
+function mailThreadOtherName(t){
+  let others=(t&&t.otherParticipants)||[];
+  if(others.length)return others.join(', ');
+  let parts=(t&&t.participants)||[];
+  return parts.filter(function(p){return p!==me;}).join(', ')||'Mail';
+}
+
+function getSelectedMailThread(){
+  let threads=socialData.mailThreads||[];
+  if(!selectedMailThreadId&&threads.length)selectedMailThreadId=threads[0].id;
+  return threads.find(function(t){return t.id===selectedMailThreadId;})||threads[0]||null;
+}
+
 function drawMailPanel(){
-  let list=document.getElementById('mailList');
-  if(!list)return;
-  let mail=socialData.mail||[];
-  list.innerHTML=mail.length?mail.map(function(m){
-    let date=m.createdAt?new Date(m.createdAt).toLocaleString():'';
-    return '<div class="socialItem '+(!m.read?'unread':'')+'">'+
-      '<div class="socialTop"><div><b>'+(!m.read?'✉ ':'')+'From '+escapeHtml(m.from||'Unknown')+'</b><br><span class="muted">'+escapeHtml(date)+'</span></div>'+ 
-      '<div class="socialActions"><button onclick="prefillMail(\''+escapeAttr(m.from||'')+'\')">Reply</button><button class="danger" onclick="deleteSocialMail(\''+escapeAttr(m.id)+'\')">Delete</button></div></div>'+ 
-      '<p>'+escapeHtml(m.text||'')+'</p>'+ 
+  let root=document.getElementById('mailList');
+  if(!root)return;
+  let threads=socialData.mailThreads||[];
+  if(!threads.length){
+    selectedMailThreadId='';
+    root.innerHTML='<div class="empty">No mail yet.</div>';
+    return;
+  }
+  if(!threads.some(function(t){return t.id===selectedMailThreadId;}))selectedMailThreadId=threads[0].id;
+  let active=getSelectedMailThread();
+  let listHtml='<div class="mailThreadList">'+threads.map(function(t){
+    let last=t.lastMessage||{};
+    let unread=Number(t.unread||0);
+    let activeClass=active&&active.id===t.id?' active':'';
+    let unreadClass=unread?' unread':'';
+    let stamp=t.updatedAt?new Date(t.updatedAt).toLocaleDateString():'';
+    return '<div class="mailThreadItem'+activeClass+unreadClass+'" onclick="selectMailThread(\''+escapeAttr(t.id)+'\')">'+
+      '<div class="mailThreadTitle"><span>'+escapeHtml(mailThreadOtherName(t))+'</span>'+(unread?'<span class="pill gold">'+unread+'</span>':'')+'</div>'+
+      '<div class="muted" style="font-size:11px;margin-top:4px">'+escapeHtml(mailTypeLabel(t.type))+' · '+escapeHtml(t.subject||'General Chat')+' · '+escapeHtml(stamp)+'</div>'+
+      '<div class="mailThreadPreview">'+escapeHtml((last.from?last.from+': ':'')+(last.text||''))+'</div>'+
     '</div>';
-  }).join(''):'<div class="empty">No mail yet.</div>';
+  }).join('')+'</div>';
+
+  let viewerHtml='';
+  if(active){
+    let messages=active.messages||[];
+    viewerHtml='<div class="mailViewer">'+
+      '<div class="mailViewerHead"><div><b>'+escapeHtml(active.subject||'Mail')+'</b><br><span class="muted">'+escapeHtml(mailTypeLabel(active.type))+' with '+escapeHtml(mailThreadOtherName(active))+'</span></div>'+
+      '<div class="socialActions"><button onclick="prefillMailFromThread(\''+escapeAttr(active.id)+'\')">Reply</button><button class="danger" onclick="deleteSocialMail(\''+escapeAttr(active.id)+'\')">Delete</button></div></div>'+
+      '<div class="mailMessages" id="mailMessages">'+messages.map(function(m){
+        let mine=m.from===me;
+        let date=m.createdAt?new Date(m.createdAt).toLocaleString():'';
+        return '<div class="mailBubble '+(mine?'mine':'')+'"><div class="mailBubbleMeta">'+escapeHtml(m.from||'Unknown')+' · '+escapeHtml(date)+'</div><div class="mailBubbleText">'+escapeHtml(m.text||'')+'</div></div>';
+      }).join('')+'</div>'+
+      '<div class="mailReplyBox"><textarea id="mailReplyText" maxlength="500" placeholder="Reply to this thread..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();replySocialMail();}"></textarea><button class="primary" onclick="replySocialMail()">Reply</button></div>'+
+    '</div>';
+  }
+  root.innerHTML=listHtml+viewerHtml;
+  let msgBox=document.getElementById('mailMessages');
+  if(msgBox)msgBox.scrollTop=msgBox.scrollHeight;
+}
+
+async function selectMailThread(threadId){
+  selectedMailThreadId=threadId||'';
+  drawMailPanel();
+  if(!me||!threadId)return;
+  try{
+    let data=await socialApi('/api/social/read-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,threadId:threadId})});
+    socialData.mail=data.mail||socialData.mail||[];
+    socialData.mailThreads=data.mailThreads||socialData.mailThreads||[];
+    socialData.counts=data.counts||socialData.counts||{};
+    drawSocialBadge();
+    drawMailPanel();
+  }catch(err){}
 }
 
 async function searchSocialUsers(){
@@ -4189,12 +4278,30 @@ async function removeFriend(target){
 function prefillMail(to){
   showSection('social');
   showSocialTab('mail');
+  selectedMailThreadId='';
   if(document.getElementById('mailTo'))mailTo.value=to||'';
+  if(document.getElementById('mailType'))mailType.value='chat';
+  if(document.getElementById('mailSubject'))mailSubject.value='General Chat';
   if(document.getElementById('mailText'))mailText.focus();
 }
 
+function prefillMailFromThread(threadId){
+  let t=(socialData.mailThreads||[]).find(function(x){return x.id===threadId;});
+  if(!t)return;
+  selectedMailThreadId=threadId;
+  let to=mailThreadOtherName(t).split(',')[0]||'';
+  if(document.getElementById('mailTo'))mailTo.value=to;
+  if(document.getElementById('mailType'))mailType.value=t.type||'chat';
+  if(document.getElementById('mailSubject'))mailSubject.value=t.subject||'';
+  let box=document.getElementById('mailReplyText')||document.getElementById('mailText');
+  if(box)box.focus();
+}
+
 function clearMailComposer(){
+  selectedMailThreadId='';
   if(document.getElementById('mailTo'))mailTo.value='';
+  if(document.getElementById('mailType'))mailType.value='chat';
+  if(document.getElementById('mailSubject'))mailSubject.value='';
   if(document.getElementById('mailText'))mailText.value='';
 }
 
@@ -4202,13 +4309,29 @@ async function sendSocialMail(){
   if(!me)return showToast('Log in first.','warn');
   let to=(document.getElementById('mailTo')&&mailTo.value||'').trim();
   let text=(document.getElementById('mailText')&&mailText.value||'').trim();
+  let type=(document.getElementById('mailType')&&mailType.value||'chat').trim();
+  let subject=(document.getElementById('mailSubject')&&mailSubject.value||'').trim();
   if(!to||!text)return showToast('Enter a recipient and message.','warn');
   try{
-    let data=await socialApi('/api/social/send-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,to:to,text:text})});
+    let data=await socialApi('/api/social/send-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,to:to,text:text,type:type,subject:subject})});
     showToast(data.message||'Mail sent.','good');
-    mailText.value='';
+    if(document.getElementById('mailText'))mailText.value='';
+    selectedMailThreadId=data.threadId||selectedMailThreadId;
     await loadSocialCenter({silent:true});
   }catch(err){showToast(err.message||'Mail failed.','warn');}
+}
+
+async function replySocialMail(){
+  if(!me)return showToast('Log in first.','warn');
+  let t=getSelectedMailThread();
+  let text=(document.getElementById('mailReplyText')&&mailReplyText.value||'').trim();
+  if(!t||!text)return showToast('Select a thread and enter a reply.','warn');
+  let to=mailThreadOtherName(t).split(',')[0]||'';
+  try{
+    let data=await socialApi('/api/social/send-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,to:to,text:text,type:t.type||'chat',subject:t.subject||'',threadId:t.id})});
+    selectedMailThreadId=data.threadId||t.id;
+    await loadSocialCenter({silent:true});
+  }catch(err){showToast(err.message||'Reply failed.','warn');}
 }
 
 async function markAllMailRead(silent){
@@ -4217,17 +4340,21 @@ async function markAllMailRead(silent){
   try{
     let data=await socialApi('/api/social/read-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me})});
     socialData.mail=data.mail||socialData.mail||[];
+    socialData.mailThreads=data.mailThreads||socialData.mailThreads||[];
     socialData.counts=data.counts||socialData.counts||{};
     drawSocialCenter();
     if(!silent)showToast('Mail marked read.','good');
   }catch(err){if(!silent)showToast(err.message||'Could not mark mail read.','warn');}
 }
 
-async function deleteSocialMail(mailId){
+async function deleteSocialMail(threadId){
+  if(!me)return;
   try{
-    let data=await socialApi('/api/social/delete-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,mailId:mailId})});
+    let data=await socialApi('/api/social/delete-mail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me,threadId:threadId})});
     socialData.mail=data.mail||[];
+    socialData.mailThreads=data.mailThreads||[];
     socialData.counts=data.counts||socialData.counts||{};
+    if(selectedMailThreadId===threadId)selectedMailThreadId='';
     drawSocialCenter();
     showToast(data.message||'Mail deleted.','warn');
   }catch(err){showToast(err.message||'Delete failed.','warn');}
