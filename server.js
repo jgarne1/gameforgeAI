@@ -306,15 +306,119 @@ function canUsernameHostGame(username,gameId){
 
 
 
+const ADMIN_ROLES=['full_admin','item_admin','moderator'];
+const ADMIN_ROLE_LABELS={
+  full_admin:'Full Admin',
+  item_admin:'Item Admin',
+  moderator:'Moderator'
+};
+
+function normalizeAdminRole(role){
+  role=String(role||'full_admin').trim();
+  if(role==='admin'||role==='owner')return 'full_admin';
+  if(role==='item')return 'item_admin';
+  if(role==='mod')return 'moderator';
+  return ADMIN_ROLES.includes(role)?role:'full_admin';
+}
+
+function adminRoleMap(){
+  let raw=readJSON(adminsFile,[]);
+  let map={};
+
+  if(Array.isArray(raw)){
+    raw.forEach(username=>{
+      username=String(username||'').trim();
+      if(username)map[username]='full_admin';
+    });
+  }else if(raw&&typeof raw==='object'){
+    if(Array.isArray(raw.admins)){
+      raw.admins.forEach(entry=>{
+        if(typeof entry==='string'){
+          let username=entry.trim();
+          if(username)map[username]=normalizeAdminRole((raw.roles||{})[username]||'full_admin');
+        }else if(entry&&typeof entry==='object'){
+          let username=String(entry.username||entry.name||'').trim();
+          if(username)map[username]=normalizeAdminRole(entry.role);
+        }
+      });
+    }
+    if(raw.roles&&typeof raw.roles==='object'){
+      Object.keys(raw.roles).forEach(username=>{
+        username=String(username||'').trim();
+        if(username)map[username]=normalizeAdminRole(raw.roles[username]);
+      });
+    }
+  }
+
+  ownerUsernames().forEach(username=>{
+    username=String(username||'').trim();
+    if(username)map[username]='full_admin';
+  });
+
+  let u=users();
+  Object.keys(u).forEach(username=>{
+    if(u[username]&&u[username].owner)map[username]='full_admin';
+  });
+
+  return map;
+}
+
 function admins(){
-  let a=readJSON(adminsFile,[]);
-  return Array.isArray(a)?a:(a.admins||[]);
+  return Object.keys(adminRoleMap());
+}
+
+function getAdminRole(username){
+  username=String(username||'').trim();
+  if(!username)return '';
+  return adminRoleMap()[username]||'';
+}
+
+function isFullAdmin(username){
+  return getAdminRole(username)==='full_admin';
+}
+
+function canAdmin(username,permission){
+  let role=getAdminRole(username);
+  if(!role)return false;
+  if(role==='full_admin')return true;
+  if(permission==='admin_manage'||permission==='user_manage'||permission==='password_reset'||permission==='economy_manage'||permission==='room_manage')return false;
+  if(permission==='item_manage')return role==='item_admin';
+  if(permission==='moderate')return role==='moderator';
+  if(permission==='dashboard')return true;
+  return false;
 }
 
 function saveAdmins(list){
+  let map=adminRoleMap();
   let unique=[...new Set((list||[]).map(x=>String(x||'').trim()).filter(Boolean))];
-  writeJSON(adminsFile,unique);
+  let roles={};
+  unique.forEach(username=>roles[username]=normalizeAdminRole(map[username]||'full_admin'));
+  writeJSON(adminsFile,{admins:unique,roles});
   return unique;
+}
+
+function saveAdminRoleMap(map){
+  let roles={};
+  Object.keys(map||{}).forEach(username=>{
+    username=String(username||'').trim();
+    if(username)roles[username]=normalizeAdminRole(map[username]);
+  });
+  let adminsList=Object.keys(roles).sort((a,b)=>a.localeCompare(b));
+  writeJSON(adminsFile,{admins:adminsList,roles});
+  return roles;
+}
+
+function adminListPayload(){
+  let map=adminRoleMap();
+  let u=normalizeAllUsers();
+  return Object.keys(map).sort((a,b)=>a.localeCompare(b)).map(username=>({
+    username,
+    role:normalizeAdminRole(map[username]),
+    roleLabel:ADMIN_ROLE_LABELS[normalizeAdminRole(map[username])]||map[username],
+    owner:!!(u[username]&&u[username].owner)||ownerUsernames().includes(username),
+    exists:!!u[username],
+    lastLoginAt:u[username]?Number(u[username].lastLoginAt||0):0
+  }));
 }
 
 function ownerUsernames(){
@@ -386,7 +490,7 @@ function maybeBootstrapOwner(username){
   if(u[username]){
     u[username]=normalizeUserRecord(u[username],username);
     u[username].owner=true;
-    u[username].role='owner';
+    u[username].role='full_admin';
     writeJSON(usersFile,u);
   }
 
@@ -1482,7 +1586,7 @@ app.post('/api/register',(req,res)=>{
   getPetProfile(username);
 
   let refreshed=users();
-  res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username)});
+  res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username),adminRole:getAdminRole(username)});
 });
 
 app.post('/api/login',(req,res)=>{
@@ -1500,18 +1604,18 @@ app.post('/api/login',(req,res)=>{
   getPetProfile(username);
 
   let refreshed=users();
-  res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username)});
+  res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username),adminRole:getAdminRole(username)});
 });
 
 app.get('/api/admin/users',(req,res)=>{
-  let user=req.query.user;
-  if(!admins().includes(user))return res.status(403).json({error:'forbidden'});
+  let adminUser=requireAdmin(req,res,'user_manage');
+  if(!adminUser)return;
   res.json(Object.values(normalizeAllUsers()).map(safeUser));
 });
 
 app.delete('/api/admin/users/:name',(req,res)=>{
-  let user=req.query.user;
-  if(!admins().includes(user))return res.status(403).json({error:'forbidden'});
+  let adminUser=requireAdmin(req,res,'user_manage');
+  if(!adminUser)return;
 
   let u=users();
   delete u[req.params.name];
@@ -1532,7 +1636,7 @@ app.delete('/api/admin/users/:name',(req,res)=>{
 
 
 app.post('/api/admin/users/:name/profile',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'user_manage');
   if(!adminUser)return;
 
   let target=String(req.params.name||'').trim();
@@ -1556,60 +1660,162 @@ app.post('/api/admin/users/:name/profile',(req,res)=>{
   });
 });
 
-app.post('/api/admin/users/:name/admin',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+app.get('/api/admin/admins',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'dashboard');
   if(!adminUser)return;
 
-  if(!isOwnerUsername(adminUser)){
-    return res.status(403).json({error:'Only an owner can change admin status.'});
+  res.json({
+    ok:true,
+    requester:adminUser,
+    requesterRole:getAdminRole(adminUser),
+    roles:ADMIN_ROLES.map(role=>({id:role,label:ADMIN_ROLE_LABELS[role]})),
+    admins:adminListPayload()
+  });
+});
+
+app.post('/api/admin/admins/role',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
+
+  let target=String(req.body.target||req.body.usernameToManage||req.body.targetUsername||'').trim();
+  let role=normalizeAdminRole(req.body.role);
+  let remove=req.body.remove===true||role==='remove'||role==='player';
+  let u=users();
+
+  if(!target)return res.status(400).json({error:'Missing target username'});
+  if(!u[target])return res.status(404).json({error:'User not found'});
+  if(target===adminUser&&remove)return res.status(400).json({error:'You cannot remove your own admin access.'});
+  if((isOwnerUsername(target)||u[target].owner)&&remove)return res.status(400).json({error:'Owner accounts must keep full admin access.'});
+
+  u[target]=normalizeUserRecord(u[target],target);
+
+  let map=adminRoleMap();
+  if(remove){
+    delete map[target];
+    if(!u[target].owner)u[target].role='player';
+  }else{
+    map[target]=role;
+    u[target].role=role;
+    if(role==='full_admin'&&isOwnerUsername(target))u[target].owner=true;
   }
+
+  if(u[target].owner)map[target]='full_admin';
+
+  saveAdminRoleMap(map);
+  writeJSON(usersFile,u);
+
+  res.json({
+    ok:true,
+    message:remove ? (target+' is no longer an admin.') : (target+' is now '+(ADMIN_ROLE_LABELS[role]||role)+'.'),
+    admins:adminListPayload(),
+    user:safeUser(u[target])
+  });
+});
+
+app.post('/api/admin/users/:name/admin',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
 
   let target=String(req.params.name||'').trim();
   let makeAdmin=req.body.makeAdmin!==false;
+  let role=normalizeAdminRole(req.body.role||'full_admin');
   let u=users();
 
   if(!u[target])return res.status(404).json({error:'User not found'});
 
   u[target]=normalizeUserRecord(u[target],target);
-
-  let a=admins();
+  let map=adminRoleMap();
 
   if(makeAdmin){
-    if(!a.includes(target))a.push(target);
-    u[target].role=u[target].owner?'owner':'admin';
+    map[target]=role;
+    u[target].role=role;
   }else{
-    a=a.filter(x=>x!==target);
-    if(!u[target].owner)u[target].role='player';
+    if(target===adminUser)return res.status(400).json({error:'You cannot remove your own admin access.'});
+    if(u[target].owner||isOwnerUsername(target))return res.status(400).json({error:'Owner accounts must keep full admin access.'});
+    delete map[target];
+    u[target].role='player';
   }
 
-  saveAdmins(a);
+  if(u[target].owner||isOwnerUsername(target)){
+    map[target]='full_admin';
+    u[target].role='full_admin';
+  }
+
+  saveAdminRoleMap(map);
   writeJSON(usersFile,u);
 
   res.json({
     ok:true,
-    message:makeAdmin ? (target+' is now an admin.') : (target+' is no longer an admin.'),
+    message:makeAdmin ? (target+' is now '+(ADMIN_ROLE_LABELS[role]||role)+'.') : (target+' is no longer an admin.'),
     user:safeUser(u[target]),
-    admins:a
+    admins:admins(),
+    adminList:adminListPayload()
   });
 });
 
+app.post('/api/admin/users/:name/password-reset',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'password_reset');
+  if(!adminUser)return;
+
+  let target=String(req.params.name||'').trim();
+  let newPassword=String(req.body.newPassword||req.body.password||'');
+  let u=users();
+
+  if(!target)return res.status(400).json({error:'Missing target username'});
+  if(!u[target])return res.status(404).json({error:'User not found'});
+  if(newPassword.length<4)return res.status(400).json({error:'Password must be at least 4 characters.'});
+
+  u[target]=normalizeUserRecord(u[target],target);
+  u[target].password=newPassword;
+  u[target].passwordResetAt=Date.now();
+  u[target].passwordResetBy=adminUser;
+  writeJSON(usersFile,u);
+
+  res.json({ok:true,message:'Password reset for '+target+'.'});
+});
+
+app.post('/api/account/change-password',(req,res)=>{
+  let username=String(req.body.username||'').trim();
+  let oldPassword=String(req.body.oldPassword||'');
+  let newPassword=String(req.body.newPassword||'');
+  let u=users();
+
+  if(!username)return res.status(400).json({error:'Missing username'});
+  if(!u[username])return res.status(404).json({error:'User not found'});
+  if(u[username].password!==oldPassword)return res.status(403).json({error:'Current password is incorrect.'});
+  if(newPassword.length<4)return res.status(400).json({error:'Password must be at least 4 characters.'});
+
+  u[username]=normalizeUserRecord(u[username],username);
+  u[username].password=newPassword;
+  u[username].passwordChangedAt=Date.now();
+  writeJSON(usersFile,u);
+
+  res.json({ok:true,message:'Password changed.'});
+});
+
 app.get('/api/admin/rooms',(req,res)=>{
-  let user=req.query.user;
-  if(!admins().includes(user))return res.status(403).json({error:'forbidden'});
+  let adminUser=requireAdmin(req,res,'room_manage');
+  if(!adminUser)return;
   res.json(Object.values(rooms).filter(r=>!r.closed).map(roomPublic));
 });
 
 
-function requireAdmin(req,res){
+function requireAdmin(req,res,permission='dashboard'){
   let username=(req.body&&req.body.username)||req.query.user;
+  username=String(username||'').trim();
 
   if(!username){
     res.status(400).json({error:'Missing admin username'});
     return null;
   }
 
-  if(!admins().includes(username)){
+  if(!getAdminRole(username)){
     res.status(403).json({error:'forbidden'});
+    return null;
+  }
+
+  if(!canAdmin(username,permission)){
+    res.status(403).json({error:'Your admin role does not have permission for this tool.'});
     return null;
   }
 
@@ -1743,7 +1949,7 @@ async function commitFileToGithub(repoPath,buffer,message){
 }
 
 app.post('/api/admin/assets/upload-preview',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   let type=String(req.body.type||'').trim().toLowerCase();
@@ -1776,7 +1982,7 @@ app.post('/api/admin/assets/upload-preview',(req,res)=>{
 });
 
 app.get('/api/admin/assets/pending',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   let out=[];
@@ -1803,7 +2009,7 @@ app.get('/api/admin/assets/pending',(req,res)=>{
 });
 
 app.post('/api/admin/assets/reject',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   let type=String(req.body.type||'').trim().toLowerCase();
@@ -1819,7 +2025,7 @@ app.post('/api/admin/assets/reject',(req,res)=>{
 });
 
 app.post('/api/admin/assets/approve',async (req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   try{
@@ -1888,13 +2094,13 @@ app.post('/api/admin/assets/approve',async (req,res)=>{
 
 
 app.get('/api/admin/pet-species',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
   res.json({ok:true,petSpecies:adminPetSpeciesCatalog()});
 });
 
 app.post('/api/admin/pet-data/sync-from-repo',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   try{
@@ -1914,7 +2120,7 @@ app.post('/api/admin/pet-data/sync-from-repo',(req,res)=>{
 });
 
 app.post('/api/admin/pet-species/update',async (req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   try{
@@ -1938,7 +2144,7 @@ app.post('/api/admin/pet-species/update',async (req,res)=>{
 });
 
 app.post('/api/admin/items/update',async (req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   try{
@@ -2071,6 +2277,7 @@ function adminPlayerPayload(targetUsername){
   return {
     user:safeUser(allUsers[targetUsername]),
     admin:admins().includes(targetUsername),
+    adminRole:getAdminRole(targetUsername),
     profile,
     listings:adminListingArray().filter(x=>x.seller===targetUsername)
   };
@@ -2134,6 +2341,8 @@ app.get('/api/admin/dashboard',(req,res)=>{
   res.json({
     ok:true,
     admin:adminUser,
+    adminRole:getAdminRole(adminUser),
+    adminRoles:adminListPayload(),
     counts:{
       users:Object.keys(allUsers).length,
       petProfiles:Object.keys(allPets).length,
@@ -2151,7 +2360,7 @@ app.get('/api/admin/dashboard',(req,res)=>{
 
 
 app.post('/api/admin/users/reset-defaults',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'user_manage');
   if(!adminUser)return;
 
   let allUsers=normalizeAllUsers();
@@ -2179,7 +2388,7 @@ app.post('/api/admin/users/reset-defaults',(req,res)=>{
 });
 
 app.get('/api/admin/player',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'economy_manage');
   if(!adminUser)return;
 
   let target=String(req.query.target||'').trim();
@@ -2192,7 +2401,7 @@ app.get('/api/admin/player',(req,res)=>{
 });
 
 app.post('/api/admin/player/coins',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'economy_manage');
   if(!adminUser)return;
 
   let target=String(req.body.target||req.body.targetUsername||'').trim();
@@ -2224,7 +2433,7 @@ app.post('/api/admin/player/coins',(req,res)=>{
 });
 
 app.post('/api/admin/player/item',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'economy_manage');
   if(!adminUser)return;
 
   let target=String(req.body.target||req.body.targetUsername||'').trim();
@@ -2264,7 +2473,7 @@ app.post('/api/admin/player/item',(req,res)=>{
 });
 
 app.post('/api/admin/player/pet-age',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'economy_manage');
   if(!adminUser)return;
 
   let target=String(req.body.target||req.body.targetUsername||'').trim();
@@ -2295,7 +2504,7 @@ app.post('/api/admin/player/pet-age',(req,res)=>{
 });
 
 app.post('/api/admin/player/restore-pet',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'economy_manage');
   if(!adminUser)return;
 
   let target=String(req.body.target||req.body.targetUsername||'').trim();
@@ -2326,7 +2535,7 @@ app.post('/api/admin/player/restore-pet',(req,res)=>{
 });
 
 app.get('/api/admin/market',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   res.json({
@@ -2340,7 +2549,7 @@ app.get('/api/admin/market',(req,res)=>{
 });
 
 app.post('/api/admin/shops/update',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'item_manage');
   if(!adminUser)return;
 
   let shopId=String(req.body.shopId||'').trim();
@@ -2372,7 +2581,7 @@ app.post('/api/admin/shops/update',(req,res)=>{
 });
 
 app.post('/api/admin/market/remove',(req,res)=>{
-  let adminUser=requireAdmin(req,res);
+  let adminUser=requireAdmin(req,res,'moderate');
   if(!adminUser)return;
 
   let listingId=String(req.body.listingId||'');
@@ -3330,7 +3539,7 @@ wss.on('connection',ws=>{
       }
 
       let name=ws.username||'Guest';
-      if(r.owner!==name&&!admins().includes(name)){
+      if(r.owner!==name&&!getAdminRole(name)){
         ws.send(JSON.stringify({type:'error',message:'Only the room owner can change room privacy.'}));
         return;
       }
@@ -3506,7 +3715,7 @@ wss.on('connection',ws=>{
     if(m.type==='closeRoom'){
       let r=rooms[ws.roomId];
 
-      if(r&&(r.owner===(ws.username||'Guest')||admins().includes(ws.username))){
+      if(r&&(r.owner===(ws.username||'Guest')||getAdminRole(ws.username))){
         r.closed=true;
 
         broadcastRoom(r.id,{type:'roomClosed'});
@@ -3567,7 +3776,7 @@ wss.on('connection',ws=>{
     }
 
     if(m.type==='adminClose'){
-      if(admins().includes(ws.username)){
+      if(getAdminRole(ws.username)){
         let r=rooms[m.roomId];
 
         if(r){
