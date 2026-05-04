@@ -222,9 +222,9 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
 <script>
 (function(){
 'use strict';
-const EXCLUDED_GAME_IDS=new Set(['petworld','petbattle','market','inventory']);
+const EXCLUDED_GAME_IDS=new Set(['petworld','market','inventory']);
 const MASTER_KEYS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
-const GAME_ICONS={tictactoe:'✕',connect4:'●',battleship:'⌖',battleship2:'⌖',hangman:'?',trouble:'★',uno:'◑',gofish:'🐟',yahtzee:'⚂',chess:'♞',othello:'◐',mancala:'●',squares:'□',miner:'⛏',shadowtrace:'◈',doomlike:'✦',pixelquest:'◆'};
+const GAME_ICONS={petbattle:'⚔️',tictactoe:'✕',connect4:'●',battleship:'⌖',battleship2:'⌖',hangman:'?',trouble:'★',uno:'◑',gofish:'🐟',yahtzee:'⚂',chess:'♞',othello:'◐',mancala:'●',squares:'□',miner:'⛏',shadowtrace:'◈',doomlike:'✦',pixelquest:'◆'};
 let me=localStorage.getItem('gf_user')||'';
 let admin=localStorage.getItem('gf_admin')==='true';
 let socket=null;
@@ -239,6 +239,8 @@ let previousPlayers=null;
 let previousSeats=null;
 let lastRoomId='';
 let pendingSeatPulses={};
+let pendingBattleSetup=false;
+let battleInviteAnnounced=false;
 
 const el=id=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -332,6 +334,7 @@ function getInventory(){return (profile&&profile.inventory)||{};}
 function itemUnlocksGame(itemId,gameId){let item=itemCatalog[itemId]||{};return item.unlocksGame===gameId||item.gameId===gameId||item.hostsGame===gameId;}
 function itemUnlocksAll(itemId){let item=itemCatalog[itemId]||{};return MASTER_KEYS.has(itemId)||item.unlocksAllGames===true||item.masterGameKey===true;}
 function canHostGame(gameId){
+  if(gameId==='petbattle')return true;
   if(admin)return true;
   const inv=getInventory();
   return Object.keys(inv).some(id=>Number(inv[id]||0)>0&&(itemUnlocksAll(id)||itemUnlocksGame(id,gameId)));
@@ -360,9 +363,11 @@ function connect(){
     if(m.type==='roomJoined'||m.type==='roomUpdate'){
       handleRoomDiff(m.room);
       room=m.room;selectedGameId=room.selectedGame?room.selectedGame.id:selectedGameId;
+      if(room.ready)readyByUser=Object.assign({},room.ready);
       publicDesired=!room.private;
       el('publicToggle').checked=publicDesired;
       drawAll();
+      applyPendingBattleSetup();
       if(room.started&&room.selectedGame){
         window.parent&&window.parent.postMessage({type:'launcherStartGame',roomId:room.id,game:room.selectedGame},'*');
       }
@@ -431,10 +436,19 @@ function drawTable(note){
     });
   }
   let host=isHost();let hasGame=!!(room&&room.selectedGame);let seated=seatedCount();let min=room&&room.selectedGame?Number(room.selectedGame.minPlayers||1):0;
-  el('startBtn').disabled=!(host&&hasGame&&seated>=min);
+  let battle=hasGame&&room.selectedGame.id==='petbattle';
+  let seatedNames=room&&room.seats?room.seats.filter(Boolean).map(s=>s.name):[];
+  let allReady=seatedNames.length>=min&&seatedNames.every(n=>readyByUser[n]);
+  el('startBtn').disabled=!(host&&hasGame&&seated>=min&&(!battle||allReady));
   el('readyBtn').disabled=!(room&&hasGame&&mySeatIndex()>=0);
   el('standBtn').disabled=!(room&&mySeatIndex()>=0);
-  el('tableStatus').innerText=note||(hasGame?(host?'Host controls: start when enough players are seated.':'Sit, ready up, and wait for the host.')+' Seated '+seated+'/'+(room.seats?room.seats.length:0)+'. Minimum '+min+'.':'Select a game to prepare the table.');
+  let defaultNote='';
+  if(hasGame&&battle){
+    defaultNote=(host?'Battle room: invite an opponent, both battlers ready up, then start.':'Join as audience, chat, watch, or sit in an open battle seat.')+' Battlers '+seated+'/'+(room.seats?room.seats.length:0)+'. Ready '+seatedNames.filter(n=>readyByUser[n]).length+'/'+Math.max(seatedNames.length,min)+'.';
+  }else{
+    defaultNote=hasGame?(host?'Host controls: start when enough players are seated.':'Sit, ready up, and wait for the host.')+' Seated '+seated+'/'+(room.seats?room.seats.length:0)+'. Minimum '+min+'.':'Select a game to prepare the table.';
+  }
+  el('tableStatus').innerText=note||defaultNote;
   applyPendingSeatPulses();
 }
 function drawChat(chat){el('log').innerHTML='';(chat||[]).slice(-50).forEach(c=>log(c.text,c.user));}
@@ -455,6 +469,51 @@ function joinRoomByCode(){
   send({type:'joinRoom',roomId:code,closeCurrent:true});
   log('Joining room '+code+'...');
 }
+
+
+function startBattleRoom(){
+  pendingBattleSetup=true;
+  battleInviteAnnounced=false;
+  readyByUser={};
+  selectedGameId='petbattle';
+  if(!room){
+    send({type:'createRoom',private:true});
+    log('Creating private Pet Battle room...');
+    return;
+  }
+  if(!isHost()){
+    send({type:'createRoom',private:true});
+    log('Creating your own Pet Battle room...');
+    return;
+  }
+  if(!room.private)send({type:'setRoomPrivacy',private:true});
+  if(!room.selectedGame||room.selectedGame.id!=='petbattle')send({type:'selectGame',gameId:'petbattle'});
+  else applyPendingBattleSetup();
+}
+
+function applyPendingBattleSetup(){
+  if(!pendingBattleSetup||!room||!isHost())return;
+  if(!room.selectedGame||room.selectedGame.id!=='petbattle'){
+    send({type:'selectGame',gameId:'petbattle'});
+    return;
+  }
+  let idx=mySeatIndex();
+  if(idx<0&&Array.isArray(room.seats)&&!room.seats[0]){
+    send({type:'sit',seat:0});
+    return;
+  }
+  pendingBattleSetup=false;
+  if(!battleInviteAnnounced){
+    battleInviteAnnounced=true;
+    log('Pet Battle room ready. Share code '+room.id+' so opponents or spectators can join.');
+    try{window.parent&&window.parent.postMessage({type:'battleRoomReady',roomId:room.id},'*');}catch(_){ }
+  }
+}
+
+window.addEventListener('message',e=>{
+  const msg=e.data||{};
+  if(msg.type==='CREATE_BATTLE_ROOM')startBattleRoom();
+});
 
 el('scrollUp').onclick=()=>el('gameList').scrollBy({top:-180,behavior:'smooth'});
 el('scrollDown').onclick=()=>el('gameList').scrollBy({top:180,behavior:'smooth'});
