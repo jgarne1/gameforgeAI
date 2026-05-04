@@ -6,19 +6,22 @@
 <title>Battle Hall</title>
 <style>
 :root{
-  --bg:#08111f;--panel:rgba(15,23,42,.86);--panel2:rgba(2,6,23,.72);--line:rgba(148,163,184,.22);
+  --bg:#08111f;--panel:rgba(15,23,42,.88);--panel2:rgba(2,6,23,.72);--line:rgba(148,163,184,.22);
   --text:#e5e7eb;--muted:#94a3b8;--gold:#fbbf24;--green:#22c55e;--blue:#38bdf8;--red:#fb7185;--violet:#a78bfa;
   --shadow:0 18px 50px rgba(0,0,0,.38);
 }
 *{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(circle at 20% 12%,rgba(56,189,248,.18),transparent 26%),radial-gradient(circle at 82% 8%,rgba(251,191,36,.13),transparent 28%),radial-gradient(circle at 50% 100%,rgba(124,58,237,.18),transparent 42%),linear-gradient(180deg,#0f172a,#020617)}
-button,select{font-family:inherit}button{border:0;border-radius:14px;background:rgba(30,41,59,.95);color:var(--text);padding:10px 12px;font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.22);transition:.15s transform,.15s filter,.15s opacity}button:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}button:disabled{opacity:.42;cursor:not-allowed;transform:none}.hidden{display:none!important}.muted{color:var(--muted)}
-.hall{height:100%;display:grid;grid-template-rows:auto 1fr;gap:10px;padding:10px}.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.72));border-radius:24px;box-shadow:var(--shadow)}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}.crest{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#f59e0b,#ef4444,#7c3aed);font-size:22px;box-shadow:0 0 34px rgba(251,191,36,.16)}h1{margin:0;font-size:21px}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}.actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.pill{border:1px solid rgba(251,191,36,.34);background:rgba(251,191,36,.1);padding:8px 10px;border-radius:999px;font-size:12px;font-weight:900;color:#fde68a}select{max-width:230px;border:1px solid var(--line);background:rgba(15,23,42,.95);color:var(--text);border-radius:999px;padding:9px 10px;font-weight:900;outline:none}.primary{background:linear-gradient(135deg,#2563eb,#7c3aed)}.ready{background:linear-gradient(135deg,#16a34a,#22c55e);color:#052e16}.danger{background:linear-gradient(135deg,#b91c1c,#fb7185)}.ghost{background:rgba(15,23,42,.78);border:1px solid var(--line)}
-.main{min-height:0;display:grid;grid-template-columns:1fr 270px;gap:10px}.arena{min-height:0;border:1px solid var(--line);border-radius:26px;background:linear-gradient(180deg,rgba(15,23,42,.74),rgba(2,6,23,.76));box-shadow:var(--shadow);padding:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}.arenaHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:0 2px 12px}.arenaHead h2{margin:0;font-size:18px}.arenaHead p{margin:4px 0 0;color:var(--muted);font-size:12px}.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:#cbd5e1}.legend span{padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:rgba(15,23,42,.62)}
-.tables{min-height:0;overflow:auto;padding:4px;display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:12px}.table{position:relative;border:1px solid rgba(148,163,184,.2);border-radius:24px;background:radial-gradient(circle at 50% 42%,rgba(34,197,94,.12),transparent 48%),linear-gradient(135deg,rgba(30,41,59,.86),rgba(15,23,42,.94));padding:12px;min-height:214px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}.table.waiting{border-color:rgba(56,189,248,.35);box-shadow:0 0 0 1px rgba(56,189,248,.08),inset 0 1px 0 rgba(255,255,255,.04)}.table.full{border-color:rgba(251,191,36,.42);animation:tablePulse 2.1s ease-in-out infinite}.tableHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.tableName{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#cbd5e1;font-weight:900}.vs{font-size:13px;font-weight:1000;color:#fde68a;text-shadow:0 0 18px rgba(251,191,36,.3)}.seats{display:grid;grid-template-columns:1fr 42px 1fr;gap:9px;align-items:stretch}.seat{min-width:0;min-height:142px;border:1px solid rgba(148,163,184,.18);border-radius:20px;background:rgba(2,6,23,.48);padding:10px;display:grid;grid-template-rows:auto 1fr auto;gap:7px;overflow:hidden}.seat.readySeat{border-color:rgba(34,197,94,.55);box-shadow:0 0 28px rgba(34,197,94,.12)}.emptySeat{display:grid;place-items:center;text-align:center;color:var(--muted);font-size:12px;line-height:1.3}.emptySeat button{margin-top:8px;padding:8px 12px;border-radius:999px;background:linear-gradient(135deg,#0ea5e9,#2563eb)}.petTop{display:flex;align-items:center;gap:8px;min-width:0}.petAvatar{width:46px;height:46px;flex:0 0 auto;border-radius:17px;display:grid;place-items:center;font-size:27px;background:radial-gradient(circle at 35% 20%,rgba(255,255,255,.18),transparent 38%),rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1)}.petMeta{min-width:0}.petName{font-size:13px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.petSub{font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.owner{font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.badges{display:flex;gap:5px;flex-wrap:wrap;align-content:start}.badge{font-size:10px;font-weight:900;padding:5px 7px;border-radius:999px;border:1px solid rgba(148,163,184,.22);background:rgba(15,23,42,.7);color:#cbd5e1}.badge.readyBadge{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.13);color:#bbf7d0}.badge.waitBadge{border-color:rgba(251,191,36,.32);background:rgba(251,191,36,.1);color:#fde68a}.seatActions{display:flex;gap:6px;align-items:center;justify-content:space-between}.seatActions button{font-size:11px;padding:7px 9px;border-radius:999px}.centerVS{display:grid;place-items:center;color:#fde68a;font-weight:1000;letter-spacing:.08em}.tableFoot{margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}.tableHint{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.startBtn{padding:8px 11px;border-radius:999px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff}
-.side{min-height:0;display:grid;grid-template-rows:auto 1fr auto;gap:10px}.card{border:1px solid var(--line);background:var(--panel);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.cardHead{padding:12px 13px;border-bottom:1px solid var(--line);background:rgba(2,6,23,.34)}.cardHead h3{margin:0;font-size:14px}.cardHead p{margin:4px 0 0;color:var(--muted);font-size:11px;line-height:1.25}.online{padding:10px;overflow:auto}.onlineRow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px;border-radius:15px;background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.12);margin-bottom:7px}.onlineRow b{font-size:12px;overflow:hidden;text-overflow:ellipsis}.dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 14px rgba(34,197,94,.55)}.rules{padding:12px;color:#cbd5e1;font-size:12px;line-height:1.45}.rules b{color:#fde68a}.toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:20;max-width:86%;padding:10px 13px;border-radius:999px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.94);box-shadow:var(--shadow);font-size:12px;font-weight:900;animation:toast 2.6s ease forwards}.readyBanner{position:fixed;left:12px;right:12px;bottom:12px;z-index:30;border:1px solid rgba(251,191,36,.48);background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(88,28,135,.92));border-radius:22px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 22px 70px rgba(0,0,0,.5)}.readyBanner b{color:#fde68a}.readyBanner button{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff}
-@keyframes tablePulse{0%,100%{box-shadow:0 0 0 rgba(251,191,36,0)}50%{box-shadow:0 0 0 3px rgba(251,191,36,.1),0 0 34px rgba(251,191,36,.12)}}@keyframes toast{0%{opacity:0;transform:translate(-50%,8px)}12%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
-@media(max-width:920px){.main{grid-template-columns:1fr}.side{display:none}.tables{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.actions{width:100%;justify-content:space-between}select{max-width:100%;flex:1}.hall{padding:7px;gap:7px}.arena{border-radius:20px;padding:9px}.table{min-height:196px}.seat{min-height:126px;padding:8px}.petAvatar{width:40px;height:40px;border-radius:15px;font-size:23px}.petName{font-size:12px}.petSub,.badge{font-size:9px}.brand p{display:none}}
+button,select,input{font-family:inherit}button{border:0;border-radius:14px;background:rgba(30,41,59,.95);color:var(--text);padding:10px 12px;font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.22);transition:.15s transform,.15s filter,.15s opacity}button:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}button:disabled{opacity:.42;cursor:not-allowed;transform:none}.hidden{display:none!important}.muted{color:var(--muted)}
+.hall{height:100%;display:grid;grid-template-rows:auto 1fr 154px;gap:10px;padding:10px}.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.72));border-radius:24px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}.crest{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#f59e0b,#ef4444,#7c3aed);font-size:22px;box-shadow:0 0 34px rgba(251,191,36,.16)}h1{margin:0;font-size:21px}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}.actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.pill{border:1px solid rgba(251,191,36,.34);background:rgba(251,191,36,.1);padding:8px 10px;border-radius:999px;font-size:12px;font-weight:900;color:#fde68a}select{max-width:240px;border:1px solid var(--line);background:rgba(15,23,42,.95);color:var(--text);border-radius:999px;padding:9px 10px;font-weight:900;outline:none}.primary{background:linear-gradient(135deg,#2563eb,#7c3aed)}.ready{background:linear-gradient(135deg,#16a34a,#22c55e);color:#052e16}.danger{background:linear-gradient(135deg,#b91c1c,#fb7185)}.ghost{background:rgba(15,23,42,.78);border:1px solid var(--line)}
+.main{min-height:0;display:grid;grid-template-columns:1fr 290px;gap:10px}.arena{min-height:0;border:1px solid var(--line);border-radius:26px;background:linear-gradient(180deg,rgba(15,23,42,.74),rgba(2,6,23,.76));box-shadow:var(--shadow);padding:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}.arenaHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:0 2px 12px}.arenaHead h2{margin:0;font-size:18px}.arenaHead p{margin:4px 0 0;color:var(--muted);font-size:12px}.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:#cbd5e1}.legend span{padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:rgba(15,23,42,.62)}
+.tables{min-height:0;overflow:auto;padding:4px;display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:12px}.table{position:relative;border:1px solid rgba(148,163,184,.2);border-radius:24px;background:radial-gradient(circle at 50% 42%,rgba(34,197,94,.12),transparent 48%),linear-gradient(135deg,rgba(30,41,59,.86),rgba(15,23,42,.94));padding:12px;min-height:222px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);overflow:hidden}.table.waiting{border-color:rgba(56,189,248,.35);box-shadow:0 0 0 1px rgba(56,189,248,.08),inset 0 1px 0 rgba(255,255,255,.04)}.table.readyTable{border-color:rgba(251,191,36,.48);animation:tablePulse 2.1s ease-in-out infinite}.tableHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.tableName{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#cbd5e1;font-weight:900}.tableState{font-size:12px;font-weight:1000;color:#fde68a;text-shadow:0 0 18px rgba(251,191,36,.3)}.seats{display:grid;grid-template-columns:1fr 48px 1fr;gap:9px;align-items:stretch}.seat{min-width:0;min-height:148px;border:1px solid rgba(148,163,184,.18);border-radius:20px;background:rgba(2,6,23,.48);padding:10px;display:grid;grid-template-rows:auto 1fr auto;gap:7px;overflow:hidden}.seat.readySeat{border-color:rgba(34,197,94,.55);box-shadow:0 0 28px rgba(34,197,94,.12)}.emptySeat{display:grid;place-items:center;text-align:center;color:var(--muted);font-size:12px;line-height:1.3}.emptySeat button{margin-top:8px;padding:8px 12px;border-radius:999px;background:linear-gradient(135deg,#0ea5e9,#2563eb)}.petTop{display:flex;align-items:center;gap:8px;min-width:0}.petAvatar{width:46px;height:46px;flex:0 0 auto;border-radius:17px;display:grid;place-items:center;font-size:27px;background:radial-gradient(circle at 35% 20%,rgba(255,255,255,.18),transparent 38%),rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);overflow:hidden}.petAvatar img{width:100%;height:100%;object-fit:cover}.petMeta{min-width:0}.petName{font-size:13px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.petSub{font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.owner{font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.badges{display:flex;gap:5px;flex-wrap:wrap;align-content:start}.badge{font-size:10px;font-weight:900;padding:5px 7px;border-radius:999px;border:1px solid rgba(148,163,184,.22);background:rgba(15,23,42,.7);color:#cbd5e1}.badge.readyBadge{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.13);color:#bbf7d0}.badge.lockBadge{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.1);color:#fde68a}.badge.waitBadge{border-color:rgba(56,189,248,.32);background:rgba(56,189,248,.1);color:#bae6fd}.seatActions{display:flex;gap:6px;align-items:center;justify-content:space-between}.seatActions button{font-size:11px;padding:7px 9px;border-radius:999px}.centerVS{display:grid;place-items:center;color:#fde68a;font-weight:1000;letter-spacing:.08em;text-shadow:0 0 20px rgba(251,191,36,.25)}.startLayer{position:absolute;left:50%;top:54px;transform:translateX(-50%);z-index:7}.startBtn{padding:10px 18px;border-radius:999px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 0 30px rgba(251,191,36,.25);animation:startPop .28s ease both}.tableFoot{margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}.tableHint{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side{min-height:0;display:grid;grid-template-rows:auto auto 1fr;gap:10px}.card{border:1px solid var(--line);background:var(--panel);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.cardHead{padding:12px 13px;border-bottom:1px solid var(--line);background:rgba(2,6,23,.34)}.cardHead h3{margin:0;font-size:14px}.cardHead p{margin:4px 0 0;color:var(--muted);font-size:11px;line-height:1.25}.status{padding:11px 12px;font-size:12px;line-height:1.45}.status b{color:#fde68a}.statusActions{display:flex;gap:8px;margin-top:10px}.statusActions button{flex:1;font-size:11px;padding:8px}.online{padding:10px;overflow:auto;max-height:145px}.onlineRow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px;border-radius:15px;background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.12);margin-bottom:7px}.onlineRow b{font-size:12px;overflow:hidden;text-overflow:ellipsis}.dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 14px rgba(34,197,94,.55)}.rules{padding:12px;color:#cbd5e1;font-size:12px;line-height:1.45}.rules b{color:#fde68a}
+.chatDock{min-height:0;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(2,6,23,.84));box-shadow:var(--shadow);display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}.chatHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(148,163,184,.16)}.chatHead h3{margin:0;font-size:14px}.chatFeed{padding:8px 14px;overflow:auto;display:flex;flex-direction:column;gap:6px}.chatMsg{font-size:12px;line-height:1.28;color:#dbeafe}.chatMsg.system{color:#fde68a}.chatMsg b{color:#fff}.chatForm{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 12px;border-top:1px solid rgba(148,163,184,.16)}.chatForm input{min-width:0;border:1px solid rgba(148,163,184,.24);border-radius:999px;background:rgba(2,6,23,.62);color:var(--text);padding:10px 13px;font-weight:800;outline:none}.chatForm input:focus{border-color:rgba(56,189,248,.5);box-shadow:0 0 0 3px rgba(56,189,248,.08)}.chatForm button{border-radius:999px;padding:9px 15px;background:linear-gradient(135deg,#2563eb,#7c3aed)}
+.modalShade{position:fixed;inset:0;background:rgba(2,6,23,.64);z-index:40;display:grid;place-items:center;padding:16px}.modal{width:min(760px,96vw);max-height:min(680px,88vh);overflow:hidden;border:1px solid var(--line);border-radius:26px;background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.96));box-shadow:0 28px 100px rgba(0,0,0,.62);display:grid;grid-template-rows:auto 1fr}.modalHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}.modalHead h2{font-size:18px;margin:0}.modalBody{overflow:auto;padding:14px}.gridList{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px}.miniCard{border:1px solid rgba(148,163,184,.18);border-radius:18px;background:rgba(15,23,42,.66);padding:10px;display:grid;gap:8px;min-width:0}.miniTop{display:flex;align-items:center;gap:8px;min-width:0}.miniIcon{width:42px;height:42px;border-radius:15px;background:rgba(2,6,23,.58);display:grid;place-items:center;overflow:hidden}.miniIcon img{width:100%;height:100%;object-fit:cover}.miniTitle{font-size:12px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.miniSub{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.miniCard button{font-size:11px;padding:8px;border-radius:999px}.miniDesc{font-size:11px;color:#cbd5e1;line-height:1.35;min-height:30px}.lockedNote{font-size:11px;color:#fde68a}.toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:60;max-width:86%;padding:10px 13px;border-radius:999px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.94);box-shadow:var(--shadow);font-size:12px;font-weight:900;animation:toast 2.6s ease forwards}.readyBanner{position:fixed;left:12px;right:12px;bottom:12px;z-index:50;border:1px solid rgba(251,191,36,.48);background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(88,28,135,.92));border-radius:22px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 22px 70px rgba(0,0,0,.5)}.readyBanner b{color:#fde68a}.readyBanner button{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff}
+@keyframes tablePulse{0%,100%{box-shadow:0 0 0 rgba(251,191,36,0)}50%{box-shadow:0 0 0 3px rgba(251,191,36,.1),0 0 34px rgba(251,191,36,.12)}}@keyframes toast{0%{opacity:0;transform:translate(-50%,8px)}12%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}@keyframes startPop{from{opacity:0;transform:translateX(-50%) scale(.86)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+@media(max-width:1000px){.hall{grid-template-rows:auto 1fr 170px}.main{grid-template-columns:1fr}.side{display:none}.tables{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.actions{width:100%;justify-content:space-between}select{max-width:100%;flex:1}.hall{padding:7px;gap:7px}.arena{border-radius:20px;padding:9px}.table{min-height:205px}.seat{min-height:130px;padding:8px}.petAvatar{width:40px;height:40px;border-radius:15px;font-size:23px}.petName{font-size:12px}.petSub,.badge{font-size:9px}.brand p{display:none}.chatDock{border-radius:20px}.chatHead{padding:8px 10px}.chatFeed{padding:7px 10px}.chatForm{padding:8px 10px}.legend{display:none}}
+@media(max-width:560px){.seats{grid-template-columns:1fr;gap:8px}.centerVS{height:20px}.startLayer{position:static;transform:none;margin:4px auto 8px;display:flex;justify-content:center}.table{min-height:0}.actions button{padding:8px 9px}.pill{font-size:11px}.hall{grid-template-rows:auto 1fr 160px}}
 </style>
 </head>
 <body>
@@ -28,6 +31,8 @@ button,select{font-family:inherit}button{border:0;border-radius:14px;background:
     <div class="actions">
       <span class="pill" id="userPill">Offline</span>
       <select id="petSelect" title="Choose the pet shown and locked when you ready up."></select>
+      <button class="ghost" id="petsBtn" title="Fast pet switcher">Pets</button>
+      <button class="ghost" id="inventoryBtn" title="View inventory">🎒 Inventory</button>
       <button class="ghost" id="standBtn">Stand</button>
       <button class="ready" id="readyBtn">Ready</button>
     </div>
@@ -35,31 +40,46 @@ button,select{font-family:inherit}button{border:0;border-radius:14px;background:
 
   <main class="main">
     <section class="arena">
-      <div class="arenaHead"><div><h2>Open Battle Tables</h2><p>Pick a seat. Each seat shows the battler's pet, level, type, and ready state without clutter.</p></div><div class="legend"><span>Blue = waiting</span><span>Gold = full</span><span>Green = ready</span></div></div>
+      <div class="arenaHead"><div><h2>Open Battle Tables</h2><p>Pick a seat. Seats show pet, level, type, and lock state without clutter.</p></div><div class="legend"><span>Blue = waiting</span><span>Gold = start ready</span><span>Green = locked</span></div></div>
       <div class="tables" id="tables"></div>
     </section>
     <aside class="side">
+      <section class="card"><div class="cardHead"><h3>Your Status</h3><p>Local clarity without changing the global header.</p></div><div class="status" id="myStatus">Loading...</div></section>
       <section class="card"><div class="cardHead"><h3>Online Battlers</h3><p>Players currently browsing the hall.</p></div><div class="online" id="online"></div></section>
-      <section class="card"><div class="cardHead"><h3>Battle Rules</h3><p>AAA rule: the server owns the truth.</p></div><div class="rules"><b>Locked pets:</b> once battle starts, Pet Battle loads server snapshots only.<br><br><b>No seat spoofing:</b> the server validates table, seat, owner, pet, and ready state.<br><br><b>Friend battles later:</b> direct challenges should create the same private battle instance.</div></section>
+      <section class="card"><div class="cardHead"><h3>Battle Rules</h3><p>AAA rule: the server owns the truth.</p></div><div class="rules"><b>Locked pets:</b> Ready locks a server pet snapshot. Unready or stand to change.<br><br><b>No egg battles:</b> eggs must hatch before fighting.<br><br><b>Inventory:</b> view-only here for fairness. Use items before readying up.</div></section>
     </aside>
   </main>
+
+  <section class="chatDock" aria-label="Battle Hall chat">
+    <div class="chatHead"><h3>Battle Hall Chat</h3><span class="muted">Hall messages + table events</span></div>
+    <div class="chatFeed" id="chatFeed"></div>
+    <form class="chatForm" id="chatForm"><input id="chatInput" maxlength="220" placeholder="Type to the Battle Hall..." autocomplete="off"><button type="submit">Send</button></form>
+  </section>
 </div>
+
+<div id="modalShade" class="modalShade hidden"><div class="modal"><div class="modalHead"><h2 id="modalTitle">Modal</h2><button class="ghost" id="modalClose">Close</button></div><div class="modalBody" id="modalBody"></div></div></div>
 <div id="banner" class="readyBanner hidden"><div>⚔️ <b id="bannerTitle">Battle ready</b><div class="muted" id="bannerText">Your private arena is ready.</div></div><button id="joinBattleBtn">Join Battle</button></div>
 <script>
 (function(){
 'use strict';
 const me=localStorage.getItem('gf_user')||'';
 let socket=null;
-let hall={tables:[],online:[]};
+let hall={tables:[],online:[],chat:[]};
 let profile=null;
 let selectedPetId='';
 let battleUrl='';
+let mySeat=null;
 const el=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(text){const n=document.createElement('div');n.className='toast';n.textContent=text;document.body.appendChild(n);setTimeout(()=>n.remove(),2700)}
 function send(obj){if(!socket||socket.readyState!==1){setTimeout(()=>send(obj),150);return}socket.send(JSON.stringify(obj))}
 function petEmoji(p){return p&&p.emoji?p.emoji:(p&&p.stage==='egg'?'🥚':'🐾')}
-function rarityClass(p){return (p&&p.rarity)||'common'}
+function petIconHtml(p){return p&&p.image?'<img src="'+esc(p.image)+'" alt="">':esc(petEmoji(p))}
+function myPets(){return profile?Object.values(profile.pets||{}):[]}
+function currentSelectedPet(){return myPets().find(p=>p.id===selectedPetId)||myPets()[0]||null}
+function petLevel(p){return Number(((p&&p.stats)||{}).level||p.level||1)}
+function petStage(p){return String((p&&p.stage)||'pet')}
+function petEligible(p){return !!p && petStage(p)!=='egg'}
 async function loadPets(){
   el('userPill').textContent=me?('Logged in: '+me):'Log in first';
   el('petSelect').innerHTML='<option value="">Loading pets...</option>';
@@ -69,30 +89,86 @@ async function loadPets(){
     const data=await res.json();
     if(!data.ok)throw new Error(data.error||'Could not load pets');
     profile=data.profile;
-    const pets=Object.values(profile.pets||{});
+    const pets=myPets();
     selectedPetId=profile.activePetId||((pets[0]||{}).id||'');
-    el('petSelect').innerHTML=pets.map(p=>'<option value="'+esc(p.id)+'" '+(p.id===selectedPetId?'selected':'')+'>'+esc((p.name||'Pet')+' • Lv '+(((p.stats||{}).level)||1)+' • '+(p.stage||'pet'))+'</option>').join('')||'<option value="">No pets</option>';
+    renderPetSelect();
+    renderStatus();
   }catch(err){el('petSelect').innerHTML='<option value="">Pet load failed</option>';toast(err.message)}
+}
+function renderPetSelect(){
+  const pets=myPets();
+  el('petSelect').innerHTML=pets.map(p=>'<option value="'+esc(p.id)+'" '+(p.id===selectedPetId?'selected':'')+' '+(!petEligible(p)?'disabled':'')+'>'+esc((p.name||'Pet')+' • Lv '+petLevel(p)+' • '+petStage(p)+(!petEligible(p)?' (cannot battle)':''))+'</option>').join('')||'<option value="">No pets</option>';
+  if(!pets.find(p=>p.id===selectedPetId&&petEligible(p))){
+    const first=pets.find(petEligible); if(first){selectedPetId=first.id;el('petSelect').value=selectedPetId;}
+  }
+}
+function findMe(){
+  for(const t of hall.tables||[]){for(let i=0;i<(t.seats||[]).length;i++){const s=t.seats[i];if(s&&s.username===me)return {table:t,seat:i,entry:s};}}
+  return null;
 }
 function seatHtml(table,seat,index){
   if(!seat){return '<div class="seat"><div class="emptySeat"><div><b>Open Seat</b><br><span>Ready for a battler</span><br><button onclick="BattleHall.sit(\''+esc(table.id)+'\','+index+')">+ Sit</button></div></div></div>'}
   const p=seat.pet||{};
   const mine=seat.username===me;
   return '<div class="seat '+(seat.ready?'readySeat':'')+'">'+
-    '<div class="petTop"><div class="petAvatar" title="'+esc(rarityClass(p))+'">'+esc(petEmoji(p))+'</div><div class="petMeta"><div class="petName">'+esc(p.name||'Pet')+'</div><div class="petSub">Lv. '+esc(p.level||1)+' • '+esc(p.type||'normal')+' • '+esc(p.powerTier||'Ready')+'</div></div></div>'+
-    '<div><div class="owner">'+esc(seat.username||'Player')+'</div><div class="badges"><span class="badge '+(seat.ready?'readyBadge':'waitBadge')+'">'+(seat.ready?'READY ✔':'Sitting')+'</span><span class="badge">'+esc(p.rarity||'common')+'</span><span class="badge">'+esc(p.stage||'pet')+'</span></div></div>'+
-    '<div class="seatActions">'+(mine?'<button class="ghost" onclick="BattleHall.stand()">Stand</button><button class="ready" onclick="BattleHall.ready('+(!seat.ready)+')">'+(seat.ready?'Unready':'Ready')+'</button>':'<span class="muted">Waiting...</span>')+'</div>'+
+    '<div class="petTop"><div class="petAvatar" title="'+esc(p.rarity||'common')+'">'+petIconHtml(p)+'</div><div class="petMeta"><div class="petName">'+esc(p.name||'Pet')+'</div><div class="petSub">Lv. '+esc(p.level||1)+' • '+esc(p.type||'normal')+' • '+esc(p.powerTier||'Ready')+'</div></div></div>'+ 
+    '<div><div class="owner">'+esc(seat.username||'Player')+'</div><div class="badges"><span class="badge '+(seat.ready?'readyBadge':'waitBadge')+'">'+(seat.ready?'READY ✔':'Sitting')+'</span>'+(seat.locked?'<span class="badge lockBadge">🔒 Locked</span>':'')+'<span class="badge">'+esc(p.rarity||'common')+'</span><span class="badge">'+esc(p.stage||'pet')+'</span></div></div>'+ 
+    '<div class="seatActions">'+(mine?'<button class="ghost" onclick="BattleHall.stand()">Stand</button><button class="ready" onclick="BattleHall.ready('+(!seat.ready)+')">'+(seat.ready?'Unready':'Ready')+'</button>':'<span class="muted">Waiting...</span>')+'</div>'+ 
   '</div>'
 }
 function render(){
+  mySeat=findMe();
   const tables=hall.tables||[];
   el('tables').innerHTML=tables.map(t=>{
     const taken=(t.seats||[]).filter(Boolean).length;
     const full=taken===2;
-    const bothReady=full&&(t.seats||[]).every(s=>s&&s.ready);
-    return '<div class="table '+(full?'full':taken?'waiting':'')+'"><div class="tableHeader"><div class="tableName">Table '+esc(t.id)+'</div><div class="vs">'+(full?'VS':'OPEN')+'</div></div><div class="seats">'+seatHtml(t,t.seats[0],0)+'<div class="centerVS">VS</div>'+seatHtml(t,t.seats[1],1)+'</div><div class="tableFoot"><div class="tableHint">'+(bothReady?'Both battlers ready. Start creates locked pets.':full?'Waiting for ready checks.':taken?'One battler waiting for opponent.':'Two open seats.')+'</div><button class="startBtn" '+(!bothReady?'disabled':'')+' onclick="BattleHall.start(\''+esc(t.id)+'\')">Start</button></div></div>'
+    const bothReady=full&&(t.seats||[]).every(s=>s&&s.ready&&s.locked);
+    return '<div class="table '+(bothReady?'readyTable':taken?'waiting':'')+'">'+(bothReady?'<div class="startLayer"><button class="startBtn" onclick="BattleHall.start(\''+esc(t.id)+'\')">Start Battle</button></div>':'')+'<div class="tableHeader"><div class="tableName">Table '+esc(t.id)+'</div><div class="tableState">'+(bothReady?'READY':full?'FULL':taken?'WAITING':'OPEN')+'</div></div><div class="seats">'+seatHtml(t,t.seats[0],0)+'<div class="centerVS">VS</div>'+seatHtml(t,t.seats[1],1)+'</div><div class="tableFoot"><div class="tableHint">'+(bothReady?'Both pets locked. Either player may start.':full?'Both players must ready to lock pets.':taken?'One battler waiting for opponent.':'Two open seats.')+'</div></div></div>'
   }).join('');
   el('online').innerHTML=(hall.online||[]).map(n=>'<div class="onlineRow"><b>'+esc(n)+'</b><span class="dot"></span></div>').join('')||'<div class="muted" style="padding:10px">No battlers online.</div>';
+  renderChat();
+  renderStatus();
+}
+function renderStatus(){
+  const s=mySeat&&mySeat.entry;
+  const p=s?(s.pet||{}):currentSelectedPet();
+  const locked=s&&s.locked;
+  el('myStatus').innerHTML='<b>'+(s?(s.ready?'Ready':'Seated'):'Not seated')+'</b><br>'+
+    (s?'Table '+esc(mySeat.table.id)+' • Seat '+(mySeat.seat+1):'Choose a battle pet, then sit at a table.')+'<br><br>'+ 
+    (p?'<b>'+(locked?'🔒 Locked Pet':'Using')+':</b> '+esc(p.name||'Pet')+' • Lv '+esc(p.level||petLevel(p))+'<br><span class="muted">'+esc(p.type||p.species||'normal')+' • '+esc(p.stage||petStage(p))+'</span>':'No pet selected')+
+    '<div class="statusActions"><button class="ghost" onclick="BattleHall.openPets()">Change Pet</button><button class="ghost" onclick="BattleHall.openInventory()">Inventory</button></div>'+
+    (locked?'<div class="lockedNote">Pet selection is locked while ready. Click Unready to change.</div>':'');
+  const lock=!!(s&&s.ready);
+  el('petSelect').disabled=lock;
+  el('petsBtn').disabled=lock;
+}
+function renderChat(){
+  const feed=el('chatFeed');
+  const msgs=(hall.chat||[]).slice(-30);
+  feed.innerHTML=msgs.map(m=>'<div class="chatMsg '+(m.kind==='system'?'system':'')+'">'+(m.kind==='system'?'⚙️ ':'<b>'+esc(m.username||'Player')+':</b> ')+esc(m.text||'')+'</div>').join('')||'<div class="chatMsg system">⚙️ Welcome to Battle Hall.</div>';
+  feed.scrollTop=feed.scrollHeight;
+}
+function showModal(title,body){el('modalTitle').textContent=title;el('modalBody').innerHTML=body;el('modalShade').classList.remove('hidden')}
+function closeModal(){el('modalShade').classList.add('hidden')}
+function openPets(){
+  if(mySeat&&mySeat.entry&&mySeat.entry.ready){toast('Unready before changing your battle pet.');return;}
+  const pets=myPets();
+  const body='<div class="gridList">'+pets.map(p=>{
+    const ok=petEligible(p); const chosen=p.id===selectedPetId;
+    return '<div class="miniCard"><div class="miniTop"><div class="miniIcon">'+(p.image?'<img src="'+esc(p.image)+'" alt="">':esc(p.emoji||'🐾'))+'</div><div style="min-width:0"><div class="miniTitle">'+esc(p.name||'Pet')+'</div><div class="miniSub">Lv '+petLevel(p)+' • '+esc(p.type||p.species||'normal')+' • '+esc(petStage(p))+'</div></div></div><div class="miniDesc">'+(ok?'Ready for Battle Hall selection.':'Eggs cannot battle yet.')+'</div><button '+(!ok||chosen?'disabled':'')+' onclick="BattleHall.choosePet(\''+esc(p.id)+'\')">'+(chosen?'Selected':ok?'Use This Pet':'Locked')+'</button></div>'
+  }).join('')+'</div>';
+  showModal('Change Battle Pet',body);
+}
+async function openInventory(){
+  showModal('Inventory','<div class="muted">Loading inventory...</div>');
+  try{
+    const res=await fetch('/api/battlehall/inventory?user='+encodeURIComponent(me));
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Inventory failed');
+    const items=data.items||[];
+    const body=items.length?'<div class="gridList">'+items.map(it=>'<div class="miniCard"><div class="miniTop"><div class="miniIcon"><img src="'+esc(it.image)+'" alt="" onerror="this.style.display=\'none\';this.parentNode.textContent=\'🎒\';"></div><div style="min-width:0"><div class="miniTitle">'+esc(it.name||it.id)+' × '+esc(it.quantity)+'</div><div class="miniSub">'+esc(it.rarity||'common')+' • '+esc(it.category||'item')+'</div></div></div><div class="miniDesc">'+esc(it.description||'No description yet.')+'</div><div class="lockedNote">View-only in Battle Hall for fair fights.</div></div>').join('')+'</div>':'<div class="muted">Your backpack is empty.</div>';
+    showModal('Inventory',body);
+  }catch(err){showModal('Inventory','<div class="muted">'+esc(err.message)+'</div>')}
 }
 function connect(){
   if(!me){toast('Log in before entering Battle Hall.');render();return}
@@ -115,15 +191,23 @@ function connect(){
   socket.onclose=()=>toast('Disconnected from Battle Hall. Refresh to reconnect.');
 }
 window.BattleHall={
-  sit:(tableId,seat)=>send({type:'battleHallSit',tableId,seat,petId:selectedPetId}),
+  sit:(tableId,seat)=>{const p=currentSelectedPet();if(!petEligible(p)){toast('Eggs cannot battle yet. Choose a hatched pet.');return;}send({type:'battleHallSit',tableId,seat,petId:selectedPetId})},
   stand:()=>send({type:'battleHallStand'}),
-  ready:(ready)=>send({type:'battleHallReady',ready,petId:selectedPetId}),
-  start:(tableId)=>send({type:'battleHallStart',tableId})
+  ready:(ready)=>{const p=currentSelectedPet();if(ready&&!petEligible(p)){toast('Eggs cannot battle yet. Choose a hatched pet.');return;}send({type:'battleHallReady',ready,petId:selectedPetId})},
+  start:(tableId)=>send({type:'battleHallStart',tableId}),
+  openPets,
+  openInventory,
+  choosePet:(id)=>{selectedPetId=id;el('petSelect').value=id;closeModal();toast('Battle pet selected. Ready will lock this pet.');renderStatus();}
 };
-el('petSelect').addEventListener('change',e=>{selectedPetId=e.target.value;toast('Selected battle pet updated. Ready again to lock it.')});
+el('petSelect').addEventListener('change',e=>{selectedPetId=e.target.value;toast('Selected battle pet updated. Ready will lock it.');renderStatus()});
 el('standBtn').onclick=()=>BattleHall.stand();
-el('readyBtn').onclick=()=>BattleHall.ready(true);
+el('readyBtn').onclick=()=>BattleHall.ready(!(mySeat&&mySeat.entry&&mySeat.entry.ready));
+el('petsBtn').onclick=()=>BattleHall.openPets();
+el('inventoryBtn').onclick=()=>BattleHall.openInventory();
 el('joinBattleBtn').onclick=()=>{if(battleUrl)location.href=battleUrl};
+el('modalClose').onclick=closeModal;
+el('modalShade').addEventListener('click',e=>{if(e.target===el('modalShade'))closeModal()});
+el('chatForm').addEventListener('submit',e=>{e.preventDefault();const text=el('chatInput').value.trim();if(!text)return;send({type:'battleHallChat',text});el('chatInput').value=''});
 loadPets().then(connect);
 render();
 })();
