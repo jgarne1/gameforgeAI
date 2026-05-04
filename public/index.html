@@ -1522,33 +1522,33 @@ body.gameMode #gameArea .danger{
 
 
 /* ===== GAME MODE DESKTOP ROOM SIDE PANEL PATCH =====
-   Surgical patch: keeps game iframe visible while reserving a clean, scalable right rail
+   Surgical patch: keeps game iframe visible while reserving a clean right rail
    for room chat + online users. Does not change launcher/server/game logic. */
 @media (min-width:1051px){
   body.gameMode #gameArea{
-    inset:8px 334px 8px 8px!important;
+    inset:8px 390px 8px 8px!important;
     z-index:5000!important;
   }
 
   body.gameMode .side{
     display:flex!important;
     flex-direction:column!important;
-    gap:10px!important;
+    gap:12px!important;
     position:fixed!important;
     top:8px!important;
     right:8px!important;
     bottom:8px!important;
-    width:310px!important;
+    width:366px!important;
     height:auto!important;
     max-height:none!important;
     padding:10px!important;
     z-index:6500!important;
     overflow:hidden!important;
     pointer-events:auto!important;
-    border-radius:22px!important;
+    border-radius:24px!important;
     border:1px solid rgba(148,163,184,.28)!important;
     background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98))!important;
-    box-shadow:0 25px 70px rgba(0,0,0,.45)!important;
+    box-shadow:0 30px 90px rgba(0,0,0,.45)!important;
   }
 
   body.gameMode .side .sideCard{
@@ -1564,15 +1564,14 @@ body.gameMode #gameArea .danger{
     pointer-events:auto!important;
     background:rgba(2,6,23,.72)!important;
     border:1px solid rgba(148,163,184,.25)!important;
-    border-radius:16px!important;
+    border-radius:20px!important;
     box-shadow:none!important;
   }
 
   body.gameMode .side #presencePanel{
     flex:0 0 auto!important;
-    max-height:140px!important;
+    max-height:30vh!important;
     overflow:auto!important;
-    padding:10px!important;
   }
 
   body.gameMode .side #presencePanel .muted{
@@ -1581,15 +1580,13 @@ body.gameMode #gameArea .danger{
 
   body.gameMode .side #roomChatPanel{
     flex:1 1 auto!important;
-    padding:10px!important;
   }
 
   body.gameMode .chatBox{
     flex:1 1 auto!important;
     height:auto!important;
-    min-height:150px!important;
+    min-height:180px!important;
     max-height:none!important;
-    overflow:auto!important;
   }
 
   body.gameMode .chatInput{
@@ -1599,17 +1596,6 @@ body.gameMode #gameArea .danger{
   body.gameMode #roomChatPanel.chatCollapsed{
     flex:0 0 auto!important;
     width:auto!important;
-  }
-
-  body.gameMode #presencePanel::-webkit-scrollbar,
-  body.gameMode .chatBox::-webkit-scrollbar{
-    width:6px;
-  }
-
-  body.gameMode #presencePanel::-webkit-scrollbar-thumb,
-  body.gameMode .chatBox::-webkit-scrollbar-thumb{
-    background:rgba(148,163,184,.4);
-    border-radius:6px;
   }
 }
 
@@ -1622,7 +1608,6 @@ body.gameMode #gameArea .danger{
     z-index:6500!important;
   }
 }
-
 
 </style>
 </head>
@@ -1826,7 +1811,6 @@ let socket=null;
 let currentRoom=null;
 let parentJoinedRoomId='';
 let launcherLoadedGameKey='';
-let launcherLoadingGameKey='';
 let room=null;
 let games=[];
 let loadedGameKey='';
@@ -2036,7 +2020,6 @@ function connect(){
       currentRoom=null;
       parentJoinedRoomId='';
       launcherLoadedGameKey='';
-      launcherLoadingGameKey='';
       loadedGameKey='';
       roomReadyStatus={};
       readyRoomId='';
@@ -2270,7 +2253,6 @@ function leaveRoom(){
   currentRoom=null;
   parentJoinedRoomId='';
   launcherLoadedGameKey='';
-  launcherLoadingGameKey='';
   pendingGameToSelect='';
   roomReadyStatus={};
   readyRoomId='';
@@ -2610,32 +2592,57 @@ async function launchSoloGame(g){
     showSection('home');
     return;
   }
+
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
 
-  // Direct companion games skip rooms/seats and immediately focus the iframe area.
-  gameFrame.removeAttribute('srcdoc');
   gameArea.classList.remove('hidden');
-  gameAreaTitle.innerText=g.name;
-  gameHint.innerText='Loading '+g.name+'... Progress is tied to your username.';
+  gameAreaTitle.innerText=g.name||'Game';
+  gameHint.innerText='Loading '+(g.name||'game')+'...';
 
-  roomChatPanel.classList.add('hidden');
+  if(roomChatPanel)roomChatPanel.classList.add('hidden');
 
-  let key='solo|'+g.file+'|'+me;
-
-  if(directGameKey===key)return;
+  let key='solo|'+(g.file||g.id||g.name)+'|'+me;
   directGameKey=key;
+  loadedGameKey='';
+  launcherLoadedGameKey='';
 
-  let players=[{seat:0,name:me}];
-  await loadGameIntoFrame(g,players,0);
-  gameHint.innerText='Account experience. Progress is tied to your username.';
-  gameArea.scrollIntoView({behavior:'smooth',block:'start'});
+  // Companion/system pages should load as real pages, not srcdoc.
+  // This protects PetWorld/Marketplace from blank iframe issues caused by injected wrappers.
+  if(g.id==='petworld'||g.id==='market'||g.id==='petbattle'||g.file==='petworld.html'||g.file==='market.html'||g.file==='petbattle.html'){
+    gameFrame.onload=function(){
+      gameHint.innerText='Account experience. Progress is tied to your username.';
+    };
+    gameFrame.removeAttribute('srcdoc');
+    gameFrame.src='/games/'+g.file+'?v='+Date.now();
+    window.scrollTo(0,0);
+    return;
+  }
+
+  // Normal solo games can still receive the GameForge wrapper/context.
+  try{
+    let players=[{seat:0,name:me}];
+    await loadGameIntoFrame(g,players,0);
+    gameHint.innerText='Account experience. Progress is tied to your username.';
+  }catch(err){
+    gameHint.innerText='Could not load '+(g.name||'game')+': '+err.message;
+    console.error(err);
+  }
+
+  window.scrollTo(0,0);
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
   let gameContext=await buildGameContext(players,mySeatIndex,currentRoom||'',room&&Array.isArray(room.seats)?room.seats:[]);
-  let html=await (await fetch('/games/'+g.file+'?v='+Date.now())).text();
+  let file=g.file||g.id;
+  if(!file)throw new Error('Game file is missing.');
+
+  let res=await fetch('/games/'+file+'?v='+Date.now());
+  if(!res.ok)throw new Error('Could not fetch /games/'+file+' ('+res.status+').');
+
+  let html=await res.text();
+  if(!html||!html.trim())throw new Error('/games/'+file+' returned an empty file.');
 
   let inject =
     '<script>'+ 
@@ -2675,6 +2682,7 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
     }
   };
 
+  gameFrame.removeAttribute('src');
   gameFrame.srcdoc=html;
 }
 
@@ -2686,7 +2694,6 @@ function exitGameMode(){
   directGameKey='';
   loadedGameKey='';
   launcherLoadedGameKey='';
-  launcherLoadingGameKey='';
   showSection('play');
 }
 
@@ -2697,23 +2704,26 @@ function sendChat(){
 
   if(!t)return;
 
-  let roomId=currentRoom || (room&&room.id) || parentJoinedRoomId || '';
+  let roomId=currentRoom || (room&&room.id) || '';
 
   if(!roomId){
     alert('Join a room before chatting.');
     return;
   }
 
-  roomId=String(roomId).toUpperCase();
   currentRoom=roomId;
 
-  // Chat uses the parent shell websocket, but the room is created/owned by the launcher iframe.
-  // Join only if the parent is not already attached. Do not reload/touch the game iframe here.
+  // The parent shell only joins the launcher room once. Rejoining every chat message
+  // causes roomUpdate redraws and can make the game iframe look like it is flickering.
   if(parentJoinedRoomId!==roomId){
     ensureParentJoinedToLauncherRoom(roomId,{silent:true});
+    setTimeout(function(){
+      send({type:'chat',text:t});
+    },120);
+  }else{
+    send({type:'chat',text:t});
   }
 
-  send({type:'chat',text:t});
   chatText.value='';
   clearChatUnread();
 }
@@ -3198,7 +3208,7 @@ function ensureParentJoinedToLauncherRoom(roomId,opts){
   if(roomChatPanel)roomChatPanel.classList.remove('hidden');
 
   // Important: only join once per room from the parent shell. Rejoining repeatedly can cause
-  // roomUpdate redraws and visible game flicker.
+  // roomUpdate redraws, and those redraws can reload the game iframe in game mode.
   if(parentJoinedRoomId===roomId)return;
 
   parentJoinedRoomId=roomId;
@@ -3216,7 +3226,7 @@ async function handleLauncherStartGame(msg){
     if(chatRoomLabel)chatRoomLabel.innerText=currentRoom;
     if(roomChatPanel)roomChatPanel.classList.remove('hidden');
     if(parentJoinedRoomId!==currentRoom){
-      parentJoinedRoomId=currentRoom;
+      ensureParentJoinedToLauncherRoom(currentRoom,{silent:true});
     }
   }else if(launcherRoomId){
     ensureParentJoinedToLauncherRoom(launcherRoomId,{silent:true});
@@ -3232,10 +3242,7 @@ async function handleLauncherStartGame(msg){
   showSection('play');
   gameAreaTitle.innerText=game.name||'Game';
 
-  let seats=(startedRoom&&Array.isArray(startedRoom.seats))
-    ? startedRoom.seats
-    : ((room&&Array.isArray(room.seats))?room.seats:[]);
-
+  let seats=(startedRoom&&Array.isArray(startedRoom.seats))?startedRoom.seats:((room&&Array.isArray(room.seats))?room.seats:[]);
   let players=seats.map(function(x,i){return x?{seat:i,name:x.name}:null;}).filter(Boolean);
 
   if(!players.length&&me){
@@ -3247,19 +3254,13 @@ async function handleLauncherStartGame(msg){
     mySeatIndex=0;
   }
 
-  let safeRoomId=String(launcherRoomId||currentRoom||'').toUpperCase();
-  if(safeRoomId)currentRoom=safeRoomId;
-
+  let safeRoomId=(launcherRoomId||currentRoom||'').toUpperCase();
   let safeFile=game.file||game.id||game.name||'game';
   let seatKey=players.map(function(p){return p.seat+':'+p.name;}).join('|');
   let key=safeRoomId+'|'+safeFile+'|'+seatKey;
 
-  // If the exact same game is already loading, ignore duplicate launcher posts.
-  if(launcherLoadingGameKey===key){
-    return;
-  }
-
-  // If it is already loaded, refresh context only. Never reload srcdoc for duplicates.
+  // Prevent iframe flicker: the launcher may post launcherStartGame more than once during
+  // room updates. If the same game/room/seats are already loaded, just refresh context.
   if(launcherLoadedGameKey===key){
     if(gameFrame&&gameFrame.contentWindow){
       let gameContext=await buildGameContext(players,mySeatIndex,safeRoomId,seats);
@@ -3277,19 +3278,15 @@ async function handleLauncherStartGame(msg){
     return;
   }
 
-  launcherLoadingGameKey=key;
+  launcherLoadedGameKey=key;
   gameHint.innerText='Loading '+(game.name||'game')+' from the table launcher...';
 
-  try{
-    await loadGameIntoFrame(game,players,mySeatIndex);
-    launcherLoadedGameKey=key;
+  loadGameIntoFrame(game,players,mySeatIndex).then(function(){
     gameHint.innerText='Game started from launcher.';
-  }catch(err){
+  }).catch(function(err){
     launcherLoadedGameKey='';
     gameHint.innerText='Could not load game: '+err.message;
-  }finally{
-    if(launcherLoadingGameKey===key)launcherLoadingGameKey='';
-  }
+  });
 }
 
 window.addEventListener('message',function(e){
