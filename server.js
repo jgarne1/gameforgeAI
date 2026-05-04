@@ -69,8 +69,34 @@ const repoPetSpeciesFile=path.join(REPO_DATA,'pet_species.json');
 const repoMovesFile=path.join(REPO_DATA,'pet_moves.json');
 
 app.use(express.json({limit:'12mb'}));
-app.use(express.static(path.join(__dirname,'public')));
-app.use('/games',express.static(path.join(__dirname,'games')));
+
+// Avoid stale launcher/catalog/profile data after deploys or admin edits.
+// HTML shells and API JSON should always be revalidated by the browser.
+app.use((req,res,next)=>{
+  const p=req.path||'';
+  if(p.startsWith('/api/')||p.endsWith('.html')||p==='/manifest.json'){
+    res.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma','no-cache');
+    res.set('Expires','0');
+    res.set('Surrogate-Control','no-store');
+  }
+  next();
+});
+
+app.use(express.static(path.join(__dirname,'public'),{
+  etag:false,
+  lastModified:false,
+  setHeaders:(res,filePath)=>{
+    if(filePath.endsWith('.html'))res.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
+  }
+}));
+app.use('/games',express.static(path.join(__dirname,'games'),{
+  etag:false,
+  lastModified:false,
+  setHeaders:(res,filePath)=>{
+    if(filePath.endsWith('.html'))res.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
+  }
+}));
 // Admin-uploaded image previews live here before approval. On Render this uses the persistent disk when mounted.
 app.use('/uploads',express.static(UPLOADS_ROOT));
 
@@ -779,7 +805,8 @@ function publicUserProfile(username,viewer){
 
 function presenceForUser(username,viewer){
   username=String(username||'').trim();
-  let matches=[...clients].filter(c=>c.username===username);
+  cleanupDeadClients();
+  let matches=[...clients].filter(c=>c.username===username&&c.readyState===1);
   let online=matches.length>0;
   let client=matches.find(c=>c.roomId)||matches[0]||null;
   let roomId=client&&client.roomId?client.roomId:'';
@@ -4066,12 +4093,31 @@ function roomPublic(r){
   };
 }
 
+function cleanupDeadClients(){
+  clients.forEach(c=>{
+    if(!c||c.readyState===3)clients.delete(c);
+  });
+}
+
 function presence(){
-  return [...clients].filter(c=>c.username).map(c=>({
+  cleanupDeadClients();
+  const byUser=new Map();
+
+  [...clients]
+    .filter(c=>c&&c.username&&c.readyState===1)
+    .forEach(c=>{
+      const existing=byUser.get(c.username);
+      const score=(c.roomId?2:0)+(c.location==='Game'?2:0)+(c.location==='Room'?1:0);
+      const existingScore=existing?((existing.roomId?2:0)+(existing.location==='Game'?2:0)+(existing.location==='Room'?1:0)):-1;
+      if(!existing||score>=existingScore)byUser.set(c.username,c);
+    });
+
+  return [...byUser.values()].map(c=>({
     username:c.username,
     location:c.location||'Home',
     roomId:c.roomId||'',
     gameId:c.gameId||'',
+    sessions:[...clients].filter(x=>x&&x.username===c.username&&x.readyState===1).length,
     privateRoom:c.roomId&&rooms[c.roomId]?!!rooms[c.roomId].private:false
   }));
 }
@@ -4107,8 +4153,8 @@ wss.on('connection',ws=>{
     try{m=JSON.parse(raw)}catch(e){return}
 
     if(m.type==='hello'){
-      ws.username=m.username||'';
-      ws.location='Home';
+      ws.username=String(m.username||'').trim();
+      ws.location=ws.roomId?'Room':'Home';
       pushPresence();
     }
 
@@ -4410,7 +4456,27 @@ wss.on('connection',ws=>{
   });
 
   ws.on('close',()=>{
+    const closingUser=ws.username||'';
+    const closingRoomId=ws.roomId||'';
     clients.delete(ws);
+
+    if(closingUser&&closingRoomId&&rooms[closingRoomId]){
+      const stillInRoom=[...clients].some(c=>c&&c.readyState===1&&c.username===closingUser&&c.roomId===closingRoomId);
+      if(!stillInRoom){
+        const r=rooms[closingRoomId];
+        r.players=(r.players||[]).filter(p=>p!==closingUser);
+        r.seats=(r.seats||[]).map(s=>s&&s.name===closingUser?null:s);
+        if(r.ready)delete r.ready[closingUser];
+
+        if((r.players||[]).length===0){
+          r.closed=true;
+        }else{
+          if(r.owner===closingUser)r.owner=r.players[0];
+          broadcastRoom(r.id,{type:'roomUpdate',room:roomPublic(r)});
+        }
+      }
+    }
+
     pushPresence();
   });
 });
