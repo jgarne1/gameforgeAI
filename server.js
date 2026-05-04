@@ -270,6 +270,39 @@ function purchasableItemCatalog(){
 }
 
 
+const CORE_FREE_GAME_IDS=new Set(['petbattle','petworld','market','inventory','launcher']);
+const MASTER_GAME_ITEM_IDS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
+
+function itemUnlocksGame(item,itemId,gameId){
+  item=item||{};
+  return item.unlocksGame===gameId||item.gameId===gameId||item.hostsGame===gameId;
+}
+
+function itemUnlocksAllGames(item,itemId){
+  item=item||{};
+  return MASTER_GAME_ITEM_IDS.has(itemId)||item.unlocksAllGames===true||item.masterGameKey===true;
+}
+
+function canUsernameHostGame(username,gameId){
+  username=String(username||'').trim();
+  gameId=String(gameId||'').trim();
+
+  if(!gameId)return false;
+  if(CORE_FREE_GAME_IDS.has(gameId))return true;
+  if(username&&admins().includes(username))return true;
+
+  let profile=username?getPetProfile(username):null;
+  let inv=(profile&&profile.inventory)||{};
+  let catalog=itemCatalog();
+
+  return Object.keys(inv).some(itemId=>{
+    if(Number(inv[itemId]||0)<=0)return false;
+    let item=catalog[itemId]||{};
+    return itemUnlocksAllGames(item,itemId)||itemUnlocksGame(item,itemId,gameId);
+  });
+}
+
+
 
 function admins(){
   let a=readJSON(adminsFile,[]);
@@ -3345,6 +3378,11 @@ wss.on('connection',ws=>{
       let g=games().find(x=>x.id===m.gameId);
 
       if(r&&g){
+        if(!canUsernameHostGame(ws.username,g.id)){
+          ws.send(JSON.stringify({type:'error',message:'You need the '+(g.name||g.id)+' game cartridge from the Game Shop before you can host this game.'}));
+          return;
+        }
+
         r.selectedGame=g;
         r.started=false;
         r.seats=Array(g.seats).fill(null);
