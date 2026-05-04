@@ -666,7 +666,7 @@ const clients=new Set();
    level, stats, selected moves, or opponent information from the client.
    ========================================================= */
 const BATTLE_HALL_TABLE_COUNT=8;
-const battleHall={tables:{},players:{},instances:{}};
+const battleHall={tables:{},players:{},instances:{},chat:[]};
 
 function battleHallInit(){
   for(let i=1;i<=BATTLE_HALL_TABLE_COUNT;i++){
@@ -675,6 +675,48 @@ function battleHallInit(){
   }
 }
 battleHallInit();
+
+function pushBattleHallChat(kind,username,text){
+  /*
+    Battle Hall chat is intentionally short-lived memory state.
+    It is lobby ambience + coordination, not permanent mail/history.
+    Keep permanent social messages in the social/mail system instead.
+  */
+  let msg={
+    id:'C'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    kind:kind||'user',
+    username:String(username||'System').slice(0,32),
+    text:String(text||'').replace(/\s+/g,' ').trim().slice(0,220),
+    createdAt:Date.now()
+  };
+  if(!msg.text)return null;
+  battleHall.chat.push(msg);
+  if(battleHall.chat.length>60)battleHall.chat=battleHall.chat.slice(-60);
+  return msg;
+}
+
+function publicBattleHallInventory(username){
+  /*
+    Lightweight view-only inventory payload for Battle Hall.
+    Items are not usable from Battle Hall yet by design; using items while ready
+    would affect fairness unless the server snapshots after every valid item use.
+  */
+  let profile=getPetProfile(username);
+  let inv=(profile&&profile.inventory)||{};
+  let catalog=itemCatalog();
+  return Object.keys(inv).filter(id=>Number(inv[id]||0)>0).map(id=>{
+    let item=catalog[id]||{};
+    return {
+      id,
+      quantity:Number(inv[id]||0),
+      name:item.name||id,
+      rarity:item.rarity||'common',
+      category:item.category||item.itemType||item.type||'item',
+      description:item.description||'',
+      image:item.image||('/assets/items/'+id+'.png')
+    };
+  }).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+}
 
 function publicPetCardForUser(username,petId){
   username=String(username||'').trim();
@@ -696,7 +738,9 @@ function publicPetCardForUser(username,petId){
     rarity:(species&&species.rarity)||'common',
     level,
     powerTier:tier,
-    image:(pet&&pet.image)||(species&&species.image)||''
+    image:(pet&&pet.image)||(species&&species.image)||'',
+    eligible:!!(pet&&pet.stage&&pet.stage!=='egg'),
+    ineligibleReason:(pet&&pet.stage==='egg')?'Eggs cannot battle yet.':''
   };
 }
 
@@ -735,16 +779,18 @@ function lockedBattlePetSnapshot(username,petId){
 
 function hallSeat(username,petId){
   let card=publicPetCardForUser(username,petId);
-  return {username,petId:card.id,pet:card,ready:false,joinedAt:Date.now()};
+  if(!card.eligible)throw new Error(card.ineligibleReason||'This pet cannot battle yet.');
+  return {username,petId:card.id,pet:card,ready:false,lockedPet:null,joinedAt:Date.now()};
 }
 
 function battleHallPublic(){
   return {
     tables:Object.values(battleHall.tables).map(t=>({
       id:t.id,
-      seats:(t.seats||[]).map(s=>s?{username:s.username,ready:!!s.ready,pet:s.pet}:null)
+      seats:(t.seats||[]).map(s=>s?{username:s.username,ready:!!s.ready,locked:!!s.lockedPet,pet:s.pet}:null)
     })),
-    online:Object.keys(battleHall.players).sort()
+    online:Object.keys(battleHall.players).sort(),
+    chat:battleHall.chat.slice(-50)
   };
 }
 
@@ -780,7 +826,7 @@ function createBattleInstanceFromSeats(source,table,seats){
   let players=seats.map((s,index)=>({
     username:s.username,
     seat:index,
-    lockedPet:lockedBattlePetSnapshot(s.username,s.petId)
+    lockedPet:s.lockedPet||lockedBattlePetSnapshot(s.username,s.petId)
   }));
 
   battleHall.instances[id]={
@@ -4314,6 +4360,16 @@ function pushPresence(){
 }
 
 
+app.get('/api/battlehall/inventory',(req,res)=>{
+  let username=String(req.query.user||'').trim();
+  if(!username)return res.status(400).json({ok:false,error:'Missing username'});
+  try{
+    res.json({ok:true,items:publicBattleHallInventory(username)});
+  }catch(err){
+    res.status(500).json({ok:false,error:err.message||'Could not load inventory'});
+  }
+});
+
 app.get('/api/battle/instance/:id',(req,res)=>{
   let username=String(req.query.user||'').trim();
   let instance=battleHall.instances[String(req.params.id||'')];
@@ -4342,6 +4398,7 @@ wss.on('connection',ws=>{
       ws.username=name;
       ws.battleHall=true;
       ws.location='Battle Hall';
+      if(!battleHall.players[name])pushBattleHallChat('system','System',name+' entered the Battle Hall.');
       battleHall.players[name]={username:name,joinedAt:Date.now()};
       ws.send(JSON.stringify({type:'battleHallState',hall:battleHallPublic()}));
       broadcastBattleHall();
@@ -4352,7 +4409,7 @@ wss.on('connection',ws=>{
       let name=ws.username||'Guest';
       ws.battleHall=false;
       delete battleHall.players[name];
-      if(leaveBattleHallSeat(name))broadcastBattleHall({notice:{kind:'leave',username:name}});
+      if(leaveBattleHallSeat(name)){pushBattleHallChat('system','System',name+' left their seat.');broadcastBattleHall({notice:{kind:'leave',username:name}});}
       pushPresence();
     }
 
@@ -4365,6 +4422,7 @@ wss.on('connection',ws=>{
       try{
         leaveBattleHallSeat(name);
         table.seats[seat]=hallSeat(name,String(m.petId||''));
+        pushBattleHallChat('system','System',name+' sat at Table '+table.id+'.');
         broadcastBattleHall({notice:{kind:'sit',username:name,tableId:table.id,seat}});
       }catch(err){
         ws.send(JSON.stringify({type:'error',message:err.message||'Could not sit at battle table.'}));
@@ -4373,7 +4431,7 @@ wss.on('connection',ws=>{
 
     if(m.type==='battleHallStand'){
       let name=ws.username||'Guest';
-      if(leaveBattleHallSeat(name))broadcastBattleHall({notice:{kind:'stand',username:name}});
+      if(leaveBattleHallSeat(name)){pushBattleHallChat('system','System',name+' stood up.');broadcastBattleHall({notice:{kind:'stand',username:name}});}
     }
 
     if(m.type==='battleHallReady'){
@@ -4381,10 +4439,20 @@ wss.on('connection',ws=>{
       let found=findBattleHallSeat(name);
       if(!found){ws.send(JSON.stringify({type:'error',message:'Sit at a Battle Hall table first.'}));return;}
       try{
-        // Re-read the pet from the server when ready is toggled, so the visible card is honest.
-        found.entry.pet=publicPetCardForUser(name,String(m.petId||found.entry.petId||''));
-        found.entry.petId=found.entry.pet.id;
-        found.entry.ready=!!m.ready;
+        if(!!m.ready){
+          // Ready means LOCK. After this point the client cannot switch pets until unready/stand.
+          let snap=lockedBattlePetSnapshot(name,String(m.petId||found.entry.petId||''));
+          found.entry.petId=snap.id;
+          found.entry.lockedPet=snap;
+          found.entry.pet=publicPetCardForUser(name,snap.id);
+          found.entry.ready=true;
+          pushBattleHallChat('system','System',name+' is ready at Table '+found.table.id+'.');
+        }else{
+          found.entry.ready=false;
+          found.entry.lockedPet=null;
+          found.entry.pet=publicPetCardForUser(name,String(found.entry.petId||m.petId||''));
+          pushBattleHallChat('system','System',name+' unlocked their battle pet.');
+        }
         broadcastBattleHall({notice:{kind:'ready',username:name,tableId:found.table.id}});
       }catch(err){
         ws.send(JSON.stringify({type:'error',message:err.message||'Could not ready up.'}));
@@ -4401,6 +4469,7 @@ wss.on('connection',ws=>{
       try{
         let instance=createBattleInstanceFromSeats('battlehall',found.table,found.table.seats);
         found.table.seats=[null,null];
+        pushBattleHallChat('system','System','Battle started at Table '+found.table.id+'.');
         instance.players.forEach(p=>sendToUser(p.username,{type:'battleReady',instanceId:instance.id,opponent:instance.players.find(x=>x.username!==p.username)?.username||'Opponent',url:'/games/petbattle.html?battleInstance='+encodeURIComponent(instance.id)}));
         broadcastBattleHall({notice:{kind:'start',username:name,tableId:found.table.id}});
       }catch(err){
@@ -4429,6 +4498,14 @@ wss.on('connection',ws=>{
         instance.version=(instance.version||0)+1;
       }
       (instance.players||[]).forEach(p=>sendToUser(p.username,{type:'battleInstanceMove',instanceId:instance.id,data:m.data,from:name,version:instance.version||0}));
+    }
+
+    if(m.type==='battleHallChat'){
+      let name=ws.username||'Guest';
+      if(!ws.battleHall){ws.send(JSON.stringify({type:'error',message:'Enter Battle Hall before chatting.'}));return;}
+      let msg=pushBattleHallChat('user',name,m.text);
+      if(msg)broadcastBattleHall();
+      return;
     }
 
     if(m.type==='createRoom'){
