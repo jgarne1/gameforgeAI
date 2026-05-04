@@ -1609,6 +1609,34 @@ body.gameMode #gameArea .danger{
   }
 }
 
+
+/* ===== AAA FLOW POLISH PATCH ===== */
+.topStatusBar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 0 14px;padding:10px 12px;border-radius:18px;
+  border:1px solid rgba(148,163,184,.22);
+  background:linear-gradient(135deg,rgba(15,23,42,.88),rgba(2,6,23,.70));
+  box-shadow:0 10px 28px rgba(0,0,0,.22);
+}
+.topStatusLeft,.topStatusRight{display:flex;align-items:center;gap:8px;min-width:0}
+.topStatusLogo{width:28px;height:28px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 0 18px rgba(56,189,248,.22)}
+.topStatusPill{display:inline-flex;align-items:center;gap:6px;max-width:220px;padding:6px 9px;border-radius:999px;border:1px solid rgba(148,163,184,.22);background:rgba(2,6,23,.52);color:#cbd5e1;font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.section.active{animation:gfSectionIn .18s ease-out both}
+@keyframes gfSectionIn{from{opacity:.45;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.continueCard{margin:-4px 0 14px;padding:15px;border-radius:22px;border:1px solid rgba(56,189,248,.30);background:radial-gradient(circle at 7% 10%,rgba(56,189,248,.15),transparent 30%),linear-gradient(135deg,rgba(15,23,42,.94),rgba(2,6,23,.86));box-shadow:0 16px 40px rgba(56,189,248,.10),var(--shadow2)}
+.continueCard .continueGrid{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.continueCard h3{margin:0 0 4px}.continueCard p{margin:0;color:var(--muted);font-size:13px}.continueActions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.commandGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.commandGrid button{margin:0;width:100%;justify-content:center;text-align:center}.battleBtn{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;border-color:#c084fc!important;color:#fff!important;box-shadow:0 10px 24px rgba(124,58,237,.18)}
+.frameLoading{position:absolute;inset:68px 14px 14px;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:18px;border:1px solid rgba(56,189,248,.22);background:radial-gradient(circle at center,rgba(56,189,248,.13),transparent 34%),rgba(2,6,23,.88);color:#e5e7eb;text-align:center;pointer-events:none}
+.frameLoading.hidden{display:none!important}.loaderOrb{width:42px;height:42px;border-radius:50%;border:4px solid rgba(148,163,184,.22);border-top-color:#38bdf8;animation:gfSpin .8s linear infinite;box-shadow:0 0 22px rgba(56,189,248,.35)}
+@keyframes gfSpin{to{transform:rotate(360deg)}}
+#frameLoadingSub{color:var(--muted);font-size:12px}.toastRoot{position:fixed;right:16px;bottom:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;pointer-events:none}.toast{padding:11px 13px;border-radius:15px;border:1px solid rgba(56,189,248,.32);background:rgba(2,6,23,.94);box-shadow:0 16px 36px rgba(0,0,0,.38);color:#e5e7eb;font-size:13px;font-weight:900;animation:toastIn .18s ease-out both}.toast.good{border-color:rgba(34,197,94,.40)}.toast.warn{border-color:rgba(250,204,21,.45)}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+body.gameMode .topStatusBar,body.directGameMode .topStatusBar{display:none}
+body.gameMode #gameArea{overflow:hidden}
+body.gameMode #gameArea .cardHeader,body.directGameMode #gameArea .cardHeader{background:rgba(2,6,23,.42);border:1px solid rgba(148,163,184,.18);border-radius:16px;padding:8px 10px!important;margin-bottom:8px}
+@media(max-width:760px){.topStatusBar{align-items:flex-start;flex-direction:column}.topStatusRight{width:100%;flex-wrap:wrap}.continueCard .continueGrid{grid-template-columns:1fr}.continueActions{justify-content:flex-start}.commandGrid{grid-template-columns:1fr}.frameLoading{inset:62px 10px 10px}}
+
 </style>
 </head>
 
@@ -1640,6 +1668,11 @@ body.gameMode #gameArea .danger{
   </div>
 
   <div class="main">
+
+    <div id="topStatusBar" class="topStatusBar">
+      <div class="topStatusLeft"><span class="topStatusLogo">✦</span><span id="topStatusText">GameForge ready</span></div>
+      <div class="topStatusRight"><span id="topStatusPet" class="topStatusPill">No companion</span><span id="topStatusRoom" class="topStatusPill">No room</span></div>
+    </div>
 
     <div id="home" class="section active">
       <div class="hero">
@@ -1718,6 +1751,7 @@ body.gameMode #gameArea .danger{
           <button class="danger" onclick="exitGameMode()">Exit Game</button>
         </div>
         <p id="gameHint" class="muted">The selected game will appear here after the table host starts the match.</p>
+        <div id="frameLoading" class="frameLoading hidden"><div class="loaderOrb"></div><b id="frameLoadingTitle">Loading...</b><span id="frameLoadingSub">Preparing your GameForge screen.</span></div>
         <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
@@ -1767,7 +1801,7 @@ body.gameMode #gameArea .danger{
 
     <div class="sideCard" id="sideCompanionPanel">
       <div class="sidebarTitle">
-        <h3>Companion</h3>
+        <h3>Command Center</h3>
       </div>
       <div id="sideCompanion" class="sideCompanionMini"><p class="muted">Log in to load your companion.</p></div>
     </div>
@@ -1801,6 +1835,8 @@ body.gameMode #gameArea .danger{
   </div>
 </div>
 
+<div id="toastRoot" class="toastRoot"></div>
+
 <script>
 /*
 Runtime notes for future AI chats:
@@ -1830,6 +1866,77 @@ let gameLibraryForcedOpen=false; // Keeps the library open only when the user ex
 let roomReadyStatus={}; // Cosmetic lobby readiness by username. It is relayed as a gameMove, but it intentionally does not block Start Game.
 let readyRoomId=''; // Tracks which room the cosmetic ready map belongs to so old ready flags do not leak between rooms.
 
+
+function showToast(text,kind){
+  let root=document.getElementById('toastRoot');
+  if(!root)return;
+  let t=document.createElement('div');
+  t.className='toast '+(kind||'');
+  t.innerText=text;
+  root.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(8px)';},2400);
+  setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2850);
+}
+
+function setFrameLoading(on,title,sub){
+  let box=document.getElementById('frameLoading');
+  if(!box)return;
+  box.classList.toggle('hidden',!on);
+  if(title&&document.getElementById('frameLoadingTitle'))frameLoadingTitle.innerText=title;
+  if(sub&&document.getElementById('frameLoadingSub'))frameLoadingSub.innerText=sub;
+}
+
+function updateTopStatus(){
+  let text=document.getElementById('topStatusText');
+  let petPill=document.getElementById('topStatusPet');
+  let roomPill=document.getElementById('topStatusRoom');
+  if(!text||!petPill||!roomPill)return;
+
+  text.innerText=me?('Logged in as '+me):'Log in to unlock pets, rooms, and progression';
+
+  let pet=null;
+  try{pet=activePet&&activePet();}catch(e){pet=null;}
+  if(pet){
+    let level=(pet.stats&&pet.stats.level)||pet.level||1;
+    petPill.innerText=(pet.emoji||'🐾')+' '+(pet.name||'Companion')+' · Lv '+level;
+  }else{
+    petPill.innerText='No active pet';
+  }
+
+  roomPill.innerText=currentRoom?('Room '+currentRoom):'No room';
+}
+
+function drawContinueCard(){
+  let card=document.getElementById('continueCard');
+  if(!card)return;
+  if(!me){card.classList.add('hidden');return;}
+
+  let pet=null;
+  try{pet=activePet&&activePet();}catch(e){pet=null;}
+  let petName=pet?(pet.name||'your companion'):'your companion';
+  let roomText=currentRoom?('Return to room '+currentRoom):'Start a table or train your companion';
+
+  card.classList.remove('hidden');
+  card.innerHTML=
+    '<div class="continueGrid">'+
+      '<div><h3>Continue your session</h3><p>'+escapeHtml(roomText)+' · '+escapeHtml(petName)+' is ready for action.</p></div>'+
+      '<div class="continueActions">'+
+        '<button class="primary" onclick="showSection(\'play\')">Play</button>'+
+        '<button class="gold" onclick="openPetWorldDirect()">Pet World</button>'+
+        '<button class="battleBtn" onclick="openPetBattleDirect()">⚔ Battle</button>'+
+      '</div>'+
+    '</div>';
+}
+
+function commandButtonsHtml(){
+  return '<div class="commandGrid">'+
+    '<button class="gold" onclick="openPetWorldDirect()">🐾 Pet World</button>'+
+    '<button class="battleBtn" onclick="openPetBattleDirect()">⚔ Battle</button>'+
+    '<button class="gold" onclick="openMarketDirect()">🏪 Market</button>'+
+    '<button class="primary" onclick="openInventory()">🎒 Inventory</button>'+
+  '</div>';
+}
+
 function showSection(id){
   document.body.classList.remove('directGameMode');
 
@@ -1852,6 +1959,9 @@ function showSection(id){
       document.getElementById(map[id]).classList.add('active');
     }
   }
+
+  updateTopStatus();
+  drawContinueCard();
 }
 
 function openAdmin(){
@@ -1944,6 +2054,9 @@ function setLogin(d){
   drawAuth();
   connect();
   loadPet();
+  updateTopStatus();
+  drawContinueCard();
+  showToast('Welcome, '+me,'good');
 
   setTimeout(()=>socket&&socket.send(JSON.stringify({type:'hello',username:me})),200);
 }
@@ -1963,6 +2076,9 @@ function logout(){
   drawPet();
   drawShop();
   drawInventory();
+  updateTopStatus();
+  drawContinueCard();
+  showToast('Logged out','warn');
 
   if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
 }
@@ -2272,6 +2388,7 @@ function clearActiveGameFrame(){
   document.body.classList.remove('directGameMode');
   gameArea.classList.add('hidden');
   gameHint.innerText='Select a game, sit at the table, and wait for the room owner to start. The game screen will appear here only when it is ready.';
+  setFrameLoading(false);
   gameFrame.onload=null;
   gameFrame.removeAttribute('srcdoc');
   loadedGameKey='';
@@ -2497,6 +2614,8 @@ function drawRoom(){
   }
 
   drawChat(room?room.chat:[],false);
+  updateTopStatus();
+  drawContinueCard();
   maybeLoadGame();
 }
 
@@ -2585,7 +2704,8 @@ function openInventory(){
   showSection('play');
   document.body.classList.add('directGameMode');
 
-  gameFrame.onload=null;
+  setFrameLoading(true,'Loading Inventory','Opening your items and collectibles.');
+  gameFrame.onload=function(){setFrameLoading(false);};
   gameFrame.removeAttribute('srcdoc');
   gameFrame.src='/games/inventory.html?v='+Date.now();
 
@@ -2613,6 +2733,7 @@ async function launchSoloGame(g){
   gameArea.classList.remove('hidden');
   gameAreaTitle.innerText=g.name||'Game';
   gameHint.innerText='Loading '+(g.name||'game')+'...';
+  setFrameLoading(true,'Loading '+(g.name||'game'),'Preparing your GameForge screen.');
 
   if(roomChatPanel)roomChatPanel.classList.add('hidden');
 
@@ -2625,6 +2746,7 @@ async function launchSoloGame(g){
   // This protects PetWorld/Marketplace from blank iframe issues caused by injected wrappers.
   if(g.id==='petworld'||g.id==='market'||g.id==='petbattle'||g.file==='petworld.html'||g.file==='market.html'||g.file==='petbattle.html'){
     gameFrame.onload=function(){
+      setFrameLoading(false);
       gameHint.innerText='Account experience. Progress is tied to your username.';
     };
     gameFrame.removeAttribute('srcdoc');
@@ -2639,7 +2761,9 @@ async function launchSoloGame(g){
     await loadGameIntoFrame(g,players,0);
     gameHint.innerText='Account experience. Progress is tied to your username.';
   }catch(err){
+    setFrameLoading(false);
     gameHint.innerText='Could not load '+(g.name||'game')+': '+err.message;
+    showToast('Could not load '+(g.name||'game'),'warn');
     console.error(err);
   }
 
@@ -2647,43 +2771,20 @@ async function launchSoloGame(g){
 }
 
 async function loadGameIntoFrame(g,players,mySeatIndex){
-  let gameContext=await buildGameContext(players,mySeatIndex,currentRoom||'',room&&Array.isArray(room.seats)?room.seats:[]);
+  let roomId=currentRoom||((room&&room.id)||'');
+  let activeSeats=(room&&Array.isArray(room.seats))?room.seats:[];
+  let gameContext=await buildGameContext(players,mySeatIndex,roomId,activeSeats);
   let file=g.file||g.id;
   if(!file)throw new Error('Game file is missing.');
 
-  let res=await fetch('/games/'+file+'?v='+Date.now());
-  if(!res.ok)throw new Error('Could not fetch /games/'+file+' ('+res.status+').');
-
-  let html=await res.text();
-  if(!html||!html.trim())throw new Error('/games/'+file+' returned an empty file.');
-
-  let inject =
-    '<script>'+ 
-    'window.GAME_PLAYERS='+JSON.stringify(players).replace(/</g,'\\u003c')+';'+
-    'window.GAME_MY_SEAT='+JSON.stringify(mySeatIndex>=0?mySeatIndex:null)+';'+
-    'window.GAME_CONTEXT='+JSON.stringify(gameContext).replace(/</g,'\\u003c')+';'+
-    'window.addEventListener("message",function(event){'+
-      'var msg=event.data||{};'+
-      'if(msg.type==="gameMove"&&window.onMove){window.onMove(msg.data);}'+
-      'if(msg.type==="gameSetup"&&window.onMove){window.onMove(msg);}'+
-      'if(msg.type==="GAME_CONTEXT"&&window.onMove){window.onMove(msg);}'+
-      'if(msg.type==="gameSaveData"&&window.onSaveData){window.onSaveData(msg.data);}'+
-    '});'+
-    '<\\/script>';
-
-  if(html.includes('<head>')){
-    html=html.replace('<head>','<head>'+inject);
-  }else{
-    html=inject+html;
-  }
+  setFrameLoading(true,'Loading '+(g.name||'Game'),'Setting up players, seats, and active pets.');
 
   gameFrame.onload=function(){
-    if(gameFrame.contentWindow){
-      gameFrame.contentWindow.postMessage({
-        type:'GAME_CONTEXT',
-        data:gameContext
-      },'*');
+    setFrameLoading(false);
+    if(!gameFrame.contentWindow)return;
 
+    function postSetup(){
+      gameFrame.contentWindow.postMessage({type:'GAME_CONTEXT',data:gameContext},'*');
       gameFrame.contentWindow.postMessage({
         type:'gameSetup',
         players:players,
@@ -2693,17 +2794,22 @@ async function loadGameIntoFrame(g,players,mySeatIndex){
         username:gameContext.username
       },'*');
     }
+
+    postSetup();
+    setTimeout(postSetup,120);
   };
 
-  gameFrame.removeAttribute('src');
-  gameFrame.srcdoc=html;
+  gameFrame.removeAttribute('srcdoc');
+  gameFrame.src='/games/'+file+'?v='+Date.now();
 }
 
 function exitGameMode(){
   document.body.classList.remove('gameMode');
   document.body.classList.remove('directGameMode');
   gameArea.classList.add('hidden');
+  setFrameLoading(false);
   gameFrame.removeAttribute('srcdoc');
+  gameFrame.removeAttribute('src');
   directGameKey='';
   loadedGameKey='';
   launcherLoadedGameKey='';
@@ -2800,13 +2906,16 @@ function drawPresence(users,roomsList){
     let selectedGameName=matchingRoom&&matchingRoom.selectedGame?matchingRoom.selectedGame.name:'';
 
     d.className='userItem '+(canJoin?'clickable':'')+(u.privateRoom?' private':'');
+    let visibleRoomText=canJoin ? (' · '+escapeHtml(u.roomId)) : '';
+    let privateText=(u.roomId&&u.privateRoom)?' · 🔒 Private room':'';
+
     d.innerHTML=
       '<b>'+escapeHtml(u.username)+'</b><br>'+
       '<span class="roomBadge">'+
         escapeHtml(u.location||'Home')+
-        (u.roomId?' · '+escapeHtml(u.roomId):'')+
-        (selectedGameName?' · '+escapeHtml(selectedGameName):'')+
-        (u.privateRoom?' 🔒 private':'')+
+        visibleRoomText+
+        (canJoin&&selectedGameName?' · '+escapeHtml(selectedGameName):'')+
+        privateText+
       '</span>'+
       (canJoin?'<br><small>Click to join room</small>':'');
 
@@ -2991,7 +3100,7 @@ function drawPet(){
   if(!pet){
     homePet.innerHTML='<p class="muted">No pet yet.</p>';
     petPanel.innerHTML='<p class="muted">No pet yet.</p>';
-    if(document.getElementById('sideCompanion'))sideCompanion.innerHTML='<p class="muted">No companion yet.</p>';
+    if(document.getElementById('sideCompanion'))sideCompanion.innerHTML='<p class="muted">No companion yet.</p>'+commandButtonsHtml();
     return;
   }
 
@@ -3011,12 +3120,7 @@ function drawPet(){
   homePet.innerHTML=mini;
 
   if(document.getElementById('sideCompanion')){
-    sideCompanion.innerHTML=
-      mini+
-      '<div class="petActions">'+
-        '<button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>'+
-        '<button class="purple" onclick="openPetBattleDirect()">Battle</button>'+
-      '</div>';
+    sideCompanion.innerHTML=mini+commandButtonsHtml();
   }
 
   let html=mini;
@@ -3060,7 +3164,10 @@ function drawPet(){
   }
 
   petPanel.innerHTML=html;
+  updateTopStatus();
+  drawContinueCard();
 }
+
 
 function petStat(name,val){
   val=Number(val||0);
@@ -3295,6 +3402,7 @@ async function handleLauncherStartGame(msg){
 
   launcherLoadedGameKey=key;
   gameHint.innerText='Loading '+(game.name||'game')+' from the table launcher...';
+  showToast('Starting '+(game.name||'game'),'good');
 
   loadGameIntoFrame(game,players,mySeatIndex).then(function(){
     gameHint.innerText='Game started from launcher.';
@@ -3384,8 +3492,8 @@ function drawMobileLobby(){
           '<b>'+escapeHtml(u.username)+'</b><br>'+
           '<small>'+
             escapeHtml(u.location||'Home')+
-            (u.roomId?' · '+escapeHtml(u.roomId):'')+
-            (u.privateRoom?' 🔒':'')+
+            (u.roomId&&!u.privateRoom?' · '+escapeHtml(u.roomId):'')+
+            (u.roomId&&u.privateRoom?' · 🔒 Private room':'')+
           '</small>'+
         '</div>';
     });
@@ -3440,6 +3548,8 @@ if(me){
 loadGames();
 drawRoom();
 updateQuickStats();
+updateTopStatus();
+drawContinueCard();
 </script>
 </body>
 </html>
