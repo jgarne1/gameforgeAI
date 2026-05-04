@@ -259,6 +259,78 @@ textarea.adminTextArea{
   background:#020617;
   color:var(--text);
 }
+.announcementPreview{
+  position:relative;
+  padding:18px;
+  min-height:220px;
+  border-radius:23px;
+  border:1px solid rgba(56,189,248,.28);
+  background:
+    radial-gradient(circle at 88% 8%,rgba(56,189,248,.14),transparent 35%),
+    radial-gradient(circle at 12% 92%,rgba(124,58,237,.13),transparent 36%),
+    linear-gradient(135deg,rgba(15,23,42,.74),rgba(2,6,23,.92));
+  box-shadow:0 18px 44px rgba(0,0,0,.35),0 0 30px rgba(56,189,248,.08);
+  overflow:hidden;
+}
+.announcementPreview:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(120deg,transparent,rgba(255,255,255,.055),transparent),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0,rgba(255,255,255,.018) 1px,transparent 1px,transparent 16px);
+  opacity:.75;
+}
+.announcementPreview .pin{
+  position:absolute;
+  right:18px;
+  top:16px;
+  width:13px;
+  height:13px;
+  border-radius:999px;
+  background:#38bdf8;
+  box-shadow:0 0 0 5px rgba(56,189,248,.10),0 0 18px rgba(56,189,248,.75);
+}
+.announcementPreview .kicker{
+  position:relative;
+  z-index:1;
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(250,204,21,.30);
+  background:rgba(250,204,21,.08);
+  color:#fde68a;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.announcementPreview .title{
+  position:relative;
+  z-index:1;
+  margin:12px 28px 8px 0;
+  color:#fff;
+  font-family:"Segoe Print","Comic Sans MS",cursive;
+  font-size:25px;
+  line-height:1.08;
+}
+.announcementPreview .message{
+  position:relative;
+  z-index:1;
+  color:#cbd5e1;
+  line-height:1.45;
+  white-space:pre-wrap;
+}
+.announcementPreview .signature{
+  position:relative;
+  z-index:1;
+  margin-top:16px;
+  color:#e5e7eb;
+  font-family:"Segoe Print","Comic Sans MS",cursive;
+  font-weight:900;
+}
+
 .effectsBox{min-height:150px;font-family:Consolas,monospace;font-size:12px}
 .stageGrid{
   display:grid;
@@ -308,6 +380,7 @@ textarea.adminTextArea{
       <span>Game Master Console for players, rooms, pets, and marketplace control.</span>
     </div>
     <button id="navOverview" class="active" onclick="showSection('overview')"><span class="navIcon">📊</span>Overview</button>
+    <button id="navAnnouncement" onclick="showSection('announcement')"><span class="navIcon">📣</span>Announcement</button>
     <button id="navPlayers" onclick="showSection('players')"><span class="navIcon">👤</span>Players</button>
     <button id="navAdmins" onclick="showSection('admins')"><span class="navIcon">🛡️</span>Admins</button>
     <button id="navRooms" onclick="showSection('rooms')"><span class="navIcon">🎮</span>Rooms</button>
@@ -343,6 +416,57 @@ textarea.adminTextArea{
         </div>
       </div>
     </div>
+
+    <div id="announcement" class="section">
+      <div class="grid2">
+        <div class="card glow">
+          <div class="cardHeader">
+            <div>
+              <h3>Home Message Board</h3>
+              <p class="muted">Update the handwritten-style message shown on the GameForge home screen. Keep it short, event-focused, and useful.</p>
+            </div>
+            <button class="primary" onclick="loadAnnouncementEditor()">Reload</button>
+          </div>
+          <div class="row">
+            <label class="pill"><input id="announcementActive" type="checkbox" checked style="width:auto;margin:0"> Active</label>
+          </div>
+          <p class="miniLabel">Title</p>
+          <input id="announcementTitle" placeholder="Battle Hall is live!" oninput="drawAnnouncementPreview()">
+          <p class="miniLabel">Message</p>
+          <textarea id="announcementMessage" class="adminTextArea" style="min-height:150px" placeholder="Write the home screen message..." oninput="drawAnnouncementPreview()"></textarea>
+          <div class="grid2" style="margin-top:10px">
+            <div>
+              <p class="miniLabel">Signature</p>
+              <input id="announcementSignature" placeholder="GameForge Team" oninput="drawAnnouncementPreview()">
+            </div>
+            <div>
+              <p class="miniLabel">CTA Button Text</p>
+              <input id="announcementButtonText" placeholder="Enter Battle Hall" oninput="drawAnnouncementPreview()">
+            </div>
+          </div>
+          <p class="miniLabel">CTA Action</p>
+          <select id="announcementButtonAction" onchange="drawAnnouncementPreview()">
+            <option value="battlehall">Enter Battle Hall</option>
+            <option value="privatebattle">Private Battle</option>
+            <option value="petworld">Pet World</option>
+            <option value="marketplace">Marketplace</option>
+            <option value="play">Game Table</option>
+            <option value="social">Social Center</option>
+            <option value="none">No Button</option>
+          </select>
+          <div class="row" style="margin-top:12px">
+            <button class="good" onclick="saveAnnouncementEditor()">Save Home Message</button>
+            <button class="ghost" onclick="loadAnnouncementEditor()">Reload</button>
+          </div>
+          <p class="muted" id="announcementMeta"></p>
+        </div>
+        <div class="card glow">
+          <div class="cardHeader"><h3>Preview</h3><span class="pill">Home card</span></div>
+          <div id="announcementPreview" class="announcementPreview"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="admins" class="section">
       <div class="card glow">
         <div class="cardHeader">
@@ -816,6 +940,7 @@ let gameScanRows=[];
 let selectedGameHtml='';
 let selectedGameHtmlName='';
 let ws=null;
+let announcementEditorData=null;
 
 const $=id=>document.getElementById(id);
 
@@ -846,6 +971,7 @@ function showSection(id){
   let sec=$(id); if(sec)sec.classList.add('active');
   let nav=$('nav'+id.charAt(0).toUpperCase()+id.slice(1)); if(nav)nav.classList.add('active');
   if(id==='admins')loadAdminList();
+  if(id==='announcement')loadAnnouncementEditor();
   if(id==='rooms')loadRooms();
   if(id==='market')loadMarket();
   if(id==='items')drawItemEditor();
@@ -1133,6 +1259,52 @@ async function syncSelectedScannedGames(){
   }catch(err){toast(err.message||'Game sync failed.');}
 }
 ['gameEditId','gameEditFile'].forEach(id=>setTimeout(()=>{let n=$(id);if(n)n.addEventListener('input',updateGameItemLabel);},0));
+
+
+async function loadAnnouncementEditor(){
+  if(!$('announcementTitle'))return;
+  try{
+    let data=await api('/api/admin/announcement?user='+encodeURIComponent(adminUser));
+    announcementEditorData=data.announcement||{};
+    $('announcementActive').checked=announcementEditorData.active!==false;
+    $('announcementTitle').value=announcementEditorData.title||'';
+    $('announcementMessage').value=announcementEditorData.message||'';
+    $('announcementSignature').value=announcementEditorData.signature||'GameForge Team';
+    $('announcementButtonText').value=announcementEditorData.buttonText||'';
+    $('announcementButtonAction').value=announcementEditorData.buttonAction||'none';
+    if($('announcementMeta'))$('announcementMeta').innerText=announcementEditorData.updatedAt?('Last updated by '+(announcementEditorData.updatedBy||'unknown')+' on '+new Date(Number(announcementEditorData.updatedAt)).toLocaleString()):'Not saved yet.';
+    drawAnnouncementPreview();
+  }catch(err){toast(err.message||'Announcement load failed.');}
+}
+
+function drawAnnouncementPreview(){
+  let box=$('announcementPreview');
+  if(!box)return;
+  let active=$('announcementActive')?$('announcementActive').checked:true;
+  let title=($('announcementTitle')&&$('announcementTitle').value)||'No current announcement';
+  let message=($('announcementMessage')&&$('announcementMessage').value)||'The GameForge team has not posted a message yet.';
+  let sig=($('announcementSignature')&&$('announcementSignature').value)||'GameForge Team';
+  let btn=($('announcementButtonAction')&&$('announcementButtonAction').value)!=='none'&&(($('announcementButtonText')&&$('announcementButtonText').value)||'');
+  box.innerHTML='<div class="pin"></div><div class="kicker">'+(active?'Team note':'Inactive')+'</div><div class="title">'+esc(title)+'</div><div class="message">'+esc(message)+'</div><div class="signature">— '+esc(sig)+'</div>'+(btn?'<p style="position:relative;z-index:1"><span class="pill">CTA: '+esc(btn)+'</span></p>':'');
+}
+
+async function saveAnnouncementEditor(){
+  try{
+    let payload={
+      username:adminUser,
+      active:$('announcementActive').checked,
+      title:$('announcementTitle').value,
+      message:$('announcementMessage').value,
+      signature:$('announcementSignature').value,
+      buttonText:$('announcementButtonText').value,
+      buttonAction:$('announcementButtonAction').value
+    };
+    let data=await api('/api/admin/announcement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    announcementEditorData=data.announcement||payload;
+    toast(data.message||'Announcement saved.');
+    loadAnnouncementEditor();
+  }catch(err){toast(err.message||'Announcement save failed.');}
+}
 
 function drawOverview(){
   let c=dashboard&&dashboard.counts?dashboard.counts:{};

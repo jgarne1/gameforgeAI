@@ -618,7 +618,7 @@ button:disabled{
 
 .readyToggleBtn{
   margin-top:6px!important;
-  padding:7px 9px!important;
+  padding:6px 8px!important;
   font-size:12px!important;
 }
 
@@ -2018,7 +2018,7 @@ body.gameMode #gameArea .danger{
    Login/profile/pet identity stay in the header/nav/right rail; Home focuses on momentum. */
 .homeCommandGrid{
   display:grid;
-  grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);
+  grid-template-columns:minmax(240px,.75fr) minmax(340px,1.25fr);
   gap:14px;
   align-items:stretch;
   margin-bottom:14px;
@@ -2040,25 +2040,29 @@ body.gameMode #gameArea .danger{
 }
 .activityFeed{
   display:grid;
-  gap:9px;
+  gap:8px;
   margin-top:10px;
   position:relative;
   z-index:1;
+}
+.homeActivityCard .activityFeed{
+  max-height:236px;
+  overflow:hidden;
 }
 .activityItem{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto;
   gap:10px;
   align-items:center;
-  padding:10px;
-  border-radius:17px;
+  padding:8px 9px;
+  border-radius:15px;
   border:1px solid rgba(148,163,184,.20);
   background:rgba(2,6,23,.46);
 }
 .activityIcon{
-  width:36px;
-  height:36px;
-  border-radius:13px;
+  width:31px;
+  height:31px;
+  border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -2075,15 +2079,15 @@ body.gameMode #gameArea .danger{
 .activitySub{
   margin-top:2px;
   color:var(--muted);
-  font-size:12px;
-  line-height:1.25;
+  font-size:11px;
+  line-height:1.22;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
 }
 .activityAction{
   margin:0!important;
-  padding:7px 9px!important;
+  padding:6px 8px!important;
   border-radius:999px!important;
   font-size:12px!important;
   white-space:nowrap;
@@ -2110,6 +2114,100 @@ body.gameMode #gameArea .danger{
 }
 .nextStepBtn b{font-size:14px;line-height:1.1}
 .nextStepBtn span{font-size:11px;color:rgba(226,232,240,.78);line-height:1.25;font-weight:800}
+
+.announcementBoard{
+  position:relative;
+  z-index:1;
+  min-height:250px;
+  padding:18px;
+  border-radius:23px;
+  border:1px solid rgba(56,189,248,.28);
+  background:
+    radial-gradient(circle at 88% 8%,rgba(56,189,248,.14),transparent 35%),
+    radial-gradient(circle at 12% 92%,rgba(124,58,237,.13),transparent 36%),
+    linear-gradient(135deg,rgba(15,23,42,.74),rgba(2,6,23,.92));
+  box-shadow:0 18px 44px rgba(0,0,0,.35),0 0 30px rgba(56,189,248,.08);
+  transform:rotate(-.35deg);
+  overflow:hidden;
+}
+.announcementBoard:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(120deg,transparent,rgba(255,255,255,.055),transparent),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0,rgba(255,255,255,.018) 1px,transparent 1px,transparent 16px);
+  opacity:.75;
+}
+.announcementPin{
+  position:absolute;
+  right:18px;
+  top:16px;
+  width:13px;
+  height:13px;
+  border-radius:999px;
+  background:#38bdf8;
+  box-shadow:0 0 0 5px rgba(56,189,248,.10),0 0 18px rgba(56,189,248,.75);
+}
+.announcementKicker{
+  position:relative;
+  z-index:1;
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(250,204,21,.30);
+  background:rgba(250,204,21,.08);
+  color:#fde68a;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.announcementTitle{
+  position:relative;
+  z-index:1;
+  margin:12px 28px 8px 0;
+  color:#fff;
+  font-family:"Segoe Print","Comic Sans MS",cursive;
+  font-size:25px;
+  line-height:1.08;
+  letter-spacing:-.5px;
+}
+.announcementMessage{
+  position:relative;
+  z-index:1;
+  color:#cbd5e1;
+  line-height:1.45;
+  font-size:14px;
+  white-space:pre-wrap;
+}
+.announcementFooter{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:16px;
+  color:#94a3b8;
+  font-size:12px;
+}
+.announcementSignature{
+  color:#e5e7eb;
+  font-family:"Segoe Print","Comic Sans MS",cursive;
+  font-weight:900;
+}
+.announcementBtn{
+  margin:0!important;
+  border-radius:999px!important;
+  padding:8px 11px!important;
+  white-space:nowrap;
+}
+@media(max-width:900px){
+  .announcementBoard{min-height:210px;transform:none}
+}
+
 .homeCompatibilityNodes{display:none!important}
 @media(max-width:900px){
   .homeCommandGrid{grid-template-columns:1fr}
@@ -2193,7 +2291,7 @@ body.gameMode #gameArea .danger{
       </div>
 
       <div class="homeCommandGrid">
-        <div class="card glow homeCommandCard">
+        <div class="card glow homeCommandCard homeActivityCard">
           <div class="cardHeader">
             <div>
               <h3>Live Activity</h3>
@@ -2212,18 +2310,18 @@ body.gameMode #gameArea .danger{
           </div>
         </div>
 
-        <div class="card glow homeCommandCard">
+        <div class="card glow homeCommandCard announcementHomeCard">
           <div class="cardHeader">
             <div>
-              <h3>Next Move</h3>
-              <p class="muted">Fast paths into the core loop.</p>
+              <h3>Message Board</h3>
+              <p class="muted">Updates and notes from the GameForge team.</p>
             </div>
           </div>
-          <div id="homeNextSteps" class="nextStepGrid">
-            <button class="nextStepBtn battleBtn" onclick="openBattleHallDirect()"><b>🏟️ Battle Hall</b><span>Find a public fight</span></button>
-            <button class="nextStepBtn purple" onclick="openPetBattleDirect()"><b>⚔️ Private Battle</b><span>Challenge or planned match</span></button>
-            <button class="nextStepBtn gold" onclick="openPetWorldDirect()"><b>🐾 Pet World</b><span>Care, train, and grow</span></button>
-            <button class="nextStepBtn primary" onclick="showSection('play')"><b>🎮 Game Table</b><span>Rooms and arcade games</span></button>
+          <div id="homeAnnouncementBoard" class="announcementBoard">
+            <div class="announcementPin"></div>
+            <div class="announcementKicker">Team note</div>
+            <div class="announcementTitle">Loading message...</div>
+            <div class="announcementMessage">Checking the latest GameForge update.</div>
           </div>
         </div>
       </div>
@@ -2822,7 +2920,7 @@ function drawHomeActivity(){
       title:liveBattleChallenge.role==='outgoing'?'Waiting for '+other:'Battle challenge from '+other,
       sub:'Live challenge expires soon.',
       action:'Open',
-      onclick:'openBattleChallengeFromHeader()'
+      onclick:'openBattleChallengeModal()'
     });
   }else if(readyBattleAlert&&readyBattleAlert.url){
     items.push({
@@ -2840,7 +2938,7 @@ function drawHomeActivity(){
       title:unread+' unread mail'+(unread===1?'':'s'),
       sub:'Open Social Center to read your latest threads.',
       action:'Mail',
-      onclick:'openMailFromHeader()'
+      onclick:'openMailFromTop()'
     });
   }
 
@@ -2894,13 +2992,64 @@ function drawHomeActivity(){
     onclick:'showSection(\'play\')'
   });
 
-  feed.innerHTML=items.slice(0,5).map(function(item){
+  feed.innerHTML=items.slice(0,3).map(function(item){
     return '<div class="activityItem">'+
       '<div class="activityIcon">'+escapeHtml(item.icon)+'</div>'+
       '<div><div class="activityTitle">'+escapeHtml(item.title)+'</div><div class="activitySub">'+escapeHtml(item.sub)+'</div></div>'+
       (item.action?'<button class="activityAction primary" onclick="'+item.onclick+'">'+escapeHtml(item.action)+'</button>':'')+
     '</div>';
   }).join('');
+}
+
+
+async function loadHomeAnnouncement(){
+  try{
+    let data=await (await fetch('/api/announcement?v='+Date.now())).json();
+    homeAnnouncement=(data&&data.announcement)||null;
+  }catch(err){
+    homeAnnouncement={
+      active:true,
+      title:'Welcome to GameForge',
+      message:'Battle Hall is live. Check back here for events, update notes, and team messages.',
+      signature:'GameForge Team',
+      buttonText:'Enter Battle Hall',
+      buttonAction:'battlehall',
+      updatedAt:0
+    };
+  }
+  drawHomeAnnouncement();
+}
+
+function announcementAction(action){
+  action=String(action||'none').toLowerCase();
+  if(action==='battlehall')return openBattleHallDirect();
+  if(action==='privatebattle')return openPetBattleDirect();
+  if(action==='petworld')return openPetWorldDirect();
+  if(action==='marketplace')return openMarketDirect();
+  if(action==='play')return showSection('play');
+  if(action==='social')return showSection('social');
+}
+
+function drawHomeAnnouncement(){
+  let box=document.getElementById('homeAnnouncementBoard');
+  if(!box)return;
+  let a=homeAnnouncement||{};
+  if(a.active===false){
+    box.innerHTML='<div class="announcementPin"></div><div class="announcementKicker">Team note</div><div class="announcementTitle">No current announcement</div><div class="announcementMessage">The GameForge team has not posted a message yet.</div>';
+    return;
+  }
+  let updated=Number(a.updatedAt||0);
+  let updatedText=updated?new Date(updated).toLocaleDateString():'';
+  let action=String(a.buttonAction||'none').toLowerCase();
+  let button=(action&&action!=='none'&&a.buttonText)
+    ? '<button class="announcementBtn primary" onclick="announcementAction(\''+escapeAttr(action)+'\')">'+escapeHtml(a.buttonText)+'</button>'
+    : '';
+  box.innerHTML=
+    '<div class="announcementPin"></div>'+ 
+    '<div class="announcementKicker">Team note</div>'+ 
+    '<div class="announcementTitle">'+escapeHtml(a.title||'Welcome to GameForge')+'</div>'+ 
+    '<div class="announcementMessage">'+escapeHtml(a.message||'Check back here for updates from the GameForge team.')+'</div>'+ 
+    '<div class="announcementFooter"><span class="announcementSignature">— '+escapeHtml(a.signature||'GameForge Team')+'</span><span>'+escapeHtml(updatedText)+'</span>'+button+'</div>';
 }
 
 function commandButtonsHtml(){

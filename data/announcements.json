@@ -1,0 +1,10 @@
+{
+  "active": true,
+  "title": "Battle Hall is live!",
+  "message": "Sit at a table, challenge a friend, and test your pet team in the new Battle Hall. Watch this board for updates, events, and team messages.",
+  "signature": "GameForge Team",
+  "buttonText": "Enter Battle Hall",
+  "buttonAction": "battlehall",
+  "updatedAt": 0,
+  "updatedBy": "system"
+}
