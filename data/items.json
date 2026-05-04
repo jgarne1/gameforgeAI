@@ -2766,5 +2766,383 @@
     ],
     "defaultShopId": "battle_shop",
     "basePrice": 45
+  },
+  "game_tictactoe": {
+    "id": "game_tictactoe",
+    "name": "Tic Tac Toe Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Tic Tac Toe in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_tictactoe.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "tictactoe",
+    "gameId": "tictactoe",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 12
+  },
+  "game_gofish": {
+    "id": "game_gofish",
+    "name": "Go Fish Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Go Fish in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_gofish.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "gofish",
+    "gameId": "gofish",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 14
+  },
+  "game_yahtzee": {
+    "id": "game_yahtzee",
+    "name": "Yahtzee Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Yahtzee in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_yahtzee.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "yahtzee",
+    "gameId": "yahtzee",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 16
+  },
+  "game_connect4": {
+    "id": "game_connect4",
+    "name": "Connect4 Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Connect4 in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_connect4.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "connect4",
+    "gameId": "connect4",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 18
+  },
+  "game_battleship": {
+    "id": "game_battleship",
+    "name": "Battleship Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Battleship in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_battleship.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "battleship",
+    "gameId": "battleship",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 20
+  },
+  "game_uno": {
+    "id": "game_uno",
+    "name": "Uno Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Uno in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_uno.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "uno",
+    "gameId": "uno",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 22
+  },
+  "game_chess": {
+    "id": "game_chess",
+    "name": "Chess Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Chess in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_chess.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "chess",
+    "gameId": "chess",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 24
+  },
+  "game_squares": {
+    "id": "game_squares",
+    "name": "James square game Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for James square game in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_squares.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "squares",
+    "gameId": "squares",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 26
+  },
+  "game_miner": {
+    "id": "game_miner",
+    "name": "Miner Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Miner in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_miner.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "miner",
+    "gameId": "miner",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 28
+  },
+  "game_mancala": {
+    "id": "game_mancala",
+    "name": "Mancala Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Mancala in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_mancala.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "mancala",
+    "gameId": "mancala",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 30
+  },
+  "game_hangman": {
+    "id": "game_hangman",
+    "name": "Hangman Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Hangman in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_hangman.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "hangman",
+    "gameId": "hangman",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 32
+  },
+  "game_trouble": {
+    "id": "game_trouble",
+    "name": "Trouble Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Trouble in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_trouble.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "trouble",
+    "gameId": "trouble",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 34
+  },
+  "game_shadowtrace": {
+    "id": "game_shadowtrace",
+    "name": "ShadowTrace Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for ShadowTrace in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_shadowtrace.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "shadowtrace",
+    "gameId": "shadowtrace",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 36
+  },
+  "game_doomlike": {
+    "id": "game_doomlike",
+    "name": "Dungeon Blaster Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "uncommon",
+    "description": "Unlocks hosting for Dungeon Blaster in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_doomlike.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "doomlike",
+    "gameId": "doomlike",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 40
+  },
+  "game_othello": {
+    "id": "game_othello",
+    "name": "Othello Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "uncommon",
+    "description": "Unlocks hosting for Othello in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_othello.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "othello",
+    "gameId": "othello",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 45
+  },
+  "game_pixelquest": {
+    "id": "game_pixelquest",
+    "name": "Pixel Quest Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "uncommon",
+    "description": "Unlocks hosting for Pixel Quest in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_pixelquest.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "pixelquest",
+    "gameId": "pixelquest",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 50
+  },
+  "game_battleship2": {
+    "id": "game_battleship2",
+    "name": "Battleship 2.0 Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "uncommon",
+    "description": "Unlocks hosting for Battleship 2.0 in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_battleship2.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "battleship2",
+    "gameId": "battleship2",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 55
+  },
+  "gameforge_master_key": {
+    "id": "gameforge_master_key",
+    "name": "GameForge Master Pass",
+    "category": "game",
+    "type": "game_unlock",
+    "rarity": "rare",
+    "description": "Testing pass that unlocks hosting for every table game. Remove or raise the price before production.",
+    "image": "/assets/items/gameforge_master_key.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksAllGames": true,
+    "masterGameKey": true,
+    "tags": [
+      "game",
+      "unlock",
+      "master"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 99
   }
 }
