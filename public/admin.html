@@ -841,7 +841,7 @@ function drawAdminList(){
     return cardHtml(
       esc(a.username)+' <span class="badge good">'+esc(formatRole(a.role))+'</span> '+owner+' '+missing,
       'Last login: '+esc(last),
-      roleSelect+'<button class="good" onclick="setAdminRole(''+escAttr(a.username)+'',document.getElementById('role_'+escAttr(a.username)+'').value)">Save Role</button><button class="gold" onclick="resetUserPasswordPrompt(''+escAttr(a.username)+'')">Reset Password</button>'+(a.owner?'':'<button class="danger" onclick="removeAdminRole(''+escAttr(a.username)+'')">Remove Admin</button>')
+      roleSelect+'<button class="good" onclick="setAdminRole(\''+escAttr(a.username)+'\',document.getElementById(\'role_'+escAttr(a.username)+'\').value)">Save Role</button><button class="gold" onclick="resetUserPasswordPrompt(\''+escAttr(a.username)+'\')">Reset Password</button>'+(a.owner?'':'<button class="danger" onclick="removeAdminRole(\''+escAttr(a.username)+'\')">Remove Admin</button>')
     );
   }).join(''):'<div class="empty">No admins found.</div>';
 }
