@@ -388,6 +388,9 @@ var profiles={};
 var moveBook={};
 var state=null;
 var ready=false;
+var battleInstanceId=new URLSearchParams(location.search).get('battleInstance')||'';
+var instanceSocket=null;
+var lockedInstance=null;
 
 function el(id){return document.getElementById(id);}
 
@@ -407,6 +410,9 @@ function receiveSetup(setupPlayers,setupSeat){
 }
 
 async function loadProfiles(){
+  // Normal launcher/private-table path:
+  // The legacy launcher tells Pet Battle who is seated, then this file loads each
+  // player's active pet profile. Battle Hall bypasses this with locked snapshots.
   try{
     profiles={};
     moveBook={};
@@ -437,6 +443,84 @@ async function loadProfiles(){
   }catch(err){
     setStatus('Battle load failed',err.message);
   }
+}
+
+function loadLockedInstance(instance){
+  // Battle Hall / Direct Challenge path:
+  // The server has already chosen the two battlers and frozen battle pet snapshots.
+  // We wrap those snapshots in the same profile shape used by the older battle UI
+  // so the renderer can stay simple and readable.
+  lockedInstance=instance;
+  players=(instance.players||[]).map(function(p){return {name:p.username||p.name};}).slice(0,2);
+  mySeat=instance.mySeat;
+  profiles={};
+  moveBook=instance.moves||{};
+
+  (instance.players||[]).forEach(function(p,index){
+    var pet=p.lockedPet||{};
+    profiles[index]={
+      username:p.username,
+      activePetId:pet.id,
+      pets:{}
+    };
+    profiles[index].pets[pet.id]=pet;
+  });
+
+  meBadge.innerText=mySeat===null||mySeat===undefined?'Spectator':'Seat '+(mySeat+1);
+  ready=true;
+
+  if(instance.state){
+    state=instance.state;
+    draw();
+  }else if(mySeat===0&&!state){
+    state=freshBattle();
+    sync();
+  }else{
+    setStatus('Battle ready','Waiting for the first battler to open the arena.');
+    drawEmpty();
+  }
+}
+
+function connectBattleInstance(){
+  if(!battleInstanceId)return false;
+
+  var username=localStorage.getItem('gf_user')||'';
+  if(!username){
+    setStatus('Login required','Log in before joining a locked battle instance.');
+    return true;
+  }
+
+  setStatus('Joining locked battle','Loading server-approved pets and opponent.');
+  var protocol=location.protocol==='https:'?'wss://':'ws://';
+  instanceSocket=new WebSocket(protocol+location.host);
+
+  instanceSocket.onopen=function(){
+    instanceSocket.send(JSON.stringify({type:'hello',username:username}));
+    instanceSocket.send(JSON.stringify({type:'battleInstanceJoin',instanceId:battleInstanceId}));
+  };
+
+  instanceSocket.onmessage=function(event){
+    var msg;
+    try{msg=JSON.parse(event.data||'{}');}catch(e){return;}
+
+    if(msg.type==='battleInstanceSetup'){
+      loadLockedInstance(msg.instance);
+      return;
+    }
+
+    if(msg.type==='battleInstanceMove'&&window.onMove){
+      window.onMove(msg.data);
+      return;
+    }
+
+    if(msg.type==='error')setStatus('Battle error',msg.message||'Something went wrong.');
+  };
+
+  instanceSocket.onclose=function(){
+    if(!state)setStatus('Connection closed','Could not stay connected to the battle instance.');
+  };
+
+  return true;
 }
 
 function activePetForSeat(seat){
@@ -1012,6 +1096,13 @@ function sync(){
 }
 
 window.sendMove=function(data){
+  // Battle Hall instances sync directly through the server-owned battle instance.
+  // Classic launcher rooms keep using parent.postMessage so pre-planned/private
+  // room battles continue to work exactly like before.
+  if(battleInstanceId&&instanceSocket&&instanceSocket.readyState===1){
+    instanceSocket.send(JSON.stringify({type:'battleInstanceMove',instanceId:battleInstanceId,data:data}));
+    return;
+  }
   parent.postMessage({type:'move',data:data},'*');
 };
 
@@ -1048,11 +1139,13 @@ function escapeHtml(s){
 }
 
 drawEmpty();
-receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
+if(!connectBattleInstance()){
+  receiveSetup(window.GAME_PLAYERS||[],window.GAME_MY_SEAT);
 
-setTimeout(function(){
-  receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
-},250);
+  setTimeout(function(){
+    receiveSetup(window.GAME_PLAYERS||players||[],window.GAME_MY_SEAT);
+  },250);
+}
 </script>
 </body>
 </html>
