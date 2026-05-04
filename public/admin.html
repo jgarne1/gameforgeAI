@@ -343,6 +343,11 @@ textarea.adminTextArea{
           <button class="primary" onclick="loadPlayer()">Load Player</button>
           <button class="ghost" onclick="copyLoggedInUser()">Use Me</button>
         </div>
+        <div class="toolBox" style="margin-top:12px">
+          <h4>Testing Reset</h4>
+          <p class="muted">Resets every user back to the default pet profile: 100 coins, one Mystery Egg, and starter inventory. This also clears marketplace listings so old listings do not point to wiped inventory.</p>
+          <button class="danger" onclick="resetAllUsersToDefault()">Reset All Users to Default</button>
+        </div>
       </div>
 
       <div id="playerWorkArea" class="hidden playerPanel">
@@ -834,6 +839,26 @@ function closeRoom(id){
 }
 
 function quickLoadPlayer(name){showSection('players');$('targetUser').value=name;loadPlayer();}
+
+async function resetAllUsersToDefault(){
+  if(!confirm('Reset ALL users to default coins, pets, eggs, and inventory? This cannot be undone.'))return;
+  if(!confirm('Final confirmation: this will also clear all marketplace listings. Continue?'))return;
+
+  try{
+    let result=await api('/api/admin/users/reset-defaults',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:adminUser})
+    });
+
+    selectedPlayer=null;
+    $('playerWorkArea').classList.add('hidden');
+    await refreshAll();
+    toast(result.message||('Reset '+Number(result.resetUsers||0)+' users.'));
+  }catch(err){
+    toast(err.message||'Reset failed.');
+  }
+}
 
 async function loadPlayer(){
   let target=$('targetUser').value.trim();
