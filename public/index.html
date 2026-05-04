@@ -376,6 +376,61 @@ button:disabled{
   display:none!important;
 }
 
+function reloadLauncherFrameForSession(){
+  let frame=document.getElementById('launcherFrame');
+  if(!frame)return;
+  frame.src='/games/launcher.html?v='+Date.now()+'&user='+encodeURIComponent(me||'guest')+'&admin='+(admin?'1':'0');
+}
+
+function closeSessionSocket(){
+  if(!socket)return;
+  try{
+    socket.onclose=null;
+    socket.close();
+  }catch(_){ }
+  socket=null;
+}
+
+function resetSessionScopedUi(){
+  // Hard reset anything that can retain the previous account inside an iframe or websocket-driven room state.
+  // This prevents admin/player switches from keeping old unlock/admin state until a full browser refresh.
+  room=null;
+  currentRoom=null;
+  parentJoinedRoomId='';
+  launcherLoadedGameKey='';
+  pendingGameToSelect='';
+  roomReadyStatus={};
+  readyRoomId='';
+  lastChatCount=0;
+  loadedGameKey='';
+  directGameKey='';
+  clearChatUnread();
+
+  try{
+    clearActiveGameFrame();
+  }catch(_){
+    try{
+      document.body.classList.remove('gameMode');
+      document.body.classList.remove('directGameMode');
+      if(gameArea)gameArea.classList.add('hidden');
+      if(gameFrame){
+        gameFrame.onload=null;
+        gameFrame.removeAttribute('srcdoc');
+        gameFrame.removeAttribute('src');
+      }
+    }catch(__){ }
+  }
+
+  if(roomChatPanel){
+    roomChatPanel.classList.add('hidden');
+    roomChatPanel.classList.remove('chatUnread');
+  }
+  if(chat)chat.innerHTML='';
+
+  reloadLauncherFrameForSession();
+}
+
+
 /* ===== ACCOUNT ===== */
 .accountBox{
   max-width:820px;
@@ -1876,7 +1931,7 @@ body.gameMode #gameArea{
       </div>
 
       <div class="card glow launcherShell" id="launcherShell">
-        <iframe id="launcherFrame" src="/games/launcher.html?v=1" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        <iframe id="launcherFrame" src="about:blank" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
       </div>
 
       <div id="gameArea" class="card hidden">
@@ -2253,11 +2308,19 @@ async function login(){
 }
 
 function setLogin(d){
-  me=d.user.username;
-  admin=!!d.admin;
+  let nextUser=d&&d.user?String(d.user.username||''):'';
+  let nextAdmin=!!(d&&d.admin);
+  let switchedAccount=nextUser!==me||nextAdmin!==admin;
+
+  if(switchedAccount)closeSessionSocket();
+
+  me=nextUser;
+  admin=nextAdmin;
 
   localStorage.setItem('gf_user',me);
-  localStorage.setItem('gf_admin',admin);
+  localStorage.setItem('gf_admin',admin?'true':'false');
+
+  if(switchedAccount)resetSessionScopedUi();
 
   drawAuth();
   connect();
@@ -2271,6 +2334,8 @@ function setLogin(d){
 }
 
 function logout(){
+  closeSessionSocket();
+
   me='';
   admin=false;
   petProfile=null;
@@ -2283,6 +2348,8 @@ function logout(){
   localStorage.removeItem('gf_user');
   localStorage.removeItem('gf_admin');
 
+  resetSessionScopedUi();
+
   drawAuth();
   drawPet();
   drawShop();
@@ -2291,8 +2358,6 @@ function logout(){
   updateTopStatus();
   drawContinueCard();
   showToast('Logged out','warn');
-
-  if(socket)socket.send(JSON.stringify({type:'hello',username:''}));
 }
 
 /* ===== WEBSOCKET / ROOMS ===== */
@@ -2614,6 +2679,7 @@ function clearActiveGameFrame(){
   setFrameLoading(false);
   gameFrame.onload=null;
   gameFrame.removeAttribute('srcdoc');
+  gameFrame.removeAttribute('src');
   loadedGameKey='';
   directGameKey='';
 }
@@ -4022,6 +4088,7 @@ function escapeAttr(s){
 /* ===== INIT ===== */
 
 drawAuth();
+reloadLauncherFrameForSession();
 
 if(me){
   connect();
