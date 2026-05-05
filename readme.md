@@ -458,3 +458,5 @@ Rules:
 - New pets can launch with still images only.
 - Admin uploads for pet sprites use slots named `{stage}_{animation}`, such as `baby_walk`.
 - Current PetWorld sprite defaults assume 5 columns x 5 rows, 25 frames. If a future sheet uses a different layout, add metadata instead of hard-coding pet-specific logic into the renderer.
+- `games/petworld.html` now has a modular `PET_ANIM` controller. Set `PET_ANIM.enabled=false` to disable all sprite behavior and return to classic still-image rendering.
+- Runtime behavior: `walk` plays during PetWorld wandering, `idle` plays while resting if present, and `jump` plays briefly for playful/train/explore reactions if present. Missing `walk`, `idle`, or `jump` files are expected and safe.

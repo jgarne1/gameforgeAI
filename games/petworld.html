@@ -278,6 +278,33 @@ button,input,select{font-family:inherit}
   animation:breatheImg 2.4s ease-in-out infinite;
 }
 .petImg.hide{display:none}
+
+/*
+  Optional sprite-sheet renderer.
+  - Hidden by default so the classic still-image PetWorld remains the fallback.
+  - JS only reveals this layer when /assets/pets/{species}/sprites/{stage}_{state}.png exists.
+  - Sheets currently default to 5x5 / 25 frames. Keep this generic so new pets do not need custom code.
+*/
+.petSprite{
+  position:absolute;
+  width:210px;
+  height:210px;
+  z-index:3;
+  pointer-events:none;
+  background-repeat:no-repeat;
+  background-size:500% 500%;
+  background-position:0% 0%;
+  filter:drop-shadow(0 20px 20px rgba(15,23,42,.25));
+  transform:scaleX(var(--petFacing, 1));
+  transform-origin:center bottom;
+  image-rendering:auto;
+}
+.petSprite.hide{display:none}
+.petSprite.spriteIdle{animation:spriteIdleBreath 2.5s ease-in-out infinite}
+.petSprite.spriteWalk{animation:spriteWalkBob .46s ease-in-out infinite}
+@keyframes spriteIdleBreath{0%,100%{transform:scaleX(var(--petFacing, 1)) scale(1) translateY(0)}50%{transform:scaleX(var(--petFacing, 1)) scale(1.035) translateY(-3px)}}
+@keyframes spriteWalkBob{0%,100%{transform:scaleX(var(--petFacing, 1)) translateY(0) rotate(-.8deg)}50%{transform:scaleX(var(--petFacing, 1)) translateY(-5px) rotate(.8deg)}}
+
 .petEmoji{
   font-size:136px;
   filter:drop-shadow(0 20px 20px rgba(15,23,42,.23));
@@ -990,6 +1017,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
         <div id="petOrb" class="petOrb" onclick="comfortPet()">
           <img id="petImg" class="petImg hide" src="">
+          <div id="petSprite" class="petSprite hide" aria-hidden="true"></div>
           <div id="petEmoji" class="petEmoji">🥚</div>
         </div>
 
@@ -1071,6 +1099,29 @@ var currentTab='quests';
 var selectedZoneId='meadow';
 var logs=[];
 var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1,pendingConfirm:null,pendingConfirmUntil:0};
+
+/*
+  PetWorld Animation Controller config.
+  This is intentionally small and removable:
+  - Set enabled:false to return to classic PetWorld still-image behavior.
+  - Missing sprite sheets automatically fall back to petImg/still image.
+  - Current convention: /assets/pets/{species}/sprites/{stage}_{idle|walk|jump}.png
+*/
+var PET_ANIM={
+  enabled:true,
+  cols:5,
+  rows:5,
+  frames:25,
+  fps:{idle:8,walk:13,jump:16},
+  currentKey:null,
+  activeState:'still',
+  facing:1,
+  frame:0,
+  timer:null,
+  assets:{idle:null,walk:null,jump:null},
+  available:{idle:false,walk:false,jump:false},
+  checking:false
+};
 
 function el(id){return document.getElementById(id);}
 
@@ -1899,20 +1950,166 @@ function comfortPet(){
 }
 
 function updatePetVisual(pet){
+  /*
+    Always prepare the classic still image first.
+    The sprite layer is optional and only appears after its sheet is confirmed.
+  */
+  showStillPetImage(pet);
+  preparePetAnimation(pet);
+}
+
+function showStillPetImage(pet){
   var img=el('petImg');
+  var sprite=el('petSprite');
   var emojiEl=el('petEmoji');
   var src=petAssetPath(pet);
+
+  if(sprite)sprite.classList.add('hide');
+
   img.onload=function(){img.classList.remove('hide');emojiEl.classList.add('hide')};
   img.onerror=function(){img.classList.add('hide');emojiEl.classList.remove('hide')};
   if(img.src.indexOf(src)===-1)img.src=src;
+}
+
+function petStageFile(pet){
+  var stage=(pet&&pet.stage)||'baby';
+  return stage==='adult'?'adult':stage==='young'||stage==='teen'?'young':'baby';
+}
+
+function petSpritePath(pet,state){
+  if(!pet||pet.stage==='egg')return '';
+  return '/assets/pets/'+(pet.species||'egg')+'/sprites/'+petStageFile(pet)+'_'+state+'.png';
+}
+
+function petAnimationKey(pet){
+  if(!pet)return 'none';
+  return [pet.id||'',pet.species||'',petStageFile(pet),pet.stage||''].join('|');
+}
+
+function preparePetAnimation(pet){
+  if(!PET_ANIM.enabled||!pet||pet.stage==='egg'){
+    stopPetSpriteFrames();
+    PET_ANIM.currentKey=null;
+    return;
+  }
+
+  var key=petAnimationKey(pet);
+  if(PET_ANIM.currentKey===key)return;
+
+  PET_ANIM.currentKey=key;
+  PET_ANIM.activeState='still';
+  PET_ANIM.frame=0;
+  PET_ANIM.assets={
+    idle:petSpritePath(pet,'idle'),
+    walk:petSpritePath(pet,'walk'),
+    jump:petSpritePath(pet,'jump')
+  };
+  PET_ANIM.available={idle:false,walk:false,jump:false};
+  PET_ANIM.checking=true;
+  stopPetSpriteFrames();
+
+  // Check all optional sheets. Missing files are normal and keep the old look.
+  Promise.all([
+    imageExists(PET_ANIM.assets.idle).then(function(ok){PET_ANIM.available.idle=ok}),
+    imageExists(PET_ANIM.assets.walk).then(function(ok){PET_ANIM.available.walk=ok}),
+    imageExists(PET_ANIM.assets.jump).then(function(ok){PET_ANIM.available.jump=ok})
+  ]).then(function(){
+    PET_ANIM.checking=false;
+    var live=activePet();
+    if(live&&petAnimationKey(live)===key){
+      setPetAnimationState('idle');
+    }
+  });
+}
+
+function imageExists(src){
+  return new Promise(function(resolve){
+    if(!src)return resolve(false);
+    var test=new Image();
+    test.onload=function(){resolve(true)};
+    test.onerror=function(){resolve(false)};
+    test.src=src+'?v=spritecheck';
+  });
+}
+
+function setPetAnimationState(state){
+  if(!PET_ANIM.enabled)return false;
+  var sprite=el('petSprite');
+  var img=el('petImg');
+  var emojiEl=el('petEmoji');
+  if(!sprite)return false;
+
+  var wanted=state||'idle';
+  var src=PET_ANIM.assets[wanted];
+
+  // If walk/jump is unavailable, idle is an acceptable animated fallback.
+  // If idle is also unavailable, return false and leave classic PetWorld visuals alone.
+  if(!PET_ANIM.available[wanted]){
+    if(wanted!=='idle'&&PET_ANIM.available.idle){
+      wanted='idle';
+      src=PET_ANIM.assets.idle;
+    }else{
+      stopPetSpriteFrames();
+      sprite.classList.add('hide');
+      return false;
+    }
+  }
+
+  PET_ANIM.activeState=wanted;
+  sprite.style.backgroundImage='url("'+src+'")';
+  sprite.style.backgroundSize=(PET_ANIM.cols*100)+'% '+(PET_ANIM.rows*100)+'%';
+  sprite.style.setProperty('--petFacing',String(PET_ANIM.facing||1));
+  sprite.classList.remove('hide','spriteIdle','spriteWalk');
+  sprite.classList.add(wanted==='walk'?'spriteWalk':'spriteIdle');
+  img.classList.add('hide');
+  emojiEl.classList.add('hide');
+  startPetSpriteFrames(wanted);
+  return true;
+}
+
+function startPetSpriteFrames(state){
+  var fps=Number((PET_ANIM.fps&&PET_ANIM.fps[state])||10);
+  stopPetSpriteFrames(false);
+  PET_ANIM.frame=0;
+  paintPetSpriteFrame();
+  PET_ANIM.timer=setInterval(function(){
+    PET_ANIM.frame=(PET_ANIM.frame+1)%Number(PET_ANIM.frames||25);
+    paintPetSpriteFrame();
+  },Math.max(45,Math.floor(1000/fps)));
+}
+
+function stopPetSpriteFrames(clearFrame){
+  if(PET_ANIM.timer){
+    clearInterval(PET_ANIM.timer);
+    PET_ANIM.timer=null;
+  }
+  if(clearFrame!==false)PET_ANIM.frame=0;
+}
+
+function paintPetSpriteFrame(){
+  var sprite=el('petSprite');
+  if(!sprite)return;
+  var cols=Number(PET_ANIM.cols||5);
+  var rows=Number(PET_ANIM.rows||5);
+  var frame=Number(PET_ANIM.frame||0)%Number(PET_ANIM.frames||25);
+  var col=frame%cols;
+  var row=Math.floor(frame/cols)%rows;
+  var x=cols<=1?0:(col/(cols-1))*100;
+  var y=rows<=1?0:(row/(rows-1))*100;
+  sprite.style.backgroundPosition=x+'% '+y+'%';
+}
+
+function setPetFacing(dir){
+  PET_ANIM.facing=dir<0?-1:1;
+  var sprite=el('petSprite');
+  if(sprite)sprite.style.setProperty('--petFacing',String(PET_ANIM.facing));
 }
 
 function petAssetPath(pet){
   if(!pet)return '';
   if((pet.stage||'egg')==='egg')return eggProgress(pet)>=80?'/assets/pets/egg/egg_cracked.png':'/assets/pets/egg/egg_idle.png';
   var species=pet.species||'egg';
-  var stage=pet.stage||'baby';
-  var file=stage==='adult'?'adult':stage==='young'||stage==='teen'?'young':'baby';
+  var file=petStageFile(pet);
   return '/assets/pets/'+species+'/'+file+'.png';
 }
 
@@ -2047,6 +2244,8 @@ function triggerPetReaction(type){
   ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
   void orb.offsetWidth;
 
+  if(type==='play'||type==='train'||type==='explore')setPetAnimationState('jump');
+
   if(type==='feed'||type==='happy'||type==='clean')orb.classList.add('reactHappy');
   else if(type==='play')orb.classList.add('reactExcited');
   else if(type==='train')orb.classList.add('reactFocus');
@@ -2057,6 +2256,7 @@ function triggerPetReaction(type){
   setTimeout(function(){
     if(!orb)return;
     ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
+    setPetAnimationState('idle');
   },1700);
 }
 
@@ -2178,10 +2378,14 @@ function smartMovePet(x,y,rot,scale,duration){
   var orb=el('petOrb');
   if(!orb)return;
 
+  var previousX=Number(localState.petX||0);
+  setPetFacing(Number(x||0)>=previousX?1:-1);
+
   localState.petX=x;
   localState.petY=y;
   localState.petRot=rot||0;
   localState.petScale=scale||1;
+  setPetAnimationState('walk');
 
   orb.classList.add('walking');
   orb.style.transition='transform '+Number(duration||1800)+'ms cubic-bezier(.25,.8,.25,1)';
@@ -2189,6 +2393,7 @@ function smartMovePet(x,y,rot,scale,duration){
 
   setTimeout(function(){
     if(orb)orb.classList.remove('walking');
+    setPetAnimationState('idle');
   },Number(duration||1800)+80);
 }
 
