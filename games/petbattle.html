@@ -4,67 +4,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pet Battle Arena</title>
 <style>
-  /* ===== MOBILE BATTLE LAYOUT FIX ===== */
-@media (max-width: 900px){
-
-  .battleArena{
-    display:flex;
-    flex-direction:row !important;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-  }
-
-  .petCard{
-    width:48%;
-    min-width:0;
-    padding:6px;
-  }
-
-  .petImg, .petEmoji{
-    width:60px !important;
-    height:60px !important;
-    font-size:40px !important;
-  }
-
-  .battleCenter{
-    display:none; /* remove clutter between pets */
-  }
-
-  .battleUI{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    background:rgba(0,0,0,0.9);
-    padding:10px;
-    border-top:1px solid #333;
-  }
-
-  .actionRow{
-    display:flex;
-    gap:6px;
-    justify-content:space-between;
-  }
-
-  .actionBtn{
-    flex:1;
-    font-size:14px;
-    padding:10px 4px;
-  }
-
-  .stanceRow{
-    display:flex;
-    gap:6px;
-    margin-bottom:6px;
-  }
-
-  .stanceBtn{
-    flex:1;
-    padding:8px;
-    font-size:13px;
-  }
-}
 :root{
   --bg:#07111f;
   --card:rgba(255,255,255,.88);
@@ -414,19 +353,56 @@ button:disabled{
   .wrap{height:auto;min-height:100dvh;padding:8px;gap:8px;}
   .top{align-items:flex-start;flex-direction:column;border-radius:18px;padding:10px;}
   .top h1{font-size:20px;margin-bottom:4px;}
-  .arena{grid-template-columns:1fr 1fr!important;gap:8px;}
-  .side,.log,.controls{border-radius:18px;padding:10px;}
-  .side h2{font-size:17px;margin:0 0 4px;}
-  .petImg{width:120px;height:120px;}
-  .petEmoji{font-size:76px;}
+
+  /* Phone layout: keep battlers side-by-side and move status/log below. */
+  .arena{
+    display:grid;
+    grid-template-columns:1fr 1fr!important;
+    grid-template-rows:auto auto;
+    gap:8px;
+  }
+  .arena > .side:nth-child(1){grid-column:1;grid-row:1;}
+  .arena > .side:nth-child(3){grid-column:2;grid-row:1;}
+  .arena > .center{grid-column:1 / span 2;grid-row:2;}
+
+  .side{min-width:0;gap:7px;}
+  .side,.log,.controls{border-radius:18px;padding:8px;}
+  .side h2{font-size:16px;margin:0 0 4px;}
+  .side .muted{font-size:11px;}
+  .statusTags{gap:4px;}
+  .statusTag{font-size:10px;padding:3px 6px;}
+  .hpBar{height:11px;margin:6px 0;}
+  .meterBar{height:7px;margin:5px 0 2px;}
+  .petStage{min-height:165px;border-radius:20px;}
+  .petImg{width:104px;height:104px;}
+  .petEmoji{font-size:68px;}
+  .statGrid{grid-template-columns:1fr 1fr;gap:5px;font-size:10px;}
+  .stat{padding:6px;border-radius:12px;}
+  .resourceGrid{grid-column:1 / span 2;gap:5px;}
+  .resourcePill{padding:5px 6px;font-size:10px;}
+  .resourcePill b{font-size:12px;}
+  .center{gap:8px;}
+  .statusCard,.logCard{border-radius:18px;padding:9px;}
+  .statusCard h2,.logCard h3{font-size:16px;}
+  .log{min-height:92px;max-height:120px;font-size:12px;}
+
   .moves{grid-template-columns:1fr 1fr!important;gap:7px;}
   .moveBtn{min-height:68px;padding:9px;border-radius:14px;}
-  .moveBtn strong{font-size:13px}.moveBtn span{font-size:11px;}
-  .statGrid{grid-template-columns:1fr 1fr;}
+  .moveBtn strong{font-size:13px}
+  .moveBtn span{font-size:11px;}
   .winner{font-size:18px;}
   button{font-size:15px;}
 }
-@media (max-width:420px){.moves{grid-template-columns:1fr!important}.petImg{width:104px;height:104px}.petEmoji{font-size:68px}}
+@media (max-width:420px){
+  .wrap{padding:6px;}
+  .arena{gap:6px;}
+  .side{padding:6px;}
+  .petStage{min-height:135px;}
+  .petImg{width:88px;height:88px;}
+  .petEmoji{font-size:58px;}
+  .moves{grid-template-columns:1fr 1fr!important;}
+  .moveBtn span{display:none;}
+}
 
 
 
@@ -1019,7 +995,7 @@ function drawMoves(){
   ['balanced','brace','focus'].forEach(function(id){
     var info=STANCE[id];
     html+='<button class="stanceBtn '+(selectedStance===id?'active':'')+'" onclick="selectStance(\''+id+'\')">'+
-      '<strong>'+escapeHtml(info.icon+' '+info.name)+'</strong><span>'+escapeHtml(info.short)+'</span></button>';
+      '<strong>'+escapeHtml(info.icon+' '+info.name)+'</strong><span>'+escapeHtml(info.short+' · Shift: 1 energy')+'</span></button>';
   });
   html+='</div>';
 
@@ -1184,9 +1160,40 @@ function stanceIcon(id){return (STANCE[id]&&STANCE[id].icon)||'⚔️';}
 
 function selectStance(id){
   if(!STANCE[id])id='balanced';
+
+  if(!state || mySeat===null || mySeat===undefined){
+    selectedStance=id;
+    try{localStorage.setItem('gf_petbattle_stance',id);}catch(e){}
+    drawMoves();
+    return;
+  }
+
+  ensureBattleShape();
+
+  if(selectedStance===id){
+    drawMoves();
+    return;
+  }
+
+  if(mySeat===state.turn){
+    if(Number(state.energy[mySeat]||0)<1){
+      addLog(state.pets[mySeat].name+' tried to shift stance, but lacked energy.');
+      drawMoves();
+      return;
+    }
+
+    state.energy[mySeat]=clampResource(Number(state.energy[mySeat]||0)-1,0,10);
+    state.stamina[mySeat]=clampResource(Number(state.stamina[mySeat]||100)-5,0,100);
+    state.stance[mySeat]=id;
+
+    addLog(state.pets[mySeat].name+' shifted stance to '+stanceLabel(id)+' (-1 energy, -5 stamina).');
+    sync();
+  }
+
   selectedStance=id;
   try{localStorage.setItem('gf_petbattle_stance',id);}catch(e){}
-  drawMoves();
+
+  draw();
 }
 
 function moveEnergyCost(move){
