@@ -428,37 +428,33 @@ PetBattle should stay readable at a glance. New systems should avoid adding more
 - Continue testing Care/Attack mode switching on two-player sessions.
 - Add pet identity and move flavor only after the current combat UI feels obvious to a first-time player.
 
+## PetWorld optional sprite-sheet asset pipeline
 
-### PetBattle v2.1 Care Preview / AAA UI pass — 2026-05-05
+PetWorld still supports the original still-image art paths and must keep them as the fallback:
 
-Implemented direction:
+```txt
+public/assets/pets/{species}/baby.png
+public/assets/pets/{species}/young.png
+public/assets/pets/{species}/adult.png
+```
 
-- Care switching remains free by design. Strategy comes from active-only benefits and opportunity cost, not from switch penalties.
-- Soothe, Steady, and Lock In now share modular care tuning through `CARE_TUNING` and `carePreviewFor()`. The live UI and committed battle math use the same helper so previews match results.
-- Care growth gently ramps over the first ~1.25 seconds. This keeps quick tactical swaps useful but prevents rapid Lock In flicker from becoming the best way to farm Fury.
-- HP, Stamina, and Fury/Finisher now show blue pending-growth overlays during the Care Window. When the opponent's attack resolves, the pending growth commits into the normal bar color.
-- Care buttons remain compact but get stronger live feedback: active sheen, header pending text, and mini-meter text tied to the same care calculation.
+Optional animation sprite sheets are added beside the stills under `sprites/`:
 
-Removal note:
+```txt
+public/assets/pets/{species}/sprites/baby_idle.png
+public/assets/pets/{species}/sprites/baby_walk.png
+public/assets/pets/{species}/sprites/baby_jump.png
+public/assets/pets/{species}/sprites/young_idle.png
+public/assets/pets/{species}/sprites/young_walk.png
+public/assets/pets/{species}/sprites/young_jump.png
+public/assets/pets/{species}/sprites/adult_idle.png
+public/assets/pets/{species}/sprites/adult_walk.png
+public/assets/pets/{species}/sprites/adult_jump.png
+```
 
-- The preview system is intentionally modular. To remove it, delete the v2.1 CSS block and the calls to `setProjectedGainBar()`, `setProjectedResourcePreview()`, and `clearProjectedGainBars()`; core battle math will remain in `carePreviewFor()`.
+Rules:
 
-
-## PetBattle v2.2 UI / Feedback Polish
-
-This pass keeps the v2.1 Care mechanics intact and focuses on making battles easier to read and better to look at.
-
-### Added
-- Darker battle-themed visual treatment with attack/care/fury color language.
-- Compact Event Feed that shows the latest important moments instead of a noisy long log.
-- Phase Ribbon and Battle Callout so players always know whether they are attacking, caring, charging, or finished.
-- Attack/Care action area labels to make the current phase self-explanatory.
-- Care commit feedback: Soothe, Steady, Treat, Guard, and Lock In now show floating feedback when their pending value commits.
-- Guard feedback: guarded hits show `GUARDED` before damage.
-- Finisher/large-hit feedback: temporary screen shake for finisher impacts.
-
-### Modular removal notes
-- Remove the `PETBATTLE v2.2` CSS block to return to the softer previous theme.
-- Remove `updateBattleShell()` and its call inside `draw()` to remove the phase ribbon/callout logic.
-- Revert `drawLog()` to the old version if a full long text log is preferred.
-- Remove the `state.lastCareSummary` assignments inside `applyCareBeforeIncoming()` if floating care feedback feels too busy.
+- Sprite sheets are optional. If a sheet is missing, PetWorld falls back to the still image and current movement behavior.
+- New pets can launch with still images only.
+- Admin uploads for pet sprites use slots named `{stage}_{animation}`, such as `baby_walk`.
+- Current PetWorld sprite defaults assume 5 columns x 5 rows, 25 frames. If a future sheet uses a different layout, add metadata instead of hard-coding pet-specific logic into the renderer.
