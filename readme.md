@@ -246,3 +246,14 @@ Combat v1 principles:
 - Mobile UI should keep pets readable side-by-side and keep stance/action buttons large enough for touch.
 
 Future battle changes should preserve the stance/resource identity and avoid drifting into a Pokemon-like type-and-four-move clone.
+
+### Pet Battle combat v1.1 mobile/stance update
+
+This drop-in adds two follow-up fixes to Combat v1:
+
+- Phone battle layout now explicitly keeps both pets side-by-side, with the status card and battle log placed below the two pet cards.
+- The old unused `.battleArena` / `.petCard` mobile patch was removed because Pet Battle uses `.arena`, `.side`, and `.center`.
+- Stance changes now have an intentional cost during the player's active turn: `-1 energy` and `-5 stamina` when switching to a different stance.
+- Stance button labels now show the shift cost so the mechanic is visible to players.
+- Very small phones keep two-column moves, shrink pet stages, and hide secondary move descriptions to preserve tap-friendly combat controls.
+
