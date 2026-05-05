@@ -228,3 +228,21 @@ Current side rail direction:
 - Game metadata fields should include visible labels and short helper text because admins may not know the difference between display names, ids/slugs, file names, seats, and unlock prices.
 - The Current Games list should scroll independently so the Game Details and Upload HTML panels stay visible while admins browse existing games.
 - Do not add aggressive validation or change the game metadata contract unless requested; current goal is clarity without breaking the existing game creation flow.
+
+## Pet Battle combat v1 update
+
+Pet Battle now uses a GameForge-specific combat direction instead of a simple first-hit damage race.
+
+Combat v1 principles:
+
+- Battles should last several meaningful turns, not two hits.
+- Players choose a stance before each move: Push, Brace, or Focus.
+- HP remains the survival resource.
+- Energy controls move availability and prevents strong-move spam.
+- Stamina controls move effectiveness and punishes reckless attacking.
+- Brace reduces incoming damage and drains attacker stamina when struck.
+- Focus builds energy and stamina but is risky if the opponent catches it with damage.
+- Push increases damage but costs more stamina.
+- Mobile UI should keep pets readable side-by-side and keep stance/action buttons large enough for touch.
+
+Future battle changes should preserve the stance/resource identity and avoid drifting into a Pokemon-like type-and-four-move clone.
