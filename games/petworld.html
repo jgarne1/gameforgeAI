@@ -1138,6 +1138,7 @@ var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,p
 
 /*
   PetWorld Animation Controller config.
+  v2.9: safer sprite swaps for Feed/Play so jump sheets do not blank/clip during load.
   This is intentionally small and removable:
   - Set enabled:false to return to classic PetWorld still-image behavior.
   - Missing sprite sheets automatically fall back to petImg/still image.
@@ -1165,6 +1166,7 @@ var PET_ANIM={
   timer:null,
   assets:{idle:null,walk:null,jump:null},
   available:{idle:false,walk:false,jump:false},
+  loaded:{idle:false,walk:false,jump:false},
   hasAny:false,
   checking:false
 };
@@ -2082,6 +2084,7 @@ function preparePetAnimation(pet){
     jump:petSpritePath(pet,'jump')
   };
   PET_ANIM.available={idle:false,walk:false,jump:false};
+  PET_ANIM.loaded={idle:false,walk:false,jump:false};
   PET_ANIM.hasAny=false;
   setPetSpriteMode(false);
   PET_ANIM.checking=true;
@@ -2089,9 +2092,9 @@ function preparePetAnimation(pet){
 
   // Check all optional sheets. Missing files are normal and keep the old look.
   Promise.all([
-    imageExists(PET_ANIM.assets.idle).then(function(ok){PET_ANIM.available.idle=ok}),
-    imageExists(PET_ANIM.assets.walk).then(function(ok){PET_ANIM.available.walk=ok}),
-    imageExists(PET_ANIM.assets.jump).then(function(ok){PET_ANIM.available.jump=ok})
+    imageExists(PET_ANIM.assets.idle).then(function(ok){PET_ANIM.available.idle=ok;PET_ANIM.loaded.idle=ok}),
+    imageExists(PET_ANIM.assets.walk).then(function(ok){PET_ANIM.available.walk=ok;PET_ANIM.loaded.walk=ok}),
+    imageExists(PET_ANIM.assets.jump).then(function(ok){PET_ANIM.available.jump=ok;PET_ANIM.loaded.jump=ok})
   ]).then(function(){
     PET_ANIM.checking=false;
     PET_ANIM.hasAny=!!(PET_ANIM.available.idle||PET_ANIM.available.walk||PET_ANIM.available.jump);
@@ -2111,7 +2114,10 @@ function imageExists(src){
     var test=new Image();
     test.onload=function(){resolve(true)};
     test.onerror=function(){resolve(false)};
-    test.src=src+'?v=spritecheck';
+    // Use the exact same URL that the sprite renderer will use.
+    // Earlier versions cache-checked with ?v=spritecheck, then rendered the plain URL.
+    // That could cause a blank/partial moment during Feed/Play while the real sheet loaded.
+    test.src=src;
   });
 }
 
@@ -2143,14 +2149,27 @@ function setPetAnimationState(state){
 
   PET_ANIM.activeState=wanted;
   setPetSpriteMode(true);
+
+  // Paint the first frame before hiding the still image. This avoids the pet
+  // disappearing for a frame when Feed/Play swaps from walk/still into jump.
+  stopPetSpriteFrames(false);
+  PET_ANIM.frame=0;
   sprite.style.backgroundImage='url("'+src+'")';
   sprite.style.backgroundSize=(PET_ANIM.cols*100)+'% '+(PET_ANIM.rows*100)+'%';
   sprite.style.setProperty('--petFacing',String(PET_ANIM.facing||1));
-  sprite.classList.remove('hide','spriteIdle','spriteWalk','spriteJump');
+  paintPetSpriteFrame();
+
+  sprite.classList.remove('spriteIdle','spriteWalk','spriteJump');
   sprite.classList.add(wanted==='walk'?'spriteWalk':wanted==='jump'?'spriteJump':'spriteIdle');
-  img.classList.add('hide');
-  emojiEl.classList.add('hide');
-  startPetSpriteFrames(wanted);
+
+  // Reveal the sprite after layout has accepted the new background. Keeping the
+  // still image visible until this moment prevents the partial/blank flicker.
+  requestAnimationFrame(function(){
+    sprite.classList.remove('hide');
+    img.classList.add('hide');
+    emojiEl.classList.add('hide');
+    startPetSpriteFrames(wanted);
+  });
   return true;
 }
 
@@ -2385,6 +2404,52 @@ function freezePetAtCurrentVisualPosition(){
   void orb.offsetWidth;
 }
 
+function petBaseTransform(extraY,extraScale){
+  // Shared transform builder for reaction animations. Keeping this centralized
+  // prevents Feed/Play from fighting the route-walk transform logic.
+  var y=Number(localState.petY||0)+Number(extraY||0);
+  var scale=Number(extraScale||1);
+  return 'translateX('+Number(localState.petX||0)+'px) translateY('+y+'px) rotate(0deg) scale('+scale+')';
+}
+
+function playPetHopMotion(duration,peakY){
+  // Always perform a physical hop, even when the optional *_jump.png sheet is missing.
+  // The sprite sheet supplies limb motion; this supplies the readable PetWorld reaction.
+  var orb=el('petOrb');
+  if(!orb)return;
+  duration=Number(duration||900);
+  peakY=Number(peakY||-46);
+  orb.style.transition='none';
+  orb.style.transform=petBaseTransform(0,1);
+  void orb.offsetWidth;
+
+  if(orb.animate){
+    var anim=orb.animate([
+      {transform:petBaseTransform(0,1),offset:0},
+      {transform:petBaseTransform(peakY,.99),offset:.34},
+      {transform:petBaseTransform(peakY+10,1.055),offset:.58},
+      {transform:petBaseTransform(0,1),offset:1}
+    ],{
+      duration:duration,
+      easing:'cubic-bezier(.2,.85,.25,1)',
+      fill:'both'
+    });
+    anim.onfinish=function(){
+      if(orb)orb.style.transform=petBaseTransform(0,1);
+    };
+    return;
+  }
+
+  // Fallback for older browsers.
+  orb.style.transition='transform '+Math.floor(duration*.34)+'ms cubic-bezier(.2,.85,.25,1)';
+  orb.style.transform=petBaseTransform(peakY,1.04);
+  queueMotion(function(){
+    if(!orb)return;
+    orb.style.transition='transform '+Math.floor(duration*.48)+'ms cubic-bezier(.2,.85,.25,1)';
+    orb.style.transform=petBaseTransform(0,1);
+  },Math.floor(duration*.38));
+}
+
 function runJumpReaction(source){
   var pet=activePet();
   var orb=el('petOrb');
@@ -2399,8 +2464,10 @@ function runJumpReaction(source){
   // pet's visible position instead of snapping to a route target/off-screen point.
   freezePetAtCurrentVisualPosition();
 
-  // Prefer the jump sheet. If it does not exist, setPetAnimationState safely falls back to idle/still.
+  // Prefer the jump sheet. If it does not exist, the visible pet still performs
+  // a real hop so the reaction never looks like it failed.
   setPetAnimationState('jump');
+  playPetHopMotion(Number((PET_ANIM.reactionMs&&PET_ANIM.reactionMs.play)||1200),-44);
   floatFx(source==='play'?'🎾':'✨');
 
   queueMotion(function(){
@@ -2439,6 +2506,7 @@ function runFeedReaction(){
   // play the reaction immediately. This keeps the berry moment tied to the pet.
   freezePetAtCurrentVisualPosition();
   setPetAnimationState('jump');
+  playPetHopMotion(950,-42);
   floatFx('🍓');
   speak((pet.name||'Your pet')+' hops for a snack.');
 
