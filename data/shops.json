@@ -2,7 +2,7 @@
   "snack_shack": {
     "id": "snack_shack",
     "name": "Snack Shack",
-    "icon": "\ud83c\udf53",
+    "icon": "🍓",
     "theme": "food",
     "description": "Food, treats, and quick hunger fixes.",
     "unlock": {
@@ -60,7 +60,7 @@
   "care_clinic": {
     "id": "care_clinic",
     "name": "Care Clinic",
-    "icon": "\ud83e\uddfc",
+    "icon": "🧼",
     "theme": "care",
     "description": "Cleaning, rest, and wellness supplies.",
     "unlock": {
@@ -122,7 +122,7 @@
   "egg_lab": {
     "id": "egg_lab",
     "name": "Egg Lab",
-    "icon": "\ud83e\udd5a",
+    "icon": "🥚",
     "theme": "egg",
     "description": "Egg influence tools. Advanced tools should be unlockable.",
     "unlock": {
@@ -201,7 +201,7 @@
   "training_dojo": {
     "id": "training_dojo",
     "name": "Training Dojo",
-    "icon": "\ud83c\udfcb\ufe0f",
+    "icon": "🏋️",
     "theme": "training",
     "description": "Stat growth tools and practice gear.",
     "unlock": {
@@ -259,7 +259,7 @@
   "toy_box": {
     "id": "toy_box",
     "name": "Toy Box",
-    "icon": "\ud83e\uddf8",
+    "icon": "🧸",
     "theme": "fun",
     "description": "Toys, fun items, and personality-shaping play.",
     "unlock": {
@@ -313,7 +313,7 @@
   "explorer_supply": {
     "id": "explorer_supply",
     "name": "Explorer Supply",
-    "icon": "\ud83e\udded",
+    "icon": "🧭",
     "theme": "explore",
     "description": "Maps, boosters, and discovery tools.",
     "unlock": {
@@ -364,7 +364,7 @@
   "curio_market": {
     "id": "curio_market",
     "name": "Curio Market",
-    "icon": "\u2728",
+    "icon": "✨",
     "theme": "cosmetic",
     "description": "Cosmetics, profile effects, oddities, and rotating rares.",
     "unlock": {
@@ -426,7 +426,7 @@
   "battle_shop": {
     "id": "battle_shop",
     "name": "Battle Shop",
-    "icon": "\u2694\ufe0f",
+    "icon": "⚔️",
     "theme": "battle",
     "description": "Battle consumables and future battle unlocks.",
     "unlock": {
@@ -469,7 +469,7 @@
   "game_shop": {
     "id": "game_shop",
     "name": "Game Shop",
-    "icon": "\ud83c\udfae",
+    "icon": "🎮",
     "theme": "games",
     "description": "Game cartridges and table unlocks. Buy one to host that game from the launcher.",
     "unlock": {
@@ -546,6 +546,10 @@
       },
       "gameforge_master_key": {
         "price": 99,
+        "stock": "infinite"
+      },
+      "game_runematch": {
+        "price": 50,
         "stock": "infinite"
       }
     },
