@@ -651,6 +651,9 @@ button:disabled{
 .flailAction{background:linear-gradient(135deg,#64748b,#cbd5e1);color:#0f172a;border-color:#94a3b8}
 
 
+
+.stanceHint{grid-column:1 / -1;font-size:11px;font-weight:900;color:#475569;background:rgba(255,255,255,.62);border:1px solid rgba(148,163,184,.25);border-radius:12px;padding:6px 8px}
+.stanceBtn.liveStance{box-shadow:inset 0 0 0 2px rgba(34,197,94,.18)}
 /* ===== BATTLE END / NO-TRAP RESULT UI ===== */
 .forfeitBtn{
   background:linear-gradient(135deg,#dc2626,#ef4444);
@@ -804,6 +807,7 @@ var lastControlModeKey='';
 var lastActionFxKey='';
 var lastStateRequestAt=0;
 var lastSeenRemoteVersion=0;
+var lastCareSyncAt=0;
 var state=null;
 var ready=false;
 var battleInstanceId=new URLSearchParams(location.search).get('battleInstance')||'';
@@ -1280,10 +1284,13 @@ function drawMoves(){
   lastControlModeKey=attackKey;
 
   html+='<div class="stancePanel modePanel">';
+  html+='<div class="stanceHint">Stance choice is queued for your next attack. Current: '+escapeHtml(stanceLabel(currentStance(mySeat)))+'</div>';
   ['balanced','brace','focus'].forEach(function(id){
     var info=STANCE[id];
-    html+='<button class="stanceBtn '+(selectedStance===id?'active':'')+'" onclick="selectStance(\''+id+'\')">'+
-      '<strong>'+escapeHtml(info.icon+' '+info.name)+'</strong><span>'+escapeHtml(info.short+' · Shift: 1 energy')+'</span></button>';
+    var queued=selectedStance===id;
+    var live=currentStance(mySeat)===id;
+    html+='<button class="stanceBtn '+(queued?'active':'')+' '+(live?'liveStance':'')+'" onclick="selectStance(\''+id+'\')">'+
+      '<strong>'+escapeHtml(info.icon+' '+info.name)+(queued?' · Queued':'')+'</strong><span>'+escapeHtml(info.short+' · '+info.detail)+'</span></button>';
   });
   html+='</div>';
 
@@ -1328,15 +1335,18 @@ function drawMoves(){
 function isExhaustedForMoves(pet){
   if(!state||mySeat===null||mySeat===undefined||!pet)return false;
   var stamina=Number(state.stamina&&state.stamina[mySeat]!==undefined?state.stamina[mySeat]:100);
+  var energy=Number(state.energy&&state.energy[mySeat]!==undefined?state.energy[mySeat]:5);
   var moves=(pet.moves&&pet.moves.length?pet.moves:[]);
+  if(stamina<=0)return true;
   if(!moves.length)return stamina<8;
   return !moves.some(function(id){
     var m=moveBook[id]||{name:id,type:'normal',category:'physical',power:30,accuracy:95};
-    return stamina>=moveStaminaCost(m,selectedStance);
+    return stamina>=moveStaminaCost(m,selectedStance) && energy>=moveEnergyCost(m);
   });
 }
 function drawCareControls(){
   ensureBattleShape();
+  if(!isMyTurn())applyCareTick(mySeat,false);
   var care=state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
   var activeType=care.type||'';
   var items=battleItemsForSeat(mySeat).slice(0,4);
@@ -1383,7 +1393,21 @@ function selectCare(type){
   ensureBattleShape();
 
   if(!CARE_ACTIONS[type])type='soothe';
-  state.care[mySeat]={type:type,start:Date.now(),itemId:null,locked:false,baseHp:state.hp&&state.hp[mySeat]!==undefined?Number(state.hp[mySeat]||0):0};
+
+  // Bank whatever the previous care action earned before switching.
+  applyCareTick(mySeat,true);
+
+  if(state.guard)state.guard[mySeat]=(type==='guard');
+  state.care[mySeat]={
+    type:type,
+    start:Date.now(),
+    lastTick:Date.now(),
+    itemId:null,
+    locked:false,
+    baseHp:state.hp&&state.hp[mySeat]!==undefined?Number(state.hp[mySeat]||0):0,
+    gain:0,
+    treatProgress:0
+  };
   addLog(state.pets[mySeat].name+' begins '+CARE_ACTIONS[type].label+'.');
   selectedCareFx(mySeat,type);
   lastControlModeKey='';
@@ -1424,7 +1448,7 @@ function useBattleItem(itemId){
   profile.inventory[itemId]=Math.max(0,Number(profile.inventory[itemId]||0)-1);
   if(profile.inventory[itemId]<=0)delete profile.inventory[itemId];
 
-  state.care[mySeat]={type:'item',itemId:itemId,start:Date.now(),locked:true};
+  state.care[mySeat]={type:'item',itemId:itemId,start:Date.now(),lastTick:Date.now(),locked:true,gain:0,treatProgress:0};
   applyBattleItemEffect(mySeat,itemId,item);
   selectedCareFx(mySeat,'item');
   addLog(state.pets[mySeat].name+' used '+(item.name||itemId)+' during the Care Window.');
@@ -1438,48 +1462,83 @@ function applyCareBeforeIncoming(seat){
   var care=state.care&&state.care[seat]?state.care[seat]:emptyCare();
   if(!care.type || care.type==='item')return;
 
-  var elapsed=Math.max(0,Math.min(CARE_WINDOW_MS,Date.now()-Number(care.start||Date.now())));
-  var seconds=Math.floor(elapsed/1000);
-  var pet=state.pets[seat];
+  // Care effects are now live while selected. This call simply banks the final
+  // partial tick before the incoming attack resolves.
+  applyCareTick(seat,true);
 
   if(care.type==='guard'){
     state.guard[seat]=true;
-    addLog(pet.name+' holds guard and prepares to absorb the next hit.');
-    state.care[seat]=emptyCare();
-    return;
-  }
-
-  if(seconds<=0){
-    state.care[seat]=emptyCare();
-    return;
-  }
-
-  if(care.type==='soothe'){
-    var baseHp=(care.baseHp!==undefined&&care.baseHp!==null)?Number(care.baseHp||0):Number(state.hp[seat]||0);
-    var maxWindowGain=pet.stats.maxHp*.05;
-    var slowGain=pet.stats.maxHp*.005*seconds;
-    var heal=Math.max(0,Math.min(maxWindowGain,slowGain));
-    var before=Number(state.hp[seat]||0);
-    state.hp[seat]=Math.min(pet.stats.maxHp,Math.max(before,baseHp+heal));
-    var gained=state.hp[seat]-before;
-    if(gained>0)addLog(pet.name+' recovered '+formatHp(gained)+' HP from soothing care.');
-  }else if(care.type==='steady'){
-    var staminaGain=Math.max(2,Math.min(18,seconds*3));
-    state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+staminaGain,0,100);
-    addLog(pet.name+' recovered '+staminaGain+' stamina from steady care.');
-  }else if(care.type==='treat'){
-    var reduction=elapsed>=6500?2:1;
-    var reduced=reduceWorstAilment(seat,reduction);
-    if(reduced)addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
-    else addLog(pet.name+' was treated, but had no ailment to reduce.');
-  }else if(care.type==='lockin'){
-    var gain=Math.max(2,Math.min(28,Math.floor(seconds*3.2)));
-    state.finisher[seat]=clampResource(Number(state.finisher[seat]||0)+gain,0,100);
-    state.finisherReady[seat]=state.finisher[seat]>=100;
-    addLog(pet.name+' locked in and built '+gain+' Fury.');
+    addLog(state.pets[seat].name+' held guard at impact.');
   }
 
   state.care[seat]=emptyCare();
+}
+
+function applyCareTick(seat,force){
+  if(!state||seat===null||seat===undefined)return false;
+  ensureBattleShape();
+  var care=state.care&&state.care[seat]?state.care[seat]:emptyCare();
+  if(!care.type || care.type==='item')return false;
+  var pet=state.pets&&state.pets[seat]?state.pets[seat]:null;
+  if(!pet||!pet.stats)return false;
+
+  var now=Date.now();
+  var last=Number(care.lastTick||care.start||now);
+  var deltaMs=Math.max(0,Math.min(1500,now-last));
+  if(deltaMs<450 && !force)return false;
+  var seconds=deltaMs/1000;
+  var changed=false;
+
+  if(care.type==='soothe'){
+    var maxGain=Number(pet.stats.maxHp||1)*0.05;
+    var currentGain=Number(care.gain||0);
+    var tickGain=Number(pet.stats.maxHp||1)*0.005*seconds;
+    var allowed=Math.max(0,Math.min(maxGain-currentGain,tickGain));
+    if(allowed>0 && Number(state.hp[seat]||0)<Number(pet.stats.maxHp||0)){
+      var before=Number(state.hp[seat]||0);
+      state.hp[seat]=Math.min(Number(pet.stats.maxHp||before),before+allowed);
+      care.gain=currentGain+(state.hp[seat]-before);
+      changed=state.hp[seat]!==before;
+    }
+  }else if(care.type==='steady'){
+    var staminaGain=2.25*seconds;
+    var beforeStam=Number(state.stamina[seat]||0);
+    state.stamina[seat]=clampResource(beforeStam+staminaGain,0,100);
+    care.gain=Number(care.gain||0)+(state.stamina[seat]-beforeStam);
+    changed=state.stamina[seat]!==beforeStam;
+  }else if(care.type==='lockin'){
+    var furyGain=1.6*seconds;
+    var beforeFury=Number(state.finisher[seat]||0);
+    state.finisher[seat]=clampResource(beforeFury+furyGain,0,100);
+    state.finisherReady[seat]=state.finisher[seat]>=100;
+    care.gain=Number(care.gain||0)+(state.finisher[seat]-beforeFury);
+    changed=state.finisher[seat]!==beforeFury;
+  }else if(care.type==='treat'){
+    care.treatProgress=Number(care.treatProgress||0)+seconds;
+    if(care.treatProgress>=4){
+      var reduced=reduceWorstAilment(seat,1);
+      care.treatProgress=0;
+      if(reduced){
+        addLog(state.pets[seat].name+' treated '+reduced+' during the Care Window.');
+        changed=true;
+      }
+    }
+  }else if(care.type==='guard'){
+    if(state.guard && !state.guard[seat])changed=true;
+    if(state.guard)state.guard[seat]=true;
+  }
+
+  care.lastTick=now;
+  state.care[seat]=care;
+
+  if(changed && seat===mySeat){
+    var syncNow=Date.now();
+    if(syncNow-lastCareSyncAt>900){
+      lastCareSyncAt=syncNow;
+      sync();
+    }
+  }
+  return changed;
 }
 
 function reduceWorstAilment(seat,amount){
@@ -1584,33 +1643,29 @@ function refreshCareLiveUI(){
 function updateCareMiniBars(care,elapsed){
   if(!state||mySeat===null||mySeat===undefined||!state.pets||!state.pets[mySeat])return;
   var pet=state.pets[mySeat];
-  var seconds=Math.floor(Math.max(0,elapsed)/1000);
   var active=care&&care.type?care.type:'';
 
   var hpNow=Number(state.hp[mySeat]||0);
-  var sootheHeal=(active==='soothe')?Math.max(0,Math.min(pet.stats.maxHp*.05,pet.stats.maxHp*.005*seconds)):0;
-  var hpPct=Math.floor(Math.max(0,Math.min(100,(hpNow+sootheHeal)/pet.stats.maxHp*100)));
-  var hpBasePct=Math.floor(Math.max(0,Math.min(100,hpNow/pet.stats.maxHp*100)));
-  setCareMini('soothe',hpPct,'HP '+hpBasePct+'% → '+hpPct+'%','linear-gradient(90deg,#86efac,#16a34a)');
+  var hpPct=Math.floor(Math.max(0,Math.min(100,hpNow/pet.stats.maxHp*100)));
+  var sootheGain=active==='soothe'?Number(care.gain||0):0;
+  setCareMini('soothe',hpPct,'HP '+hpPct+'%'+(active==='soothe'?' · +'+formatHp(sootheGain):''),'linear-gradient(90deg,#86efac,#16a34a)');
 
   var ailment=findWorstAilment(mySeat);
-  var treatPct=ailment?(active==='treat'?Math.max(8,Math.min(100,Math.floor(elapsed/6500*100))):Math.min(35,Number(ailment.turns||0)*18)):0;
+  var treatProgress=active==='treat'?Math.min(100,Math.floor(Number(care.treatProgress||0)/4*100)):0;
   var treatText=ailment?(ailment.label+' '+ailment.turns+'t'):'No ailment';
-  if(active==='treat'&&ailment)treatText+=' · treating';
-  setCareMini('treat',treatPct,treatText,'linear-gradient(90deg,#bae6fd,#0284c7)');
+  if(active==='treat')treatText+=(ailment?' · treating':'');
+  setCareMini('treat',treatProgress,treatText,'linear-gradient(90deg,#bae6fd,#0284c7)');
 
   var staminaNow=Number(state.stamina&&state.stamina[mySeat]!==undefined?state.stamina[mySeat]:100);
-  var staminaGain=(active==='steady')?Math.max(0,Math.min(18,seconds*3)):0;
-  var staminaPct=Math.floor(Math.max(0,Math.min(100,staminaNow+staminaGain)));
-  setCareMini('steady',staminaPct,'Stamina '+Math.floor(staminaNow)+'% → '+staminaPct+'%','linear-gradient(90deg,#fde68a,#f59e0b)');
+  var staminaPct=Math.floor(Math.max(0,Math.min(100,staminaNow)));
+  setCareMini('steady',staminaPct,'Stamina '+staminaPct+'%'+(active==='steady'?' · +'+Math.floor(Number(care.gain||0)):''),'linear-gradient(90deg,#fde68a,#f59e0b)');
 
   var guardPct=(active==='guard')?100:0;
   setCareMini('guard',guardPct,(active==='guard'?'Guard ready · next hit reduced':'Guard next hit'),'linear-gradient(90deg,#93c5fd,#2563eb)');
 
   var furyNow=Number(state.finisher&&state.finisher[mySeat]!==undefined?state.finisher[mySeat]:0);
-  var furyGain=(active==='lockin')?Math.max(0,Math.min(28,Math.floor(seconds*3.2))):0;
-  var furyPct=Math.floor(Math.max(0,Math.min(100,furyNow+furyGain)));
-  setCareMini('lockin',furyPct,(furyPct>=100?'Fury READY':'Fury '+Math.floor(furyNow)+'% → '+furyPct+'%'),'linear-gradient(90deg,#f97316,#facc15)');
+  var furyPct=Math.floor(Math.max(0,Math.min(100,furyNow)));
+  setCareMini('lockin',furyPct,(furyPct>=100?'Fury READY':'Fury '+furyPct+'%'+(active==='lockin'?' · +'+Math.floor(Number(care.gain||0)):'')),'linear-gradient(90deg,#f97316,#facc15)');
 }
 
 function setCareMini(id,pct,text,bg){
@@ -1627,26 +1682,12 @@ function projectedCarePreview(seat,care,elapsed){
   ensureBattleShape();
   if(seat===null||seat===undefined||!state||!state.pets||!state.pets[seat])return null;
   var pet=state.pets[seat];
-  var seconds=Math.floor(Math.max(0,elapsed||0)/1000);
-  var hp=Number(state.hp&&state.hp[seat]!==undefined?state.hp[seat]:pet.stats.maxHp);
-  var stamina=Number(state.stamina&&state.stamina[seat]!==undefined?state.stamina[seat]:100);
-  var energy=Number(state.energy&&state.energy[seat]!==undefined?state.energy[seat]:5);
-  var finisher=Number(state.finisher&&state.finisher[seat]!==undefined?state.finisher[seat]:0);
-  var type=care&&care.type?care.type:'';
-
-  if(type==='soothe'){
-    var baseHp=(care.baseHp!==undefined&&care.baseHp!==null)?Number(care.baseHp||0):hp;
-    var heal=Math.max(0,Math.min(pet.stats.maxHp*.05,pet.stats.maxHp*.005*seconds));
-    hp=Math.min(pet.stats.maxHp,Math.max(hp,baseHp+heal));
-  }else if(type==='steady'){
-    var staminaGain=Math.max(0,Math.min(18,seconds*3));
-    stamina=clampResource(stamina+staminaGain,0,100);
-  }else if(type==='lockin'){
-    var furyGain=Math.max(0,Math.min(28,Math.floor(seconds*3.2)));
-    finisher=clampResource(finisher+furyGain,0,100);
-  }
-
-  return {hp:hp,stamina:stamina,energy:energy,finisher:finisher};
+  return {
+    hp:Number(state.hp&&state.hp[seat]!==undefined?state.hp[seat]:pet.stats.maxHp),
+    stamina:Number(state.stamina&&state.stamina[seat]!==undefined?state.stamina[seat]:100),
+    energy:Number(state.energy&&state.energy[seat]!==undefined?state.energy[seat]:5),
+    finisher:Number(state.finisher&&state.finisher[seat]!==undefined?state.finisher[seat]:0)
+  };
 }
 
 function refreshProjectedPetSide(seat,preview){
@@ -1703,7 +1744,7 @@ var CARE_ACTIONS={
   lockin:{label:'Lock In focus'}
 };
 
-function emptyCare(){return {type:null,start:0,itemId:null,locked:false,baseHp:null};}
+function emptyCare(){return {type:null,start:0,lastTick:0,itemId:null,locked:false,baseHp:null,gain:0,treatProgress:0};}
 
 function escapeAttr(s){return String(s||'').replace(/[\\'\"]/g,'');}
 
@@ -1742,18 +1783,18 @@ function useMove(moveId,opts){
 
   ensureBattleShape();
 
-  var stance=selectedStance||'balanced';
-  state.stance[actor]=stance;
-  applyStanceStart(actor,stance);
+  var stance=selectedStance||currentStance(actor)||'balanced';
+  var oldStance=currentStance(actor);
+  var stanceChanged=stance!==oldStance;
 
-  var energyCost=moveEnergyCost(move);
+  var energyCost=moveEnergyCost(move)+(stanceChanged?1:0);
   if(Number(state.energy[actor]||0)<energyCost){
     addLog(attacker.name+' tried '+moveName+' but lacked energy.');
     draw();
     return;
   }
 
-  var staminaCost=moveStaminaCost(move,stance);
+  var staminaCost=moveStaminaCost(move,stance)+(stanceChanged?5:0);
   if(Number(state.stamina[actor]||0)<staminaCost){
     addLog(attacker.name+' tried '+moveName+' but was too exhausted.');
     lastControlModeKey='';
@@ -1763,6 +1804,11 @@ function useMove(moveId,opts){
 
   state.energy[actor]=clampResource(Number(state.energy[actor]||0)-energyCost,0,10);
   state.stamina[actor]=clampResource(Number(state.stamina[actor]||100)-staminaCost,0,100);
+  if(stanceChanged){
+    state.stance[actor]=stance;
+    addLog(attacker.name+' shifted stance to '+stanceLabel(stance)+' as they attacked (-1 energy, -5 stamina).');
+  }
+  applyStanceStart(actor,stance);
 
   var blocked=startTurnStatus(actor);
 
@@ -1900,9 +1946,9 @@ function damage(actor,target,move,forceFinisher){
 }
 
 var STANCE={
-  balanced:{name:'Push',icon:'⚔️',short:'Hit harder, spend stamina',damage:1.14,defense:1},
-  brace:{name:'Brace',icon:'🛡️',short:'Cut damage, punish attacks',damage:.82,defense:1.22},
-  focus:{name:'Focus',icon:'✨',short:'Gain energy, risky if hit',damage:.96,defense:.86}
+  balanced:{name:'Push',icon:'⚔️',short:'+14% damage, normal defense',detail:'Next attack hits harder but costs more stamina.',damage:1.14,defense:1},
+  brace:{name:'Brace',icon:'🛡️',short:'-18% damage, +22% defense',detail:'Next attack is safer and your defense improves after acting.',damage:.82,defense:1.22},
+  focus:{name:'Focus',icon:'✨',short:'Gain energy, risky if hit',detail:'Next attack is steadier and converts focus into energy.',damage:.96,defense:.86}
 };
 
 function clampResource(v,min,max){
@@ -1922,39 +1968,12 @@ function stanceIcon(id){return (STANCE[id]&&STANCE[id].icon)||'⚔️';}
 function selectStance(id){
   if(!STANCE[id])id='balanced';
 
-  if(!state || mySeat===null || mySeat===undefined){
-    selectedStance=id;
-    try{localStorage.setItem('gf_petbattle_stance',id);}catch(e){}
-    drawMoves();
-    return;
-  }
-
-  ensureBattleShape();
-
-  if(selectedStance===id){
-    drawMoves();
-    return;
-  }
-
-  if(isMyTurn()){
-    if(Number(state.energy[mySeat]||0)<1){
-      addLog(state.pets[mySeat].name+' tried to shift stance, but lacked energy.');
-      drawMoves();
-      return;
-    }
-
-    state.energy[mySeat]=clampResource(Number(state.energy[mySeat]||0)-1,0,10);
-    state.stamina[mySeat]=clampResource(Number(state.stamina[mySeat]||100)-5,0,100);
-    state.stance[mySeat]=id;
-
-    addLog(state.pets[mySeat].name+' shifted stance to '+stanceLabel(id)+' (-1 energy, -5 stamina).');
-    sync();
-  }
-
+  // Stance selection is now queued. It does not affect stats immediately.
+  // The queued stance is applied when this player actually attacks.
   selectedStance=id;
   try{localStorage.setItem('gf_petbattle_stance',id);}catch(e){}
-
-  draw();
+  lastControlModeKey='';
+  drawMoves();
 }
 
 function moveEnergyCost(move){

@@ -410,3 +410,42 @@ Future polish notes:
 - Pet-specific move identities should be layered on top of these type effects later.
 - Starter pets should eventually have distinct combat personalities and preferred stance/care patterns.
 - Clash mechanics remain a future candidate after Fury, Guard, Rest, and stamina pacing feel stable.
+
+### Pet Battle combat v1.9 Live Care Mixing + queued stance update
+
+This update focuses on clarity, polish, and making the Care Window feel more active without adding a new resource.
+
+Implemented direction:
+
+- Care actions now apply live while selected instead of only previewing until impact.
+- Players can mix care actions during the same Care Window:
+  - Soothe for a few seconds to recover a small amount of HP.
+  - Switch to Steady to recover stamina.
+  - Switch to Lock In to build Fury.
+  - Switch to Guard near the end if they predict an incoming hit.
+- Previously earned care effects stay applied when switching actions.
+- Only the currently selected care action progresses at any moment.
+- Guard only protects the player if Guard is the active care choice when the incoming attack lands.
+- Soothe remains intentionally slow and capped at roughly 5% max HP per Care Window so battle items remain valuable.
+- Fury gain from Lock In remains slow and should feel like a commitment rather than a free finisher.
+
+Stance behavior update:
+
+- Stance selection is now queued instead of live.
+- Selecting Push, Brace, or Focus shows what the stance does, but it does not immediately change battle stats.
+- The queued stance is applied when the player makes their next attack.
+- If the queued stance differs from the current active stance, the shift cost is charged as part of that attack.
+- This avoids confusion where stance changes appeared to affect the pet before an action was actually taken.
+
+Exhaustion reliability update:
+
+- Exhaustion checks now consider stamina and energy availability for trained moves.
+- If no trained move can be used, the fallback actions should appear:
+  - Flail: weak emergency action.
+  - Rest: stamina recovery action.
+
+Design intent:
+
+- Care Mode should feel active and readable, but not complicated.
+- Players should be able to make timing decisions during the opponent's turn without feeling like they are playing a separate minigame.
+- The current battle direction is still: simple inputs, deep timing/read outcomes, clear mobile-first UI, and strong moment-to-moment feedback.
