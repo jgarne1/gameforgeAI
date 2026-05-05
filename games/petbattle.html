@@ -801,6 +801,63 @@ button:disabled{
 .safeExitNote{font-size:12px;color:#64748b;margin-top:10px;line-height:1.35}
 @media(max-width:640px){.battleActions{width:100%;justify-content:space-between}.resultTitle{font-size:26px}.resultMatchup{grid-template-columns:1fr}.resultVs{display:none}.rewardGrid{grid-template-columns:1fr}.resultActions button{width:100%}}
 
+
+
+/* ===== PETBATTLE v2.2: AAA UI / feedback polish =====
+   This section intentionally overrides the older soft-card theme without
+   deleting it. If the battle theme is too aggressive, remove only this block. */
+:root{
+  --arenaBg:#050814;
+  --arenaPanel:rgba(15,23,42,.82);
+  --arenaPanel2:rgba(30,41,59,.78);
+  --arenaLine:rgba(148,163,184,.22);
+  --arenaText:#e5eefc;
+  --arenaMuted:#94a3b8;
+  --attackGlow:#fb7185;
+  --careGlow:#60a5fa;
+  --furyGlow:#f59e0b;
+}
+body{
+  color:var(--arenaText);
+  background:
+    radial-gradient(circle at 50% -8%,rgba(249,115,22,.22),transparent 32%),
+    radial-gradient(circle at 12% 20%,rgba(59,130,246,.20),transparent 28%),
+    radial-gradient(circle at 88% 26%,rgba(220,38,38,.18),transparent 26%),
+    linear-gradient(135deg,#030712 0%,#07111f 48%,#111827 100%);
+}
+.wrap{padding:10px;gap:9px;min-height:620px}
+.top,.side,.statusCard,.logCard,.controls{
+  background:linear-gradient(180deg,rgba(15,23,42,.90),rgba(15,23,42,.72));
+  border-color:var(--arenaLine);
+  box-shadow:0 24px 70px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.top{border-radius:20px;padding:9px 13px}
+.top h1{font-size:22px;color:#fff;text-shadow:0 0 20px rgba(96,165,250,.18)}
+.muted{color:var(--arenaMuted)}
+.badge{background:rgba(15,23,42,.72);border-color:rgba(148,163,184,.24);color:#e2e8f0}
+.arena{grid-template-columns:minmax(260px,1fr) minmax(280px,350px) minmax(260px,1fr);gap:9px}
+.side{border-radius:24px;padding:11px;gap:8px;position:relative;overflow:hidden}
+.side:before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,rgba(96,165,250,.85),rgba(248,113,113,.85));opacity:.8}
+.side h2{color:#fff;font-size:20px;letter-spacing:-.02em}
+.petStage{min-height:clamp(190px,34vh,300px);background:radial-gradient(circle at 50% 45%,rgba(96,165,250,.28),rgba(15,23,42,.22) 35%,rgba(2,6,23,.75) 78%),linear-gradient(180deg,#111827,#020617);border-color:rgba(96,165,250,.20)}
+.petStage.enemy{background:radial-gradient(circle at 50% 45%,rgba(248,113,113,.26),rgba(15,23,42,.22) 35%,rgba(2,6,23,.75) 78%),linear-gradient(180deg,#1f1218,#020617);border-color:rgba(248,113,113,.20)}
+.stat{background:rgba(2,6,23,.38);border-color:rgba(148,163,184,.18);color:#e2e8f0}
+.stat b{color:#f8fafc}.statusTag{background:rgba(30,41,59,.88);border-color:rgba(148,163,184,.24);color:#dbeafe}
+.hpBar,.meterBar,.finisherBar,.resourceTrack{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.18)}
+.hpFill{background:linear-gradient(90deg,#22c55e,#bef264)}.hpFill.mid{background:linear-gradient(90deg,#facc15,#fb923c)}.hpFill.low{background:linear-gradient(90deg,#ef4444,#fb7185)}
+.meterFill{background:linear-gradient(90deg,#22d3ee,#2563eb)}
+.finisherFill{background:linear-gradient(90deg,#7c2d12,#f97316,#facc15)}
+.finisherFill.ready{box-shadow:0 0 18px rgba(250,204,21,.85);animation:finisherPulse 1.05s ease-in-out infinite}
+.phaseRibbon{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.28);color:#bfdbfe;font-size:11px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.statusCard{border-radius:20px;min-height:106px;overflow:hidden}.statusCard h2{font-size:20px;color:#fff;margin-right:72px}.statusCard p{margin:4px 0 7px;line-height:1.25}.battleCallout{min-height:27px;padding:7px 10px;border-radius:14px;background:rgba(2,6,23,.38);border:1px solid rgba(148,163,184,.18);font-weight:1000;font-size:12px;color:#e2e8f0}.battleCallout.ready{color:#fde68a;border-color:rgba(250,204,21,.35);box-shadow:0 0 18px rgba(250,204,21,.08)}.battleCallout.care{color:#bfdbfe;border-color:rgba(96,165,250,.35)}.battleCallout.attack{color:#fecdd3;border-color:rgba(248,113,113,.34)}
+.logCard{border-radius:20px;min-height:0}.logCard h3{font-size:14px;color:#cbd5e1;margin-bottom:7px}.log{min-height:188px;max-height:calc(100vh - 325px);height:100%;background:rgba(2,6,23,.42);border-color:rgba(148,163,184,.18);color:#cbd5e1;font-size:12px;padding:8px}.logLine{display:block;padding:4px 6px;margin:0 0 4px;border-radius:10px;background:rgba(15,23,42,.50);border:1px solid rgba(148,163,184,.10)}.logLine.major{color:#fde68a;border-color:rgba(250,204,21,.22);background:rgba(120,53,15,.18)}.logLine.guard{color:#bfdbfe;border-color:rgba(96,165,250,.22);background:rgba(30,64,175,.16)}.logLine.heal{color:#bbf7d0;border-color:rgba(34,197,94,.22);background:rgba(20,83,45,.14)}
+.controls{border-radius:20px;padding:8px}.modePanel{background:rgba(2,6,23,.24);border:1px solid rgba(148,163,184,.14);border-radius:16px;padding:7px}.modeTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 2px 8px;font-size:11px;font-weight:1000;color:#cbd5e1;text-transform:uppercase;letter-spacing:.08em}.modeTitle span{color:#94a3b8;text-transform:none;letter-spacing:0;font-size:11px;font-weight:800}.moves{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.stancePanel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:7px}.moveBtn,.stanceBtn,.careBtn,.battleItemBtn{background:linear-gradient(180deg,rgba(30,41,59,.96),rgba(15,23,42,.96));border-color:rgba(148,163,184,.20);color:#e2e8f0;min-height:54px}.moveBtn.primary{background:linear-gradient(180deg,rgba(153,27,27,.96),rgba(69,10,10,.98));border-color:rgba(248,113,113,.32)}.moveBtn:hover,.stanceBtn:hover,.careBtn:hover,.battleItemBtn:hover{box-shadow:0 10px 24px rgba(0,0,0,.30),0 0 18px rgba(96,165,250,.08)}.moveBtn span,.moveBtn small,.stanceBtn span,.careBtn span,.battleItemBtn span{color:#a7b5c8}.stanceBtn.active{border-color:rgba(250,204,21,.52);box-shadow:0 0 0 2px rgba(250,204,21,.12)}.carePanel{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.35fr);gap:7px}.careHeader{grid-column:1 / -1;background:linear-gradient(90deg,rgba(30,64,175,.24),rgba(15,23,42,.30));border-radius:13px;border:1px solid rgba(96,165,250,.20);padding:7px 9px;display:flex;align-items:center;justify-content:space-between}.careHeader strong{font-size:13px;color:#dbeafe}.careHeader span{display:inline;color:#93c5fd;font-size:11px}.careHeaderStatus{font-size:11px;color:#bfdbfe}.careMeter{width:150px;height:8px;background:rgba(2,6,23,.55)}.careOptions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.battleItems{display:grid;grid-template-columns:1fr;gap:6px}.careSectionTitle{grid-column:1 / -1;color:#94a3b8;font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em}.careBtn.activeCare{border-color:rgba(96,165,250,.62);box-shadow:0 0 0 2px rgba(96,165,250,.12),0 0 24px rgba(96,165,250,.12)}.careBtn strong,.battleItemBtn strong{color:#f8fafc}.careMiniText{color:#9fb7d8}.careMiniMeter{background:rgba(2,6,23,.58);border-color:rgba(148,163,184,.14)}
+.battleFlash{animation:battleFlash .38s ease-out}@keyframes battleFlash{0%{filter:brightness(1)}35%{filter:brightness(1.7)}100%{filter:brightness(1)}}
+.screenShake{animation:screenShake .28s ease-out}@keyframes screenShake{0%,100%{transform:translate(0,0)}20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-2px,-1px)}80%{transform:translate(2px,1px)}}
+.damageFloat.guard{color:#93c5fd;font-size:25px}.damageFloat.buff{color:#60a5fa;font-size:23px}.damageFloat.heal{text-shadow:0 3px 0 rgba(2,6,23,.65),0 0 18px rgba(34,197,94,.45)}
+@media(max-width:1000px){.arena{grid-template-columns:1fr 1fr!important}.log{max-height:170px}.carePanel{grid-template-columns:1fr}.battleItems{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.wrap{padding:7px}.top h1{font-size:18px}.top .muted{display:none}.side h2{font-size:16px}.petStage{min-height:150px}.statusCard{min-height:94px}.statusCard h2{font-size:17px}.battleCallout{font-size:11px}.moves{grid-template-columns:repeat(2,1fr)}.stancePanel{grid-template-columns:repeat(3,1fr)}.careOptions{grid-template-columns:repeat(5,minmax(0,1fr))}.careBtn{min-height:46px}.careBtn strong{font-size:10px}.careMiniText{display:none}.careMeter{width:110px}.log{min-height:118px;max-height:145px}}
+
 </style>
 </head>
 
@@ -809,7 +866,7 @@ button:disabled{
   <div class="top">
     <div>
       <h1>Pet Battle Arena</h1>
-      <div class="muted">Stance, care, stamina, and Fury-based companion battles.</div>
+      <div class="muted">Real-time care windows. Tactical turns. Big finisher moments.</div>
     </div>
     <div class="battleActions">
       <span id="meBadge" class="badge">Loading</span>
@@ -841,14 +898,16 @@ button:disabled{
 
     <div class="center">
       <div class="statusCard">
+        <div id="phaseRibbon" class="phaseRibbon">Loading</div>
         <h2 id="statusTitle">Loading pets...</h2>
         <p id="statusText" class="muted">Both seated players need active pets.</p>
+        <div id="battleCallout" class="battleCallout">Preparing arena...</div>
         <button class="statusConcedeBtn" onclick="requestForfeitBattle()">Concede</button>
         <div id="winnerBox"></div>
       </div>
 
       <div class="logCard">
-        <h3>Battle Log</h3>
+        <h3>Event Feed</h3>
         <div id="battleLog" class="log"></div>
       </div>
     </div>
@@ -1166,6 +1225,7 @@ function draw(){
   drawPetSide(1);
   drawLog();
   drawMoves();
+  updateBattleShell();
 
   if(state.blocked){
     setStatus('Battle unavailable','Eggs cannot battle. Hatch both companions first.');
@@ -1182,7 +1242,7 @@ function draw(){
   }else{
     winnerBox.innerHTML='';
     var turnName=state.turn===null?'Charging':players[state.turn].name;
-    setStatus(state.turn===null?'Charging Initiative':'Current Turn',state.turn===null?'Pets are building initiative.':turnName+' chooses a move.');
+    setStatus(state.turn===null?'Charging Initiative':(isMyTurn()?'Choose Your Move':'Care Window'),state.turn===null?'Pets are racing for turn order.':(isMyTurn()?'Pick stance + attack.':'Support your pet while they choose.'));
     turnBadge.innerText=state.turn===null?'Charging':'Turn: '+turnName;
   }
 
@@ -1333,12 +1393,58 @@ function resourcePillHtml(seat,label,value,max,suffix){
 }
 
 function drawLog(){
-  battleLog.innerHTML=state.log.slice(-24).map(function(x){
-    return '• '+escapeHtml(x);
-  }).join('<br>');
+  // v2.2: compact event feed. Keep the raw log array unchanged, but render only
+  // the most useful recent events so the center panel stays readable.
+  battleLog.innerHTML=state.log.slice(-8).map(function(x){
+    var cls='logLine';
+    if(/FINISHER|unleashed|wins|Battle complete/i.test(x))cls+=' major';
+    else if(/guard|braced|absorb/i.test(x))cls+=' guard';
+    else if(/recovered|soothing|steady|treated|healed/i.test(x))cls+=' heal';
+    return '<span class="'+cls+'">'+escapeHtml(x)+'</span>';
+  }).join('');
   battleLog.scrollTop=battleLog.scrollHeight;
 }
 
+
+
+function updateBattleShell(){
+  // v2.2: single visual authority for phase styling/callouts.
+  // Remove this function and the call in draw() to fall back to the older status card.
+  var ribbon=el('phaseRibbon');
+  var callout=el('battleCallout');
+  var wrap=document.querySelector('.wrap');
+  if(!ribbon||!callout||!state)return;
+
+  var phase='charging';
+  var label='Charging';
+  var text='Initiative is building.';
+  var ccls='battleCallout';
+
+  if(state.blocked){phase='blocked';label='Blocked';text='Hatch both pets before battling.';}
+  else if(state.winner!==null){phase='finished';label='Complete';text=(players[state.winner]?players[state.winner].name:'Winner')+' wins.';ccls+=' ready';}
+  else if(isMyTurn()){
+    phase='attack';label='Attack Phase';text='Pick a stance, then choose a move.';ccls+=' attack';
+    if(state.finisherReady&&state.finisherReady[mySeat]){text='FINISHER READY — use it when the swing is worth it.';ccls+=' ready';}
+  }else if(state.turn!==null){
+    phase='care';label='Care Window';text=careCalloutText();ccls+=' care';
+  }
+
+  ribbon.innerText=label;
+  callout.className=ccls;
+  callout.innerText=text;
+  if(wrap){wrap.setAttribute('data-phase',phase);}
+}
+
+function careCalloutText(){
+  var care=state&&state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
+  var active=care&&care.type?care.type:'';
+  if(active==='soothe')return 'Soothe: bank a small HP recovery before impact.';
+  if(active==='steady')return 'Steady: rebuild stamina for your next attack.';
+  if(active==='treat')return 'Treat: shorten the worst ailment while you wait.';
+  if(active==='guard')return 'Guard: stay here if you expect the hit now.';
+  if(active==='lockin')return 'Lock In: build Fury, but give up recovery and defense.';
+  return 'Switch care actions freely while your opponent chooses.';
+}
 
 function requestFreshBattleState(reason){
   var now=Date.now();
@@ -1395,6 +1501,7 @@ function drawMoves(){
   if(lastControlModeKey===attackKey)return;
   lastControlModeKey=attackKey;
 
+  html+='<div class="modeTitle">Attack Phase <span>Choose stance + move</span></div>';
   html+='<div class="stancePanel modePanel">';
   ['balanced','brace','focus'].forEach(function(id){
     var info=STANCE[id];
@@ -1459,7 +1566,7 @@ function drawCareControls(){
   var html='';
 
   html+='<div class="carePanel modePanel">';
-  html+='<div class="careHeader"><div><strong>🌿 Care Window</strong><span>Act while they choose.</span><div id="careHeaderStatus" class="careHeaderStatus"></div></div><div class="careMeter"><div id="careMeterFill" class="careMeterFill"></div></div></div>';
+  html+='<div class="careHeader"><div><strong>💙 Care Window</strong><span>Switch freely while opponent thinks.</span><div id="careHeaderStatus" class="careHeaderStatus"></div></div><div class="careMeter"><div id="careMeterFill" class="careMeterFill"></div></div></div>';
 
   html+='<div class="careOptions">';
   html+='<div class="careSectionTitle">Tend</div>';
@@ -1566,6 +1673,7 @@ function useBattleItem(itemId){
 function applyCareBeforeIncoming(seat){
   ensureBattleShape();
   var care=state.care&&state.care[seat]?state.care[seat]:emptyCare();
+  state.lastCareSummary=null;
   if(!care.type || care.type==='item')return;
 
   var elapsed=careElapsedMs(care);
@@ -1576,7 +1684,9 @@ function applyCareBeforeIncoming(seat){
     // Guard has no blue growth segment because it is binary: it only matters if
     // active at impact. The stamina cost is still paid in damage().
     state.guard[seat]=true;
+    state.lastCareSummary={seat:seat,type:'guard',text:'Guard armed'};
     addLog(pet.name+' holds guard and prepares to absorb the next hit.');
+    showFloatingNumber(seat,'GUARD','guard');
     state.care[seat]=emptyCare();
     return;
   }
@@ -1590,22 +1700,37 @@ function applyCareBeforeIncoming(seat){
     var before=Number(state.hp[seat]||0);
     state.hp[seat]=preview.hp;
     var gained=state.hp[seat]-before;
-    if(gained>0)addLog(pet.name+' recovered '+formatHp(gained)+' HP from soothing care.');
+    if(gained>0){
+      state.lastCareSummary={seat:seat,type:'soothe',text:'+'+formatHp(gained)+' HP'};
+      addLog(pet.name+' recovered '+formatHp(gained)+' HP from soothing care.');
+      showFloatingNumber(seat,'+'+formatHp(gained),'heal');
+    }
   }else if(care.type==='steady'){
     var oldStamina=Number(state.stamina[seat]||0);
     state.stamina[seat]=preview.stamina;
     var staminaGain=Math.floor(state.stamina[seat]-oldStamina);
-    if(staminaGain>0)addLog(pet.name+' recovered '+staminaGain+' stamina from steady care.');
+    if(staminaGain>0){
+      state.lastCareSummary={seat:seat,type:'steady',text:'+'+staminaGain+' STA'};
+      addLog(pet.name+' recovered '+staminaGain+' stamina from steady care.');
+      showFloatingNumber(seat,'+'+staminaGain+' STA','buff');
+    }
   }else if(care.type==='treat'){
     var reduced=reduceWorstAilment(seat,preview.treatReduction);
-    if(reduced)addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
-    else addLog(pet.name+' was treated, but had no ailment to reduce.');
+    if(reduced){
+      state.lastCareSummary={seat:seat,type:'treat',text:'Treat -'+preview.treatReduction+'t'};
+      addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
+      showFloatingNumber(seat,'TREAT','buff');
+    }else addLog(pet.name+' was treated, but had no ailment to reduce.');
   }else if(care.type==='lockin'){
     var oldFury=Number(state.finisher[seat]||0);
     state.finisher[seat]=preview.finisher;
     state.finisherReady[seat]=state.finisher[seat]>=100;
     var gain=Math.floor(state.finisher[seat]-oldFury);
-    if(gain>0)addLog(pet.name+' locked in and built '+gain+' Fury.');
+    if(gain>0){
+      state.lastCareSummary={seat:seat,type:'lockin',text:'+'+gain+' Fury'};
+      addLog(pet.name+' locked in and built '+gain+' Fury.');
+      showFloatingNumber(seat,'+'+gain+' Fury','buff');
+    }
   }
 
   state.care[seat]=emptyCare();
@@ -2013,7 +2138,7 @@ function useMove(moveId,opts){
     }
   }
 
-  state.lastAction={actor:actor,target:target,move:moveId,stance:stance,time:Date.now(),damage:Number(actionResult.damage||0),finisher:!!actionResult.finisher,miss:!!actionResult.miss,type:actionResult.type||move.type||'normal',rest:!!actionResult.rest};
+  state.lastAction={actor:actor,target:target,move:moveId,stance:stance,time:Date.now(),damage:Number(actionResult.damage||0),finisher:!!actionResult.finisher,miss:!!actionResult.miss,type:actionResult.type||move.type||'normal',rest:!!actionResult.rest,guarded:!!actionResult.guarded,careSummary:state.lastCareSummary||null};
 
   checkWinner(actor,target);
 
@@ -2061,7 +2186,7 @@ function resolveMove(actor,target,moveId,move,opts){
 
   var appliedAfterDamage=applyMoveStatus(actor,target,move);
   if(appliedAfterDamage)addLog(appliedAfterDamage);
-  return {damage:result.damage,finisher:!!result.finisher,type:move.type||'normal'};
+  return {damage:result.damage,finisher:!!result.finisher,type:move.type||'normal',guarded:!!result.guarded};
 }
 function damage(actor,target,move,forceFinisher){
   var attacker=state.pets[actor];
@@ -2127,7 +2252,7 @@ function damage(actor,target,move,forceFinisher){
     state.finisher[target]=clampResource(Number(state.finisher[target]||0)-loss,0,100);
     state.finisherReady[target]=state.finisher[target]>=100;
   }
-  return {damage:dmg,note:note,finisher:finisherActive};
+  return {damage:dmg,note:note,finisher:finisherActive,guarded:guardActive};
 }
 
 var STANCE={
@@ -2467,7 +2592,10 @@ function playLastActionFxOnce(){
   }
   showTypeEffect(a.target,a.type||'normal',!!a.finisher);
   if(Number(a.damage||0)>0){
-    setTimeout(function(){showFloatingNumber(a.target,a.damage,a.finisher?'finisher':'damage');},230);
+    if(a.finisher)document.querySelector('.wrap').classList.add('screenShake');
+    if(a.guarded)setTimeout(function(){showFloatingNumber(a.target,'GUARDED','guard');},120);
+    setTimeout(function(){showFloatingNumber(a.target,a.damage,a.finisher?'finisher':'damage');},260);
+    setTimeout(function(){var w=document.querySelector('.wrap');if(w)w.classList.remove('screenShake');},420);
   }else if(a.miss){
     setTimeout(function(){showFloatingNumber(a.target,'MISS','miss');},230);
   }
