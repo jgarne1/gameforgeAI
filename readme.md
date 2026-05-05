@@ -148,6 +148,7 @@ Current/near-term battle pillars:
 - **Stances:** Push, Brace, and Focus create readable risk/reward decisions.
 - **Resources:** HP decides survival, Energy gates stronger actions, and Stamina controls move effectiveness/fatigue.
 - **Care Window:** after a player acts, their controls switch into Care Mode while the opponent chooses. This keeps the waiting player engaged and creates pressure for the active player to choose quickly.
+- **Lock-In Finisher:** Care Mode includes a deliberate `Lock In` choice that builds a Finisher meter instead of healing, treating ailments, or restoring stamina. This creates high-impact swing moments without making finishers passive or random.
 - **Battle items:** only battle-enabled items should appear in battle. Use `battleEnabled: true`, `category: "battle"`, a `battle` tag, or a future `battleEffect` definition. Full server validation/consumption is still required before ranked or real-economy play.
 - **Mobile-first controls:** Pet Battle should switch cleanly between Attack Mode and Care Mode in the same control area. Do not show both at once.
 
@@ -155,10 +156,12 @@ Care Window v1 behavior:
 
 - Attack Mode appears only on the active player's turn.
 - Care Mode appears while waiting for the opponent.
-- Care choices are intentionally simple: Soothe, Treat, or Steady.
+- Care choices are intentionally simple: Soothe, Treat, Steady, or Lock In.
 - Soothe gradually restores a small amount of HP based on how long the opponent takes.
 - Treat reduces ailment duration such as burn/slow/snare.
 - Steady restores stamina.
+- Lock In builds Finisher charge only; it does not heal, treat, or restore resources. If the opponent waits too long, the waiting player can create a major momentum swing.
+- At 100% Finisher, the next damaging move gets a large bonus and a special combat-log moment, then the meter resets. Taking damage chips away at Finisher charge, so commitment has risk.
 - Battle item use is a quick Care Window action. If the player selects an item fast enough, its effect applies before the opponent's next move resolves.
 - A Care Window should be capped so stalling cannot create unlimited healing or recovery.
 
@@ -170,6 +173,7 @@ Important implementation direction:
 
 AAA engagement roadmap for Pet Battle:
 
+- Tune Lock-In/Finisher gain and loss until it creates memorable but fair comeback/swing moments.
 - Add type-based graphical move effects and clear impact feedback.
 - Add stance visual states so Push/Brace/Focus are readable without reading logs.
 - Heavily expand the move library over time.

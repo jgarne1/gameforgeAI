@@ -523,17 +523,35 @@ button:disabled{
 .careFxTreat{box-shadow:0 0 0 3px rgba(14,165,233,.18),0 0 28px rgba(14,165,233,.28)!important}
 .careFxSteady{box-shadow:0 0 0 3px rgba(250,204,21,.2),0 0 28px rgba(250,204,21,.25)!important}
 .careFxItem{box-shadow:0 0 0 3px rgba(124,58,237,.18),0 0 28px rgba(124,58,237,.28)!important}
+.careFxLock{box-shadow:0 0 0 3px rgba(249,115,22,.22),0 0 34px rgba(249,115,22,.34)!important}
+.finisherBar{
+  height:9px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#e5e7eb;
+  margin:5px 0 2px;
+  border:1px solid rgba(148,163,184,.22);
+}
+.finisherFill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#f59e0b,#facc15,#f97316);
+  transition:width .25s ease, box-shadow .25s ease;
+}
+.finisherFill.ready{animation:finisherPulse .85s ease-in-out infinite;box-shadow:0 0 14px rgba(250,204,21,.9)}
+@keyframes finisherPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
 @media(max-width:700px){
   .carePanel{grid-template-columns:1fr;gap:8px}
   .careHeader{grid-column:1;align-items:flex-start;flex-direction:column}
   .careMeter{width:100%}
-  .careOptions{grid-template-columns:repeat(3,1fr);gap:6px}
+  .careOptions{grid-template-columns:repeat(4,1fr);gap:6px}
   .battleItems{grid-template-columns:1fr 1fr;gap:6px}
   .careBtn,.battleItemBtn{min-height:56px;padding:8px;border-radius:14px}
   .careBtn strong,.battleItemBtn strong{font-size:12px}.careBtn span,.battleItemBtn span{font-size:10px}
 }
 @media(max-width:420px){
-  .careOptions{grid-template-columns:1fr 1fr 1fr}
+  .careOptions{grid-template-columns:1fr 1fr}
   .careBtn span{display:none}
 }
 
@@ -621,6 +639,8 @@ button:disabled{
         <div id="p0HpText" class="muted"></div>
         <div class="meterBar"><div id="p0Meter" class="meterFill"></div></div>
         <div id="p0MeterText" class="muted"></div>
+        <div class="finisherBar"><div id="p0Finisher" class="finisherFill"></div></div>
+        <div id="p0FinisherText" class="muted"></div>
         <div id="p0Statuses" class="statusTags"></div>
       </div>
 
@@ -653,6 +673,8 @@ button:disabled{
         <div id="p1HpText" class="muted"></div>
         <div class="meterBar"><div id="p1Meter" class="meterFill"></div></div>
         <div id="p1MeterText" class="muted"></div>
+        <div class="finisherBar"><div id="p1Finisher" class="finisherFill"></div></div>
+        <div id="p1FinisherText" class="muted"></div>
         <div id="p1Statuses" class="statusTags"></div>
       </div>
 
@@ -882,6 +904,8 @@ function freshBattle(){
       stance:['balanced','balanced'],
       status:[{},{}],
       care:[emptyCare(),emptyCare()],
+      finisher:[0,0],
+      finisherReady:[false,false],
       turn:null,
       round:1,
       winner:null,
@@ -906,6 +930,8 @@ function freshBattle(){
     stance:['balanced','balanced'],
     status:[{},{}],
     care:[emptyCare(),emptyCare()],
+    finisher:[0,0],
+    finisherReady:[false,false],
     turn:null,
     round:1,
     winner:null,
@@ -979,6 +1005,15 @@ function drawPetSide(seat){
 
   el('p'+seat+'Meter').style.width=Math.max(0,Math.min(100,meter))+'%';
   el('p'+seat+'MeterText').innerText='Initiative '+Math.floor(Math.max(0,Math.min(100,meter)))+'%';
+
+  var fin=Math.floor(Math.max(0,Math.min(100,Number(state.finisher&&state.finisher[seat]!==undefined?state.finisher[seat]:0))));
+  var finFill=el('p'+seat+'Finisher');
+  if(finFill){
+    finFill.style.width=fin+'%';
+    finFill.className='finisherFill '+(fin>=100?'ready':'');
+  }
+  var finText=el('p'+seat+'FinisherText');
+  if(finText)finText.innerText=fin>=100?'🔥 FINISHER READY':'Finisher '+fin+'%';
 
   el('p'+seat+'Statuses').innerHTML=statusTags(seat);
 
@@ -1124,14 +1159,16 @@ function drawCareControls(){
   var html='';
 
   html+='<div class="carePanel modePanel">';
-  html+='<div class="careHeader"><div><strong>🌿 Care Window</strong><span>Opponent is choosing. Tend quickly before their move lands.</span></div><div class="careMeter"><div id="careMeterFill" class="careMeterFill"></div></div></div>';
+  html+='<div class="careHeader"><div><strong>🌿 Care Window</strong><span>Opponent is choosing. Tend, use an item, or 🔥 Lock In to build a finisher.</span></div><div class="careMeter"><div id="careMeterFill" class="careMeterFill"></div></div></div>';
 
   html+='<div class="careOptions">';
   html+='<div class="careSectionTitle">Tend</div>';
   html+=careButton('soothe','💚 Soothe','Slow HP recovery',activeType);
   html+=careButton('treat','🩹 Treat','Reduce ailment time',activeType);
   html+=careButton('steady','🧘 Steady','Recover stamina',activeType);
+  html+=careButton('lockin','🔥 Lock In','Build finisher. No recovery.',activeType);
   html+='</div>';
+
 
   html+='<div class="battleItems">';
   html+='<div class="careSectionTitle">Battle Items</div>';
@@ -1237,6 +1274,11 @@ function applyCareBeforeIncoming(seat){
     var reduced=reduceWorstAilment(seat,reduction);
     if(reduced)addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
     else addLog(pet.name+' was treated, but had no ailment to reduce.');
+  }else if(care.type==='lockin'){
+    var gain=Math.max(8,Math.min(75,Math.floor(seconds*11)));
+    state.finisher[seat]=clampResource(Number(state.finisher[seat]||0)+gain,0,100);
+    state.finisherReady[seat]=state.finisher[seat]>=100;
+    addLog(pet.name+' locked in and built '+gain+' finisher charge.');
   }
 
   state.care[seat]=emptyCare();
@@ -1316,7 +1358,7 @@ function selectedCareFx(seat,type){
   var stage=document.querySelectorAll('.petStage')[seat];
   if(!stage)return;
   stage.classList.remove('careFxSoothe','careFxTreat','careFxSteady','careFxItem');
-  var cls={soothe:'careFxSoothe',treat:'careFxTreat',steady:'careFxSteady',item:'careFxItem'}[type];
+  var cls={soothe:'careFxSoothe',treat:'careFxTreat',steady:'careFxSteady',item:'careFxItem',lockin:'careFxLock'}[type];
   if(cls){stage.classList.add(cls);setTimeout(function(){stage.classList.remove(cls);},900);}
 }
 
@@ -1328,13 +1370,15 @@ function refreshCareMeter(){
   var pct=0;
   if(care.type&&care.start)pct=Math.min(100,Math.floor((Date.now()-Number(care.start||0))/CARE_WINDOW_MS*100));
   fill.style.width=pct+'%';
+  fill.style.background=(care.type==='lockin')?'linear-gradient(90deg,#f97316,#facc15)':'linear-gradient(90deg,#86efac,#22c55e)';
 }
 
 var CARE_WINDOW_MS=8000;
 var CARE_ACTIONS={
   soothe:{label:'soothing care'},
   treat:{label:'treatment'},
-  steady:{label:'steady breathing'}
+  steady:{label:'steady breathing'},
+  lockin:{label:'Lock In focus'}
 };
 
 function emptyCare(){return {type:null,start:0,itemId:null,locked:false};}
@@ -1372,13 +1416,13 @@ function useMove(moveId){
   if(blocked){
     addLog(attacker.name+' could not move because of '+blocked+'.');
   }else{
+    applyCareBeforeIncoming(target);
     var roll=Math.random()*100;
 
     if(roll>Number(move.accuracy||95)){
       addLog(attacker.name+' used '+moveName+' but missed!');
       applyMissRecovery(actor);
     }else{
-      applyCareBeforeIncoming(target);
       resolveMove(actor,target,moveId,move);
     }
   }
@@ -1439,6 +1483,8 @@ function damage(actor,target,move){
   var stanceScale=STANCE[actorStance]?STANCE[actorStance].damage:1;
   var clashScale=1;
   var note='';
+  var finisherActive=state.finisherReady&&state.finisherReady[actor];
+  var finisherScale=finisherActive?1.45:1;
 
   if(targetStance==='brace'){
     var drain=power>=48?20:power>=40?16:12;
@@ -1456,8 +1502,19 @@ function damage(actor,target,move){
     note=attacker.name+' converted focus into +1 energy.';
   }
 
-  var dmg=Math.floor((base-reduction)*variance*typeBonus*staminaScale*stanceScale*clashScale);
-  return {damage:Math.max(2,dmg),note:note};
+  var dmg=Math.floor((base-reduction)*variance*typeBonus*staminaScale*stanceScale*clashScale*finisherScale);
+  dmg=Math.max(2,dmg);
+  if(finisherActive){
+    state.finisher[actor]=0;
+    state.finisherReady[actor]=false;
+    note=(note?note+' ':'')+'🔥 FINISHER unleashed! '+attacker.name+' turned locked-in focus into a huge swing.';
+  }
+  if(dmg>0&&state.finisher){
+    var loss=Math.min(22,Math.max(6,Math.floor(dmg*.5)));
+    state.finisher[target]=clampResource(Number(state.finisher[target]||0)-loss,0,100);
+    state.finisherReady[target]=state.finisher[target]>=100;
+  }
+  return {damage:dmg,note:note};
 }
 
 var STANCE={
@@ -1674,6 +1731,12 @@ function ensureBattleShape(){
   if(!state.care)state.care=[emptyCare(),emptyCare()];
   if(!state.care[0])state.care[0]=emptyCare();
   if(!state.care[1])state.care[1]=emptyCare();
+  if(!state.finisher)state.finisher=[0,0];
+  if(state.finisher[0]===undefined)state.finisher[0]=0;
+  if(state.finisher[1]===undefined)state.finisher[1]=0;
+  if(!state.finisherReady)state.finisherReady=[false,false];
+  state.finisherReady[0]=Number(state.finisher[0]||0)>=100;
+  state.finisherReady[1]=Number(state.finisher[1]||0)>=100;
 }
 
 function startTurnStatus(seat){
