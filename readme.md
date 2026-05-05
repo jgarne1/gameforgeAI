@@ -411,41 +411,19 @@ Future polish notes:
 - Starter pets should eventually have distinct combat personalities and preferred stance/care patterns.
 - Clash mechanics remain a future candidate after Fury, Guard, Rest, and stamina pacing feel stable.
 
-### Pet Battle combat v1.9 Live Care Mixing + queued stance update
+## PetBattle v2.0 UI Clarity Cleanup — 2026-05-05
 
-This update focuses on clarity, polish, and making the Care Window feel more active without adding a new resource.
+### What changed
+- Cleaned up the PetBattle top/status controls so battle state badges remain visible without crowding the arena.
+- Removed the large visible top-level in-frame forfeit button and kept a smaller, less intrusive Concede control in the battle status card.
+- Tightened the Care Window layout so care actions stay compact and do not cover important battle information.
+- Removed most repeated explanatory subtext from Care buttons; the live meters and labels are now the primary communication layer.
+- Preserved the current Care/Attack/Fury/Guard/Flail/Rest mechanics without adding new combat systems.
 
-Implemented direction:
+### UI direction
+PetBattle should stay readable at a glance. New systems should avoid adding more large text blocks inside the active battle controls. Prefer compact labels, live bars, clear icons, and battle-log feedback over long button descriptions.
 
-- Care actions now apply live while selected instead of only previewing until impact.
-- Players can mix care actions during the same Care Window:
-  - Soothe for a few seconds to recover a small amount of HP.
-  - Switch to Steady to recover stamina.
-  - Switch to Lock In to build Fury.
-  - Switch to Guard near the end if they predict an incoming hit.
-- Previously earned care effects stay applied when switching actions.
-- Only the currently selected care action progresses at any moment.
-- Guard only protects the player if Guard is the active care choice when the incoming attack lands.
-- Soothe remains intentionally slow and capped at roughly 5% max HP per Care Window so battle items remain valuable.
-- Fury gain from Lock In remains slow and should feel like a commitment rather than a free finisher.
-
-Stance behavior update:
-
-- Stance selection is now queued instead of live.
-- Selecting Push, Brace, or Focus shows what the stance does, but it does not immediately change battle stats.
-- The queued stance is applied when the player makes their next attack.
-- If the queued stance differs from the current active stance, the shift cost is charged as part of that attack.
-- This avoids confusion where stance changes appeared to affect the pet before an action was actually taken.
-
-Exhaustion reliability update:
-
-- Exhaustion checks now consider stamina and energy availability for trained moves.
-- If no trained move can be used, the fallback actions should appear:
-  - Flail: weak emergency action.
-  - Rest: stamina recovery action.
-
-Design intent:
-
-- Care Mode should feel active and readable, but not complicated.
-- Players should be able to make timing decisions during the opponent's turn without feeling like they are playing a separate minigame.
-- The current battle direction is still: simple inputs, deep timing/read outcomes, clear mobile-first UI, and strong moment-to-moment feedback.
+### Next recommended pass
+- Tune disabled move reasons and beginner hints.
+- Continue testing Care/Attack mode switching on two-player sessions.
+- Add pet identity and move flavor only after the current combat UI feels obvious to a first-time player.
