@@ -1152,7 +1152,7 @@ var PET_ANIM={
   // Autonomous pet behavior. Jump is intentionally NOT included here.
   // Jump is a player reaction only (feed/play), while the idle loop chooses walk most often and idle sometimes.
   behavior:{walkChance:.78,idleMinMs:1800,idleMaxMs:3400},
-  reactionMs:{jump:950,feed:2700,play:1200},
+  reactionMs:{jump:950,feed:2100,play:1200},
   // Route settings keep the walk sheet visually matched to real movement.
   // If the sprite walks in place, increase minTravel or routePadding.
   routePadding:90,
@@ -2010,11 +2010,24 @@ function showStillPetImage(pet){
   var emojiEl=el('petEmoji');
   var src=petAssetPath(pet);
 
+  // The still image is the safety net for every missing sprite state.
+  // Important: if the image src is already loaded, onload will NOT fire again.
+  // Without the complete/src check below, a draw() during Feed could hide the sprite
+  // and leave the already-loaded still image hidden for a blank/disappearing pet frame.
   if(sprite)sprite.classList.add('hide');
 
   img.onload=function(){img.classList.remove('hide');emojiEl.classList.add('hide')};
   img.onerror=function(){img.classList.add('hide');emojiEl.classList.remove('hide')};
-  if(img.src.indexOf(src)===-1)img.src=src;
+
+  if(img.src.indexOf(src)===-1){
+    img.src=src;
+  }else if(img.complete&&img.naturalWidth>0){
+    img.classList.remove('hide');
+    emojiEl.classList.add('hide');
+  }else if(!img.src){
+    img.classList.add('hide');
+    emojiEl.classList.remove('hide');
+  }
 }
 
 function petStageFile(pet){
@@ -2344,6 +2357,34 @@ function triggerPetReaction(type){
   },1700);
 }
 
+function freezePetAtCurrentVisualPosition(){
+  // Stops an in-progress route without snapping the pet off-screen.
+  // CSS transitions interpolate between old and target transforms, so localState.petX
+  // may be the future target, not the pet's current visible position. Reading the
+  // computed matrix lets Feed/Play pause the pet exactly where the player sees it.
+  var orb=el('petOrb');
+  if(!orb)return;
+  var tx=Number(localState.petX||0);
+  var ty=Number(localState.petY||0);
+  try{
+    var transform=window.getComputedStyle(orb).transform;
+    if(transform&&transform!=='none'){
+      var m=new DOMMatrix(transform);
+      if(isFinite(m.m41))tx=m.m41;
+      if(isFinite(m.m42))ty=m.m42;
+    }
+  }catch(e){}
+
+  localState.petX=Math.round(tx);
+  localState.petY=Math.round(ty);
+  localState.petRot=0;
+  localState.petScale=1;
+  orb.classList.remove('walking','wanderLeft','wanderRight','wanderNearLeft','wanderNearRight','hop');
+  orb.style.transition='none';
+  orb.style.transform='translateX('+localState.petX+'px) translateY('+localState.petY+'px) rotate(0deg) scale(1)';
+  void orb.offsetWidth;
+}
+
 function runJumpReaction(source){
   var pet=activePet();
   var orb=el('petOrb');
@@ -2353,6 +2394,10 @@ function runJumpReaction(source){
   localState.motionBusyUntil=Date.now()+Number((PET_ANIM.reactionMs&&PET_ANIM.reactionMs.play)||1200);
   ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg','feedingFocus'].forEach(function(c){orb.classList.remove(c)});
   orb.classList.add('reactExcited');
+
+  // Player reactions interrupt walking. Freeze first so the jump plays from the
+  // pet's visible position instead of snapping to a route target/off-screen point.
+  freezePetAtCurrentVisualPosition();
 
   // Prefer the jump sheet. If it does not exist, setPetAnimationState safely falls back to idle/still.
   setPetAnimationState('jump');
@@ -2385,32 +2430,26 @@ function runFeedReaction(){
   if(!orb||!pet)return;
 
   clearMotionTimers();
-  localState.motionBusyUntil=Date.now()+2600;
+  localState.motionBusyUntil=Date.now()+Number((PET_ANIM.reactionMs&&PET_ANIM.reactionMs.feed)||2100);
   ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
   orb.classList.add('feedingFocus');
 
-  // Walk to center if the pet is away from the snack zone. If it is already close, do not fake walk in place.
-  var dist=Math.abs(Number(localState.petX||0));
-  if(dist>45)smartMovePet(0,8,0,1.03,Math.min(1050,520+dist*2),{forceWalk:true});
-  else smartMovePet(0,8,0,1.03,420,{forceIdle:true});
+  // Feed should interrupt the current walk, not make the pet disappear while it
+  // marches to a snack point. Freeze the pet where it is visibly standing, then
+  // play the reaction immediately. This keeps the berry moment tied to the pet.
+  freezePetAtCurrentVisualPosition();
+  setPetAnimationState('jump');
+  floatFx('🍓');
+  speak((pet.name||'Your pet')+' hops for a snack.');
 
   queueMotion(function(){
-    // Feeding is a reaction moment: use jump if available, otherwise idle/still.
-    // This happens after the pet reaches center so the snack never plays off-screen.
-    setPetAnimationState('jump');
-    floatFx('🍓');
-    speak((pet.name||'Your pet')+' hops over for a snack.');
-  },820);
-
-  queueMotion(function(){
-    // Briefly settle into idle after the hop so the bite moment reads clearly.
+    // Settle into idle after the hop so the bite/read moment is clear.
     setPetAnimationState('idle');
-    stopPetSpriteFrames(false);
     if(orb){
       orb.classList.remove('feedingFocus');
       orb.classList.add('reactHappy');
     }
-  },1500);
+  },950);
 
   queueMotion(function(){
     if(orb)orb.classList.remove('reactHappy');
@@ -2418,7 +2457,7 @@ function runFeedReaction(){
     localState.motionBusyUntil=0;
     localState.lastWanderAt=Date.now();
     localState.nextWanderDelay=2200;
-  },Number((PET_ANIM.reactionMs&&PET_ANIM.reactionMs.feed)||2700));
+  },Number((PET_ANIM.reactionMs&&PET_ANIM.reactionMs.feed)||2100));
 }
 
 function setPetPersonalityMotion(pet,mood){
@@ -2754,6 +2793,8 @@ function flyItem(itemId){
 }
 
 function visiblePetEl(){
+  var sprite=el('petSprite');
+  if(sprite&&!sprite.classList.contains('hide'))return sprite;
   var img=el('petImg');
   if(img&&!img.classList.contains('hide'))return img;
   return el('petEmoji');
