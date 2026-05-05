@@ -9,10 +9,7 @@
     --bg:#06111f;
     --bg2:#020617;
     --panel:#101c31;
-    --panel2:#16243d;
-    --panel3:#0b1426;
     --line:rgba(255,255,255,.12);
-    --line2:rgba(125,211,252,.28);
     --text:#f8fafc;
     --muted:#94a3b8;
     --soft:#cbd5e1;
@@ -20,12 +17,12 @@
     --accent2:#7dd3fc;
     --gold:#facc15;
     --good:#22c55e;
-    --warn:#f59e0b;
     --bad:#fb7185;
     --shadow:0 18px 45px rgba(0,0,0,.38);
   }
 
   *{box-sizing:border-box}
+  html,body{height:100%}
 
   body{
     margin:0;
@@ -39,16 +36,14 @@
     overflow:hidden;
   }
 
-  button{
-    font:inherit;
-  }
+  button{font:inherit}
 
   .shell{
     height:100vh;
     display:grid;
     grid-template-rows:auto 1fr;
-    gap:12px;
-    padding:12px;
+    gap:10px;
+    padding:10px;
     min-height:0;
   }
 
@@ -56,27 +51,28 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:12px;
-    padding:12px 14px;
+    gap:10px;
+    padding:10px 12px;
     border:1px solid var(--line);
-    border-radius:22px;
+    border-radius:20px;
     background:rgba(16,28,49,.9);
     box-shadow:var(--shadow);
+    min-height:64px;
   }
 
   .brand h1{
     margin:0;
-    font-size:24px;
+    font-size:22px;
     letter-spacing:.02em;
   }
 
   .brand p{
-    margin:4px 0 0;
+    margin:3px 0 0;
     color:var(--muted);
-    font-size:13px;
+    font-size:12px;
   }
 
-  .phaseBox{
+  .topStats{
     display:flex;
     align-items:center;
     justify-content:flex-end;
@@ -89,45 +85,33 @@
     background:rgba(255,255,255,.07);
     color:var(--soft);
     border-radius:999px;
-    padding:8px 11px;
-    font-size:13px;
+    padding:7px 10px;
+    font-size:12px;
     white-space:nowrap;
   }
 
-  .pill strong{
-    color:var(--text);
-  }
-
-  .timer{
-    min-width:84px;
-    text-align:center;
-    border-color:rgba(250,204,21,.35);
-    color:#fde68a;
-  }
-
-  .timer.danger{
-    border-color:rgba(251,113,133,.6);
-    color:#fecdd3;
-    animation:pulseDanger .8s infinite alternate;
-  }
-
-  @keyframes pulseDanger{
-    from{box-shadow:0 0 0 rgba(251,113,133,0)}
-    to{box-shadow:0 0 18px rgba(251,113,133,.3)}
-  }
+  .pill strong{color:var(--text)}
 
   .arena{
     min-height:0;
     display:grid;
-    grid-template-columns:minmax(290px,1fr) minmax(260px,360px) minmax(290px,1fr);
-    gap:12px;
+    grid-template-columns:minmax(280px,1fr) minmax(250px,340px) minmax(280px,1fr);
+    gap:10px;
+  }
+
+  .arena.solo{
+    grid-template-columns:minmax(280px,1fr) minmax(250px,340px);
+  }
+
+  .arena.solo #panel-p2{
+    display:none;
   }
 
   .card{
     min-height:0;
     border:1px solid var(--line);
     background:rgba(16,28,49,.86);
-    border-radius:24px;
+    border-radius:22px;
     box-shadow:var(--shadow);
     overflow:hidden;
   }
@@ -138,7 +122,7 @@
   }
 
   .playerHead{
-    padding:13px 14px;
+    padding:10px 12px;
     border-bottom:1px solid var(--line);
     background:
       radial-gradient(circle at top right, rgba(56,189,248,.16), transparent 35%),
@@ -147,22 +131,22 @@
 
   .playerHead h2{
     margin:0;
-    font-size:18px;
+    font-size:17px;
   }
 
   .playerHead p{
-    margin:4px 0 0;
+    margin:3px 0 0;
     color:var(--muted);
     font-size:12px;
   }
 
   .secretPreview{
-    padding:10px 12px;
+    padding:8px 10px;
     border-bottom:1px solid var(--line);
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:10px;
+    gap:8px;
     background:rgba(2,6,23,.28);
   }
 
@@ -174,21 +158,23 @@
   .secretSlots,
   .guessSlots{
     display:flex;
-    gap:6px;
+    gap:5px;
     flex-wrap:nowrap;
+    align-items:center;
   }
 
   .hiddenSlot,
   .slot{
-    width:30px;
-    height:30px;
-    border-radius:9px;
+    width:26px;
+    height:26px;
+    border-radius:8px;
     border:1px solid var(--line);
     display:flex;
     align-items:center;
     justify-content:center;
     font-weight:900;
     flex:0 0 auto;
+    font-size:13px;
   }
 
   .hiddenSlot{
@@ -203,41 +189,47 @@
 
   .boardWrap{
     min-height:0;
-    overflow:auto;
-    padding:12px;
+    overflow:hidden;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
   }
 
   .rows{
     display:flex;
     flex-direction:column;
-    gap:8px;
+    justify-content:flex-end;
+    gap:5px;
+    min-height:0;
   }
 
   .row{
     display:grid;
-    grid-template-columns:18px 1fr auto;
-    gap:8px;
+    grid-template-columns:16px 1fr auto;
+    gap:6px;
     align-items:center;
-    padding:9px;
+    padding:6px;
     border:1px solid rgba(255,255,255,.08);
     background:rgba(2,6,23,.22);
-    border-radius:16px;
+    border-radius:13px;
     min-width:0;
   }
 
+  .row.future{opacity:.46}
+
   .row.active{
-    border-color:rgba(56,189,248,.55);
-    background:rgba(56,189,248,.08);
+    border-color:rgba(56,189,248,.62);
+    background:rgba(56,189,248,.09);
     box-shadow:0 0 24px rgba(56,189,248,.08);
+    opacity:1;
   }
 
-  .row.done{
-    opacity:.78;
-  }
+  .row.done{opacity:.86}
 
   .led{
-    width:12px;
-    height:12px;
+    width:11px;
+    height:11px;
     border-radius:999px;
     border:1px solid rgba(255,255,255,.18);
     background:rgba(148,163,184,.22);
@@ -251,21 +243,21 @@
 
   @keyframes ledPulse{
     from{transform:scale(.9)}
-    to{transform:scale(1.18)}
+    to{transform:scale(1.16)}
   }
 
   .resultMini{
     display:flex;
-    gap:4px;
+    gap:3px;
     flex-wrap:wrap;
     justify-content:flex-end;
-    min-width:72px;
+    min-width:66px;
   }
 
   .mini{
     border-radius:999px;
-    padding:3px 6px;
-    font-size:11px;
+    padding:2px 5px;
+    font-size:10px;
     border:1px solid var(--line);
     color:var(--soft);
     background:rgba(255,255,255,.06);
@@ -277,7 +269,7 @@
 
   .controls{
     border-top:1px solid var(--line);
-    padding:12px;
+    padding:9px 10px;
     background:rgba(2,6,23,.26);
   }
 
@@ -286,28 +278,22 @@
     align-items:center;
     justify-content:space-between;
     gap:8px;
-    margin-bottom:8px;
+    margin-bottom:7px;
   }
 
-  .controlTitle strong{
-    font-size:13px;
-  }
-
-  .statusText{
-    color:var(--muted);
-    font-size:12px;
-  }
+  .controlTitle strong{font-size:13px}
+  .statusText{color:var(--muted);font-size:11px;text-align:right}
 
   .palette{
     display:flex;
-    gap:7px;
+    gap:6px;
     flex-wrap:wrap;
-    margin-bottom:10px;
+    margin:8px 0;
   }
 
   .colorBtn{
-    width:34px;
-    height:34px;
+    width:31px;
+    height:31px;
     border-radius:999px;
     border:2px solid rgba(255,255,255,.25);
     cursor:pointer;
@@ -320,14 +306,9 @@
     border-color:#fff;
   }
 
-  .colorBtn.selected{
-    border-color:#fff;
-    box-shadow:0 0 0 3px rgba(255,255,255,.16), 0 12px 22px rgba(0,0,0,.28);
-  }
-
   .submitLine{
     display:flex;
-    gap:8px;
+    gap:7px;
     align-items:center;
   }
 
@@ -336,11 +317,11 @@
     color:#03111f;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     font-weight:900;
-    padding:10px 13px;
-    border-radius:14px;
+    padding:9px 12px;
+    border-radius:13px;
     cursor:pointer;
     box-shadow:0 13px 26px rgba(56,189,248,.18);
-    min-width:112px;
+    min-width:106px;
   }
 
   .action.secondary{
@@ -362,30 +343,62 @@
   }
 
   .duelStatus{
-    padding:14px;
+    padding:11px 12px;
     border-bottom:1px solid var(--line);
     background:
       radial-gradient(circle at top, rgba(250,204,21,.14), transparent 38%),
       rgba(255,255,255,.025);
   }
 
-  .duelStatus h2{
+  .statusHeadline{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+    text-align:center;
+  }
+
+  .statusHeadline h2{
     margin:0;
-    font-size:19px;
+    font-size:18px;
+  }
+
+  .inlineTimer{
+    border:1px solid rgba(250,204,21,.42);
+    background:rgba(250,204,21,.1);
+    color:#fde68a;
+    border-radius:999px;
+    padding:5px 9px;
+    font-weight:900;
+    font-size:13px;
+    min-width:62px;
+  }
+
+  .inlineTimer.danger{
+    color:#fecdd3;
+    border-color:rgba(251,113,133,.62);
+    animation:pulseDanger .8s infinite alternate;
+  }
+
+  @keyframes pulseDanger{
+    from{box-shadow:0 0 0 rgba(251,113,133,0)}
+    to{box-shadow:0 0 18px rgba(251,113,133,.3)}
   }
 
   .duelStatus p{
     margin:5px 0 0;
     color:var(--muted);
-    font-size:13px;
-    line-height:1.35;
+    font-size:12px;
+    line-height:1.32;
+    text-align:center;
   }
 
   .setupBox{
-    padding:12px 14px;
+    padding:9px 11px;
     border-bottom:1px solid var(--line);
     display:grid;
-    gap:8px;
+    gap:6px;
     background:rgba(2,6,23,.22);
   }
 
@@ -393,7 +406,7 @@
     display:flex;
     justify-content:space-between;
     gap:8px;
-    font-size:13px;
+    font-size:12px;
     color:var(--soft);
   }
 
@@ -419,57 +432,66 @@
 
   .logWrap{
     min-height:0;
-    overflow:auto;
-    padding:12px;
+    overflow:hidden;
+    padding:9px;
   }
 
   .logGrid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:10px;
+    gap:8px;
+    height:100%;
+    min-height:0;
+  }
+
+  .solo .logGrid{
+    grid-template-columns:1fr;
+  }
+
+  .solo #logCol-p2{
+    display:none;
   }
 
   .logCol{
     border:1px solid rgba(255,255,255,.09);
-    border-radius:16px;
+    border-radius:14px;
     overflow:hidden;
     background:rgba(2,6,23,.2);
+    min-height:0;
+    display:grid;
+    grid-template-rows:auto 1fr;
   }
 
   .logCol h3{
     margin:0;
-    padding:9px 10px;
-    font-size:13px;
+    padding:8px 9px;
+    font-size:12px;
     background:rgba(255,255,255,.055);
     border-bottom:1px solid rgba(255,255,255,.08);
   }
 
   .logList{
+    overflow:hidden;
     display:flex;
-    flex-direction:column;
+    flex-direction:column-reverse;
+    justify-content:flex-start;
   }
 
   .logItem{
-    padding:9px 10px;
-    border-bottom:1px solid rgba(255,255,255,.065);
+    padding:7px 9px;
+    border-top:1px solid rgba(255,255,255,.065);
     color:var(--soft);
-    font-size:12px;
-    line-height:1.45;
+    font-size:11px;
+    line-height:1.35;
   }
 
-  .logItem:last-child{
-    border-bottom:0;
-  }
-
-  .logItem strong{
-    color:var(--text);
-  }
+  .logItem strong{color:var(--text)}
 
   .legend{
-    padding:12px 14px;
+    padding:9px 11px;
     border-top:1px solid var(--line);
     color:var(--muted);
-    font-size:12px;
+    font-size:11px;
     display:grid;
     gap:5px;
     background:rgba(2,6,23,.25);
@@ -478,11 +500,11 @@
   .toast{
     position:fixed;
     left:50%;
-    bottom:18px;
+    bottom:14px;
     transform:translateX(-50%);
     max-width:min(92vw,560px);
-    padding:11px 14px;
-    border-radius:16px;
+    padding:10px 13px;
+    border-radius:15px;
     background:rgba(15,23,42,.95);
     border:1px solid rgba(125,211,252,.28);
     box-shadow:var(--shadow);
@@ -492,14 +514,12 @@
     z-index:10;
   }
 
-  .toast.show{
-    display:block;
-  }
+  .toast.show{display:block}
 
   .modalBackdrop{
     position:fixed;
     inset:0;
-    background:rgba(2,6,23,.78);
+    background:rgba(2,6,23,.8);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -508,9 +528,9 @@
   }
 
   .modal{
-    width:min(96vw,760px);
-    border:1px solid var(--line2);
-    border-radius:26px;
+    width:min(94vw,520px);
+    border:1px solid rgba(125,211,252,.3);
+    border-radius:25px;
     background:
       radial-gradient(circle at top left, rgba(56,189,248,.13), transparent 35%),
       linear-gradient(180deg,#101c31,#07111f);
@@ -518,60 +538,29 @@
     padding:16px;
   }
 
-  .modalHead{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    align-items:flex-start;
-    margin-bottom:12px;
-  }
-
-  .modalHead h2{
+  .modal h2{
     margin:0;
     font-size:22px;
   }
 
-  .modalHead p{
-    margin:5px 0 0;
+  .modal p{
+    margin:6px 0 12px;
     color:var(--muted);
     font-size:13px;
-  }
-
-  .setupSplit{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-  }
-
-  .setupCard{
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:20px;
-    background:rgba(2,6,23,.26);
-    padding:12px;
-  }
-
-  .setupCard h3{
-    margin:0 0 4px;
-    font-size:15px;
-  }
-
-  .setupCard p{
-    margin:0 0 10px;
-    color:var(--muted);
-    font-size:12px;
+    line-height:1.35;
   }
 
   .codeSlots{
     display:flex;
     gap:7px;
-    margin:10px 0;
+    margin:11px 0;
     flex-wrap:wrap;
   }
 
   .codeSlot{
-    width:40px;
-    height:40px;
-    border-radius:12px;
+    width:42px;
+    height:42px;
+    border-radius:13px;
     border:1px dashed rgba(255,255,255,.25);
     background:rgba(255,255,255,.055);
     cursor:pointer;
@@ -582,95 +571,59 @@
     justify-content:space-between;
     align-items:center;
     gap:10px;
-    margin-top:14px;
+    margin-top:13px;
     color:var(--muted);
     font-size:12px;
   }
 
-  .hidden{
-    display:none !important;
+  .choiceActions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:14px;
   }
+
+  .hidden{display:none !important}
 
   @media(max-width:1100px){
     body{overflow:auto}
-    .shell{
-      height:auto;
-      min-height:100vh;
-    }
-
-    .arena{
-      grid-template-columns:1fr;
-    }
-
-    .centerPanel{
-      order:-1;
-    }
-
-    .playerPanel{
-      min-height:620px;
-    }
+    .shell{height:auto;min-height:100vh}
+    .arena,.arena.solo{grid-template-columns:1fr}
+    .centerPanel{order:-1;min-height:420px}
+    .playerPanel{min-height:560px}
+    .boardWrap{overflow:hidden}
   }
 
   @media(max-width:680px){
-    .shell{
-      padding:9px;
-      gap:9px;
-    }
+    .shell{padding:8px;gap:8px}
+    .topbar{align-items:flex-start;flex-direction:column;border-radius:18px}
+    .topStats{justify-content:flex-start}
+    .brand h1{font-size:20px}
+    .brand p{font-size:11px}
+    .row{grid-template-columns:15px 1fr}
+    .resultMini{grid-column:2;justify-content:flex-start}
+    .slot,.hiddenSlot{width:24px;height:24px;border-radius:8px;font-size:11px}
+    .colorBtn{width:36px;height:36px}
+    .submitLine,.choiceActions{grid-template-columns:1fr;flex-direction:column;align-items:stretch}
+    .action{width:100%}
+    .logGrid{grid-template-columns:1fr}
+    .centerPanel{min-height:520px}
+    .modal{border-radius:20px}
+  }
 
-    .topbar{
-      align-items:flex-start;
-      flex-direction:column;
-      border-radius:18px;
-    }
-
-    .phaseBox{
-      justify-content:flex-start;
-    }
-
-    .brand h1{
-      font-size:21px;
-    }
-
-    .setupSplit,
-    .logGrid{
-      grid-template-columns:1fr;
-    }
-
-    .row{
-      grid-template-columns:16px 1fr;
-    }
-
-    .resultMini{
-      grid-column:2;
-      justify-content:flex-start;
-    }
-
-    .slot,
-    .hiddenSlot{
-      width:27px;
-      height:27px;
-      border-radius:8px;
-    }
-
-    .colorBtn{
-      width:38px;
-      height:38px;
-    }
-
-    .submitLine{
-      flex-direction:column;
-      align-items:stretch;
-    }
-
-    .action{
-      width:100%;
-    }
-
-    .modal{
-      border-radius:20px;
-      max-height:92vh;
-      overflow:auto;
-    }
+  @media(max-height:760px) and (min-width:1101px){
+    .brand p{display:none}
+    .topbar{min-height:54px;padding:8px 10px}
+    .playerHead{padding:8px 10px}
+    .playerHead p{display:none}
+    .secretPreview{padding:6px 9px}
+    .controls{padding:7px 9px}
+    .row{padding:4px 6px;gap:5px}
+    .slot,.hiddenSlot{width:23px;height:23px}
+    .colorBtn{width:27px;height:27px}
+    .duelStatus{padding:8px 10px}
+    .setupBox,.legend{padding:7px 9px}
+    .logWrap{padding:7px}
   }
 </style>
 </head>
@@ -678,35 +631,32 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <h1>Mastermind Duel</h1>
-        <p>Set your rival’s secret code, then race to crack yours before they crack theirs.</p>
+        <h1 id="gameTitle">Mastermind Duel</h1>
+        <p id="gameSubtitle">Set your rival’s secret code, then race to crack yours before they crack theirs.</p>
       </div>
-      <div class="phaseBox">
+      <div class="topStats">
+        <div class="pill">Mode: <strong id="modeLabel">Choose</strong></div>
         <div class="pill">Phase: <strong id="phaseLabel">Setup</strong></div>
         <div class="pill">Round: <strong id="roundLabel">0 / 10</strong></div>
-        <div class="pill timer" id="timerPill">Timer: <strong id="timerLabel">--</strong></div>
       </div>
     </header>
 
-    <section class="arena">
+    <section class="arena" id="arena">
       <section class="card playerPanel" id="panel-p1">
         <div class="playerHead">
-          <h2>Player 1 Board</h2>
-          <p>Guess the code Player 2 created for you.</p>
+          <h2 id="p1Title">Player 1 Board</h2>
+          <p id="p1Sub">Guess the code Player 2 created for you.</p>
         </div>
-
         <div class="secretPreview">
           <span>Hidden Code</span>
           <div class="secretSlots" id="hidden-p1"></div>
         </div>
-
         <div class="boardWrap">
           <div class="rows" id="rows-p1"></div>
         </div>
-
         <div class="controls">
           <div class="controlTitle">
-            <strong>Player 1 Guess</strong>
+            <strong id="guessTitle-p1">Player 1 Guess</strong>
             <span class="statusText" id="status-p1">Waiting for setup.</span>
           </div>
           <div class="guessSlots" id="guess-p1"></div>
@@ -720,8 +670,11 @@
 
       <section class="card centerPanel">
         <div class="duelStatus">
-          <h2 id="headline">Create secret codes</h2>
-          <p id="subline">Each player chooses the code their opponent must guess. Repeats are allowed.</p>
+          <div class="statusHeadline">
+            <h2 id="headline">Choose Mode</h2>
+            <span class="inlineTimer hidden" id="inlineTimer">60s</span>
+          </div>
+          <p id="subline">Play solo against a random code, or run a local two-player duel.</p>
         </div>
 
         <div class="setupBox">
@@ -736,14 +689,14 @@
         </div>
 
         <div class="logWrap">
-          <div class="logGrid">
+          <div class="logGrid" id="logGrid">
             <div class="logCol">
-              <h3>Player 1 Results</h3>
+              <h3 id="logTitle-p1">Player 1 Results</h3>
               <div class="logList" id="log-p1">
                 <div class="logItem">No guesses yet.</div>
               </div>
             </div>
-            <div class="logCol">
+            <div class="logCol" id="logCol-p2">
               <h3>Player 2 Results</h3>
               <div class="logList" id="log-p2">
                 <div class="logItem">No guesses yet.</div>
@@ -753,10 +706,8 @@
         </div>
 
         <div class="legend">
-          <div><strong>Goal:</strong> solve your hidden code before your rival solves theirs.</div>
-          <div><strong>Timer:</strong> each round is 60 seconds after both secret codes are submitted.</div>
-          <div><strong>Timeout:</strong> unfinished slots are submitted as blanks and count as Miss.</div>
-          <button class="action secondary" id="newGameBtn">New Duel</button>
+          <div><strong>Timer:</strong> 60 seconds per round. Empty slots auto-submit as Miss.</div>
+          <button class="action secondary" id="newGameBtn">New Game</button>
         </div>
       </section>
 
@@ -765,16 +716,13 @@
           <h2>Player 2 Board</h2>
           <p>Guess the code Player 1 created for you.</p>
         </div>
-
         <div class="secretPreview">
           <span>Hidden Code</span>
           <div class="secretSlots" id="hidden-p2"></div>
         </div>
-
         <div class="boardWrap">
           <div class="rows" id="rows-p2"></div>
         </div>
-
         <div class="controls">
           <div class="controlTitle">
             <strong>Player 2 Guess</strong>
@@ -791,37 +739,28 @@
     </section>
   </main>
 
-  <div class="modalBackdrop" id="setupModal">
+  <div class="modalBackdrop" id="modeModal">
     <div class="modal">
-      <div class="modalHead">
-        <div>
-          <h2>Set Secret Codes</h2>
-          <p>Player 1 creates Player 2’s answer. Player 2 creates Player 1’s answer. Click colors to fill six slots. Repeats are allowed.</p>
-        </div>
+      <h2>Choose Mastermind Mode</h2>
+      <p>Solo starts instantly with a random hidden code. Duel uses two private setup steps where each player creates the other player’s code.</p>
+      <div class="choiceActions">
+        <button class="action" id="soloBtn">Play Solo</button>
+        <button class="action secondary" id="duelBtn">Local Duel</button>
       </div>
+    </div>
+  </div>
 
-      <div class="setupSplit">
-        <div class="setupCard">
-          <h3>Player 1: create Player 2’s code</h3>
-          <p>This is the answer Player 2 will try to guess.</p>
-          <div class="codeSlots" id="codeForP2"></div>
-          <div class="palette" id="setupPalette-p1"></div>
-          <button class="action" id="lockCode-p1">Submit Player 2 Code</button>
-        </div>
-
-        <div class="setupCard">
-          <h3>Player 2: create Player 1’s code</h3>
-          <p>This is the answer Player 1 will try to guess.</p>
-          <div class="codeSlots" id="codeForP1"></div>
-          <div class="palette" id="setupPalette-p2"></div>
-          <button class="action" id="lockCode-p2">Submit Player 1 Code</button>
-        </div>
-      </div>
-
+  <div class="modalBackdrop hidden" id="setupModal">
+    <div class="modal">
+      <h2 id="setupTitle">Player 1 Setup</h2>
+      <p id="setupText">Create the secret code Player 2 will guess. Pick six colors. Repeats are allowed.</p>
+      <div class="codeSlots" id="activeCodeSlots"></div>
+      <div class="palette" id="activeSetupPalette"></div>
       <div class="modalFoot">
-        <span>Tip: use repeats to make harder codes.</span>
-        <button class="action secondary" id="randomCodesBtn">Randomize Both</button>
+        <span id="setupHint">Click a filled slot to clear it.</span>
+        <button class="action secondary" id="randomCodeBtn">Randomize</button>
       </div>
+      <button class="action" id="submitCodeBtn">Submit Code</button>
     </div>
   </div>
 
@@ -843,7 +782,9 @@
   const ROUND_SECONDS = 60;
 
   const state = {
-    phase:"setup",
+    mode:"choose",
+    phase:"choose",
+    setupStep:"p1SetsP2",
     round:0,
     timeLeft:ROUND_SECONDS,
     timer:null,
@@ -852,7 +793,8 @@
     guesses:{ p1:Array(CODE_LEN).fill(null), p2:Array(CODE_LEN).fill(null) },
     submitted:{ p1:false, p2:false },
     rows:{ p1:[], p2:[] },
-    winner:null
+    winner:null,
+    reveal:false
   };
 
   const $ = (id)=>document.getElementById(id);
@@ -865,8 +807,10 @@
     el._t = setTimeout(()=>el.classList.remove("show"), 2200);
   }
 
-  function colorByValue(value){
-    return COLORS.find(c=>c.value===value);
+  function colorByValue(value){return COLORS.find(c=>c.value===value)}
+
+  function randomCode(){
+    return Array.from({length:CODE_LEN}, ()=>COLORS[Math.floor(Math.random()*COLORS.length)].value);
   }
 
   function makeColorDot(value, className){
@@ -903,24 +847,67 @@
     return false;
   }
 
+  function activeSetupPlayer(){
+    return state.setupStep === "p1SetsP2" ? "p2" : "p1";
+  }
+
+  function activeSetupLabel(){
+    return state.setupStep === "p1SetsP2"
+      ? { title:"Player 1 Setup", text:"Create the secret code Player 2 will guess. Pick six colors. Repeats are allowed.", button:"Submit Player 2 Code" }
+      : { title:"Player 2 Setup", text:"Create the secret code Player 1 will guess. Pick six colors. Repeats are allowed.", button:"Submit Player 1 Code" };
+  }
+
+  function renderSetupModal(){
+    if(state.phase !== "setup") return;
+    const target = activeSetupPlayer();
+    const label = activeSetupLabel();
+    $("setupTitle").textContent = label.title;
+    $("setupText").textContent = label.text;
+    $("submitCodeBtn").textContent = label.button;
+
+    const slots = $("activeCodeSlots");
+    slots.innerHTML = "";
+    state.codes[target].forEach((value,index)=>{
+      const slot = makeColorDot(value,"codeSlot");
+      slot.title = value ? "Click to clear" : "Empty slot";
+      slot.onclick = ()=>{
+        if(state.codeLocked[target]) return;
+        state.codes[target][index] = null;
+        renderSetupModal();
+      };
+      slots.appendChild(slot);
+    });
+
+    makePalette("activeSetupPalette", (value)=>{
+      if(!fillFirstEmpty(state.codes[target], value)) toast("Code is full. Click a slot to clear it.");
+      renderSetupModal();
+    });
+  }
+
   function renderHidden(){
     ["p1","p2"].forEach(player=>{
       const el = $("hidden-"+player);
+      if(!el) return;
       el.innerHTML = "";
       for(let i=0;i<CODE_LEN;i++){
-        const s = document.createElement("div");
-        s.className = "hiddenSlot";
-        s.textContent = "?";
-        el.appendChild(s);
+        if(state.reveal){
+          el.appendChild(makeColorDot(state.codes[player][i], "hiddenSlot"));
+        }else{
+          const s = document.createElement("div");
+          s.className = "hiddenSlot";
+          s.textContent = "?";
+          el.appendChild(s);
+        }
       }
     });
   }
 
   function renderGuess(player){
     const el = $("guess-"+player);
+    if(!el) return;
     el.innerHTML = "";
-    state.guesses[player].forEach((value, index)=>{
-      const slot = makeColorDot(value, "slot");
+    state.guesses[player].forEach((value,index)=>{
+      const slot = makeColorDot(value,"slot");
       slot.title = value ? "Click to clear" : "Empty slot";
       slot.onclick = ()=>{
         if(state.phase !== "guess" || state.submitted[player] || state.winner) return;
@@ -931,42 +918,19 @@
     });
   }
 
-  function renderSetupCodes(){
-    const map = [
-      ["codeForP1","p1"],
-      ["codeForP2","p2"]
-    ];
-
-    map.forEach(([elId, player])=>{
-      const el = $(elId);
-      el.innerHTML = "";
-      state.codes[player].forEach((value, index)=>{
-        const slot = makeColorDot(value, "codeSlot");
-        slot.title = value ? "Click to clear" : "Empty slot";
-        slot.onclick = ()=>{
-          if(state.codeLocked[player]) return;
-          state.codes[player][index] = null;
-          renderSetupCodes();
-        };
-        el.appendChild(slot);
-      });
-    });
-
-    $("lockCode-p1").disabled = state.codeLocked.p2;
-    $("lockCode-p2").disabled = state.codeLocked.p1;
-    $("lockCode-p1").textContent = state.codeLocked.p2 ? "Player 2 Code Submitted" : "Submit Player 2 Code";
-    $("lockCode-p2").textContent = state.codeLocked.p1 ? "Player 1 Code Submitted" : "Submit Player 1 Code";
-  }
-
   function renderRows(player){
     const el = $("rows-"+player);
+    if(!el) return;
     el.innerHTML = "";
 
-    for(let i=0;i<MAX_ROUNDS;i++){
-      const existing = state.rows[player][i];
+    for(let displayRound=MAX_ROUNDS; displayRound>=1; displayRound--){
+      const idx = displayRound - 1;
+      const existing = state.rows[player][idx];
+      const isActive = state.phase === "guess" && state.round === displayRound && !state.winner;
+      const isFuture = state.phase === "guess" && displayRound > state.round;
+
       const row = document.createElement("div");
-      const isActive = state.phase === "guess" && i === state.round - 1 && !state.winner;
-      row.className = "row" + (isActive ? " active" : "") + (existing ? " done" : "");
+      row.className = "row" + (isActive ? " active" : "") + (existing ? " done" : "") + (isFuture ? " future" : "");
 
       const led = document.createElement("div");
       led.className = "led";
@@ -974,11 +938,10 @@
 
       const slots = document.createElement("div");
       slots.className = "guessSlots";
-
       const values = existing ? existing.guess : Array(CODE_LEN).fill(null);
       values.forEach(v=>{
         if(v){
-          slots.appendChild(makeColorDot(v, "slot"));
+          slots.appendChild(makeColorDot(v,"slot"));
         }else{
           const blank = document.createElement("div");
           blank.className = "slot";
@@ -987,7 +950,6 @@
           slots.appendChild(blank);
         }
       });
-
       row.appendChild(slots);
 
       const result = document.createElement("div");
@@ -998,7 +960,7 @@
           '<span class="mini color">C '+existing.result.colorOnly+'</span>' +
           '<span class="mini miss">M '+existing.result.miss+'</span>';
       }else{
-        result.innerHTML = '<span class="mini">R'+(i+1)+'</span>';
+        result.innerHTML = '<span class="mini">R'+displayRound+'</span>';
       }
       row.appendChild(result);
 
@@ -1009,79 +971,117 @@
   function renderLogs(){
     ["p1","p2"].forEach(player=>{
       const el = $("log-"+player);
+      if(!el) return;
       el.innerHTML = "";
       if(!state.rows[player].length){
         el.innerHTML = '<div class="logItem">No guesses yet.</div>';
         return;
       }
 
-      state.rows[player].forEach((r, idx)=>{
+      state.rows[player].forEach((r,idx)=>{
         const item = document.createElement("div");
         item.className = "logItem";
         item.innerHTML =
           '<strong>Round '+(idx+1)+'</strong><br>' +
-          'Exact Match: <strong>'+r.result.exact+'</strong><br>' +
-          'Color Only: <strong>'+r.result.colorOnly+'</strong><br>' +
+          'Exact: <strong>'+r.result.exact+'</strong> · ' +
+          'Color: <strong>'+r.result.colorOnly+'</strong> · ' +
           'Miss: <strong>'+r.result.miss+'</strong>';
         el.appendChild(item);
       });
     });
   }
 
+  function statusFor(player){
+    if(state.mode === "solo" && player === "p2") return "";
+    if(state.winner) return "Complete. Code revealed.";
+    if(state.phase === "choose") return "Choose mode.";
+    if(state.phase === "setup") return "Waiting for secret codes.";
+    if(state.submitted[player]) return "Locked in. Waiting.";
+    return "Choose six colors.";
+  }
+
+  function renderModeLayout(){
+    const solo = state.mode === "solo";
+    $("arena").classList.toggle("solo", solo);
+    $("logGrid").classList.toggle("solo", solo);
+
+    $("modeLabel").textContent = state.mode === "solo" ? "Solo" : state.mode === "duel" ? "Duel" : "Choose";
+    $("gameTitle").textContent = solo ? "Mastermind Solo" : "Mastermind Duel";
+    $("gameSubtitle").textContent = solo
+      ? "Crack a random hidden code before your attempts run out."
+      : "Set your rival’s secret code, then race to crack yours before they crack theirs.";
+
+    $("p1Title").textContent = solo ? "Codebreaker Board" : "Player 1 Board";
+    $("p1Sub").textContent = solo ? "Guess the randomly generated hidden code." : "Guess the code Player 2 created for you.";
+    $("guessTitle-p1").textContent = solo ? "Your Guess" : "Player 1 Guess";
+    $("logTitle-p1").textContent = solo ? "Solo Results" : "Player 1 Results";
+  }
+
   function renderStatus(){
-    $("phaseLabel").textContent = state.phase === "setup" ? "Setup" : state.winner ? "Complete" : "Guess";
+    renderModeLayout();
+
+    $("phaseLabel").textContent =
+      state.phase === "choose" ? "Choose" :
+      state.phase === "setup" ? "Setup" :
+      state.winner ? "Complete" : "Guess";
+
     $("roundLabel").textContent = state.round + " / " + MAX_ROUNDS;
-    $("timerLabel").textContent = state.phase === "guess" && !state.winner ? state.timeLeft + "s" : "--";
-    $("timerPill").classList.toggle("danger", state.phase === "guess" && state.timeLeft <= 10 && !state.winner);
 
     $("ready-p1").classList.toggle("ready", state.codeLocked.p1);
     $("ready-p2").classList.toggle("ready", state.codeLocked.p2);
+    $("ready-p1").textContent = state.mode === "solo" ? "Random code set" : "P1 code set";
+    $("ready-p2").textContent = state.mode === "solo" ? "Solo mode" : "P2 code set";
 
     $("status-p1").textContent = statusFor("p1");
     $("status-p2").textContent = statusFor("p2");
 
     $("submit-p1").disabled = state.phase !== "guess" || state.submitted.p1 || !!state.winner;
-    $("submit-p2").disabled = state.phase !== "guess" || state.submitted.p2 || !!state.winner;
+    $("submit-p2").disabled = state.phase !== "guess" || state.submitted.p2 || !!state.winner || state.mode === "solo";
     $("clear-p1").disabled = state.phase !== "guess" || state.submitted.p1 || !!state.winner;
-    $("clear-p2").disabled = state.phase !== "guess" || state.submitted.p2 || !!state.winner;
+    $("clear-p2").disabled = state.phase !== "guess" || state.submitted.p2 || !!state.winner || state.mode === "solo";
+
+    const timer = $("inlineTimer");
+    timer.classList.toggle("hidden", state.phase !== "guess" || !!state.winner);
+    timer.textContent = state.timeLeft + "s";
+    timer.classList.toggle("danger", state.timeLeft <= 10 && state.phase === "guess" && !state.winner);
 
     if(state.winner){
-      $("headline").textContent = state.winner === "tie" ? "Tie Duel!" : (state.winner === "p1" ? "Player 1 Wins!" : "Player 2 Wins!");
-      $("subline").textContent = state.winner === "tie"
-        ? "Both players cracked their codes in the same round."
-        : "The winning player solved their hidden code first.";
+      if(state.mode === "solo"){
+        $("headline").textContent = state.winner === "p1" ? "Code Cracked!" : "Code Survived!";
+        $("subline").textContent = "The hidden code is now revealed at the end of the board.";
+      }else{
+        $("headline").textContent = state.winner === "tie" ? "Tie Duel!" : (state.winner === "p1" ? "Player 1 Wins!" : "Player 2 Wins!");
+        $("subline").textContent = "Hidden codes are now revealed at the end of each board.";
+      }
+    }else if(state.phase === "choose"){
+      $("headline").textContent = "Choose Mode";
+      $("subline").textContent = "Solo starts instantly. Local Duel uses separate setup popups.";
     }else if(state.phase === "setup"){
       $("headline").textContent = "Create secret codes";
-      $("subline").textContent = "Both players must submit their secret codes before the first 60-second round begins.";
+      $("subline").textContent = state.setupStep === "p1SetsP2"
+        ? "Player 1 is creating Player 2’s secret code."
+        : "Player 2 is creating Player 1’s secret code.";
     }else{
-      $("headline").textContent = state.submitted.p1 && state.submitted.p2 ? "Resolving round..." : "Round " + state.round + " is live";
-      $("subline").textContent = "Submit your six-slot guess before the timer reaches zero.";
+      $("headline").textContent = "Round " + state.round + " Live";
+      $("subline").textContent = state.mode === "solo"
+        ? "Submit before time expires. Empty slots count as Miss."
+        : "Both players submit before time expires. The round resolves when both are locked in.";
     }
-  }
-
-  function statusFor(player){
-    if(state.winner) return "Duel complete.";
-    if(state.phase === "setup") return "Waiting for both secret codes.";
-    if(state.submitted[player]) return "Locked in. Waiting for opponent.";
-    return "Choose six colors, then submit.";
   }
 
   function renderAll(){
     renderHidden();
-    renderSetupCodes();
     ["p1","p2"].forEach(player=>{
       renderGuess(player);
       renderRows(player);
     });
     renderLogs();
     renderStatus();
+    if(state.phase === "setup") renderSetupModal();
   }
 
   function scoreGuess(secret, guess){
-    let exact = 0;
-    let colorOnly = 0;
-    let miss = 0;
-
+    let exact = 0, colorOnly = 0, miss = 0;
     const secretLeft = [];
     const guessLeft = [];
 
@@ -1118,8 +1118,9 @@
     state.guesses.p1 = Array(CODE_LEN).fill(null);
     state.guesses.p2 = Array(CODE_LEN).fill(null);
     state.submitted.p1 = false;
-    state.submitted.p2 = false;
+    state.submitted.p2 = state.mode === "solo";
     $("setupModal").classList.add("hidden");
+    $("modeModal").classList.add("hidden");
     startTimer();
     renderAll();
     toast("Round 1 started. You have 60 seconds.");
@@ -1150,8 +1151,13 @@
   function submitGuess(player, auto){
     if(state.phase !== "guess" || state.submitted[player] || state.winner) return;
     state.submitted[player] = true;
-    toast((player === "p1" ? "Player 1" : "Player 2") + (auto ? " auto-submitted." : " locked in."));
+    toast((state.mode === "solo" ? "Guess" : (player === "p1" ? "Player 1" : "Player 2")) + (auto ? " auto-submitted." : " locked in."));
     renderAll();
+
+    if(state.mode === "solo"){
+      setTimeout(resolveRound, 300);
+      return;
+    }
 
     if(state.submitted.p1 && state.submitted.p2){
       setTimeout(resolveRound, 450);
@@ -1161,7 +1167,7 @@
   function autoSubmitRound(){
     if(state.phase !== "guess" || state.winner) return;
     if(!state.submitted.p1) submitGuess("p1", true);
-    if(!state.submitted.p2) submitGuess("p2", true);
+    if(state.mode !== "solo" && !state.submitted.p2) submitGuess("p2", true);
   }
 
   function resolveRound(){
@@ -1170,42 +1176,61 @@
     stopTimer();
 
     const r1 = scoreGuess(state.codes.p1, state.guesses.p1);
-    const r2 = scoreGuess(state.codes.p2, state.guesses.p2);
-
     state.rows.p1.push({ guess:state.guesses.p1.slice(), result:r1 });
-    state.rows.p2.push({ guess:state.guesses.p2.slice(), result:r2 });
+
+    let r2 = null;
+    if(state.mode !== "solo"){
+      r2 = scoreGuess(state.codes.p2, state.guesses.p2);
+      state.rows.p2.push({ guess:state.guesses.p2.slice(), result:r2 });
+    }
 
     const p1Solved = r1.exact === CODE_LEN;
-    const p2Solved = r2.exact === CODE_LEN;
+    const p2Solved = state.mode !== "solo" && r2.exact === CODE_LEN;
 
-    if(p1Solved && p2Solved){
+    if(state.mode === "solo"){
+      if(p1Solved){
+        state.winner = "p1";
+        state.reveal = true;
+        toast("Code cracked!");
+      }else if(state.round >= MAX_ROUNDS){
+        state.winner = "code";
+        state.reveal = true;
+        toast("The code survived. Hidden code revealed.");
+      }else{
+        nextRound();
+      }
+    }else if(p1Solved && p2Solved){
       state.winner = "tie";
+      state.reveal = true;
       toast("Tie! Both players cracked their codes.");
     }else if(p1Solved){
       state.winner = "p1";
+      state.reveal = true;
       toast("Player 1 wins!");
     }else if(p2Solved){
       state.winner = "p2";
+      state.reveal = true;
       toast("Player 2 wins!");
     }else if(state.round >= MAX_ROUNDS){
       state.winner = "tie";
+      state.reveal = true;
       toast("No one cracked the code. Duel ends in a tie.");
     }else{
-      state.round++;
-      state.timeLeft = ROUND_SECONDS;
-      state.guesses.p1 = Array(CODE_LEN).fill(null);
-      state.guesses.p2 = Array(CODE_LEN).fill(null);
-      state.submitted.p1 = false;
-      state.submitted.p2 = false;
-      toast("Round " + state.round + " started.");
-      startTimer();
+      nextRound();
     }
 
     renderAll();
   }
 
-  function randomCode(){
-    return Array.from({length:CODE_LEN}, ()=>COLORS[Math.floor(Math.random()*COLORS.length)].value);
+  function nextRound(){
+    state.round++;
+    state.timeLeft = ROUND_SECONDS;
+    state.guesses.p1 = Array(CODE_LEN).fill(null);
+    state.guesses.p2 = Array(CODE_LEN).fill(null);
+    state.submitted.p1 = false;
+    state.submitted.p2 = state.mode === "solo";
+    toast("Round " + state.round + " started.");
+    startTimer();
   }
 
   function lockCodeFor(player){
@@ -1215,18 +1240,47 @@
     }
 
     state.codeLocked[player] = true;
-    renderAll();
+
+    if(state.setupStep === "p1SetsP2"){
+      state.setupStep = "p2SetsP1";
+      toast("Player 2 setup is next.");
+      renderAll();
+      return;
+    }
 
     if(state.codeLocked.p1 && state.codeLocked.p2){
       startGuessing();
-    }else{
-      toast("Code submitted. Waiting for the other player.");
     }
   }
 
-  function resetGame(){
-    stopTimer();
+  function startSolo(){
+    resetState();
+    state.mode = "solo";
+    state.phase = "guess";
+    state.codes.p1 = randomCode();
+    state.codes.p2 = randomCode();
+    state.codeLocked.p1 = true;
+    state.codeLocked.p2 = true;
+    $("modeModal").classList.add("hidden");
+    $("setupModal").classList.add("hidden");
+    startGuessing();
+  }
+
+  function startDuelSetup(){
+    resetState();
+    state.mode = "duel";
     state.phase = "setup";
+    state.setupStep = "p1SetsP2";
+    $("modeModal").classList.add("hidden");
+    $("setupModal").classList.remove("hidden");
+    renderAll();
+  }
+
+  function resetState(){
+    stopTimer();
+    state.mode = "choose";
+    state.phase = "choose";
+    state.setupStep = "p1SetsP2";
     state.round = 0;
     state.timeLeft = ROUND_SECONDS;
     state.codes.p1 = Array(CODE_LEN).fill(null);
@@ -1240,37 +1294,42 @@
     state.rows.p1 = [];
     state.rows.p2 = [];
     state.winner = null;
-    $("setupModal").classList.remove("hidden");
+    state.reveal = false;
+  }
+
+  function newGame(){
+    resetState();
+    $("modeModal").classList.remove("hidden");
+    $("setupModal").classList.add("hidden");
     renderAll();
   }
 
   function bind(){
-    makePalette("setupPalette-p1", (value)=>{
-      if(state.codeLocked.p2) return;
-      if(!fillFirstEmpty(state.codes.p2, value)) toast("Player 2 code is full. Click a slot to clear it.");
-      renderSetupCodes();
-    });
-
-    makePalette("setupPalette-p2", (value)=>{
-      if(state.codeLocked.p1) return;
-      if(!fillFirstEmpty(state.codes.p1, value)) toast("Player 1 code is full. Click a slot to clear it.");
-      renderSetupCodes();
-    });
-
     makePalette("palette-p1", (value)=>{
       if(state.phase !== "guess" || state.submitted.p1 || state.winner) return;
-      if(!fillFirstEmpty(state.guesses.p1, value)) toast("Player 1 guess is full. Click a slot to clear it.");
+      if(!fillFirstEmpty(state.guesses.p1, value)) toast("Guess is full. Click a slot to clear it.");
       renderGuess("p1");
     });
 
     makePalette("palette-p2", (value)=>{
-      if(state.phase !== "guess" || state.submitted.p2 || state.winner) return;
+      if(state.phase !== "guess" || state.submitted.p2 || state.winner || state.mode === "solo") return;
       if(!fillFirstEmpty(state.guesses.p2, value)) toast("Player 2 guess is full. Click a slot to clear it.");
       renderGuess("p2");
     });
 
-    $("lockCode-p1").onclick = ()=>lockCodeFor("p2");
-    $("lockCode-p2").onclick = ()=>lockCodeFor("p1");
+    $("soloBtn").onclick = startSolo;
+    $("duelBtn").onclick = startDuelSetup;
+
+    $("submitCodeBtn").onclick = ()=>{
+      lockCodeFor(activeSetupPlayer());
+    };
+
+    $("randomCodeBtn").onclick = ()=>{
+      const target = activeSetupPlayer();
+      state.codes[target] = randomCode();
+      renderSetupModal();
+      toast("Random code generated.");
+    };
 
     $("submit-p1").onclick = ()=>submitGuess("p1", false);
     $("submit-p2").onclick = ()=>submitGuess("p2", false);
@@ -1282,19 +1341,12 @@
     };
 
     $("clear-p2").onclick = ()=>{
-      if(state.phase !== "guess" || state.submitted.p2 || state.winner) return;
+      if(state.phase !== "guess" || state.submitted.p2 || state.winner || state.mode === "solo") return;
       state.guesses.p2 = Array(CODE_LEN).fill(null);
       renderGuess("p2");
     };
 
-    $("randomCodesBtn").onclick = ()=>{
-      if(!state.codeLocked.p1) state.codes.p1 = randomCode();
-      if(!state.codeLocked.p2) state.codes.p2 = randomCode();
-      renderSetupCodes();
-      toast("Random codes generated.");
-    };
-
-    $("newGameBtn").onclick = resetGame;
+    $("newGameBtn").onclick = newGame;
   }
 
   bind();
