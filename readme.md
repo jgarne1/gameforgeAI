@@ -442,3 +442,23 @@ Implemented direction:
 Removal note:
 
 - The preview system is intentionally modular. To remove it, delete the v2.1 CSS block and the calls to `setProjectedGainBar()`, `setProjectedResourcePreview()`, and `clearProjectedGainBars()`; core battle math will remain in `carePreviewFor()`.
+
+
+## PetBattle v2.2 UI / Feedback Polish
+
+This pass keeps the v2.1 Care mechanics intact and focuses on making battles easier to read and better to look at.
+
+### Added
+- Darker battle-themed visual treatment with attack/care/fury color language.
+- Compact Event Feed that shows the latest important moments instead of a noisy long log.
+- Phase Ribbon and Battle Callout so players always know whether they are attacking, caring, charging, or finished.
+- Attack/Care action area labels to make the current phase self-explanatory.
+- Care commit feedback: Soothe, Steady, Treat, Guard, and Lock In now show floating feedback when their pending value commits.
+- Guard feedback: guarded hits show `GUARDED` before damage.
+- Finisher/large-hit feedback: temporary screen shake for finisher impacts.
+
+### Modular removal notes
+- Remove the `PETBATTLE v2.2` CSS block to return to the softer previous theme.
+- Remove `updateBattleShell()` and its call inside `draw()` to remove the phase ribbon/callout logic.
+- Revert `drawLog()` to the old version if a full long text log is preferred.
+- Remove the `state.lastCareSummary` assignments inside `applyCareBeforeIncoming()` if floating care feedback feels too busy.
