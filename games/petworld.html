@@ -314,6 +314,32 @@ button,input,select{font-family:inherit}
   box-shadow:0 0 105px rgba(251,191,36,.9), inset 0 0 58px rgba(255,255,255,.72);
 }
 
+
+/*
+  Sprite mode removes the classic glowing orb/bubble and personality float.
+  Sprites have their own foot/body motion, so the container should behave like
+  a grounded stage position instead of a floating bubble.
+*/
+.petOrb.spriteMode{
+  background:transparent!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  animation:none!important;
+}
+.petOrb.spriteMode.playful,
+.petOrb.spriteMode.lazy,
+.petOrb.spriteMode.napping,
+.petOrb.spriteMode.aggressive,
+.petOrb.spriteMode.calm,
+.petOrb.spriteMode.curious,
+.petOrb.spriteMode.moody{
+  animation:none!important;
+}
+.petOrb.spriteMode .petImg,
+.petOrb.spriteMode .petEmoji{
+  animation:none;
+}
+
 .petEmoji{
   font-size:136px;
   filter:drop-shadow(0 20px 20px rgba(15,23,42,.23));
@@ -411,19 +437,18 @@ button,input,select{font-family:inherit}
   transition:width .35s ease;
 }
 .petOrb{
-  animation:none;
   will-change:transform;
 }
-.petOrb.playful:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
-.petOrb.lazy:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
-.petOrb.napping:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
-.petOrb.aggressive:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
-.petOrb.calm:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
-.petOrb.curious:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
-.petOrb.moody:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg){
-  animation:none;
-}
-.petOrb.walking{
+/* Classic still-image pets keep the original cozy floating/bubble feel.
+   Sprite pets opt out through .spriteMode because their sheet supplies motion. */
+.petOrb.spriteMode.playful:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.spriteMode.lazy:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.spriteMode.napping:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.spriteMode.aggressive:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.spriteMode.calm:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.spriteMode.curious:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.spriteMode.moody:not(.reactHappy):not(.reactExcited):not(.reactFocus):not(.reactSleep):not(.reactExplore):not(.reactEgg),
+.petOrb.spriteMode.walking{
   animation:none!important;
 }
 
@@ -1134,6 +1159,7 @@ var PET_ANIM={
   timer:null,
   assets:{idle:null,walk:null,jump:null},
   available:{idle:false,walk:false,jump:false},
+  hasAny:false,
   checking:false
 };
 
@@ -2000,10 +2026,28 @@ function petAnimationKey(pet){
   return [pet.id||'',pet.species||'',petStageFile(pet),pet.stage||''].join('|');
 }
 
+
+function setPetSpriteMode(on){
+  var orb=el('petOrb');
+  if(orb)orb.classList.toggle('spriteMode',!!on);
+}
+
+function restoreClassicPetVisuals(){
+  // Used when a specific sprite state is missing. It guarantees the still image
+  // comes back instead of leaving the sprite layer hidden and the pet invisible.
+  var pet=activePet();
+  var sprite=el('petSprite');
+  if(sprite)sprite.classList.add('hide');
+  stopPetSpriteFrames();
+  if(pet)showStillPetImage(pet);
+}
+
 function preparePetAnimation(pet){
   if(!PET_ANIM.enabled||!pet||pet.stage==='egg'){
     stopPetSpriteFrames();
     PET_ANIM.currentKey=null;
+    PET_ANIM.hasAny=false;
+    setPetSpriteMode(false);
     return;
   }
 
@@ -2019,6 +2063,8 @@ function preparePetAnimation(pet){
     jump:petSpritePath(pet,'jump')
   };
   PET_ANIM.available={idle:false,walk:false,jump:false};
+  PET_ANIM.hasAny=false;
+  setPetSpriteMode(false);
   PET_ANIM.checking=true;
   stopPetSpriteFrames();
 
@@ -2029,8 +2075,12 @@ function preparePetAnimation(pet){
     imageExists(PET_ANIM.assets.jump).then(function(ok){PET_ANIM.available.jump=ok})
   ]).then(function(){
     PET_ANIM.checking=false;
+    PET_ANIM.hasAny=!!(PET_ANIM.available.idle||PET_ANIM.available.walk||PET_ANIM.available.jump);
     var live=activePet();
     if(live&&petAnimationKey(live)===key){
+      // If any sprite exists for this stage, remove the old bubble/floating feel
+      // even when the current state falls back to the still image.
+      setPetSpriteMode(PET_ANIM.hasAny);
       setPetAnimationState('idle');
     }
   });
@@ -2063,13 +2113,17 @@ function setPetAnimationState(state){
       wanted='idle';
       src=PET_ANIM.assets.idle;
     }else{
-      stopPetSpriteFrames();
-      sprite.classList.add('hide');
+      // Missing state is normal while you are building sprite sheets over time.
+      // Keep spriteMode if this pet has any sprite sheet so the bubble/float stays hidden,
+      // but show the still image for this state.
+      setPetSpriteMode(!!PET_ANIM.hasAny);
+      restoreClassicPetVisuals();
       return false;
     }
   }
 
   PET_ANIM.activeState=wanted;
+  setPetSpriteMode(true);
   sprite.style.backgroundImage='url("'+src+'")';
   sprite.style.backgroundSize=(PET_ANIM.cols*100)+'% '+(PET_ANIM.rows*100)+'%';
   sprite.style.setProperty('--petFacing',String(PET_ANIM.facing||1));
@@ -2114,7 +2168,9 @@ function paintPetSpriteFrame(){
 }
 
 function setPetFacing(dir){
-  PET_ANIM.facing=dir<0?-1:1;
+  // Sprite art was authored facing the opposite direction from the old image logic.
+  // Reverse the scaleX mapping so left/right walking faces correctly.
+  PET_ANIM.facing=dir<0?1:-1;
   var sprite=el('petSprite');
   if(sprite)sprite.style.setProperty('--petFacing',String(PET_ANIM.facing));
 }
