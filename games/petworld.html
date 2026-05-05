@@ -298,12 +298,21 @@ button,input,select{font-family:inherit}
   transform:scaleX(var(--petFacing, 1));
   transform-origin:center bottom;
   image-rendering:auto;
+  overflow:hidden;
+  backface-visibility:hidden;
+  will-change:background-position,transform;
 }
 .petSprite.hide{display:none}
 .petSprite.spriteIdle{animation:spriteIdleBreath 2.5s ease-in-out infinite}
 .petSprite.spriteWalk{animation:spriteWalkBob .46s ease-in-out infinite}
 @keyframes spriteIdleBreath{0%,100%{transform:scaleX(var(--petFacing, 1)) scale(1) translateY(0)}50%{transform:scaleX(var(--petFacing, 1)) scale(1.035) translateY(-3px)}}
 @keyframes spriteWalkBob{0%,100%{transform:scaleX(var(--petFacing, 1)) translateY(0) rotate(-.8deg)}50%{transform:scaleX(var(--petFacing, 1)) translateY(-5px) rotate(.8deg)}}
+
+/* Feeding is handled as a controlled center-stage reaction so the wander controller cannot pull the pet away mid-snack. */
+.petOrb.feedingFocus{
+  transition:transform .72s cubic-bezier(.2,.9,.2,1), box-shadow .28s ease;
+  box-shadow:0 0 105px rgba(251,191,36,.9), inset 0 0 58px rgba(255,255,255,.72);
+}
 
 .petEmoji{
   font-size:136px;
@@ -1098,7 +1107,7 @@ var limits={maxRoster:6,newEggBaseCost:75};
 var currentTab='quests';
 var selectedZoneId='meadow';
 var logs=[];
-var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1,pendingConfirm:null,pendingConfirmUntil:0};
+var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1,pendingConfirm:null,pendingConfirmUntil:0,motionBusyUntil:0,motionTimers:[]};
 
 /*
   PetWorld Animation Controller config.
@@ -1113,6 +1122,11 @@ var PET_ANIM={
   rows:5,
   frames:25,
   fps:{idle:8,walk:13,jump:16},
+  // Route settings keep the walk sheet visually matched to real movement.
+  // If the sprite walks in place, increase minTravel or routePadding.
+  routePadding:90,
+  minTravel:245,
+  offscreenChance:.28,
   currentKey:null,
   activeState:'still',
   facing:1,
@@ -2241,12 +2255,19 @@ function triggerPetReaction(type){
   var orb=el('petOrb');
   if(!orb)return;
 
-  ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
+  // Feeding is special: players noticed the pet could disappear or keep wandering while fed.
+  // This sequence pauses wandering, walks the pet to center, shows the snack moment, then resumes idle.
+  if(type==='feed'){
+    runFeedReaction();
+    return;
+  }
+
+  ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg','feedingFocus'].forEach(function(c){orb.classList.remove(c)});
   void orb.offsetWidth;
 
   if(type==='play'||type==='train'||type==='explore')setPetAnimationState('jump');
 
-  if(type==='feed'||type==='happy'||type==='clean')orb.classList.add('reactHappy');
+  if(type==='happy'||type==='clean')orb.classList.add('reactHappy');
   else if(type==='play')orb.classList.add('reactExcited');
   else if(type==='train')orb.classList.add('reactFocus');
   else if(type==='rest')orb.classList.add('reactSleep');
@@ -2258,6 +2279,56 @@ function triggerPetReaction(type){
     ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
     setPetAnimationState('idle');
   },1700);
+}
+
+function clearMotionTimers(){
+  (localState.motionTimers||[]).forEach(function(t){clearTimeout(t)});
+  localState.motionTimers=[];
+}
+
+function queueMotion(fn,delay){
+  var t=setTimeout(fn,delay);
+  localState.motionTimers.push(t);
+  return t;
+}
+
+function runFeedReaction(){
+  var pet=activePet();
+  var orb=el('petOrb');
+  if(!orb||!pet)return;
+
+  clearMotionTimers();
+  localState.motionBusyUntil=Date.now()+2600;
+  ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
+  orb.classList.add('feedingFocus');
+
+  // Walk to center if the pet is away from the snack zone. If it is already close, do not fake walk in place.
+  var dist=Math.abs(Number(localState.petX||0));
+  if(dist>45)smartMovePet(0,8,0,1.03,Math.min(1050,520+dist*2),{forceWalk:true});
+  else smartMovePet(0,8,0,1.03,420,{forceIdle:true});
+
+  queueMotion(function(){
+    // Prefer idle for the bite moment. If idle sheet is missing/bad, this safely becomes the classic still image.
+    setPetAnimationState('idle');
+    stopPetSpriteFrames(false); // freeze briefly on the current/first idle frame for a clean snack pose.
+    floatFx('🍓');
+    speak((pet.name||'Your pet')+' trots over for a snack.');
+  },820);
+
+  queueMotion(function(){
+    if(orb){
+      orb.classList.remove('feedingFocus');
+      orb.classList.add('reactHappy');
+    }
+  },1180);
+
+  queueMotion(function(){
+    if(orb)orb.classList.remove('reactHappy');
+    setPetAnimationState('idle');
+    localState.motionBusyUntil=0;
+    localState.lastWanderAt=Date.now();
+    localState.nextWanderDelay=2200;
+  },2350);
 }
 
 function setPetPersonalityMotion(pet,mood){
@@ -2326,6 +2397,7 @@ function tickPetLife(){
 
 function maybeWanderPet(pet){
   var now=Date.now();
+  if(now<Number(localState.motionBusyUntil||0))return;
   if(now-localState.lastWanderAt<Number(localState.nextWanderDelay||4200))return;
 
   var orb=el('petOrb');
@@ -2336,34 +2408,49 @@ function maybeWanderPet(pet){
   if(pet.stage==='egg'){
     localState.nextWanderDelay=eggProgress(pet)>=80?2800:5200;
     if(eggProgress(pet)>=80){
-      smartMovePet(0,-34,0,1.04,420);
-      setTimeout(function(){smartMovePet(0,0,0,1,520)},520);
+      smartMovePet(0,-34,0,1.04,420,{forceIdle:true});
+      setTimeout(function(){smartMovePet(0,0,0,1,520,{forceIdle:true})},520);
     }else{
-      smartMovePet(0,0,0,1,500);
+      smartMovePet(0,0,0,1,500,{forceIdle:true});
     }
     return;
   }
 
   var personality=pet.personality||'calm';
   var mood=getMood(pet);
-  var step=95;
   var delay=4300;
   var restChance=.18;
 
-  if(personality==='lazy'){step=46;delay=6200;restChance=.48}
-  if(personality==='playful'){step=145;delay=3000;restChance=.06}
-  if(personality==='curious'){step=130;delay=3400;restChance=.08}
-  if(personality==='aggressive'){step=155;delay=3200;restChance=.04}
-  if(personality==='calm'){step=78;delay=4800;restChance=.22}
-  if(personality==='moody'){step=170;delay=3600;restChance=.22}
-  if(mood.label==='Tired'||mood.label==='Struggling'){step=38;delay=6600;restChance=.55}
+  if(personality==='lazy'){delay=6200;restChance=.48}
+  if(personality==='playful'){delay=3000;restChance=.06}
+  if(personality==='curious'){delay=3400;restChance=.08}
+  if(personality==='aggressive'){delay=3200;restChance=.04}
+  if(personality==='calm'){delay=4800;restChance=.22}
+  if(personality==='moody'){delay=3600;restChance=.22}
+  if(mood.label==='Tired'||mood.label==='Struggling'){delay=6600;restChance=.55}
 
   localState.nextWanderDelay=delay+Math.floor(Math.random()*1200);
 
   if(Math.random()<restChance){
-    smartMovePet(Number(localState.petX||0),Number(localState.petY||0),0,.99,900);
+    smartMovePet(Number(localState.petX||0),Number(localState.petY||0),0,.99,900,{forceIdle:true});
     return;
   }
+
+  // If a walk sheet exists, use long routes so the pet never visibly walks in place.
+  if(PET_ANIM.enabled&&PET_ANIM.available&&PET_ANIM.available.walk){
+    startRouteWalk(personality,mood);
+    return;
+  }
+
+  // Classic fallback: the old still-image wander remains small and cozy.
+  var step=95;
+  if(personality==='lazy')step=46;
+  if(personality==='playful')step=145;
+  if(personality==='curious')step=130;
+  if(personality==='aggressive')step=155;
+  if(personality==='calm')step=78;
+  if(personality==='moody')step=170;
+  if(mood.label==='Tired'||mood.label==='Struggling')step=38;
 
   var nextX=clampNumber(Number(localState.petX||0)+randRange(-step,step),-190,190);
   var nextY=clampNumber(randRange(-2,28),-10,34);
@@ -2374,26 +2461,93 @@ function maybeWanderPet(pet){
   smartMovePet(nextX,nextY,rot,scale,1800+Math.floor(Math.random()*900));
 }
 
-function smartMovePet(x,y,rot,scale,duration){
+function getPetRouteBounds(allowOffscreen){
+  var stage=el('petStage');
+  var orb=el('petOrb');
+  var stageW=stage?stage.clientWidth:760;
+  var orbW=orb?orb.offsetWidth:315;
+  var visible=Math.max(Number(PET_ANIM.minTravel||245),Math.floor((stageW-orbW)/2)-20);
+  visible=Math.min(visible,Math.max(250,Math.floor(stageW*.42)));
+  var off=Math.floor(stageW/2+orbW/2+Number(PET_ANIM.routePadding||90));
+  if(allowOffscreen)return {left:-off,right:off,visibleLeft:-visible,visibleRight:visible};
+  return {left:-visible,right:visible,visibleLeft:-visible,visibleRight:visible};
+}
+
+function startRouteWalk(personality,mood){
+  var current=Number(localState.petX||0);
+  var offscreen=Math.random()<Number(PET_ANIM.offscreenChance||0);
+  var bounds=getPetRouteBounds(offscreen);
+  var dir=current<=0?1:-1;
+  if(Math.random()<.38)dir*=-1;
+
+  var targetX=dir>0?bounds.right:bounds.left;
+  var targetY=randRange(4,28);
+  var distance=Math.abs(targetX-current);
+
+  // If this route is too tiny, force the opposite side so the walk animation always travels.
+  if(distance<Number(PET_ANIM.minTravel||245)){
+    targetX=dir>0?bounds.left:bounds.right;
+    dir*=-1;
+    distance=Math.abs(targetX-current);
+  }
+
+  var base=personality==='lazy'?34:personality==='playful'?58:personality==='aggressive'?62:46; // px/sec-ish tuning
+  if(mood&&mood.label==='Tired')base=28;
+  var duration=clampNumber(Math.floor((distance/base)*1000),2200,6200);
+  var rot=clampNumber(dir*randRange(1,3),-4,4);
+  var scale=offscreen?.96+Math.random()*.1:1;
+
+  smartMovePet(targetX,targetY,rot,scale,duration,{forceWalk:true});
+
+  if(offscreen){
+    // Let the pet leave the stage, then quietly re-enter from the other side and stroll back into view.
+    localState.motionBusyUntil=Date.now()+duration+3400;
+    queueMotion(function(){
+      var orb=el('petOrb');
+      if(!orb)return;
+      var entryX=dir>0?bounds.left:bounds.right;
+      localState.petX=entryX;
+      localState.petY=targetY;
+      orb.style.transition='none';
+      orb.style.transform='translateX('+entryX+'px) translateY('+targetY+'px) rotate(0deg) scale(.98)';
+      setPetFacing(dir>0?1:-1);
+      void orb.offsetWidth;
+      var returnX=dir>0?bounds.visibleLeft:bounds.visibleRight;
+      smartMovePet(returnX,randRange(6,26),0,1,2600,{forceWalk:true});
+    },duration+240);
+    queueMotion(function(){
+      localState.motionBusyUntil=0;
+      localState.lastWanderAt=Date.now();
+      localState.nextWanderDelay=2400+Math.floor(Math.random()*1200);
+    },duration+3200);
+  }
+}
+
+function smartMovePet(x,y,rot,scale,duration,opts){
+  opts=opts||{};
   var orb=el('petOrb');
   if(!orb)return;
 
   var previousX=Number(localState.petX||0);
+  var travel=Math.abs(Number(x||0)-previousX);
+  var shouldWalk=opts.forceWalk||(!opts.forceIdle&&travel>=42&&Number(duration||0)>700);
+
   setPetFacing(Number(x||0)>=previousX?1:-1);
 
   localState.petX=x;
   localState.petY=y;
   localState.petRot=rot||0;
   localState.petScale=scale||1;
-  setPetAnimationState('walk');
+  setPetAnimationState(shouldWalk?'walk':'idle');
 
-  orb.classList.add('walking');
+  orb.classList.toggle('walking',shouldWalk);
   orb.style.transition='transform '+Number(duration||1800)+'ms cubic-bezier(.25,.8,.25,1)';
   orb.style.transform='translateX('+x+'px) translateY('+y+'px) rotate('+(rot||0)+'deg) scale('+(scale||1)+')';
 
   setTimeout(function(){
     if(orb)orb.classList.remove('walking');
-    setPetAnimationState('idle');
+    // Only return to idle if no longer in a controlled route/reaction window.
+    if(Date.now()>=Number(localState.motionBusyUntil||0)-120)setPetAnimationState('idle');
   },Number(duration||1800)+80);
 }
 
