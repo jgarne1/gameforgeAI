@@ -151,12 +151,16 @@ Current/near-term battle pillars:
 - **Lock-In Finisher:** Care Mode includes a deliberate `Lock In` choice that builds a Finisher meter instead of healing, treating ailments, or restoring stamina. This creates high-impact swing moments without making finishers passive or random.
 - **Battle items:** only battle-enabled items should appear in battle. Use `battleEnabled: true`, `category: "battle"`, a `battle` tag, or a future `battleEffect` definition. Full server validation/consumption is still required before ranked or real-economy play.
 - **Mobile-first controls:** Pet Battle should switch cleanly between Attack Mode and Care Mode in the same control area. Do not show both at once.
+- **Live care feedback:** Care Mode should render once, then update only mini-meter widths/text every ~500ms so HP, Stamina, and Fury growth feels alive without flicker. Do not rebuild the whole control panel on every tick.
+- **Impact feedback:** Damaging moves should show floating, fading damage numbers near the pet, with stronger visual treatment for finisher hits. This gives players immediate Final-Fantasy-style combat feedback beyond the log.
 
 Care Window v1 behavior:
 
 - Attack Mode appears only on the active player's turn.
 - Care Mode appears while waiting for the opponent.
 - Care choices are intentionally simple: Soothe, Treat, Steady, or Lock In.
+- Care buttons should include compact live mini-meters: Soothe previews HP %, Treat shows ailment recovery/progress, Steady previews stamina %, and Lock In previews Fury/Finisher %.
+- Care UI should not flicker. Render the Care panel only when the mode/action changes; timer ticks should update existing bars and labels only.
 - Soothe gradually restores a small amount of HP based on how long the opponent takes.
 - Treat reduces ailment duration such as burn/slow/snare.
 - Steady restores stamina.
@@ -175,6 +179,7 @@ AAA engagement roadmap for Pet Battle:
 
 - Tune Lock-In/Finisher gain and loss until it creates memorable but fair comeback/swing moments.
 - Add type-based graphical move effects and clear impact feedback.
+- Expand impact feedback with floating damage/heal numbers, finisher number styling, and later type-specific hit effects.
 - Add stance visual states so Push/Brace/Focus are readable without reading logs.
 - Heavily expand the move library over time.
 - Add items that teach stances, skills, and special moves.

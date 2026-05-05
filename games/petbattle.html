@@ -541,7 +541,51 @@ button:disabled{
 }
 .finisherFill.ready{animation:finisherPulse .85s ease-in-out infinite;box-shadow:0 0 14px rgba(250,204,21,.9)}
 @keyframes finisherPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
+.careMiniMeter{
+  height:7px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#e5e7eb;
+  margin-top:8px;
+  border:1px solid rgba(148,163,184,.22);
+}
+.careMiniFill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#94a3b8,#64748b);
+  transition:width .4s ease;
+}
+.careMiniText{
+  margin-top:4px;
+  font-size:10px;
+  color:#64748b;
+  font-weight:900;
+}
+.careBtn.activeCare .careMiniFill{filter:brightness(1.12)}
+.damageFloat{
+  position:absolute;
+  left:50%;
+  top:38%;
+  z-index:5;
+  pointer-events:none;
+  font-size:30px;
+  font-weight:1000;
+  color:#dc2626;
+  text-shadow:0 3px 0 rgba(255,255,255,.95),0 8px 18px rgba(15,23,42,.28);
+  transform:translate(-50%,0) scale(.92);
+  animation:damageFloatUp .95s ease-out forwards;
+}
+.damageFloat.heal{color:#16a34a}
+.damageFloat.finisher{color:#f59e0b;font-size:34px;text-shadow:0 3px 0 rgba(255,255,255,.95),0 0 18px rgba(250,204,21,.7),0 8px 20px rgba(15,23,42,.32)}
+@keyframes damageFloatUp{
+  0%{opacity:0;transform:translate(-50%,8px) scale(.82)}
+  18%{opacity:1;transform:translate(-50%,-4px) scale(1.08)}
+  100%{opacity:0;transform:translate(-50%,-52px) scale(1)}
+}
 @media(max-width:700px){
+  .damageFloat{font-size:23px;top:34%}
+  .damageFloat.finisher{font-size:27px}
   .carePanel{grid-template-columns:1fr;gap:8px}
   .careHeader{grid-column:1;align-items:flex-start;flex-direction:column}
   .careMeter{width:100%}
@@ -705,6 +749,8 @@ var profiles={};
 var moveBook={};
 var itemCatalog={};
 var careUiTimer=null;
+var lastControlModeKey='';
+var lastActionFxKey='';
 var state=null;
 var ready=false;
 var battleInstanceId=new URLSearchParams(location.search).get('battleInstance')||'';
@@ -984,9 +1030,7 @@ function draw(){
     turnBadge.innerText=state.turn===null?'Charging':'Turn: '+turnName;
   }
 
-  if(state.lastAction){
-    pulseAction(state.lastAction.actor,state.lastAction.target);
-  }
+  playLastActionFxOnce();
 }
 
 function drawPetSide(seat){
@@ -1104,25 +1148,44 @@ function drawMoves(){
   var html='';
 
   if(!state||state.blocked){
-    moveButtons.innerHTML='<button disabled>Battle unavailable</button>';
+    var blockedKey='blocked';
+    if(lastControlModeKey!==blockedKey){
+      moveButtons.innerHTML='<button disabled>Battle unavailable</button>';
+      lastControlModeKey=blockedKey;
+    }
     return;
   }
 
   if(state.winner!==null){
-    moveButtons.innerHTML='<button class="gold" onclick="showLocalBattleResult()">Show Results</button><button onclick="returnToHub()">Return to Hub</button>';
+    var finishedKey='finished:'+state.winner;
+    if(lastControlModeKey!==finishedKey){
+      moveButtons.innerHTML='<button class="gold" onclick="showLocalBattleResult()">Show Results</button><button onclick="returnToHub()">Return to Hub</button>';
+      lastControlModeKey=finishedKey;
+    }
     return;
   }
 
   ensureBattleShape();
 
   if(mySeat!==state.turn){
-    drawCareControls();
+    var care=state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
+    var itemIds=battleItemsForSeat(mySeat).slice(0,4).map(function(x){return x.id+':'+x.quantity;}).join('|');
+    var careKey='care:r'+state.round+':turn'+state.turn+':mine'+mySeat+':type'+(care.type||'none')+':item'+(care.itemId||'')+':'+itemIds;
+    if(lastControlModeKey!==careKey){
+      drawCareControls();
+      lastControlModeKey=careKey;
+    }else{
+      refreshCareLiveUI();
+    }
     return;
   }
 
   var pet=state.pets[mySeat];
+  var attackKey='attack:r'+state.round+':turn'+state.turn+':stance'+selectedStance+':e'+Math.floor(Number(state.energy[mySeat]||0))+':s'+Math.floor(Number(state.stamina[mySeat]||0))+':fin'+Math.floor(Number(state.finisher&&state.finisher[mySeat]||0));
+  if(lastControlModeKey===attackKey)return;
+  lastControlModeKey=attackKey;
 
-  html+='<div class="stancePanel">';
+  html+='<div class="stancePanel modePanel">';
   ['balanced','brace','focus'].forEach(function(id){
     var info=STANCE[id];
     html+='<button class="stanceBtn '+(selectedStance===id?'active':'')+'" onclick="selectStance(\''+id+'\')">'+
@@ -1130,7 +1193,7 @@ function drawMoves(){
   });
   html+='</div>';
 
-  html+='<div class="moves">';
+  html+='<div class="moves modePanel">';
   pet.moves.forEach(function(id){
     var m=moveBook[id]||{name:id,type:'normal',category:'physical',power:30,accuracy:95};
     var category=m.category||'physical';
@@ -1185,11 +1248,11 @@ function drawCareControls(){
   html+='</div>';
 
   moveButtons.innerHTML=html;
-  refreshCareMeter();
+  refreshCareLiveUI();
 }
 
 function careButton(id,label,sub,activeType){
-  return '<button class="careBtn '+(activeType===id?'activeCare':'')+'" onclick="selectCare(\''+id+'\')"><strong>'+escapeHtml(label)+'</strong><span>'+escapeHtml(sub)+'</span></button>';
+  return '<button class="careBtn '+(activeType===id?'activeCare':'')+'" onclick="selectCare(\''+id+'\')"><strong>'+escapeHtml(label)+'</strong><span>'+escapeHtml(sub)+'</span><div class="careMiniMeter"><div id="careMiniFill_'+id+'" class="careMiniFill"></div></div><div id="careMiniText_'+id+'" class="careMiniText"></div></button>';
 }
 
 function selectCare(type){
@@ -1201,6 +1264,7 @@ function selectCare(type){
   state.care[mySeat]={type:type,start:Date.now(),itemId:null,locked:false};
   addLog(state.pets[mySeat].name+' begins '+CARE_ACTIONS[type].label+'.');
   selectedCareFx(mySeat,type);
+  lastControlModeKey='';
   draw();
   sync();
 }
@@ -1242,6 +1306,7 @@ function useBattleItem(itemId){
   applyBattleItemEffect(mySeat,itemId,item);
   selectedCareFx(mySeat,'item');
   addLog(state.pets[mySeat].name+' used '+(item.name||itemId)+' during the Care Window.');
+  lastControlModeKey='';
   draw();
   sync();
 }
@@ -1357,20 +1422,78 @@ function battleItemSummary(item){
 function selectedCareFx(seat,type){
   var stage=document.querySelectorAll('.petStage')[seat];
   if(!stage)return;
-  stage.classList.remove('careFxSoothe','careFxTreat','careFxSteady','careFxItem');
+  stage.classList.remove('careFxSoothe','careFxTreat','careFxSteady','careFxItem','careFxLock');
   var cls={soothe:'careFxSoothe',treat:'careFxTreat',steady:'careFxSteady',item:'careFxItem',lockin:'careFxLock'}[type];
   if(cls){stage.classList.add(cls);setTimeout(function(){stage.classList.remove(cls);},900);}
 }
 
 function refreshCareMeter(){
+  refreshCareLiveUI();
+}
+
+function refreshCareLiveUI(){
   var fill=document.getElementById('careMeterFill');
-  if(!fill||!state||mySeat===null||mySeat===undefined)return;
+  if(!state||mySeat===null||mySeat===undefined)return;
   ensureBattleShape();
   var care=state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
-  var pct=0;
-  if(care.type&&care.start)pct=Math.min(100,Math.floor((Date.now()-Number(care.start||0))/CARE_WINDOW_MS*100));
-  fill.style.width=pct+'%';
-  fill.style.background=(care.type==='lockin')?'linear-gradient(90deg,#f97316,#facc15)':'linear-gradient(90deg,#86efac,#22c55e)';
+  var elapsed=(care.type&&care.start)?Math.max(0,Math.min(CARE_WINDOW_MS,Date.now()-Number(care.start||0))):0;
+  var pct=Math.min(100,Math.floor(elapsed/CARE_WINDOW_MS*100));
+
+  if(fill){
+    fill.style.width=pct+'%';
+    fill.style.background=(care.type==='lockin')?'linear-gradient(90deg,#f97316,#facc15)':'linear-gradient(90deg,#86efac,#22c55e)';
+  }
+
+  updateCareMiniBars(care,elapsed);
+}
+
+function updateCareMiniBars(care,elapsed){
+  if(!state||mySeat===null||mySeat===undefined||!state.pets||!state.pets[mySeat])return;
+  var pet=state.pets[mySeat];
+  var seconds=Math.floor(Math.max(0,elapsed)/1000);
+  var active=care&&care.type?care.type:'';
+
+  var hpNow=Number(state.hp[mySeat]||0);
+  var sootheHeal=(active==='soothe')?Math.max(0,Math.min(Math.ceil(pet.stats.maxHp*.08),seconds*2)):0;
+  var hpPct=Math.floor(Math.max(0,Math.min(100,(hpNow+sootheHeal)/pet.stats.maxHp*100)));
+  var hpBasePct=Math.floor(Math.max(0,Math.min(100,hpNow/pet.stats.maxHp*100)));
+  setCareMini('soothe',hpPct,'HP '+hpBasePct+'% → '+hpPct+'%','linear-gradient(90deg,#86efac,#16a34a)');
+
+  var ailment=findWorstAilment(mySeat);
+  var treatPct=ailment?(active==='treat'?Math.max(8,Math.min(100,Math.floor(elapsed/6500*100))):Math.min(35,Number(ailment.turns||0)*18)):0;
+  var treatText=ailment?(ailment.label+' '+ailment.turns+'t'):'No ailment';
+  if(active==='treat'&&ailment)treatText+=' · treating';
+  setCareMini('treat',treatPct,treatText,'linear-gradient(90deg,#bae6fd,#0284c7)');
+
+  var staminaNow=Number(state.stamina&&state.stamina[mySeat]!==undefined?state.stamina[mySeat]:100);
+  var staminaGain=(active==='steady')?Math.max(0,Math.min(18,seconds*3)):0;
+  var staminaPct=Math.floor(Math.max(0,Math.min(100,staminaNow+staminaGain)));
+  setCareMini('steady',staminaPct,'Stamina '+Math.floor(staminaNow)+'% → '+staminaPct+'%','linear-gradient(90deg,#fde68a,#f59e0b)');
+
+  var furyNow=Number(state.finisher&&state.finisher[mySeat]!==undefined?state.finisher[mySeat]:0);
+  var furyGain=(active==='lockin')?Math.max(0,Math.min(75,Math.floor(seconds*11))):0;
+  var furyPct=Math.floor(Math.max(0,Math.min(100,furyNow+furyGain)));
+  setCareMini('lockin',furyPct,(furyPct>=100?'Fury READY':'Fury '+Math.floor(furyNow)+'% → '+furyPct+'%'),'linear-gradient(90deg,#f97316,#facc15)');
+}
+
+function setCareMini(id,pct,text,bg){
+  var fill=document.getElementById('careMiniFill_'+id);
+  var label=document.getElementById('careMiniText_'+id);
+  if(fill){
+    fill.style.width=Math.max(0,Math.min(100,pct))+'%';
+    if(bg)fill.style.background=bg;
+  }
+  if(label)label.innerText=text||'';
+}
+
+function findWorstAilment(seat){
+  var s=state&&state.status&&state.status[seat]?state.status[seat]:{};
+  var order=['burn','stun','sleep','snare','slow','attack_down','defense_down'];
+  for(var i=0;i<order.length;i++){
+    var k=order[i];
+    if(s[k]&&s[k]>0)return {key:k,label:k.replace('_',' '),turns:Number(s[k]||0)};
+  }
+  return null;
 }
 
 var CARE_WINDOW_MS=8000;
@@ -1394,6 +1517,7 @@ function useMove(moveId){
   var attacker=state.pets[actor];
   var move=moveBook[moveId]||{name:moveId,type:'normal',category:'physical',power:30,accuracy:95};
   var moveName=move.name||moveId;
+  var actionResult={damage:0,finisher:false,miss:false};
 
   ensureBattleShape();
 
@@ -1422,12 +1546,13 @@ function useMove(moveId){
     if(roll>Number(move.accuracy||95)){
       addLog(attacker.name+' used '+moveName+' but missed!');
       applyMissRecovery(actor);
+      actionResult={damage:0,finisher:false,miss:true};
     }else{
-      resolveMove(actor,target,moveId,move);
+      actionResult=resolveMove(actor,target,moveId,move)||actionResult;
     }
   }
 
-  state.lastAction={actor:actor,target:target,move:moveId,stance:stance,time:Date.now()};
+  state.lastAction={actor:actor,target:target,move:moveId,stance:stance,time:Date.now(),damage:Number(actionResult.damage||0),finisher:!!actionResult.finisher,miss:!!actionResult.miss};
 
   checkWinner(actor,target);
 
@@ -1440,6 +1565,7 @@ function useMove(moveId){
     advanceInitiative();
   }
 
+  lastControlModeKey='';
   draw();
   sync();
 }
@@ -1453,7 +1579,7 @@ function resolveMove(actor,target,moveId,move){
   if(category==='status'||category==='buff'||category==='debuff'||power<=0){
     var applied=applyMoveStatus(actor,target,move);
     addLog(attacker.name+' used '+moveName+' from '+stanceLabel(stance)+'.'+(applied?' '+applied:''));
-    return;
+    return {damage:0,finisher:false};
   }
 
   var result=damage(actor,target,move);
@@ -1463,6 +1589,7 @@ function resolveMove(actor,target,moveId,move){
 
   var appliedAfterDamage=applyMoveStatus(actor,target,move);
   if(appliedAfterDamage)addLog(appliedAfterDamage);
+  return {damage:result.damage,finisher:!!result.finisher};
 }
 function damage(actor,target,move){
   var attacker=state.pets[actor];
@@ -1514,7 +1641,7 @@ function damage(actor,target,move){
     state.finisher[target]=clampResource(Number(state.finisher[target]||0)-loss,0,100);
     state.finisherReady[target]=state.finisher[target]>=100;
   }
-  return {damage:dmg,note:note};
+  return {damage:dmg,note:note,finisher:finisherActive};
 }
 
 var STANCE={
@@ -1835,6 +1962,20 @@ function addRewardPreview(winner,loser){
   addLog('Battle complete. Results are being finalized by the server.');
 }
 
+function playLastActionFxOnce(){
+  if(!state||!state.lastAction)return;
+  var a=state.lastAction;
+  var key=[a.time,a.actor,a.target,a.move,a.damage,a.finisher,a.miss].join(':');
+  if(lastActionFxKey===key)return;
+  lastActionFxKey=key;
+  pulseAction(a.actor,a.target);
+  if(Number(a.damage||0)>0){
+    setTimeout(function(){showFloatingNumber(a.target,a.damage,a.finisher?'finisher':'damage');},230);
+  }else if(a.miss){
+    setTimeout(function(){showFloatingNumber(a.target,'MISS','miss');},230);
+  }
+}
+
 function pulseAction(actor,target){
   var a=visiblePetEl(actor);
   var t=visiblePetEl(target);
@@ -1852,6 +1993,21 @@ function pulseAction(actor,target){
       t.classList.add('hitAnim');
     },180);
   }
+}
+
+function showFloatingNumber(seat,value,kind){
+  var stage=document.querySelectorAll('.petStage')[seat];
+  if(!stage)return;
+  var node=document.createElement('div');
+  var cls='damageFloat';
+  if(kind==='heal')cls+=' heal';
+  if(kind==='finisher')cls+=' finisher';
+  node.className=cls;
+  node.textContent=(typeof value==='number'||String(value).match(/^\d+$/))?('-'+value):String(value);
+  node.style.left=(44+Math.random()*12)+'%';
+  node.style.top=(30+Math.random()*12)+'%';
+  stage.appendChild(node);
+  setTimeout(function(){if(node&&node.parentNode)node.parentNode.removeChild(node);},1050);
 }
 
 function visiblePetEl(seat){
@@ -2061,6 +2217,7 @@ window.onMove=function(data){
 
   if(data.type==='battleState'){
     state=data.state;
+    lastControlModeKey='';
     draw();
   }
 
