@@ -3166,5 +3166,27 @@
     ],
     "defaultShopId": "game_shop",
     "basePrice": 50
+  },
+  "game_mastermindduel": {
+    "id": "game_mastermindduel",
+    "name": "Peg Duel Game Cartridge",
+    "category": "game",
+    "type": "game_unlock",
+    "itemType": "game_unlock",
+    "rarity": "common",
+    "description": "Unlocks hosting for Peg Duel in the GameForge table launcher. Guests can still join your table.",
+    "image": "/assets/items/game_mastermindduel.png",
+    "placeholderImage": "/assets/items/generic_item.png",
+    "stackable": false,
+    "usable": false,
+    "unlocksGame": "mastermindduel",
+    "gameId": "mastermindduel",
+    "tags": [
+      "game",
+      "unlock",
+      "cartridge"
+    ],
+    "defaultShopId": "game_shop",
+    "basePrice": 50
   }
 }
