@@ -551,6 +551,10 @@
       "game_runematch": {
         "price": 50,
         "stock": "infinite"
+      },
+      "game_mastermindduel": {
+        "price": 50,
+        "stock": "infinite"
       }
     },
     "openHour": 0,
