@@ -492,7 +492,7 @@ button:disabled{
 }
 .careOptions,.battleItems{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:6px;
 }
 .battleItems{grid-template-columns:repeat(2,1fr)}
@@ -525,6 +525,12 @@ button:disabled{
 .careFxSteady{box-shadow:0 0 0 3px rgba(250,204,21,.2),0 0 28px rgba(250,204,21,.25)!important}
 .careFxItem{box-shadow:0 0 0 3px rgba(124,58,237,.18),0 0 28px rgba(124,58,237,.28)!important}
 .careFxLock{box-shadow:0 0 0 3px rgba(249,115,22,.22),0 0 34px rgba(249,115,22,.34)!important}
+.careFxGuard{box-shadow:0 0 0 3px rgba(59,130,246,.20),0 0 34px rgba(59,130,246,.30)!important}
+.finisherReadyStage{box-shadow:0 0 0 3px rgba(250,204,21,.26),0 0 36px rgba(250,204,21,.48)!important;animation:finisherStagePulse 1.15s ease-in-out infinite}
+.enemyFinisherReady{box-shadow:0 0 0 3px rgba(239,68,68,.22),0 0 36px rgba(249,115,22,.45)!important;animation:finisherStagePulse 1.15s ease-in-out infinite}
+@keyframes finisherStagePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.08)}}
+.finisherAction{grid-column:1 / -1;background:linear-gradient(135deg,#f97316,#facc15,#ef4444);color:#111827;border-color:#f59e0b;text-align:center;box-shadow:0 12px 28px rgba(249,115,22,.22);animation:finisherPulse .9s ease-in-out infinite}
+.finisherAction small{color:rgba(17,24,39,.78)!important}
 .finisherBar{
   height:9px;
   border-radius:999px;
@@ -591,7 +597,7 @@ button:disabled{
   .careHeader{grid-column:1;align-items:center;flex-direction:row;padding:6px 8px}
   .careHeader span{font-size:10px}
   .careMeter{width:110px;min-width:90px}
-  .careOptions{grid-template-columns:repeat(4,1fr);gap:5px}
+  .careOptions{grid-template-columns:repeat(5,1fr);gap:5px}
   .battleItems{grid-template-columns:1fr 1fr;gap:5px}
   .careBtn,.battleItemBtn{min-height:48px;padding:7px;border-radius:13px}
   .careBtn strong,.battleItemBtn strong{font-size:11px}.careBtn span,.battleItemBtn span{font-size:9px}
@@ -959,6 +965,7 @@ function freshBattle(){
       care:[emptyCare(),emptyCare()],
       finisher:[0,0],
       finisherReady:[false,false],
+      guard:[false,false],
       turn:null,
       round:1,
       winner:null,
@@ -985,6 +992,7 @@ function freshBattle(){
     care:[emptyCare(),emptyCare()],
     finisher:[0,0],
     finisherReady:[false,false],
+    guard:[false,false],
     turn:null,
     round:1,
     winner:null,
@@ -1049,7 +1057,7 @@ function drawPetSide(seat){
 
   el('p'+seat+'Name').innerText=players[seat]?players[seat].name:'Seat '+(seat+1);
   el('p'+seat+'Sub').innerText=pet.name+' · '+pet.type+' · Lv '+pet.stats.level;
-  el('p'+seat+'HpText').innerText=hp+' / '+pet.stats.maxHp+' HP';
+  el('p'+seat+'HpText').innerText=formatHp(hp)+' / '+pet.stats.maxHp+' HP';
 
   hpFill.style.width=pct+'%';
   hpFill.className='hpFill '+(pct<30?'low':pct<60?'mid':'');
@@ -1079,6 +1087,21 @@ function drawPetSide(seat){
     '<div class="resourceGrid"><div class="resourcePill"><b>'+energy+'/10</b>Energy</div><div class="resourcePill"><b>'+stamina+'%</b>Stamina</div></div>';
 
   setPetVisual(seat,pet);
+  updatePetStageState(seat);
+}
+
+function formatHp(v){
+  v=Number(v||0);
+  return Math.abs(v-Math.round(v))<0.05 ? String(Math.round(v)) : String(Math.round(v*10)/10);
+}
+
+function updatePetStageState(seat){
+  var stage=document.querySelectorAll('.petStage')[seat];
+  if(!stage||!state)return;
+  stage.classList.remove('finisherReadyStage','enemyFinisherReady');
+  var ready=state.finisherReady&&state.finisherReady[seat];
+  if(!ready)return;
+  stage.classList.add(seat===mySeat?'finisherReadyStage':'enemyFinisherReady');
 }
 
 function statusTags(seat){
@@ -1096,6 +1119,7 @@ function statusTags(seat){
   if(s.defense_down>0)labels.push('🛡️ Def-');
   if(s.speed_up>0)labels.push('💨 Spd+');
 
+  if(state&&state.guard&&state.guard[seat])labels.push('🛡️ Guarding');
   labels.unshift(stanceIcon(currentStance(seat))+' '+stanceLabel(currentStance(seat)));
 
   if(!labels.length)return '<span class="muted">No status</span>';
@@ -1203,7 +1227,7 @@ function drawMoves(){
   }
 
   var pet=state.pets[mySeat];
-  var attackKey='attack:r'+state.round+':turn'+state.turn+':stance'+selectedStance+':e'+Math.floor(Number(state.energy[mySeat]||0))+':s'+Math.floor(Number(state.stamina[mySeat]||0))+':fin'+Math.floor(Number(state.finisher&&state.finisher[mySeat]||0));
+  var attackKey='attack:r'+state.round+':turn'+state.turn+':stance'+selectedStance+':e'+Math.floor(Number(state.energy[mySeat]||0))+':s'+Math.floor(Number(state.stamina[mySeat]||0))+':fin'+Math.floor(Number(state.finisher&&state.finisher[mySeat]||0))+':ready'+(state.finisherReady&&state.finisherReady[mySeat]?'1':'0');
   if(lastControlModeKey===attackKey)return;
   lastControlModeKey=attackKey;
 
@@ -1216,6 +1240,9 @@ function drawMoves(){
   html+='</div>';
 
   html+='<div class="moves modePanel">';
+  if(state.finisherReady&&state.finisherReady[mySeat]){
+    html+='<button class="moveBtn finisherAction" onclick="useFinisher()"><strong>🔥 FINISHER</strong><span>Spend Fury for a major swing.</span><small>Manual use · costs 2 energy / 22 stamina</small></button>';
+  }
   pet.moves.forEach(function(id){
     var m=moveBook[id]||{name:id,type:'normal',category:'physical',power:30,accuracy:95};
     var category=m.category||'physical';
@@ -1251,6 +1278,7 @@ function drawCareControls(){
   html+=careButton('soothe','💚 Soothe','Slow HP recovery',activeType);
   html+=careButton('treat','🩹 Treat','Reduce ailment time',activeType);
   html+=careButton('steady','🧘 Steady','Recover stamina',activeType);
+  html+=careButton('guard','🛡️ Guard','Reduce next hit. Costs stamina.',activeType);
   html+=careButton('lockin','🔥 Lock In','Build finisher. No recovery.',activeType);
   html+='</div>';
 
@@ -1283,7 +1311,7 @@ function selectCare(type){
   ensureBattleShape();
 
   if(!CARE_ACTIONS[type])type='soothe';
-  state.care[mySeat]={type:type,start:Date.now(),itemId:null,locked:false};
+  state.care[mySeat]={type:type,start:Date.now(),itemId:null,locked:false,baseHp:state.hp&&state.hp[mySeat]!==undefined?Number(state.hp[mySeat]||0):0};
   addLog(state.pets[mySeat].name+' begins '+CARE_ACTIONS[type].label+'.');
   selectedCareFx(mySeat,type);
   lastControlModeKey='';
@@ -1340,18 +1368,29 @@ function applyCareBeforeIncoming(seat){
 
   var elapsed=Math.max(0,Math.min(CARE_WINDOW_MS,Date.now()-Number(care.start||Date.now())));
   var seconds=Math.floor(elapsed/1000);
+  var pet=state.pets[seat];
+
+  if(care.type==='guard'){
+    state.guard[seat]=true;
+    addLog(pet.name+' holds guard and prepares to absorb the next hit.');
+    state.care[seat]=emptyCare();
+    return;
+  }
+
   if(seconds<=0){
     state.care[seat]=emptyCare();
     return;
   }
 
-  var pet=state.pets[seat];
   if(care.type==='soothe'){
-    var heal=Math.max(1,Math.min(Math.ceil(pet.stats.maxHp*.08),seconds*2));
-    var before=state.hp[seat];
-    state.hp[seat]=Math.min(pet.stats.maxHp,Number(state.hp[seat]||0)+heal);
+    var baseHp=(care.baseHp!==undefined&&care.baseHp!==null)?Number(care.baseHp||0):Number(state.hp[seat]||0);
+    var maxWindowGain=pet.stats.maxHp*.05;
+    var slowGain=pet.stats.maxHp*.005*seconds;
+    var heal=Math.max(0,Math.min(maxWindowGain,slowGain));
+    var before=Number(state.hp[seat]||0);
+    state.hp[seat]=Math.min(pet.stats.maxHp,Math.max(before,baseHp+heal));
     var gained=state.hp[seat]-before;
-    if(gained>0)addLog(pet.name+' recovered '+gained+' HP from soothing care.');
+    if(gained>0)addLog(pet.name+' recovered '+formatHp(gained)+' HP from soothing care.');
   }else if(care.type==='steady'){
     var staminaGain=Math.max(2,Math.min(18,seconds*3));
     state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+staminaGain,0,100);
@@ -1362,10 +1401,10 @@ function applyCareBeforeIncoming(seat){
     if(reduced)addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
     else addLog(pet.name+' was treated, but had no ailment to reduce.');
   }else if(care.type==='lockin'){
-    var gain=Math.max(4,Math.min(38,Math.floor(seconds*5.5)));
+    var gain=Math.max(2,Math.min(28,Math.floor(seconds*3.2)));
     state.finisher[seat]=clampResource(Number(state.finisher[seat]||0)+gain,0,100);
     state.finisherReady[seat]=state.finisher[seat]>=100;
-    addLog(pet.name+' locked in and built '+gain+' finisher charge.');
+    addLog(pet.name+' locked in and built '+gain+' Fury.');
   }
 
   state.care[seat]=emptyCare();
@@ -1444,8 +1483,8 @@ function battleItemSummary(item){
 function selectedCareFx(seat,type){
   var stage=document.querySelectorAll('.petStage')[seat];
   if(!stage)return;
-  stage.classList.remove('careFxSoothe','careFxTreat','careFxSteady','careFxItem','careFxLock');
-  var cls={soothe:'careFxSoothe',treat:'careFxTreat',steady:'careFxSteady',item:'careFxItem',lockin:'careFxLock'}[type];
+  stage.classList.remove('careFxSoothe','careFxTreat','careFxSteady','careFxItem','careFxLock','careFxGuard');
+  var cls={soothe:'careFxSoothe',treat:'careFxTreat',steady:'careFxSteady',item:'careFxItem',lockin:'careFxLock',guard:'careFxGuard'}[type];
   if(cls){stage.classList.add(cls);setTimeout(function(){stage.classList.remove(cls);},900);}
 }
 
@@ -1463,7 +1502,7 @@ function refreshCareLiveUI(){
 
   if(fill){
     fill.style.width=pct+'%';
-    fill.style.background=(care.type==='lockin')?'linear-gradient(90deg,#f97316,#facc15)':'linear-gradient(90deg,#86efac,#22c55e)';
+    fill.style.background=(care.type==='lockin')?'linear-gradient(90deg,#f97316,#facc15)':(care.type==='guard')?'linear-gradient(90deg,#93c5fd,#2563eb)':'linear-gradient(90deg,#86efac,#22c55e)';
   }
 
   updateCareMiniBars(care,elapsed);
@@ -1477,7 +1516,7 @@ function updateCareMiniBars(care,elapsed){
   var active=care&&care.type?care.type:'';
 
   var hpNow=Number(state.hp[mySeat]||0);
-  var sootheHeal=(active==='soothe')?Math.max(0,Math.min(Math.ceil(pet.stats.maxHp*.08),seconds*2)):0;
+  var sootheHeal=(active==='soothe')?Math.max(0,Math.min(pet.stats.maxHp*.05,pet.stats.maxHp*.005*seconds)):0;
   var hpPct=Math.floor(Math.max(0,Math.min(100,(hpNow+sootheHeal)/pet.stats.maxHp*100)));
   var hpBasePct=Math.floor(Math.max(0,Math.min(100,hpNow/pet.stats.maxHp*100)));
   setCareMini('soothe',hpPct,'HP '+hpBasePct+'% → '+hpPct+'%','linear-gradient(90deg,#86efac,#16a34a)');
@@ -1493,8 +1532,11 @@ function updateCareMiniBars(care,elapsed){
   var staminaPct=Math.floor(Math.max(0,Math.min(100,staminaNow+staminaGain)));
   setCareMini('steady',staminaPct,'Stamina '+Math.floor(staminaNow)+'% → '+staminaPct+'%','linear-gradient(90deg,#fde68a,#f59e0b)');
 
+  var guardPct=(active==='guard')?100:0;
+  setCareMini('guard',guardPct,(active==='guard'?'Guard ready · next hit reduced':'Guard next hit'),'linear-gradient(90deg,#93c5fd,#2563eb)');
+
   var furyNow=Number(state.finisher&&state.finisher[mySeat]!==undefined?state.finisher[mySeat]:0);
-  var furyGain=(active==='lockin')?Math.max(0,Math.min(38,Math.floor(seconds*5.5))):0;
+  var furyGain=(active==='lockin')?Math.max(0,Math.min(28,Math.floor(seconds*3.2))):0;
   var furyPct=Math.floor(Math.max(0,Math.min(100,furyNow+furyGain)));
   setCareMini('lockin',furyPct,(furyPct>=100?'Fury READY':'Fury '+Math.floor(furyNow)+'% → '+furyPct+'%'),'linear-gradient(90deg,#f97316,#facc15)');
 }
@@ -1521,13 +1563,14 @@ function projectedCarePreview(seat,care,elapsed){
   var type=care&&care.type?care.type:'';
 
   if(type==='soothe'){
-    var heal=Math.max(0,Math.min(Math.ceil(pet.stats.maxHp*.08),seconds*2));
-    hp=Math.min(pet.stats.maxHp,hp+heal);
+    var baseHp=(care.baseHp!==undefined&&care.baseHp!==null)?Number(care.baseHp||0):hp;
+    var heal=Math.max(0,Math.min(pet.stats.maxHp*.05,pet.stats.maxHp*.005*seconds));
+    hp=Math.min(pet.stats.maxHp,Math.max(hp,baseHp+heal));
   }else if(type==='steady'){
     var staminaGain=Math.max(0,Math.min(18,seconds*3));
     stamina=clampResource(stamina+staminaGain,0,100);
   }else if(type==='lockin'){
-    var furyGain=Math.max(0,Math.min(38,Math.floor(seconds*5.5)));
+    var furyGain=Math.max(0,Math.min(28,Math.floor(seconds*3.2)));
     finisher=clampResource(finisher+furyGain,0,100);
   }
 
@@ -1545,7 +1588,7 @@ function refreshProjectedPetSide(seat,preview){
     hpFill.className='hpFill '+(hpPct<30?'low':hpPct<60?'mid':'');
   }
   var hpText=el('p'+seat+'HpText');
-  if(hpText)hpText.innerText=Math.round(hp)+' / '+pet.stats.maxHp+' HP';
+  if(hpText)hpText.innerText=formatHp(hp)+' / '+pet.stats.maxHp+' HP';
 
   var fin=Math.floor(Math.max(0,Math.min(100,Number(preview.finisher||0))));
   var finFill=el('p'+seat+'Finisher');
@@ -1584,21 +1627,40 @@ var CARE_ACTIONS={
   soothe:{label:'soothing care'},
   treat:{label:'treatment'},
   steady:{label:'steady breathing'},
+  guard:{label:'guarding'},
   lockin:{label:'Lock In focus'}
 };
 
-function emptyCare(){return {type:null,start:0,itemId:null,locked:false};}
+function emptyCare(){return {type:null,start:0,itemId:null,locked:false,baseHp:null};}
 
 function escapeAttr(s){return String(s||'').replace(/[\\'\"]/g,'');}
 
-function useMove(moveId){
+function clearGuard(seat){
+  if(state&&state.guard&&seat!==null&&seat!==undefined)state.guard[seat]=false;
+}
+
+function useFinisher(){
+  if(!state||mySeat===null||mySeat===undefined)return;
+  ensureBattleShape();
+  if(!(state.finisherReady&&state.finisherReady[mySeat]))return;
+  useMove('__finisher__',{finisher:true});
+}
+
+function useMove(moveId,opts){
+  opts=opts||{};
   if(!state||state.winner!==null||state.blocked)return;
   if(mySeat!==state.turn)return;
 
   var actor=mySeat;
   var target=actor===0?1:0;
   var attacker=state.pets[actor];
-  var move=moveBook[moveId]||{name:moveId,type:'normal',category:'physical',power:30,accuracy:95};
+  var move;
+  if(moveId==='__finisher__'){
+    move={name:'Fury Finisher',type:(state.pets[mySeat]&&state.pets[mySeat].type)||'normal',category:'finisher',power:56,accuracy:100,energyCost:2,staminaCost:22,initiativeCost:118};
+    opts.finisher=true;
+  }else{
+    move=moveBook[moveId]||{name:moveId,type:'normal',category:'physical',power:30,accuracy:95};
+  }
   var moveName=move.name||moveId;
   var actionResult={damage:0,finisher:false,miss:false};
 
@@ -1629,9 +1691,10 @@ function useMove(moveId){
     if(roll>Number(move.accuracy||95)){
       addLog(attacker.name+' used '+moveName+' but missed!');
       applyMissRecovery(actor);
+      clearGuard(target);
       actionResult={damage:0,finisher:false,miss:true};
     }else{
-      actionResult=resolveMove(actor,target,moveId,move)||actionResult;
+      actionResult=resolveMove(actor,target,moveId,move,opts)||actionResult;
     }
   }
 
@@ -1652,7 +1715,8 @@ function useMove(moveId){
   draw();
   sync();
 }
-function resolveMove(actor,target,moveId,move){
+function resolveMove(actor,target,moveId,move,opts){
+  opts=opts||{};
   var attacker=state.pets[actor];
   var moveName=move.name||moveId;
   var category=move.category||'physical';
@@ -1665,7 +1729,7 @@ function resolveMove(actor,target,moveId,move){
     return {damage:0,finisher:false};
   }
 
-  var result=damage(actor,target,move);
+  var result=damage(actor,target,move,!!opts.finisher);
   state.hp[target]=Math.max(0,state.hp[target]-result.damage);
   addLog(attacker.name+' used '+moveName+' from '+stanceLabel(stance)+' and dealt '+result.damage+' damage.');
   if(result.note)addLog(result.note);
@@ -1674,7 +1738,7 @@ function resolveMove(actor,target,moveId,move){
   if(appliedAfterDamage)addLog(appliedAfterDamage);
   return {damage:result.damage,finisher:!!result.finisher};
 }
-function damage(actor,target,move){
+function damage(actor,target,move,forceFinisher){
   var attacker=state.pets[actor];
 
   var power=Number(move.power||30);
@@ -1693,7 +1757,7 @@ function damage(actor,target,move){
   var stanceScale=STANCE[actorStance]?STANCE[actorStance].damage:1;
   var clashScale=1;
   var note='';
-  var finisherActive=state.finisherReady&&state.finisherReady[actor];
+  var finisherActive=!!forceFinisher && state.finisherReady&&state.finisherReady[actor];
   var finisherScale=finisherActive?1.45:1;
 
   if(targetStance==='brace'){
@@ -1712,12 +1776,26 @@ function damage(actor,target,move){
     note=attacker.name+' converted focus into +1 energy.';
   }
 
-  var dmg=Math.floor((base-reduction)*variance*typeBonus*staminaScale*stanceScale*clashScale*finisherScale);
+  var guardActive=state.guard&&state.guard[target];
+  var guardNote='';
+  var guardScale=1;
+  if(guardActive){
+    guardScale=finisherActive?0.65:0.50;
+    var guardCost=finisherActive?22:12;
+    state.stamina[target]=clampResource(Number(state.stamina[target]||0)-guardCost,0,100);
+    state.guard[target]=false;
+    guardNote=state.pets[target].name+' guarded the hit, reducing damage and spending '+guardCost+' stamina.';
+  }
+
+  var dmg=Math.floor((base-reduction)*variance*typeBonus*staminaScale*stanceScale*clashScale*finisherScale*guardScale);
   dmg=Math.max(2,dmg);
   if(finisherActive){
     state.finisher[actor]=0;
     state.finisherReady[actor]=false;
     note=(note?note+' ':'')+'🔥 FINISHER unleashed! '+attacker.name+' turned locked-in focus into a huge swing.';
+  }
+  if(guardNote){
+    note=(note?note+' ':'')+guardNote;
   }
   if(dmg>0&&state.finisher){
     var loss=Math.min(22,Math.max(6,Math.floor(dmg*.5)));
@@ -1786,6 +1864,7 @@ function selectStance(id){
 }
 
 function moveEnergyCost(move){
+  if(move&&move.energyCost!==undefined)return Number(move.energyCost||0);
   var category=move.category||'physical';
   var power=Number(move.power||0);
   if(category==='status'||category==='buff'||category==='debuff'||power<=0)return 1;
@@ -1796,6 +1875,7 @@ function moveEnergyCost(move){
 }
 
 function moveStaminaCost(move,stance){
+  if(move&&move.staminaCost!==undefined)return Number(move.staminaCost||0);
   var category=move.category||'physical';
   var power=Number(move.power||0);
   var cost=(category==='status'||category==='buff'||category==='debuff'||power<=0)?8:Math.round(10+(power*.38));
@@ -1831,6 +1911,7 @@ function endRoundResourceTick(actor,target){
 }
 
 function moveInitiativeCost(move){
+  if(move&&move.initiativeCost!==undefined)return Number(move.initiativeCost||90);
   var category=move.category||'physical';
   var power=Number(move.power||0);
 
@@ -1945,6 +2026,9 @@ function ensureBattleShape(){
   if(state.finisher[0]===undefined)state.finisher[0]=0;
   if(state.finisher[1]===undefined)state.finisher[1]=0;
   if(!state.finisherReady)state.finisherReady=[false,false];
+  if(!state.guard)state.guard=[false,false];
+  if(state.guard[0]===undefined)state.guard[0]=false;
+  if(state.guard[1]===undefined)state.guard[1]=false;
   state.finisherReady[0]=Number(state.finisher[0]||0)>=100;
   state.finisherReady[1]=Number(state.finisher[1]||0)>=100;
 }

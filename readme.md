@@ -351,3 +351,34 @@ This update tightens the Care Window after playtesting:
 - Pet stage backgrounds were reduced with responsive sizing so the blue/pink battle stages stay inside their player panes instead of crowding the control area.
 
 Design note: Care Mode is intended to feel live without flicker. The panel should render once, then update existing bar widths/text/resource displays on the timer tick.
+
+### Pet Battle combat v1.7 Guard + manual Fury Finisher update
+
+This update adds the next high-impact battle layer while keeping the current Attack/Care flow intact.
+
+Implemented direction:
+
+- Care Mode now includes **Guard** as a prediction action.
+- Guard is primarily intended to counter an expected Fury/Finisher attack or other large incoming hit.
+- Guard does **not** skip the defender's next attack turn. Instead, it reduces the next incoming hit and spends stamina when triggered.
+- Current Guard tuning:
+  - Normal guarded hit: roughly 50% damage taken and about 12 stamina spent.
+  - Fury/Finisher guarded hit: roughly 65% damage taken and about 22 stamina spent.
+- Guard should feel useful when the player makes the right read, but it should not fully erase an enemy's offensive moment.
+- Fury/Finisher is now manually selected instead of automatically consuming the next attack.
+- When Fury is ready, the attacking player sees a clear **FINISHER** button in Attack Mode.
+- Both players should see a clear aura/glow around a pet when its Fury/Finisher is ready.
+- Soothe healing should be slow and capped as actual healing, not just as a UI preview. Current intent is a max of about 5% HP per Care Window.
+
+Future owner-skill note:
+
+- Pet owner skills should eventually provide small, lightly meaningful boosts to care and item efficiency.
+- These boosts should be subtle edges, not battle-swinging passives.
+- Example future boosts: slightly stronger Soothe, slightly faster Treat, slightly better Guard stamina efficiency, minor battle-item effectiveness bonuses.
+- Owner skills should enhance player identity and progression while keeping combat primarily skill/read driven.
+
+Future balance notes:
+
+- Guard should be monitored closely. If it becomes too dominant, increase stamina cost or reduce reduction slightly.
+- If Fury/Finisher feels too easy to counter, slightly improve the finisher-vs-guard damage scale or add secondary effects later.
+- Clash mechanics are still a future candidate after Guard/Fury are stable.
