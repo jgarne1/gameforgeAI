@@ -208,3 +208,16 @@ Future roadmap:
 - Backpack limits and battle-prep item choices.
 - Artist/admin asset tooling.
 
+
+### Battle Hall polish note — compact side rail
+
+The Battle Hall right rail should prioritize live multiplayer awareness over static instructions.
+
+Current side rail direction:
+
+- `Your Status` should stay compact. It is a quick personal summary, not a large dashboard.
+- Remove filler/explainer copy under `Your Status`; the global shell already provides account context.
+- The attendee list should be labeled `Battle Hall Attendees`, not `Online Battlers`, because it represents presence in this specific lobby.
+- Attendees should show lightweight activity status when possible: `Browsing`, `Seated`, or `Ready`.
+- Chat remains the primary right-side panel and should have enough visible message history to feel like a live lobby console.
+- Do not re-add a large persistent rules panel. Rules/help can become a compact tooltip, modal, or help button later.
