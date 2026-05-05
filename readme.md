@@ -382,3 +382,31 @@ Future balance notes:
 - Guard should be monitored closely. If it becomes too dominant, increase stamina cost or reduce reduction slightly.
 - If Fury/Finisher feels too easy to counter, slightly improve the finisher-vs-guard damage scale or add secondary effects later.
 - Clash mechanics are still a future candidate after Guard/Fury are stable.
+
+
+### Pet Battle combat v1.8 Impact & Exhaustion update
+
+This update adds the first pass of **Impact & Identity** polish while preserving the current stance, care, Guard, and Fury flow.
+
+Implemented direction:
+
+- Damaging moves now trigger lightweight CSS-based visual effects by move type. No image assets are required for this pass.
+- Current effect families include fire, water, grass, electric, shadow, earth, light, normal, and rest/recovery.
+- Fury/Finisher impacts receive a larger, more dramatic effect layer and stronger floating number treatment.
+- Exhausted pets now receive special fallback actions instead of being stuck with unusable moves:
+  - **Flail**: a weak emergency hit with no stamina cost.
+  - **Rest**: uses the attack turn to recover stamina and slightly stabilize energy.
+- Flail and Rest only appear when the pet does not have enough stamina to use any trained move.
+- Normal trained moves are now disabled when the pet lacks the stamina required to use them.
+
+Design intent:
+
+- Stamina should feel meaningful. Reaching exhaustion should be a tactical state, not a soft-lock.
+- Rest gives players a recovery valve, while Flail preserves the option to make a desperate low-impact play.
+- Type effects are meant to improve readability and game feel without becoming heavy or distracting on mobile.
+
+Future polish notes:
+
+- Pet-specific move identities should be layered on top of these type effects later.
+- Starter pets should eventually have distinct combat personalities and preferred stance/care patterns.
+- Clash mechanics remain a future candidate after Fury, Guard, Rest, and stamina pacing feel stable.

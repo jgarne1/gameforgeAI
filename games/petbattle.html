@@ -584,7 +584,36 @@ button:disabled{
   animation:damageFloatUp .95s ease-out forwards;
 }
 .damageFloat.heal{color:#16a34a}
+.damageFloat.miss{color:#64748b;font-size:24px}
 .damageFloat.finisher{color:#f59e0b;font-size:34px;text-shadow:0 3px 0 rgba(255,255,255,.95),0 0 18px rgba(250,204,21,.7),0 8px 20px rgba(15,23,42,.32)}
+.typeFx{
+  position:absolute;
+  left:50%;
+  top:46%;
+  z-index:4;
+  width:88px;
+  height:88px;
+  pointer-events:none;
+  border-radius:999px;
+  transform:translate(-50%,-50%) scale(.55);
+  opacity:0;
+  mix-blend-mode:multiply;
+  animation:typeFxPop .72s ease-out forwards;
+}
+.typeFx.finisherFx{width:128px;height:128px;animation:typeFxPop 1.05s ease-out forwards}
+.typeFx.fire{background:radial-gradient(circle,rgba(251,113,133,.9),rgba(249,115,22,.48) 42%,transparent 72%)}
+.typeFx.water{background:radial-gradient(circle,rgba(125,211,252,.95),rgba(14,165,233,.42) 45%,transparent 74%)}
+.typeFx.grass{background:radial-gradient(circle,rgba(134,239,172,.95),rgba(22,163,74,.38) 45%,transparent 74%)}
+.typeFx.electric{background:radial-gradient(circle,rgba(254,240,138,.95),rgba(250,204,21,.52) 38%,transparent 68%)}
+.typeFx.shadow{background:radial-gradient(circle,rgba(167,139,250,.82),rgba(76,29,149,.34) 48%,transparent 76%);mix-blend-mode:normal}
+.typeFx.earth{background:radial-gradient(circle,rgba(217,119,6,.62),rgba(120,53,15,.28) 48%,transparent 75%)}
+.typeFx.light{background:radial-gradient(circle,rgba(255,255,255,.95),rgba(250,204,21,.55) 42%,transparent 72%)}
+.typeFx.normal{background:radial-gradient(circle,rgba(203,213,225,.95),rgba(100,116,139,.34) 48%,transparent 74%)}
+.typeFx.rest{background:radial-gradient(circle,rgba(187,247,208,.9),rgba(34,197,94,.32) 48%,transparent 74%)}
+.typeFx:after{content:'';position:absolute;inset:18%;border:2px solid rgba(255,255,255,.72);border-radius:999px;animation:typeFxRing .72s ease-out forwards}
+.typeFx.finisherFx:after{inset:8%;border-color:rgba(250,204,21,.9);border-width:3px}
+@keyframes typeFxPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.45)}}
+@keyframes typeFxRing{0%{opacity:.9;transform:scale(.45)}100%{opacity:0;transform:scale(1.65)}}
 @keyframes damageFloatUp{
   0%{opacity:0;transform:translate(-50%,8px) scale(.82)}
   18%{opacity:1;transform:translate(-50%,-4px) scale(1.08)}
@@ -608,6 +637,18 @@ button:disabled{
   .careOptions{grid-template-columns:1fr 1fr}
   .careBtn span{display:none}
 }
+.exhaustedNotice{
+  grid-column:1 / -1;
+  padding:9px 10px;
+  border-radius:16px;
+  background:rgba(15,23,42,.07);
+  border:1px solid rgba(148,163,184,.28);
+  font-size:12px;
+  color:#475569;
+  font-weight:900;
+}
+.restAction{background:linear-gradient(135deg,#16a34a,#86efac);color:#052e16;border-color:#22c55e}
+.flailAction{background:linear-gradient(135deg,#64748b,#cbd5e1);color:#0f172a;border-color:#94a3b8}
 
 
 /* ===== BATTLE END / NO-TRAP RESULT UI ===== */
@@ -773,10 +814,17 @@ var lastServerResult=null;
 var selectedStance=localStorage.getItem('gf_petbattle_stance')||'balanced';
 
 function el(id){return document.getElementById(id);}
+function seatIndex(v){
+  if(v===null||v===undefined||v==='')return null;
+  var n=Number(v);
+  return Number.isFinite(n)?n:null;
+}
+function currentTurnIndex(){return state?seatIndex(state.turn):null;}
+function isMyTurn(){return mySeat!==null&&mySeat!==undefined&&currentTurnIndex()===mySeat;}
 
 function receiveSetup(setupPlayers,setupSeat){
   players=(setupPlayers||[]).slice(0,2);
-  mySeat=setupSeat;
+  mySeat=seatIndex(setupSeat);
 
   meBadge.innerText=mySeat===null||mySeat===undefined?'Spectator':'Seat '+(mySeat+1);
 
@@ -835,7 +883,7 @@ function loadLockedInstance(instance){
   // so the renderer can stay simple and readable.
   lockedInstance=instance;
   players=(instance.players||[]).map(function(p){return {name:p.username||p.name};}).slice(0,2);
-  mySeat=instance.mySeat;
+  mySeat=seatIndex(instance.mySeat);
   profiles={};
   moveBook=instance.moves||{};
   itemCatalog=instance.items||itemCatalog||{};
@@ -1212,7 +1260,7 @@ function drawMoves(){
 
   ensureBattleShape();
 
-  if(mySeat!==state.turn){
+  if(!isMyTurn()){
     var care=state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
     var itemIds=battleItemsForSeat(mySeat).slice(0,4).map(function(x){return x.id+':'+x.quantity;}).join('|');
     var careKey='care:r'+state.round+':turn'+state.turn+':mine'+mySeat+':type'+(care.type||'none')+':item'+(care.itemId||'')+':'+itemIds;
@@ -1240,7 +1288,17 @@ function drawMoves(){
   html+='</div>';
 
   html+='<div class="moves modePanel">';
-  if(state.finisherReady&&state.finisherReady[mySeat]){
+
+  if(isExhaustedForMoves(pet)){
+    html+='<div class="exhaustedNotice">⚠️ Too tired for trained moves. Use Flail as a weak desperation hit, or Rest to recover stamina.</div>';
+    html+='<button class="moveBtn flailAction" onclick="useMove(\'__flail__\')"><strong>😵 Flail</strong><span>Weak hit when exhausted.</span><small>Energy 0 · Stamina 0 · emergency only</small></button>';
+    html+='<button class="moveBtn restAction" onclick="useMove(\'__rest__\')"><strong>🌿 Rest</strong><span>Recover stamina and reset your footing.</span><small>Restores stamina · uses your attack turn</small></button>';
+    html+='</div>';
+    moveButtons.innerHTML=html;
+    return;
+  }
+
+  if(state.finisherReady&&state.finisherReady[mySeat]&&Number(state.stamina[mySeat]||0)>=22&&Number(state.energy[mySeat]||0)>=2){
     html+='<button class="moveBtn finisherAction" onclick="useFinisher()"><strong>🔥 FINISHER</strong><span>Spend Fury for a major swing.</span><small>Manual use · costs 2 energy / 22 stamina</small></button>';
   }
   pet.moves.forEach(function(id){
@@ -1251,9 +1309,12 @@ function drawMoves(){
     var energyCost=moveEnergyCost(m);
     var staminaCost=moveStaminaCost(m,selectedStance);
     var enoughEnergy=Number(state.energy[mySeat]||0)>=energyCost;
-    var disabledClass=enoughEnergy?'':' disabledMove';
+    var enoughStamina=Number(state.stamina[mySeat]||0)>=staminaCost;
+    var canUse=enoughEnergy&&enoughStamina;
+    var disabledClass=canUse?'':' disabledMove';
+    var disabledAttr=canUse?'':'disabled title="Not enough '+(!enoughEnergy?'energy':'stamina')+'"';
 
-    html+='<button class="moveBtn primary'+disabledClass+'" onclick="useMove(\''+id+'\')" '+(enoughEnergy?'':'title="Not enough energy"')+'>'+
+    html+='<button class="moveBtn primary'+disabledClass+'" onclick="useMove(\''+id+'\')" '+disabledAttr+'>'+
       '<strong>'+escapeHtml(m.name)+'</strong>'+ 
       '<span>'+escapeHtml(m.type||'normal')+' · '+escapeHtml(category)+' · '+powerText+'</span>'+ 
       '<small>Energy '+energyCost+' · Stamina '+staminaCost+' · Init '+cost+'</small>'+ 
@@ -1262,6 +1323,17 @@ function drawMoves(){
   html+='</div>';
 
   moveButtons.innerHTML=html;
+}
+
+function isExhaustedForMoves(pet){
+  if(!state||mySeat===null||mySeat===undefined||!pet)return false;
+  var stamina=Number(state.stamina&&state.stamina[mySeat]!==undefined?state.stamina[mySeat]:100);
+  var moves=(pet.moves&&pet.moves.length?pet.moves:[]);
+  if(!moves.length)return stamina<8;
+  return !moves.some(function(id){
+    var m=moveBook[id]||{name:id,type:'normal',category:'physical',power:30,accuracy:95};
+    return stamina>=moveStaminaCost(m,selectedStance);
+  });
 }
 function drawCareControls(){
   ensureBattleShape();
@@ -1307,7 +1379,7 @@ function careButton(id,label,sub,activeType){
 
 function selectCare(type){
   if(!state||state.winner!==null||state.blocked)return;
-  if(mySeat===state.turn)return;
+  if(isMyTurn())return;
   ensureBattleShape();
 
   if(!CARE_ACTIONS[type])type='soothe';
@@ -1340,7 +1412,7 @@ function isBattleEnabledItem(item){
 
 function useBattleItem(itemId){
   if(!state||state.winner!==null||state.blocked)return;
-  if(mySeat===state.turn)return;
+  if(isMyTurn())return;
   ensureBattleShape();
 
   var profile=profiles&&profiles[mySeat]?profiles[mySeat]:null;
@@ -1649,7 +1721,7 @@ function useFinisher(){
 function useMove(moveId,opts){
   opts=opts||{};
   if(!state||state.winner!==null||state.blocked)return;
-  if(mySeat!==state.turn)return;
+  if(!isMyTurn())return;
 
   var actor=mySeat;
   var target=actor===0?1:0;
@@ -1658,11 +1730,15 @@ function useMove(moveId,opts){
   if(moveId==='__finisher__'){
     move={name:'Fury Finisher',type:(state.pets[mySeat]&&state.pets[mySeat].type)||'normal',category:'finisher',power:56,accuracy:100,energyCost:2,staminaCost:22,initiativeCost:118};
     opts.finisher=true;
+  }else if(moveId==='__flail__'){
+    move={name:'Flail',type:'normal',category:'physical',power:14,accuracy:92,energyCost:0,staminaCost:0,initiativeCost:86};
+  }else if(moveId==='__rest__'){
+    move={name:'Rest',type:'rest',category:'rest',power:0,accuracy:100,energyCost:0,staminaCost:0,initiativeCost:96};
   }else{
     move=moveBook[moveId]||{name:moveId,type:'normal',category:'physical',power:30,accuracy:95};
   }
   var moveName=move.name||moveId;
-  var actionResult={damage:0,finisher:false,miss:false};
+  var actionResult={damage:0,finisher:false,miss:false,type:(move&&move.type)||'normal',rest:false};
 
   ensureBattleShape();
 
@@ -1677,8 +1753,16 @@ function useMove(moveId,opts){
     return;
   }
 
+  var staminaCost=moveStaminaCost(move,stance);
+  if(Number(state.stamina[actor]||0)<staminaCost){
+    addLog(attacker.name+' tried '+moveName+' but was too exhausted.');
+    lastControlModeKey='';
+    draw();
+    return;
+  }
+
   state.energy[actor]=clampResource(Number(state.energy[actor]||0)-energyCost,0,10);
-  state.stamina[actor]=clampResource(Number(state.stamina[actor]||100)-moveStaminaCost(move,stance),0,100);
+  state.stamina[actor]=clampResource(Number(state.stamina[actor]||100)-staminaCost,0,100);
 
   var blocked=startTurnStatus(actor);
 
@@ -1698,7 +1782,7 @@ function useMove(moveId,opts){
     }
   }
 
-  state.lastAction={actor:actor,target:target,move:moveId,stance:stance,time:Date.now(),damage:Number(actionResult.damage||0),finisher:!!actionResult.finisher,miss:!!actionResult.miss};
+  state.lastAction={actor:actor,target:target,move:moveId,stance:stance,time:Date.now(),damage:Number(actionResult.damage||0),finisher:!!actionResult.finisher,miss:!!actionResult.miss,type:actionResult.type||move.type||'normal',rest:!!actionResult.rest};
 
   checkWinner(actor,target);
 
@@ -1723,10 +1807,20 @@ function resolveMove(actor,target,moveId,move,opts){
   var power=Number(move.power||0);
   var stance=currentStance(actor);
 
+  if(category==='rest'){
+    var beforeStamina=Number(state.stamina[actor]||0);
+    var gain=38;
+    state.stamina[actor]=clampResource(beforeStamina+gain,0,100);
+    state.energy[actor]=clampResource(Number(state.energy[actor]||0)+1,0,10);
+    addLog(attacker.name+' rested and recovered '+Math.floor(state.stamina[actor]-beforeStamina)+' stamina.');
+    showFloatingNumber(actor,'REST','heal');
+    return {damage:0,finisher:false,type:'rest',rest:true};
+  }
+
   if(category==='status'||category==='buff'||category==='debuff'||power<=0){
     var applied=applyMoveStatus(actor,target,move);
     addLog(attacker.name+' used '+moveName+' from '+stanceLabel(stance)+'.'+(applied?' '+applied:''));
-    return {damage:0,finisher:false};
+    return {damage:0,finisher:false,type:move.type||'normal'};
   }
 
   var result=damage(actor,target,move,!!opts.finisher);
@@ -1736,7 +1830,7 @@ function resolveMove(actor,target,moveId,move,opts){
 
   var appliedAfterDamage=applyMoveStatus(actor,target,move);
   if(appliedAfterDamage)addLog(appliedAfterDamage);
-  return {damage:result.damage,finisher:!!result.finisher};
+  return {damage:result.damage,finisher:!!result.finisher,type:move.type||'normal'};
 }
 function damage(actor,target,move,forceFinisher){
   var attacker=state.pets[actor];
@@ -1842,7 +1936,7 @@ function selectStance(id){
     return;
   }
 
-  if(mySeat===state.turn){
+  if(isMyTurn()){
     if(Number(state.energy[mySeat]||0)<1){
       addLog(state.pets[mySeat].name+' tried to shift stance, but lacked energy.');
       drawMoves();
@@ -2136,6 +2230,11 @@ function playLastActionFxOnce(){
   if(lastActionFxKey===key)return;
   lastActionFxKey=key;
   pulseAction(a.actor,a.target);
+  if(a.rest){
+    showTypeEffect(a.actor,'rest',false);
+    return;
+  }
+  showTypeEffect(a.target,a.type||'normal',!!a.finisher);
   if(Number(a.damage||0)>0){
     setTimeout(function(){showFloatingNumber(a.target,a.damage,a.finisher?'finisher':'damage');},230);
   }else if(a.miss){
@@ -2162,12 +2261,33 @@ function pulseAction(actor,target){
   }
 }
 
+function normalizeEffectType(type){
+  type=String(type||'normal').toLowerCase();
+  if(type==='fire'||type==='water'||type==='grass'||type==='electric'||type==='shadow'||type==='earth'||type==='light'||type==='rest')return type;
+  if(type==='rock'||type==='ground')return 'earth';
+  if(type==='ice')return 'water';
+  if(type==='dark')return 'shadow';
+  return 'normal';
+}
+
+function showTypeEffect(seat,type,isFinisher){
+  var stage=document.querySelectorAll('.petStage')[seat];
+  if(!stage)return;
+  var node=document.createElement('div');
+  node.className='typeFx '+normalizeEffectType(type)+(isFinisher?' finisherFx':'');
+  node.style.left=(46+Math.random()*8)+'%';
+  node.style.top=(40+Math.random()*12)+'%';
+  stage.appendChild(node);
+  setTimeout(function(){if(node&&node.parentNode)node.parentNode.removeChild(node);},1150);
+}
+
 function showFloatingNumber(seat,value,kind){
   var stage=document.querySelectorAll('.petStage')[seat];
   if(!stage)return;
   var node=document.createElement('div');
   var cls='damageFloat';
   if(kind==='heal')cls+=' heal';
+  if(kind==='miss')cls+=' miss';
   if(kind==='finisher')cls+=' finisher';
   node.className=cls;
   node.textContent=(typeof value==='number'||String(value).match(/^\d+$/))?('-'+value):String(value);
