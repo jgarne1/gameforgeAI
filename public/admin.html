@@ -362,13 +362,16 @@ textarea.adminTextArea{
 @media(max-width:760px){.editorFormGrid{grid-template-columns:1fr}}
 
 .gameEditorGrid{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(0,1.25fr);gap:14px;align-items:start}
-.gameFormGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gameFormGrid input,.gameFormGrid select{width:100%}
+.gameFormGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gameFormGrid input,.gameFormGrid select{width:100%}
+.gameField label{display:block;color:#e5e7eb;font-size:12px;font-weight:1000;margin:0 0 5px;letter-spacing:.15px}
+.gameField .hint{color:var(--muted);font-size:11px;line-height:1.35;margin:5px 0 0}
 .checkRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.checkRow label{cursor:pointer}
 .gameFileBox{border:1px dashed rgba(148,163,184,.38);border-radius:18px;padding:12px;background:rgba(2,6,23,.38)}
+.gameListPanel{max-height:clamp(360px,62vh,760px);overflow:auto;padding-right:4px;scrollbar-width:thin}
 .gameListRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(148,163,184,.20);border-radius:18px;padding:12px;background:rgba(2,6,23,.48)}
 .gameFlags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.syncRow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid rgba(148,163,184,.18);border-radius:16px;padding:10px;background:rgba(2,6,23,.42)}
 .syncRow input{width:18px;height:18px}.syncMissing{font-size:12px;color:#fde68a;margin-top:4px}.gameHelp{font-size:12px;color:var(--muted);line-height:1.38;margin-top:6px}
-@media(max-width:1050px){.gameEditorGrid{grid-template-columns:1fr}.gameFormGrid{grid-template-columns:1fr}}
+@media(max-width:1050px){.gameEditorGrid{grid-template-columns:1fr}.gameFormGrid{grid-template-columns:1fr}.gameListPanel{max-height:420px}}
 
 </style>
 </head>
@@ -795,14 +798,46 @@ textarea.adminTextArea{
             <div class="toolBox">
               <h4>Game Details</h4>
               <div class="gameFormGrid">
-                <input id="gameEditId" placeholder="game id">
-                <input id="gameEditName" placeholder="display name">
-                <input id="gameEditFile" placeholder="file, ex: checkers.html">
-                <input id="gameEditIcon" placeholder="icon, ex: 🎮">
-                <input id="gameEditMin" type="number" min="1" max="12" value="1" placeholder="min players">
-                <input id="gameEditMax" type="number" min="1" max="12" value="2" placeholder="max players">
-                <input id="gameEditSeats" type="number" min="1" max="12" value="2" placeholder="seats">
-                <input id="gameEditPrice" type="number" min="0" max="999999" value="50" placeholder="unlock price">
+                <div class="gameField">
+                  <label for="gameEditId">Game ID / Slug</label>
+                  <input id="gameEditId" placeholder="rune-match">
+                  <p class="hint">Internal id used by metadata, unlock item, and launcher references. Use lowercase letters, numbers, and hyphens.</p>
+                </div>
+                <div class="gameField">
+                  <label for="gameEditName">Display Name</label>
+                  <input id="gameEditName" placeholder="Rune Match">
+                  <p class="hint">Player-facing name shown in the launcher and admin lists.</p>
+                </div>
+                <div class="gameField">
+                  <label for="gameEditFile">HTML File</label>
+                  <input id="gameEditFile" placeholder="rune-match.html">
+                  <p class="hint">Filename inside <code>/games</code>. Include <code>.html</code>. This should match the uploaded file.</p>
+                </div>
+                <div class="gameField">
+                  <label for="gameEditIcon">Launcher Icon</label>
+                  <input id="gameEditIcon" placeholder="🧩">
+                  <p class="hint">Small emoji/icon shown beside the game. Keep it simple and readable.</p>
+                </div>
+                <div class="gameField">
+                  <label for="gameEditMin">Minimum Players</label>
+                  <input id="gameEditMin" type="number" min="1" max="12" value="1" placeholder="1">
+                  <p class="hint">Fewest players needed. Solo games usually use <code>1</code>.</p>
+                </div>
+                <div class="gameField">
+                  <label for="gameEditMax">Maximum Players</label>
+                  <input id="gameEditMax" type="number" min="1" max="12" value="2" placeholder="2">
+                  <p class="hint">Most players allowed at the table. Head-to-head games usually use <code>2</code>.</p>
+                </div>
+                <div class="gameField">
+                  <label for="gameEditSeats">Table Seats</label>
+                  <input id="gameEditSeats" type="number" min="1" max="12" value="2" placeholder="2">
+                  <p class="hint">How many seat spots the launcher should draw for the room/table.</p>
+                </div>
+                <div class="gameField">
+                  <label for="gameEditPrice">Unlock Price</label>
+                  <input id="gameEditPrice" type="number" min="0" max="999999" value="50" placeholder="50">
+                  <p class="hint">Coin cost for the auto-created Game Shop unlock item. Use <code>0</code> for free unlocks.</p>
+                </div>
               </div>
               <div class="checkRow">
                 <label class="pill"><input id="gameEditEnabled" type="checkbox" checked> Enabled</label>
@@ -819,7 +854,7 @@ textarea.adminTextArea{
             <div class="gameFileBox">
               <h4 style="margin:0 0 8px">Upload HTML</h4>
               <input id="gameHtmlFile" class="fileInput" type="file" accept=".html,text/html" onchange="loadSelectedGameHtml()">
-              <p class="gameHelp" id="gameUploadHelp">Choose a .html file. Same filename replaces the existing game file after upload.</p>
+              <p class="gameHelp" id="gameUploadHelp">Choose a self-contained .html file. Same filename replaces the existing game file after upload. Save metadata first when creating a new game, then upload the matching HTML file.</p>
               <div class="row">
                 <button class="gold" onclick="uploadGameHtml()">Upload + Commit</button>
               </div>
@@ -829,7 +864,7 @@ textarea.adminTextArea{
           <div class="editorStack">
             <div class="toolBox">
               <div class="cardHeader"><h4 style="margin:0">Current Games</h4><span class="pill" id="gameCountPill">0 games</span></div>
-              <div id="gameEditorList" class="list"></div>
+              <div id="gameEditorList" class="list gameListPanel"></div>
             </div>
             <div class="toolBox">
               <div class="cardHeader"><h4 style="margin:0">Scan Missing Setup</h4><button class="good" onclick="syncSelectedScannedGames()">Sync Checked</button></div>

@@ -221,3 +221,10 @@ Current side rail direction:
 - Attendees should show lightweight activity status when possible: `Browsing`, `Seated`, or `Ready`.
 - Chat remains the primary right-side panel and should have enough visible message history to feel like a live lobby console.
 - Do not re-add a large persistent rules panel. Rules/help can become a compact tooltip, modal, or help button later.
+
+## Admin Game Editor UX Notes
+
+- Keep the Game Editor lightweight unless explicitly asked for a larger schema redesign.
+- Game metadata fields should include visible labels and short helper text because admins may not know the difference between display names, ids/slugs, file names, seats, and unlock prices.
+- The Current Games list should scroll independently so the Game Details and Upload HTML panels stay visible while admins browse existing games.
+- Do not add aggressive validation or change the game metadata contract unless requested; current goal is clarity without breaking the existing game creation flow.
