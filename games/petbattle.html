@@ -258,6 +258,7 @@ h1,h2,h3{margin:0}
   grid-template-columns:repeat(4,1fr);
   gap:8px;
 }
+.combatControls{display:block}
 
 button{
   border:1px solid #cbd5e1;
@@ -302,82 +303,80 @@ button:disabled{
 
 @media(max-width:1000px){
   body{overflow:auto}
-  .wrap{height:auto;min-height:100dvh}
+  .wrap{height:auto}
   .arena{grid-template-columns:1fr}
   .moves{grid-template-columns:1fr 1fr}
 }
 
 
-/* ===== AI MOBILE DUEL VIEW PATCH v2 =====
-   Phone layout keeps both pets side-by-side, then places status/log below. */
+/* ===== AI MOBILE USABILITY PATCH v1 =====
+   Phone layout only. Keeps the battle readable in the iframe. */
 @media (max-width:700px){
   html,body{height:auto;min-height:100%;overflow:auto;}
-  body{font-size:13px;}
-  .wrap{height:auto;min-height:100dvh;padding:7px;gap:7px;grid-template-rows:auto auto auto;}
-  .top{align-items:stretch;flex-direction:column;border-radius:18px;padding:9px;gap:8px;}
-  .top h1{font-size:19px;margin-bottom:2px;}
-  .top .muted{font-size:12px;line-height:1.25;}
-  .battleActions{justify-content:space-between;gap:6px;}
-  .battleActions .badge{flex:1;justify-content:center;min-width:0;padding:6px 7px;font-size:11px;}
-  .battleActions button{width:100%;padding:9px;border-radius:14px;}
-
-  .arena{
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-    grid-template-areas:
-      "player opponent"
-      "center center";
-    gap:7px;
-  }
-  .arena > .side:first-child{grid-area:player;}
-  .arena > .center{grid-area:center;}
-  .arena > .side:last-child{grid-area:opponent;}
-
-  .side{
-    min-width:0;
-    border-radius:18px;
-    padding:8px;
-    gap:7px;
-    grid-template-rows:auto auto auto;
-  }
-  .side h2{font-size:15px;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .side .muted{font-size:11px;line-height:1.2;}
-  .hpBar{height:10px;margin:5px 0;}
-  .meterBar{height:6px;margin:4px 0 1px;}
-  .statusTags{gap:3px;min-height:16px;margin-top:4px;}
-  .statusTag{font-size:9px;padding:3px 5px;}
-
-  .petStage{min-height:112px;border-radius:18px;}
-  .petImg{width:104px;height:104px;}
-  .petEmoji{font-size:68px;}
-
-  .statGrid{grid-template-columns:1fr 1fr;gap:5px;}
-  .stat{border-radius:11px;padding:5px;font-size:10px;}
-
-  .center{gap:7px;}
-  .statusCard,.logCard,.controls{border-radius:18px;padding:9px;}
-  .statusCard h2{font-size:17px;}
-  .logCard h3{font-size:14px;}
-  .log{min-height:130px;height:130px;border-radius:14px;padding:8px;font-size:12px;}
-
+  .wrap{height:auto;min-height:100dvh;padding:8px;gap:8px;}
+  .top{align-items:flex-start;flex-direction:column;border-radius:18px;padding:10px;}
+  .top h1{font-size:20px;margin-bottom:4px;}
+  .arena{grid-template-columns:1fr!important;gap:8px;}
+  .side,.log,.controls{border-radius:18px;padding:10px;}
+  .side h2{font-size:17px;margin:0 0 4px;}
+  .petImg{width:120px;height:120px;}
+  .petEmoji{font-size:76px;}
   .moves{grid-template-columns:1fr 1fr!important;gap:7px;}
-  .moveBtn{min-height:64px;padding:8px;border-radius:14px;}
+  .moveBtn{min-height:68px;padding:9px;border-radius:14px;}
   .moveBtn strong{font-size:13px}.moveBtn span{font-size:11px;}
+  .statGrid{grid-template-columns:1fr 1fr;}
   .winner{font-size:18px;}
-  button{font-size:14px;}
+  button{font-size:15px;}
 }
+@media (max-width:420px){.moves{grid-template-columns:1fr!important}.petImg{width:104px;height:104px}.petEmoji{font-size:68px}}
 
-@media (max-width:420px){
-  .wrap{padding:6px;gap:6px;}
-  .arena{gap:6px;}
-  .side{padding:7px;gap:6px;}
-  .petStage{min-height:96px;}
-  .petImg{width:88px;height:88px;}
-  .petEmoji{font-size:58px;}
-  .stat{padding:4px;font-size:9px;}
-  .moves{grid-template-columns:1fr 1fr!important;}
-  .moveBtn{min-height:60px;}
+
+
+
+/* ===== COMBAT v1: stance + stamina + energy UI ===== */
+.resourceGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:6px;
 }
-
+.resourcePill{
+  border-radius:12px;
+  padding:6px 8px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(148,163,184,.3);
+  font-size:11px;
+  font-weight:900;
+  color:#334155;
+}
+.resourcePill b{display:block;font-size:14px;color:#0f172a;line-height:1.05}
+.stancePanel{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:8px;
+}
+.stanceBtn{
+  text-align:left;
+  min-height:58px;
+  border-radius:16px;
+  background:rgba(255,255,255,.82);
+}
+.stanceBtn strong{display:block;font-size:13px}
+.stanceBtn span{display:block;font-size:11px;color:#64748b;margin-top:3px;line-height:1.2}
+.stanceBtn.active{
+  border-color:#2563eb;
+  box-shadow:0 0 0 2px rgba(37,99,235,.16),0 10px 22px rgba(37,99,235,.12);
+  background:linear-gradient(180deg,#eff6ff,#fff);
+}
+.moveBtn small{display:block;color:rgba(255,255,255,.86);font-size:11px;margin-top:3px;line-height:1.15}
+.moveBtn.disabledMove{opacity:.52;filter:grayscale(.15)}
+@media(max-width:700px){
+  .stancePanel{grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:7px}
+  .stanceBtn{min-height:54px;padding:8px;border-radius:14px}
+  .stanceBtn strong{font-size:12px}.stanceBtn span{font-size:10px}
+}
+@media(max-width:420px){.stancePanel{grid-template-columns:1fr 1fr 1fr}.stanceBtn{padding:7px}.stanceBtn span{display:none}}
 
 
 /* ===== BATTLE END / NO-TRAP RESULT UI ===== */
@@ -508,7 +507,7 @@ button:disabled{
   </div>
 
   <div class="controls">
-    <div id="moveButtons" class="moves"></div>
+    <div id="moveButtons" class="combatControls"></div>
   </div>
 </div>
 
@@ -530,6 +529,7 @@ var instanceSocket=null;
 var lockedInstance=null;
 var battleEnded=false;
 var lastServerResult=null;
+var selectedStance=localStorage.getItem('gf_petbattle_stance')||'balanced';
 
 function el(id){return document.getElementById(id);}
 
@@ -710,6 +710,9 @@ function freshBattle(){
       pets:[a,b],
       hp:[a.stats.maxHp,b.stats.maxHp],
       meter:[0,0],
+      stamina:[100,100],
+      energy:[5,5],
+      stance:['balanced','balanced'],
       status:[{},{}],
       turn:null,
       round:1,
@@ -730,6 +733,9 @@ function freshBattle(){
       first===0?72:52,
       first===1?72:52
     ],
+    stamina:[100,100],
+    energy:[5,5],
+    stance:['balanced','balanced'],
     status:[{},{}],
     turn:null,
     round:1,
@@ -737,7 +743,8 @@ function freshBattle(){
     blocked:false,
     log:[
       'Battle started: '+a.name+' vs '+b.name+'.',
-      'Initiative is charging. Faster pets act sooner, but turns are no longer guaranteed wins.'
+      'New combat rules: stance, stamina, and energy now decide momentum.',
+      'Brace punishes reckless attacks. Focus builds energy but is risky. Push hits harder but drains stamina.'
     ],
     lastAction:null
   };
@@ -806,11 +813,15 @@ function drawPetSide(seat){
 
   el('p'+seat+'Statuses').innerHTML=statusTags(seat);
 
+  var stamina=Math.floor(Math.max(0,Math.min(100,Number(state.stamina&&state.stamina[seat]!==undefined?state.stamina[seat]:100))));
+  var energy=Math.floor(Math.max(0,Math.min(10,Number(state.energy&&state.energy[seat]!==undefined?state.energy[seat]:5))));
+
   el('p'+seat+'Stats').innerHTML=
     stat('Attack',effectiveAttack(seat))+
     stat('Defense',effectiveDefense(seat))+
     stat('Speed',effectiveSpeed(seat))+
-    stat('Moves',pet.moves.length);
+    stat('Stance',stanceLabel(currentStance(seat)))+
+    '<div class="resourceGrid"><div class="resourcePill"><b>'+energy+'/10</b>Energy</div><div class="resourcePill"><b>'+stamina+'%</b>Stamina</div></div>';
 
   setPetVisual(seat,pet);
 }
@@ -828,6 +839,8 @@ function statusTags(seat){
   if(s.attack_down>0)labels.push('⚔️ Atk-');
   if(s.defense_up>0)labels.push('🛡️ Def+');
   if(s.defense_down>0)labels.push('🛡️ Def-');
+
+  labels.unshift(stanceIcon(currentStance(seat))+' '+stanceLabel(currentStance(seat)));
 
   if(!labels.length)return '<span class="muted">No status</span>';
 
@@ -895,6 +908,8 @@ function drawMoves(){
     return;
   }
 
+  ensureBattleShape();
+
   if(mySeat!==state.turn){
     moveButtons.innerHTML='<button disabled>Waiting for opponent...</button>';
     return;
@@ -902,21 +917,35 @@ function drawMoves(){
 
   var pet=state.pets[mySeat];
 
+  html+='<div class="stancePanel">';
+  ['balanced','brace','focus'].forEach(function(id){
+    var info=STANCE[id];
+    html+='<button class="stanceBtn '+(selectedStance===id?'active':'')+'" onclick="selectStance(\''+id+'\')">'+
+      '<strong>'+escapeHtml(info.icon+' '+info.name)+'</strong><span>'+escapeHtml(info.short)+'</span></button>';
+  });
+  html+='</div>';
+
+  html+='<div class="moves">';
   pet.moves.forEach(function(id){
     var m=moveBook[id]||{name:id,type:'normal',category:'physical',power:30,accuracy:95};
     var category=m.category||'physical';
     var powerText=Number(m.power||0)>0?'Power '+Number(m.power||30):'Status';
     var cost=moveInitiativeCost(m);
+    var energyCost=moveEnergyCost(m);
+    var staminaCost=moveStaminaCost(m,selectedStance);
+    var enoughEnergy=Number(state.energy[mySeat]||0)>=energyCost;
+    var disabledClass=enoughEnergy?'':' disabledMove';
 
-    html+='<button class="moveBtn primary" onclick="useMove(\''+id+'\')">'+
-      '<strong>'+escapeHtml(m.name)+'</strong>'+
-      '<span>'+escapeHtml(m.type||'normal')+' · '+escapeHtml(category)+' · '+powerText+' · Acc '+Number(m.accuracy||95)+'% · Cost '+cost+'</span>'+
+    html+='<button class="moveBtn primary'+disabledClass+'" onclick="useMove(\''+id+'\')" '+(enoughEnergy?'':'title="Not enough energy"')+'>'+
+      '<strong>'+escapeHtml(m.name)+'</strong>'+ 
+      '<span>'+escapeHtml(m.type||'normal')+' · '+escapeHtml(category)+' · '+powerText+'</span>'+ 
+      '<small>Energy '+energyCost+' · Stamina '+staminaCost+' · Init '+cost+'</small>'+ 
     '</button>';
   });
+  html+='</div>';
 
   moveButtons.innerHTML=html;
 }
-
 function useMove(moveId){
   if(!state||state.winner!==null||state.blocked)return;
   if(mySeat!==state.turn)return;
@@ -929,6 +958,20 @@ function useMove(moveId){
 
   ensureBattleShape();
 
+  var stance=selectedStance||'balanced';
+  state.stance[actor]=stance;
+  applyStanceStart(actor,stance);
+
+  var energyCost=moveEnergyCost(move);
+  if(Number(state.energy[actor]||0)<energyCost){
+    addLog(attacker.name+' tried '+moveName+' but lacked energy.');
+    draw();
+    return;
+  }
+
+  state.energy[actor]=clampResource(Number(state.energy[actor]||0)-energyCost,0,10);
+  state.stamina[actor]=clampResource(Number(state.stamina[actor]||100)-moveStaminaCost(move,stance),0,100);
+
   var blocked=startTurnStatus(actor);
 
   if(blocked){
@@ -938,17 +981,19 @@ function useMove(moveId){
 
     if(roll>Number(move.accuracy||95)){
       addLog(attacker.name+' used '+moveName+' but missed!');
+      applyMissRecovery(actor);
     }else{
       resolveMove(actor,target,moveId,move);
     }
   }
 
-  state.lastAction={actor:actor,target:target,move:moveId,time:Date.now()};
+  state.lastAction={actor:actor,target:target,move:moveId,stance:stance,time:Date.now()};
 
   checkWinner(actor,target);
 
   if(state.winner===null){
     endTurnStatus(actor);
+    endRoundResourceTick(actor,target);
     spendInitiative(actor,move);
     state.turn=null;
     state.round++;
@@ -958,27 +1003,27 @@ function useMove(moveId){
   draw();
   sync();
 }
-
 function resolveMove(actor,target,moveId,move){
   var attacker=state.pets[actor];
   var moveName=move.name||moveId;
   var category=move.category||'physical';
   var power=Number(move.power||0);
+  var stance=currentStance(actor);
 
   if(category==='status'||category==='buff'||category==='debuff'||power<=0){
     var applied=applyMoveStatus(actor,target,move);
-    addLog(attacker.name+' used '+moveName+'.'+(applied?' '+applied:''));
+    addLog(attacker.name+' used '+moveName+' from '+stanceLabel(stance)+'.'+(applied?' '+applied:''));
     return;
   }
 
-  var dmg=damage(actor,target,move);
-  state.hp[target]=Math.max(0,state.hp[target]-dmg);
-  addLog(attacker.name+' used '+moveName+' and dealt '+dmg+' damage.');
+  var result=damage(actor,target,move);
+  state.hp[target]=Math.max(0,state.hp[target]-result.damage);
+  addLog(attacker.name+' used '+moveName+' from '+stanceLabel(stance)+' and dealt '+result.damage+' damage.');
+  if(result.note)addLog(result.note);
 
   var appliedAfterDamage=applyMoveStatus(actor,target,move);
   if(appliedAfterDamage)addLog(appliedAfterDamage);
 }
-
 function damage(actor,target,move){
   var attacker=state.pets[actor];
 
@@ -986,15 +1031,109 @@ function damage(actor,target,move){
   var atk=effectiveAttack(actor);
   var def=effectiveDefense(target);
   var level=Number(attacker.stats.level||1);
+  var actorStance=currentStance(actor);
+  var targetStance=currentStance(target);
+  var stamina=Number(state.stamina&&state.stamina[actor]!==undefined?state.stamina[actor]:100);
 
-  var base=(power*0.38)+(atk*1.05)+(level*1.05);
-  var reduction=def*0.82;
-  var variance=0.9+(Math.random()*0.22);
-  var typeBonus=(move.type&&move.type===attacker.type)?1.10:1;
+  var base=(power*0.28)+(atk*.78)+(level*.75);
+  var reduction=def*.92;
+  var variance=0.92+(Math.random()*0.17);
+  var typeBonus=(move.type&&move.type===attacker.type)?1.06:1;
+  var staminaScale=0.62+(Math.max(0,Math.min(100,stamina))/180);
+  var stanceScale=STANCE[actorStance]?STANCE[actorStance].damage:1;
+  var clashScale=1;
+  var note='';
 
-  var dmg=Math.floor((base-reduction)*variance*typeBonus);
+  if(targetStance==='brace'){
+    var drain=power>=48?20:power>=40?16:12;
+    clashScale*=0.66;
+    state.stamina[actor]=clampResource(Number(state.stamina[actor]||0)-drain,0,100);
+    state.energy[target]=clampResource(Number(state.energy[target]||0)+1,0,10);
+    note=state.pets[target].name+' braced the hit. '+attacker.name+' lost '+drain+' stamina and the defender gained energy.';
+  }else if(targetStance==='focus'){
+    clashScale*=1.14;
+    var eLoss=power>=44?2:1;
+    state.energy[target]=clampResource(Number(state.energy[target]||0)-eLoss,0,10);
+    note=state.pets[target].name+' was caught focusing and lost '+eLoss+' energy.';
+  }else if(actorStance==='focus'){
+    state.energy[actor]=clampResource(Number(state.energy[actor]||0)+1,0,10);
+    note=attacker.name+' converted focus into +1 energy.';
+  }
 
-  return Math.max(3,dmg);
+  var dmg=Math.floor((base-reduction)*variance*typeBonus*staminaScale*stanceScale*clashScale);
+  return {damage:Math.max(2,dmg),note:note};
+}
+
+var STANCE={
+  balanced:{name:'Push',icon:'⚔️',short:'Hit harder, spend stamina',damage:1.14,defense:1},
+  brace:{name:'Brace',icon:'🛡️',short:'Cut damage, punish attacks',damage:.82,defense:1.22},
+  focus:{name:'Focus',icon:'✨',short:'Gain energy, risky if hit',damage:.96,defense:.86}
+};
+
+function clampResource(v,min,max){
+  v=Number(v||0);
+  if(!Number.isFinite(v))v=min;
+  return Math.max(min,Math.min(max,v));
+}
+
+function currentStance(seat){
+  ensureBattleShape();
+  return state.stance&&state.stance[seat]?state.stance[seat]:'balanced';
+}
+
+function stanceLabel(id){return (STANCE[id]&&STANCE[id].name)||'Push';}
+function stanceIcon(id){return (STANCE[id]&&STANCE[id].icon)||'⚔️';}
+
+function selectStance(id){
+  if(!STANCE[id])id='balanced';
+  selectedStance=id;
+  try{localStorage.setItem('gf_petbattle_stance',id);}catch(e){}
+  drawMoves();
+}
+
+function moveEnergyCost(move){
+  var category=move.category||'physical';
+  var power=Number(move.power||0);
+  if(category==='status'||category==='buff'||category==='debuff'||power<=0)return 1;
+  if(power>=50)return 4;
+  if(power>=42)return 3;
+  if(power>=34)return 2;
+  return 1;
+}
+
+function moveStaminaCost(move,stance){
+  var category=move.category||'physical';
+  var power=Number(move.power||0);
+  var cost=(category==='status'||category==='buff'||category==='debuff'||power<=0)?8:Math.round(10+(power*.38));
+  if(stance==='balanced')cost+=6;
+  if(stance==='brace')cost=Math.max(5,cost-8);
+  if(stance==='focus')cost=Math.max(4,cost-5);
+  return cost;
+}
+
+function applyStanceStart(seat,stance){
+  ensureBattleShape();
+  if(stance==='brace'){
+    state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+10,0,100);
+    addLog(state.pets[seat].name+' braces and steadies their footing.');
+  }else if(stance==='focus'){
+    state.energy[seat]=clampResource(Number(state.energy[seat]||0)+2,0,10);
+    state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+5,0,100);
+    addLog(state.pets[seat].name+' focuses, gaining energy before acting.');
+  }
+}
+
+function applyMissRecovery(seat){
+  ensureBattleShape();
+  state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+4,0,100);
+}
+
+function endRoundResourceTick(actor,target){
+  ensureBattleShape();
+  for(var i=0;i<2;i++){
+    state.stamina[i]=clampResource(Number(state.stamina[i]||0)+9,0,100);
+    state.energy[i]=clampResource(Number(state.energy[i]||0)+1,0,10);
+  }
 }
 
 function moveInitiativeCost(move){
@@ -1071,7 +1210,10 @@ function effectiveDefense(seat){
   if(s.defense_up&&s.defense_up>0)def+=Number(s.defense_up_amount||1);
   if(s.defense_down&&s.defense_down>0)def-=Number(s.defense_down_amount||1);
 
-  return Math.max(1,def);
+  var stance=currentStance(seat);
+  if(STANCE[stance]&&STANCE[stance].defense)def*=STANCE[stance].defense;
+
+  return Math.max(1,Math.round(def));
 }
 
 function effectiveSpeed(seat){
@@ -1092,6 +1234,15 @@ function ensureBattleShape(){
   if(!state.meter)state.meter=[0,0];
   if(state.meter[0]===undefined)state.meter[0]=0;
   if(state.meter[1]===undefined)state.meter[1]=0;
+  if(!state.stamina)state.stamina=[100,100];
+  if(state.stamina[0]===undefined)state.stamina[0]=100;
+  if(state.stamina[1]===undefined)state.stamina[1]=100;
+  if(!state.energy)state.energy=[5,5];
+  if(state.energy[0]===undefined)state.energy[0]=5;
+  if(state.energy[1]===undefined)state.energy[1]=5;
+  if(!state.stance)state.stance=['balanced','balanced'];
+  if(!state.stance[0])state.stance[0]='balanced';
+  if(!state.stance[1])state.stance[1]='balanced';
 }
 
 function startTurnStatus(seat){
