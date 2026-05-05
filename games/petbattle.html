@@ -4,6 +4,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pet Battle Arena</title>
 <style>
+  /* ===== MOBILE BATTLE LAYOUT FIX ===== */
+@media (max-width: 900px){
+
+  .battleArena{
+    display:flex;
+    flex-direction:row !important;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+
+  .petCard{
+    width:48%;
+    min-width:0;
+    padding:6px;
+  }
+
+  .petImg, .petEmoji{
+    width:60px !important;
+    height:60px !important;
+    font-size:40px !important;
+  }
+
+  .battleCenter{
+    display:none; /* remove clutter between pets */
+  }
+
+  .battleUI{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:rgba(0,0,0,0.9);
+    padding:10px;
+    border-top:1px solid #333;
+  }
+
+  .actionRow{
+    display:flex;
+    gap:6px;
+    justify-content:space-between;
+  }
+
+  .actionBtn{
+    flex:1;
+    font-size:14px;
+    padding:10px 4px;
+  }
+
+  .stanceRow{
+    display:flex;
+    gap:6px;
+    margin-bottom:6px;
+  }
+
+  .stanceBtn{
+    flex:1;
+    padding:8px;
+    font-size:13px;
+  }
+}
 :root{
   --bg:#07111f;
   --card:rgba(255,255,255,.88);
@@ -304,8 +365,45 @@ button:disabled{
 @media(max-width:1000px){
   body{overflow:auto}
   .wrap{height:auto}
-  .arena{grid-template-columns:1fr}
-  .moves{grid-template-columns:1fr 1fr}
+
+  .arena{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:auto auto;
+    gap:8px;
+  }
+
+  .arena > .side:nth-child(1){
+    grid-column:1;
+    grid-row:1;
+  }
+
+  .arena > .side:nth-child(3){
+    grid-column:2;
+    grid-row:1;
+  }
+
+  .arena > .center{
+    grid-column:1 / span 2;
+    grid-row:2;
+  }
+
+  .moves{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .petImg{
+    width:110px;
+    height:110px;
+  }
+
+  .petEmoji{
+    font-size:70px;
+  }
+
+  .side{
+    padding:8px;
+  }
 }
 
 
@@ -316,7 +414,7 @@ button:disabled{
   .wrap{height:auto;min-height:100dvh;padding:8px;gap:8px;}
   .top{align-items:flex-start;flex-direction:column;border-radius:18px;padding:10px;}
   .top h1{font-size:20px;margin-bottom:4px;}
-  .arena{grid-template-columns:1fr!important;gap:8px;}
+  .arena{grid-template-columns:1fr 1fr!important;gap:8px;}
   .side,.log,.controls{border-radius:18px;padding:10px;}
   .side h2{font-size:17px;margin:0 0 4px;}
   .petImg{width:120px;height:120px;}
