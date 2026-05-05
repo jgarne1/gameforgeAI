@@ -195,7 +195,7 @@
     "type": "fire",
     "emoji": "🐾",
     "rarity": "common",
-    "hatchWeight": 1000,
+    "hatchWeight": 0,
     "enabled": true,
     "hatchable": true,
     "base": {
