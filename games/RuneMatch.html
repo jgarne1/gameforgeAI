@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rune Match</title>
+<style>
+  :root{
+    --bg:#07111f;
+    --panel:#111c2f;
+    --panel2:#172642;
+    --line:rgba(255,255,255,.12);
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --accent:#38bdf8;
+    --gold:#facc15;
+    --good:#22c55e;
+    --bad:#fb7185;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial, sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(circle at top left, rgba(56,189,248,.18), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(250,204,21,.12), transparent 30%),
+      linear-gradient(180deg,#07111f,#020617);
+    overflow:hidden;
+  }
+
+  .gameShell{
+    height:100vh;
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    gap:12px;
+    padding:14px;
+  }
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:rgba(17,28,47,.88);
+    box-shadow:0 18px 40px rgba(0,0,0,.28);
+  }
+
+  .titleBlock h1{
+    margin:0;
+    font-size:22px;
+    letter-spacing:.03em;
+  }
+
+  .titleBlock p{
+    margin:4px 0 0;
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  .stats{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+
+  .pill{
+    padding:8px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-size:13px;
+    white-space:nowrap;
+  }
+
+  .pill strong{
+    color:var(--text);
+  }
+
+  .boardWrap{
+    min-height:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .board{
+    width:min(92vw, 620px);
+    height:min(68vh, 620px);
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:12px;
+  }
+
+  .card{
+    position:relative;
+    border:0;
+    border-radius:20px;
+    cursor:pointer;
+    background:linear-gradient(145deg,#172642,#0f172a);
+    border:1px solid rgba(255,255,255,.13);
+    box-shadow:0 14px 30px rgba(0,0,0,.32);
+    color:var(--text);
+    font-size:34px;
+    transform-style:preserve-3d;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    min-height:68px;
+  }
+
+  .card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(56,189,248,.45);
+    box-shadow:0 18px 36px rgba(0,0,0,.4);
+  }
+
+  .card:disabled{
+    cursor:default;
+  }
+
+  .face{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:20px;
+    backface-visibility:hidden;
+  }
+
+  .front{
+    background:
+      radial-gradient(circle at 30% 20%, rgba(56,189,248,.22), transparent 25%),
+      linear-gradient(145deg,#1e3a5f,#0f172a);
+    color:var(--accent);
+    font-weight:900;
+  }
+
+  .back{
+    transform:rotateY(180deg);
+    background:linear-gradient(145deg,#2b3d63,#172642);
+  }
+
+  .card.open,
+  .card.matched{
+    transform:rotateY(180deg);
+  }
+
+  .card.matched .back{
+    background:
+      radial-gradient(circle at center, rgba(34,197,94,.22), transparent 45%),
+      linear-gradient(145deg,#164e35,#172642);
+  }
+
+  .controls{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  button.action{
+    border:0;
+    border-radius:14px;
+    padding:11px 16px;
+    color:#02111f;
+    font-weight:800;
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),#7dd3fc);
+    box-shadow:0 12px 24px rgba(56,189,248,.18);
+  }
+
+  .message{
+    min-height:22px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  .win{
+    color:var(--gold);
+    font-weight:800;
+  }
+
+  @media(max-width:640px){
+    body{overflow:auto}
+    .gameShell{
+      min-height:100vh;
+      height:auto;
+      padding:10px;
+      gap:10px;
+    }
+
+    .topbar{
+      align-items:flex-start;
+      flex-direction:column;
+      border-radius:16px;
+    }
+
+    .titleBlock h1{
+      font-size:20px;
+    }
+
+    .stats{
+      justify-content:flex-start;
+    }
+
+    .board{
+      width:100%;
+      height:auto;
+      aspect-ratio:1/1.18;
+      gap:8px;
+    }
+
+    .card{
+      border-radius:15px;
+      font-size:28px;
+      min-height:58px;
+    }
+
+    .face{
+      border-radius:15px;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="gameShell">
+    <section class="topbar">
+      <div class="titleBlock">
+        <h1>Rune Match</h1>
+        <p>Flip cards, match ancient runes, and clear the board.</p>
+      </div>
+      <div class="stats">
+        <div class="pill">Moves: <strong id="moves">0</strong></div>
+        <div class="pill">Matches: <strong id="matches">0</strong>/8</div>
+        <div class="pill">Time: <strong id="time">0s</strong></div>
+      </div>
+    </section>
+
+    <section class="boardWrap">
+      <div class="board" id="board"></div>
+    </section>
+
+    <section>
+      <div class="message" id="message">Find all matching rune pairs.</div>
+      <div class="controls">
+        <button class="action" onclick="newGame()">New Game</button>
+      </div>
+    </section>
+  </main>
+
+<script>
+(function(){
+  const symbols = ["🔥","❄️","🌿","⚡","🌙","🪨","💧","⭐"];
+  let cards = [];
+  let first = null;
+  let second = null;
+  let locked = false;
+  let moves = 0;
+  let matches = 0;
+  let startedAt = null;
+  let timer = null;
+
+  const board = document.getElementById("board");
+  const movesEl = document.getElementById("moves");
+  const matchesEl = document.getElementById("matches");
+  const timeEl = document.getElementById("time");
+  const messageEl = document.getElementById("message");
+
+  function shuffle(array){
+    for(let i=array.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [array[i],array[j]]=[array[j],array[i]];
+    }
+    return array;
+  }
+
+  function startTimer(){
+    if(timer) return;
+    startedAt = Date.now();
+    timer = setInterval(function(){
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      timeEl.textContent = elapsed + "s";
+    }, 250);
+  }
+
+  function stopTimer(){
+    if(timer){
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function render(){
+    board.innerHTML = "";
+    cards.forEach(function(card, index){
+      const btn = document.createElement("button");
+      btn.className = "card" + (card.open ? " open" : "") + (card.matched ? " matched" : "");
+      btn.disabled = card.open || card.matched || locked;
+      btn.setAttribute("aria-label", card.matched ? "Matched card" : "Hidden rune card");
+      btn.onclick = function(){ flip(index); };
+
+      btn.innerHTML =
+        '<span class="face front">?</span>' +
+        '<span class="face back">' + card.symbol + '</span>';
+
+      board.appendChild(btn);
+    });
+
+    movesEl.textContent = moves;
+    matchesEl.textContent = matches;
+  }
+
+  function flip(index){
+    if(locked) return;
+    const card = cards[index];
+    if(card.open || card.matched) return;
+
+    startTimer();
+
+    card.open = true;
+
+    if(first === null){
+      first = index;
+      messageEl.textContent = "Choose another rune.";
+      render();
+      return;
+    }
+
+    second = index;
+    moves++;
+    locked = true;
+    render();
+
+    const a = cards[first];
+    const b = cards[second];
+
+    if(a.symbol === b.symbol){
+      setTimeout(function(){
+        a.matched = true;
+        b.matched = true;
+        a.open = false;
+        b.open = false;
+        matches++;
+        first = null;
+        second = null;
+        locked = false;
+
+        if(matches === 8){
+          stopTimer();
+          messageEl.innerHTML = '<span class="win">Victory! You cleared the rune board in ' + moves + ' moves.</span>';
+        }else{
+          messageEl.textContent = "Match found.";
+        }
+
+        render();
+      }, 450);
+    }else{
+      setTimeout(function(){
+        a.open = false;
+        b.open = false;
+        first = null;
+        second = null;
+        locked = false;
+        messageEl.textContent = "No match. Try again.";
+        render();
+      }, 750);
+    }
+  }
+
+  window.newGame = function(){
+    stopTimer();
+    cards = shuffle(symbols.concat(symbols)).map(function(symbol){
+      return { symbol:symbol, open:false, matched:false };
+    });
+    first = null;
+    second = null;
+    locked = false;
+    moves = 0;
+    matches = 0;
+    startedAt = null;
+    timeEl.textContent = "0s";
+    messageEl.textContent = "Find all matching rune pairs.";
+    render();
+  };
+
+  newGame();
+})();
+</script>
+</body>
+</html>
