@@ -5504,6 +5504,9 @@ async function initApp(){
   updateQuickStats();
   updateTopStatus();
   drawContinueCard();
+  // Load the admin-controlled home announcement after the shell is ready.
+  // This keeps the fallback board visible even if the API is slow, then replaces it with saved team content.
+  loadHomeAnnouncement();
 }
 
 initApp();
