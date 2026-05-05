@@ -315,3 +315,27 @@ This drop-in adds two follow-up fixes to Combat v1:
 - Stance button labels now show the shift cost so the mechanic is visible to players.
 - Very small phones keep two-column moves, shrink pet stages, and hide secondary move descriptions to preserve tap-friendly combat controls.
 
+
+### Pet Battle combat v1.5 turn-mode sync fix
+
+This update fixes a client-side Attack/Care mode issue seen during two-player testing.
+
+Observed behavior:
+
+- The defending player received the updated battle state enough for Care/Fury progress to stop.
+- Their controls could remain stuck on the Care screen instead of switching to Attack Mode.
+
+Cause:
+
+- Some launcher/Battle Hall setup paths can provide `mySeat` as a string while `state.turn` is numeric.
+- The battle UI used strict seat comparison in several places, so `"1" !== 1` could incorrectly keep a player in Care Mode even when it was actually their turn.
+
+Fix:
+
+- Pet Battle now normalizes local seat and turn values before comparing them.
+- A shared `isMyTurn()` helper controls Attack/Care mode switching.
+- Incoming battle states force a normalized turn, battle shape validation, and a full control-mode invalidation before redraw.
+
+Future note:
+
+- Before live/ranked play, battle authority should continue moving toward server-owned validation for turn order, item consumption, and final combat results.
