@@ -155,11 +155,12 @@ Current intended flow:
 Battle Hall UX goals:
 
 - Battle tables are the main “arena floor.”
-- Chat is a lobby console: useful and visible but not dominant.
+- Chat is a right-side lobby console replacing the old Battle Rules panel; rules should not consume persistent screen space.
 - Desktop should fill the iframe/screen with no dead black space.
 - Mobile should stack into a usable one-column flow with large tap targets.
-- Chat must support button send and Enter-to-send.
+- Chat must support button send and Enter-to-send, show more than one line/history on desktop, and remain reachable on mobile.
 - Hall chat is temporary lobby ambience and coordination, not permanent mail/history.
+- Do not re-add a large permanent Battle Rules panel; if rules are needed later, use a compact help affordance/modal.
 
 ## Social/friends/mail rules
 
