@@ -1134,11 +1134,12 @@ var limits={maxRoster:6,newEggBaseCost:75};
 var currentTab='quests';
 var selectedZoneId='meadow';
 var logs=[];
-var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1,pendingConfirm:null,pendingConfirmUntil:0,motionBusyUntil:0,motionTimers:[]};
+var localState={lastComfort:0,lastPromptAt:0,lastWanderAt:0,prompt:null,petX:0,petY:0,petRot:0,petScale:1,nextWanderDelay:4200,adventureBusy:false,lastLevel:1,pendingConfirm:null,pendingConfirmUntil:0,motionBusyUntil:0,motionTimers:[],visualPetKey:null};
 
 /*
   PetWorld Animation Controller config.
-  v2.9: safer sprite swaps for Feed/Play so jump sheets do not blank/clip during load.
+  v2.10: clears stale sprite state when switching from animated pets back to eggs.
+  This prevents egg care actions from briefly pulsing the previous pet sprite.
   This is intentionally small and removable:
   - Set enabled:false to return to classic PetWorld still-image behavior.
   - Missing sprite sheets automatically fall back to petImg/still image.
@@ -1620,16 +1621,22 @@ async function careEgg(action){
     if(data.error)return notify(data.error);
     profile=data.profile;
     var pet=activePet();
+
+    // Draw first so the visible target is definitely the egg/still image before
+    // care pulse effects run. Without this, adopting an egg while an animated pet
+    // was loaded could pulse the previous sprite for one frame.
+    localState.prompt=null;
+    draw();
+
     addLog(data.message||careMessage(action));
     notify(data.message||careMessage(action));
     animateCare(action);
     triggerPetReaction('egg');
-    localState.prompt=null;
     if(data.hatched||beforeStage==='egg'&&pet.stage!=='egg'){
       showHatch(pet);
       addLog('A new companion hatched: '+(pet.name||'New pet')+'!');
+      draw();
     }
-    draw();
   }catch(err){notify('Care failed: '+err.message)}
 }
 
@@ -2002,8 +2009,59 @@ function updatePetVisual(pet){
     Always prepare the classic still image first.
     The sprite layer is optional and only appears after its sheet is confirmed.
   */
+  resetPetVisualIfChanged(pet);
   showStillPetImage(pet);
   preparePetAnimation(pet);
+}
+
+function petVisualKey(pet){
+  if(!pet)return 'none';
+  return [pet.id||'',pet.species||'',pet.stage||'',petStageFile(pet)].join('|');
+}
+
+function resetPetVisualIfChanged(pet){
+  var key=petVisualKey(pet);
+  if(localState.visualPetKey===key)return;
+
+  localState.visualPetKey=key;
+
+  // New active companion means old route timers/sprite sheets are no longer valid.
+  // This is especially important when adopting/selecting an egg after an animated pet:
+  // egg care effects should never target the previous pet's sprite layer.
+  clearMotionTimers();
+  localState.motionBusyUntil=0;
+  if(!pet||pet.stage==='egg'){
+    localState.petX=0;
+    localState.petY=0;
+    localState.petRot=0;
+    localState.petScale=1;
+    var orb=el('petOrb');
+    if(orb){
+      orb.style.transition='transform 360ms ease';
+      orb.style.transform='translateX(0px) translateY(0px) rotate(0deg) scale(1)';
+      orb.classList.remove('walking','feedingFocus','spriteMode');
+    }
+  }
+  hardClearSpriteLayer();
+}
+
+function hardClearSpriteLayer(){
+  stopPetSpriteFrames();
+  PET_ANIM.currentKey=null;
+  PET_ANIM.activeState='still';
+  PET_ANIM.frame=0;
+  PET_ANIM.assets={idle:null,walk:null,jump:null};
+  PET_ANIM.available={idle:false,walk:false,jump:false};
+  PET_ANIM.loaded={idle:false,walk:false,jump:false};
+  PET_ANIM.hasAny=false;
+  PET_ANIM.checking=false;
+  setPetSpriteMode(false);
+  var sprite=el('petSprite');
+  if(sprite){
+    sprite.classList.add('hide');
+    sprite.classList.remove('spriteIdle','spriteWalk','spriteJump');
+    sprite.style.backgroundImage='';
+  }
 }
 
 function showStillPetImage(pet){
@@ -2065,10 +2123,7 @@ function restoreClassicPetVisuals(){
 
 function preparePetAnimation(pet){
   if(!PET_ANIM.enabled||!pet||pet.stage==='egg'){
-    stopPetSpriteFrames();
-    PET_ANIM.currentKey=null;
-    PET_ANIM.hasAny=false;
-    setPetSpriteMode(false);
+    hardClearSpriteLayer();
     return;
   }
 
@@ -2123,6 +2178,11 @@ function imageExists(src){
 
 function setPetAnimationState(state){
   if(!PET_ANIM.enabled)return false;
+  var live=activePet();
+  if(!live||live.stage==='egg'){
+    hardClearSpriteLayer();
+    return false;
+  }
   var sprite=el('petSprite');
   var img=el('petImg');
   var emojiEl=el('petEmoji');
@@ -2372,7 +2432,9 @@ function triggerPetReaction(type){
   setTimeout(function(){
     if(!orb)return;
     ['reactHappy','reactExcited','reactFocus','reactSleep','reactExplore','reactEgg'].forEach(function(c){orb.classList.remove(c)});
-    setPetAnimationState('idle');
+    var live=activePet();
+    if(live&&live.stage!=='egg')setPetAnimationState('idle');
+    else hardClearSpriteLayer();
   },1700);
 }
 
@@ -2861,8 +2923,9 @@ function flyItem(itemId){
 }
 
 function visiblePetEl(){
+  var live=activePet();
   var sprite=el('petSprite');
-  if(sprite&&!sprite.classList.contains('hide'))return sprite;
+  if(live&&live.stage!=='egg'&&sprite&&!sprite.classList.contains('hide'))return sprite;
   var img=el('petImg');
   if(img&&!img.classList.contains('hide'))return img;
   return el('petEmoji');
