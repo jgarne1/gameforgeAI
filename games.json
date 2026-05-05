@@ -104,6 +104,18 @@
     "seats": 2
   },
   {
+    "id": "mastermindduel",
+    "name": "Peg Duel",
+    "file": "mastermindduel.html",
+    "minPlayers": 1,
+    "maxPlayers": 2,
+    "seats": 2,
+    "icon": "📍",
+    "showInLauncher": true,
+    "requiresUnlock": true,
+    "enabled": true
+  },
+  {
     "id": "petbattle",
     "name": "Pet Battle Arena",
     "file": "petbattle.html",
