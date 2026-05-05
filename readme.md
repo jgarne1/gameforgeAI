@@ -137,6 +137,47 @@ The battle system must be server-authoritative.
 - Rewards must be granted by the server.
 - Forfeit rewards should scale by progress so early quitting cannot be farmed.
 
+
+
+### Pet Battle combat vision — current active design
+
+Pet Battle is moving toward a unique, tempo-based combat identity rather than a simple RPG damage race. The intended feel is: **simple inputs, deep outcomes, no dead time, and constant pet attachment**.
+
+Current/near-term battle pillars:
+
+- **Stances:** Push, Brace, and Focus create readable risk/reward decisions.
+- **Resources:** HP decides survival, Energy gates stronger actions, and Stamina controls move effectiveness/fatigue.
+- **Care Window:** after a player acts, their controls switch into Care Mode while the opponent chooses. This keeps the waiting player engaged and creates pressure for the active player to choose quickly.
+- **Battle items:** only battle-enabled items should appear in battle. Use `battleEnabled: true`, `category: "battle"`, a `battle` tag, or a future `battleEffect` definition. Full server validation/consumption is still required before ranked or real-economy play.
+- **Mobile-first controls:** Pet Battle should switch cleanly between Attack Mode and Care Mode in the same control area. Do not show both at once.
+
+Care Window v1 behavior:
+
+- Attack Mode appears only on the active player's turn.
+- Care Mode appears while waiting for the opponent.
+- Care choices are intentionally simple: Soothe, Treat, or Steady.
+- Soothe gradually restores a small amount of HP based on how long the opponent takes.
+- Treat reduces ailment duration such as burn/slow/snare.
+- Steady restores stamina.
+- Battle item use is a quick Care Window action. If the player selects an item fast enough, its effect applies before the opponent's next move resolves.
+- A Care Window should be capped so stalling cannot create unlimited healing or recovery.
+
+Important implementation direction:
+
+- The current prototype may remain client-synced for iteration, but the final battle system must become server-authoritative.
+- Server-authoritative battle must validate selected moves, stance changes, care choices, battle item eligibility, item ownership, item consumption, and final rewards.
+- Battle items should eventually be chosen through a limited **battle pouch/loadout**, not the full inventory, to prevent spam and simplify balance.
+
+AAA engagement roadmap for Pet Battle:
+
+- Add type-based graphical move effects and clear impact feedback.
+- Add stance visual states so Push/Brace/Focus are readable without reading logs.
+- Heavily expand the move library over time.
+- Add items that teach stances, skills, and special moves.
+- Add a skill management UI so players can choose which learned moves/stances are equipped.
+- Add pet traits, bond effects, and growth-stage combat identity.
+- Keep all combat readable on mobile: large buttons, clear mode changes, compact logs, and no forced scrolling during active battle decisions.
+
 ## Battle Hall rules
 
 `games/battlehall.html` is the public matchmaking lobby for Pet Battle.

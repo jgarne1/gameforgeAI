@@ -453,6 +453,91 @@ button:disabled{
 @media(max-width:420px){.stancePanel{grid-template-columns:1fr 1fr 1fr}.stanceBtn{padding:7px}.stanceBtn span{display:none}}
 
 
+/* ===== COMBAT v1.2: Care Window UI ===== */
+.modePanel{
+  transition:opacity .18s ease, transform .18s ease;
+}
+.carePanel{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:10px;
+  align-items:stretch;
+}
+.careHeader{
+  grid-column:1 / span 2;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  padding:8px 10px;
+  border-radius:16px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(148,163,184,.28);
+}
+.careHeader strong{display:block;color:#0f172a}.careHeader span{font-size:12px;color:#64748b;font-weight:800}
+.careMeter{
+  min-width:120px;
+  height:10px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#e5e7eb;
+  border:1px solid rgba(148,163,184,.25);
+}
+.careMeterFill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#86efac,#22c55e);
+  transition:width .2s linear;
+}
+.careOptions,.battleItems{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.battleItems{grid-template-columns:repeat(2,1fr)}
+.careSectionTitle{
+  grid-column:1 / -1;
+  font-size:12px;
+  color:#64748b;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.careBtn,.battleItemBtn{
+  text-align:left;
+  min-height:64px;
+  border-radius:16px;
+  background:rgba(255,255,255,.86);
+}
+.careBtn strong,.battleItemBtn strong{display:block;font-size:13px}.careBtn span,.battleItemBtn span{display:block;font-size:11px;color:#64748b;margin-top:3px;line-height:1.2}
+.careBtn.activeCare{
+  border-color:#16a34a;
+  box-shadow:0 0 0 2px rgba(22,163,74,.16),0 10px 22px rgba(22,163,74,.12);
+  background:linear-gradient(180deg,#f0fdf4,#fff);
+}
+.battleItemBtn.usedCare{
+  opacity:.6;
+}
+.careFxSoothe{box-shadow:0 0 0 3px rgba(34,197,94,.18),0 0 28px rgba(34,197,94,.28)!important}
+.careFxTreat{box-shadow:0 0 0 3px rgba(14,165,233,.18),0 0 28px rgba(14,165,233,.28)!important}
+.careFxSteady{box-shadow:0 0 0 3px rgba(250,204,21,.2),0 0 28px rgba(250,204,21,.25)!important}
+.careFxItem{box-shadow:0 0 0 3px rgba(124,58,237,.18),0 0 28px rgba(124,58,237,.28)!important}
+@media(max-width:700px){
+  .carePanel{grid-template-columns:1fr;gap:8px}
+  .careHeader{grid-column:1;align-items:flex-start;flex-direction:column}
+  .careMeter{width:100%}
+  .careOptions{grid-template-columns:repeat(3,1fr);gap:6px}
+  .battleItems{grid-template-columns:1fr 1fr;gap:6px}
+  .careBtn,.battleItemBtn{min-height:56px;padding:8px;border-radius:14px}
+  .careBtn strong,.battleItemBtn strong{font-size:12px}.careBtn span,.battleItemBtn span{font-size:10px}
+}
+@media(max-width:420px){
+  .careOptions{grid-template-columns:1fr 1fr 1fr}
+  .careBtn span{display:none}
+}
+
+
 /* ===== BATTLE END / NO-TRAP RESULT UI ===== */
 .forfeitBtn{
   background:linear-gradient(135deg,#dc2626,#ef4444);
@@ -596,6 +681,8 @@ var players=[];
 var mySeat=null;
 var profiles={};
 var moveBook={};
+var itemCatalog={};
+var careUiTimer=null;
 var state=null;
 var ready=false;
 var battleInstanceId=new URLSearchParams(location.search).get('battleInstance')||'';
@@ -615,7 +702,9 @@ function receiveSetup(setupPlayers,setupSeat){
 
   if(players.length<2){
     setStatus('Waiting for 2 players','Pet Battle needs two seated players.');
-    drawEmpty();
+    if(!careUiTimer){careUiTimer=setInterval(refreshCareMeter,500);}
+
+drawEmpty();
     return;
   }
 
@@ -642,6 +731,7 @@ async function loadProfiles(){
 
       profiles[i]=data.profile;
       moveBook=data.moves||moveBook||{};
+      itemCatalog=Object.assign(itemCatalog||{},data.shop||{});
     }
 
     ready=true;
@@ -668,6 +758,7 @@ function loadLockedInstance(instance){
   mySeat=instance.mySeat;
   profiles={};
   moveBook=instance.moves||{};
+  itemCatalog=instance.items||itemCatalog||{};
 
   (instance.players||[]).forEach(function(p,index){
     var pet=p.lockedPet||{};
@@ -690,7 +781,9 @@ function loadLockedInstance(instance){
     sync();
   }else{
     setStatus('Battle ready','Waiting for the first battler to open the arena.');
-    drawEmpty();
+    if(!careUiTimer){careUiTimer=setInterval(refreshCareMeter,500);}
+
+drawEmpty();
   }
 }
 
@@ -788,6 +881,7 @@ function freshBattle(){
       energy:[5,5],
       stance:['balanced','balanced'],
       status:[{},{}],
+      care:[emptyCare(),emptyCare()],
       turn:null,
       round:1,
       winner:null,
@@ -811,6 +905,7 @@ function freshBattle(){
     energy:[5,5],
     stance:['balanced','balanced'],
     status:[{},{}],
+    care:[emptyCare(),emptyCare()],
     turn:null,
     round:1,
     winner:null,
@@ -913,6 +1008,7 @@ function statusTags(seat){
   if(s.attack_down>0)labels.push('⚔️ Atk-');
   if(s.defense_up>0)labels.push('🛡️ Def+');
   if(s.defense_down>0)labels.push('🛡️ Def-');
+  if(s.speed_up>0)labels.push('💨 Spd+');
 
   labels.unshift(stanceIcon(currentStance(seat))+' '+stanceLabel(currentStance(seat)));
 
@@ -985,7 +1081,7 @@ function drawMoves(){
   ensureBattleShape();
 
   if(mySeat!==state.turn){
-    moveButtons.innerHTML='<button disabled>Waiting for opponent...</button>';
+    drawCareControls();
     return;
   }
 
@@ -1020,6 +1116,231 @@ function drawMoves(){
 
   moveButtons.innerHTML=html;
 }
+function drawCareControls(){
+  ensureBattleShape();
+  var care=state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
+  var activeType=care.type||'';
+  var items=battleItemsForSeat(mySeat).slice(0,4);
+  var html='';
+
+  html+='<div class="carePanel modePanel">';
+  html+='<div class="careHeader"><div><strong>🌿 Care Window</strong><span>Opponent is choosing. Tend quickly before their move lands.</span></div><div class="careMeter"><div id="careMeterFill" class="careMeterFill"></div></div></div>';
+
+  html+='<div class="careOptions">';
+  html+='<div class="careSectionTitle">Tend</div>';
+  html+=careButton('soothe','💚 Soothe','Slow HP recovery',activeType);
+  html+=careButton('treat','🩹 Treat','Reduce ailment time',activeType);
+  html+=careButton('steady','🧘 Steady','Recover stamina',activeType);
+  html+='</div>';
+
+  html+='<div class="battleItems">';
+  html+='<div class="careSectionTitle">Battle Items</div>';
+  if(items.length){
+    items.forEach(function(entry){
+      var item=entry.item||{};
+      html+='<button class="battleItemBtn '+(activeType==='item'?'usedCare':'')+'" onclick="useBattleItem(\''+escapeAttr(entry.id)+'\')" '+(activeType==='item'?'disabled':'')+'>'+ 
+        '<strong>'+escapeHtml(item.name||entry.id)+' ×'+entry.quantity+'</strong><span>'+escapeHtml(item.description||battleItemSummary(item))+'</span></button>';
+    });
+  }else{
+    html+='<button class="battleItemBtn" disabled><strong>No battle items</strong><span>Only battleEnabled/battle-tagged items show here.</span></button>';
+  }
+  html+='</div>';
+  html+='</div>';
+
+  moveButtons.innerHTML=html;
+  refreshCareMeter();
+}
+
+function careButton(id,label,sub,activeType){
+  return '<button class="careBtn '+(activeType===id?'activeCare':'')+'" onclick="selectCare(\''+id+'\')"><strong>'+escapeHtml(label)+'</strong><span>'+escapeHtml(sub)+'</span></button>';
+}
+
+function selectCare(type){
+  if(!state||state.winner!==null||state.blocked)return;
+  if(mySeat===state.turn)return;
+  ensureBattleShape();
+
+  if(!CARE_ACTIONS[type])type='soothe';
+  state.care[mySeat]={type:type,start:Date.now(),itemId:null,locked:false};
+  addLog(state.pets[mySeat].name+' begins '+CARE_ACTIONS[type].label+'.');
+  selectedCareFx(mySeat,type);
+  draw();
+  sync();
+}
+
+function battleItemsForSeat(seat){
+  var profile=profiles&&profiles[seat]?profiles[seat]:null;
+  var inv=(profile&&profile.inventory)||{};
+  var out=[];
+  Object.keys(inv).forEach(function(id){
+    var qty=Number(inv[id]||0);
+    if(qty<=0)return;
+    var item=(itemCatalog&&itemCatalog[id])||{};
+    if(isBattleEnabledItem(item))out.push({id:id,quantity:qty,item:item});
+  });
+  return out.sort(function(a,b){return String(a.item.name||a.id).localeCompare(String(b.item.name||b.id));});
+}
+
+function isBattleEnabledItem(item){
+  item=item||{};
+  var tags=item.tags||[];
+  return item.battleEnabled===true || item.category==='battle' || tags.indexOf('battle')>=0 || !!item.battleEffect;
+}
+
+function useBattleItem(itemId){
+  if(!state||state.winner!==null||state.blocked)return;
+  if(mySeat===state.turn)return;
+  ensureBattleShape();
+
+  var profile=profiles&&profiles[mySeat]?profiles[mySeat]:null;
+  if(!profile||!profile.inventory||Number(profile.inventory[itemId]||0)<=0)return;
+  var item=(itemCatalog&&itemCatalog[itemId])||{};
+  if(!isBattleEnabledItem(item))return;
+  if(state.care[mySeat]&&state.care[mySeat].type==='item')return;
+
+  profile.inventory[itemId]=Math.max(0,Number(profile.inventory[itemId]||0)-1);
+  if(profile.inventory[itemId]<=0)delete profile.inventory[itemId];
+
+  state.care[mySeat]={type:'item',itemId:itemId,start:Date.now(),locked:true};
+  applyBattleItemEffect(mySeat,itemId,item);
+  selectedCareFx(mySeat,'item');
+  addLog(state.pets[mySeat].name+' used '+(item.name||itemId)+' during the Care Window.');
+  draw();
+  sync();
+}
+
+function applyCareBeforeIncoming(seat){
+  ensureBattleShape();
+  var care=state.care&&state.care[seat]?state.care[seat]:emptyCare();
+  if(!care.type || care.type==='item')return;
+
+  var elapsed=Math.max(0,Math.min(CARE_WINDOW_MS,Date.now()-Number(care.start||Date.now())));
+  var seconds=Math.floor(elapsed/1000);
+  if(seconds<=0){
+    state.care[seat]=emptyCare();
+    return;
+  }
+
+  var pet=state.pets[seat];
+  if(care.type==='soothe'){
+    var heal=Math.max(1,Math.min(Math.ceil(pet.stats.maxHp*.08),seconds*2));
+    var before=state.hp[seat];
+    state.hp[seat]=Math.min(pet.stats.maxHp,Number(state.hp[seat]||0)+heal);
+    var gained=state.hp[seat]-before;
+    if(gained>0)addLog(pet.name+' recovered '+gained+' HP from soothing care.');
+  }else if(care.type==='steady'){
+    var staminaGain=Math.max(2,Math.min(18,seconds*3));
+    state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+staminaGain,0,100);
+    addLog(pet.name+' recovered '+staminaGain+' stamina from steady care.');
+  }else if(care.type==='treat'){
+    var reduction=elapsed>=6500?2:1;
+    var reduced=reduceWorstAilment(seat,reduction);
+    if(reduced)addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
+    else addLog(pet.name+' was treated, but had no ailment to reduce.');
+  }
+
+  state.care[seat]=emptyCare();
+}
+
+function reduceWorstAilment(seat,amount){
+  var s=state.status&&state.status[seat]?state.status[seat]:{};
+  var order=['burn','stun','sleep','snare','slow','attack_down','defense_down'];
+  for(var i=0;i<order.length;i++){
+    var k=order[i];
+    if(s[k]&&s[k]>0){
+      s[k]=Math.max(0,Number(s[k]||0)-amount);
+      if(s[k]<=0){delete s[k];delete s[k+'_amount'];}
+      return k.replace('_',' ');
+    }
+  }
+  return '';
+}
+
+function applyBattleItemEffect(seat,itemId,item){
+  ensureBattleShape();
+  item=item||{};
+  var effect=item.battleEffect||battleEffectFromLegacyItem(item)||{kind:'stamina',amount:10};
+  var pet=state.pets[seat];
+
+  if(effect.kind==='heal'){
+    var heal=Math.max(1,Number(effect.amount||12));
+    state.hp[seat]=Math.min(pet.stats.maxHp,Number(state.hp[seat]||0)+heal);
+  }else if(effect.kind==='stamina'){
+    state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+Number(effect.amount||14),0,100);
+  }else if(effect.kind==='energy'){
+    state.energy[seat]=clampResource(Number(state.energy[seat]||0)+Number(effect.amount||2),0,10);
+  }else if(effect.kind==='cleanse'){
+    reduceWorstAilment(seat,Number(effect.amount||1));
+  }else if(effect.kind==='attack_up'){
+    applyTempBuff(seat,'attack_up',Number(effect.amount||2),Number(effect.duration||2));
+  }else if(effect.kind==='defense_up'){
+    applyTempBuff(seat,'defense_up',Number(effect.amount||2),Number(effect.duration||2));
+  }else if(effect.kind==='speed_up'){
+    applyTempBuff(seat,'speed_up',Number(effect.amount||2),Number(effect.duration||2));
+  }
+}
+
+function battleEffectFromLegacyItem(item){
+  var effects=item.effects||[];
+  for(var i=0;i<effects.length;i++){
+    var e=effects[i]||{};
+    if(e.type==='battle_boost'){
+      if(e.target==='recover')return {kind:'heal',amount:Number(e.value||12)};
+      if(e.target==='defense')return {kind:'defense_up',amount:2,duration:Number(e.durationTurns||3)};
+      if(e.target==='speed')return {kind:'speed_up',amount:2,duration:Number(e.durationTurns||3)};
+      if(e.target==='strength')return {kind:'attack_up',amount:2,duration:Number(e.durationTurns||3)};
+      if(e.target==='magic')return {kind:'energy',amount:2};
+    }
+  }
+  return null;
+}
+
+function applyTempBuff(seat,key,amount,duration){
+  var s=state.status[seat]||{};
+  s[key]=Math.max(Number(s[key]||0),duration);
+  s[key+'_amount']=Math.max(Number(s[key+'_amount']||0),amount);
+  state.status[seat]=s;
+}
+
+function battleItemSummary(item){
+  var e=item.battleEffect||battleEffectFromLegacyItem(item)||{};
+  if(e.kind==='heal')return 'Restore HP';
+  if(e.kind==='stamina')return 'Restore stamina';
+  if(e.kind==='energy')return 'Restore energy';
+  if(e.kind==='cleanse')return 'Treat an ailment';
+  if(e.kind)return 'Battle effect: '+e.kind.replace('_',' ');
+  return 'Battle-enabled item';
+}
+
+function selectedCareFx(seat,type){
+  var stage=document.querySelectorAll('.petStage')[seat];
+  if(!stage)return;
+  stage.classList.remove('careFxSoothe','careFxTreat','careFxSteady','careFxItem');
+  var cls={soothe:'careFxSoothe',treat:'careFxTreat',steady:'careFxSteady',item:'careFxItem'}[type];
+  if(cls){stage.classList.add(cls);setTimeout(function(){stage.classList.remove(cls);},900);}
+}
+
+function refreshCareMeter(){
+  var fill=document.getElementById('careMeterFill');
+  if(!fill||!state||mySeat===null||mySeat===undefined)return;
+  ensureBattleShape();
+  var care=state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
+  var pct=0;
+  if(care.type&&care.start)pct=Math.min(100,Math.floor((Date.now()-Number(care.start||0))/CARE_WINDOW_MS*100));
+  fill.style.width=pct+'%';
+}
+
+var CARE_WINDOW_MS=8000;
+var CARE_ACTIONS={
+  soothe:{label:'soothing care'},
+  treat:{label:'treatment'},
+  steady:{label:'steady breathing'}
+};
+
+function emptyCare(){return {type:null,start:0,itemId:null,locked:false};}
+
+function escapeAttr(s){return String(s||'').replace(/[\\'\"]/g,'');}
+
 function useMove(moveId){
   if(!state||state.winner!==null||state.blocked)return;
   if(mySeat!==state.turn)return;
@@ -1057,6 +1378,7 @@ function useMove(moveId){
       addLog(attacker.name+' used '+moveName+' but missed!');
       applyMissRecovery(actor);
     }else{
+      applyCareBeforeIncoming(target);
       resolveMove(actor,target,moveId,move);
     }
   }
@@ -1328,6 +1650,7 @@ function effectiveSpeed(seat){
 
   if(s.slow&&s.slow>0)spd=Math.max(1,Math.floor(spd*.65));
   if(s.snare&&s.snare>0)spd=Math.max(1,Math.floor(spd*.75));
+  if(s.speed_up&&s.speed_up>0)spd+=Number(s.speed_up_amount||2);
 
   return Math.max(1,spd);
 }
@@ -1348,6 +1671,9 @@ function ensureBattleShape(){
   if(!state.stance)state.stance=['balanced','balanced'];
   if(!state.stance[0])state.stance[0]='balanced';
   if(!state.stance[1])state.stance[1]='balanced';
+  if(!state.care)state.care=[emptyCare(),emptyCare()];
+  if(!state.care[0])state.care[0]=emptyCare();
+  if(!state.care[1])state.care[1]=emptyCare();
 }
 
 function startTurnStatus(seat){
@@ -1377,7 +1703,7 @@ function endTurnStatus(seat){
   ensureBattleShape();
   var s=state.status[seat]||{};
 
-  ['burn','slow','sleep','stun','snare','attack_up','attack_down','defense_up','defense_down'].forEach(function(k){
+  ['burn','slow','sleep','stun','snare','attack_up','attack_down','defense_up','defense_down','speed_up'].forEach(function(k){
     if(s[k]&&s[k]>0){
       s[k]--;
       if(s[k]<=0){
@@ -1714,6 +2040,8 @@ function escapeHtml(s){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
+
+if(!careUiTimer){careUiTimer=setInterval(refreshCareMeter,500);}
 
 drawEmpty();
 if(!connectBattleInstance()){

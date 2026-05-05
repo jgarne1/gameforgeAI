@@ -2669,7 +2669,12 @@
       "battle"
     ],
     "defaultShopId": "battle_shop",
-    "basePrice": 25
+    "basePrice": 25,
+    "battleEnabled": true,
+    "battleEffect": {
+      "kind": "heal",
+      "amount": 15
+    }
   },
   "guard_cookie": {
     "id": "guard_cookie",
@@ -2693,7 +2698,13 @@
       "battle"
     ],
     "defaultShopId": "battle_shop",
-    "basePrice": 45
+    "basePrice": 45,
+    "battleEnabled": true,
+    "battleEffect": {
+      "kind": "defense_up",
+      "amount": 2,
+      "duration": 3
+    }
   },
   "swift_soda": {
     "id": "swift_soda",
@@ -2717,7 +2728,13 @@
       "battle"
     ],
     "defaultShopId": "battle_shop",
-    "basePrice": 45
+    "basePrice": 45,
+    "battleEnabled": true,
+    "battleEffect": {
+      "kind": "speed_up",
+      "amount": 2,
+      "duration": 3
+    }
   },
   "power_pebble": {
     "id": "power_pebble",
@@ -2741,7 +2758,13 @@
       "battle"
     ],
     "defaultShopId": "battle_shop",
-    "basePrice": 45
+    "basePrice": 45,
+    "battleEnabled": true,
+    "battleEffect": {
+      "kind": "attack_up",
+      "amount": 2,
+      "duration": 3
+    }
   },
   "focus_mint": {
     "id": "focus_mint",
@@ -2765,7 +2788,12 @@
       "battle"
     ],
     "defaultShopId": "battle_shop",
-    "basePrice": 45
+    "basePrice": 45,
+    "battleEnabled": true,
+    "battleEffect": {
+      "kind": "energy",
+      "amount": 2
+    }
   },
   "game_tictactoe": {
     "id": "game_tictactoe",
