@@ -175,7 +175,7 @@
     "type": "water",
     "emoji": "🐾",
     "rarity": "common",
-    "hatchWeight": 1000,
+    "hatchWeight": 100,
     "enabled": true,
     "hatchable": true,
     "base": {
