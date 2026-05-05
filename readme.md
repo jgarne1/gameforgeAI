@@ -427,3 +427,18 @@ PetBattle should stay readable at a glance. New systems should avoid adding more
 - Tune disabled move reasons and beginner hints.
 - Continue testing Care/Attack mode switching on two-player sessions.
 - Add pet identity and move flavor only after the current combat UI feels obvious to a first-time player.
+
+
+### PetBattle v2.1 Care Preview / AAA UI pass — 2026-05-05
+
+Implemented direction:
+
+- Care switching remains free by design. Strategy comes from active-only benefits and opportunity cost, not from switch penalties.
+- Soothe, Steady, and Lock In now share modular care tuning through `CARE_TUNING` and `carePreviewFor()`. The live UI and committed battle math use the same helper so previews match results.
+- Care growth gently ramps over the first ~1.25 seconds. This keeps quick tactical swaps useful but prevents rapid Lock In flicker from becoming the best way to farm Fury.
+- HP, Stamina, and Fury/Finisher now show blue pending-growth overlays during the Care Window. When the opponent's attack resolves, the pending growth commits into the normal bar color.
+- Care buttons remain compact but get stronger live feedback: active sheen, header pending text, and mini-meter text tied to the same care calculation.
+
+Removal note:
+
+- The preview system is intentionally modular. To remove it, delete the v2.1 CSS block and the calls to `setProjectedGainBar()`, `setProjectedResourcePreview()`, and `clearProjectedGainBars()`; core battle math will remain in `carePreviewFor()`.

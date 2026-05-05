@@ -547,6 +547,60 @@ button:disabled{
   transition:width .25s ease, box-shadow .25s ease;
 }
 .finisherFill.ready{animation:finisherPulse .85s ease-in-out infinite;box-shadow:0 0 14px rgba(250,204,21,.9)}
+
+/* ===== COMBAT v2.1: pending growth overlays =====
+   Blue overlays show what Care has built during the current waiting window.
+   When the opponent's attack resolves, applyCareBeforeIncoming() commits those
+   values into normal HP/Stamina/Fury state and these preview overlays clear. */
+.hpBar,.meterBar,.finisherBar{position:relative}
+.barGainPreview{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  width:0%;
+  display:none;
+  border-radius:999px;
+  background:linear-gradient(90deg,rgba(96,165,250,.72),rgba(147,197,253,.92));
+  box-shadow:0 0 12px rgba(96,165,250,.55);
+  transition:left .25s ease,width .25s ease,opacity .2s ease;
+  pointer-events:none;
+}
+.furyGainPreview{background:linear-gradient(90deg,rgba(96,165,250,.68),rgba(191,219,254,.95))}
+.resourcePill{overflow:hidden;position:relative}
+.resourceTrack{
+  position:relative;
+  height:5px;
+  margin-top:5px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(148,163,184,.24);
+}
+.resourceFill,.resourcePreviewFill{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  border-radius:999px;
+  transition:width .25s ease,left .25s ease;
+}
+.resourceFill{width:0%;background:linear-gradient(90deg,#94a3b8,#475569)}
+.resourcePreviewFill{width:0%;display:none;background:linear-gradient(90deg,rgba(96,165,250,.72),rgba(147,197,253,.95));box-shadow:0 0 10px rgba(96,165,250,.45)}
+.resourceHint{display:block;margin-top:3px;font-size:9px;color:#2563eb;font-weight:1000;min-height:10px;line-height:1}
+.careHeaderStatus{font-size:10px;color:#2563eb;font-weight:1000;margin-top:2px;letter-spacing:.01em}
+.careBtn.activeCare{position:relative;overflow:hidden}
+.careBtn.activeCare:after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.36),transparent);
+  transform:translateX(-120%);
+  animation:careSheen 1.7s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes careSheen{0%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
+
 @keyframes finisherPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
 .careMiniMeter{
   height:5px;
@@ -768,11 +822,11 @@ button:disabled{
       <div>
         <h2 id="p0Name">Player 1</h2>
         <div id="p0Sub" class="muted">Loading...</div>
-        <div class="hpBar"><div id="p0Hp" class="hpFill"></div></div>
+        <div class="hpBar"><div id="p0Hp" class="hpFill"></div><div id="p0HpPreview" class="barGainPreview"></div></div>
         <div id="p0HpText" class="muted"></div>
         <div class="meterBar"><div id="p0Meter" class="meterFill"></div></div>
         <div id="p0MeterText" class="muted"></div>
-        <div class="finisherBar"><div id="p0Finisher" class="finisherFill"></div></div>
+        <div class="finisherBar"><div id="p0Finisher" class="finisherFill"></div><div id="p0FinisherPreview" class="barGainPreview furyGainPreview"></div></div>
         <div id="p0FinisherText" class="muted"></div>
         <div id="p0Statuses" class="statusTags"></div>
       </div>
@@ -803,11 +857,11 @@ button:disabled{
       <div>
         <h2 id="p1Name">Player 2</h2>
         <div id="p1Sub" class="muted">Loading...</div>
-        <div class="hpBar"><div id="p1Hp" class="hpFill"></div></div>
+        <div class="hpBar"><div id="p1Hp" class="hpFill"></div><div id="p1HpPreview" class="barGainPreview"></div></div>
         <div id="p1HpText" class="muted"></div>
         <div class="meterBar"><div id="p1Meter" class="meterFill"></div></div>
         <div id="p1MeterText" class="muted"></div>
-        <div class="finisherBar"><div id="p1Finisher" class="finisherFill"></div></div>
+        <div class="finisherBar"><div id="p1Finisher" class="finisherFill"></div><div id="p1FinisherPreview" class="barGainPreview furyGainPreview"></div></div>
         <div id="p1FinisherText" class="muted"></div>
         <div id="p1Statuses" class="statusTags"></div>
       </div>
@@ -1171,7 +1225,10 @@ function drawPetSide(seat){
     stat('Defense',effectiveDefense(seat))+
     stat('Speed',effectiveSpeed(seat))+
     stat('Stance',stanceLabel(currentStance(seat)))+
-    '<div class="resourceGrid"><div class="resourcePill"><b>'+energy+'/10</b>Energy</div><div class="resourcePill"><b>'+stamina+'%</b>Stamina</div></div>';
+    resourceGridHtml(seat,energy,stamina);
+
+  // Any full redraw represents committed battle state, so clear blue previews.
+  clearProjectedGainBars(seat);
 
   setPetVisual(seat,pet);
   updatePetStageState(seat);
@@ -1253,6 +1310,26 @@ function petAssetPath(pet){
 
 function stat(k,v){
   return '<div class="stat"><b>'+escapeHtml(k)+'</b><br>'+escapeHtml(v)+'</div>';
+}
+
+
+function resourceGridHtml(seat,energy,stamina){
+  // Modular resource renderer. The blue preview segments are controlled by
+  // refreshProjectedPetSide() so removing preview UX only requires deleting
+  // setProjectedGainBar()/setProjectedResourcePreview() calls and CSS.
+  return '<div class="resourceGrid">'+
+    resourcePillHtml(seat,'Energy',energy,10,'/10')+
+    resourcePillHtml(seat,'Stamina',stamina,100,'%')+
+  '</div>';
+}
+
+function resourcePillHtml(seat,label,value,max,suffix){
+  var kind=label.toLowerCase();
+  var pct=Math.max(0,Math.min(100,(Number(value||0)/Number(max||100))*100));
+  var shown=label==='Energy'?Math.floor(value)+'/10':Math.floor(value)+'%';
+  return '<div class="resourcePill"><b>'+shown+'</b>'+escapeHtml(label)+
+    '<div class="resourceTrack"><div class="resourceFill" style="width:'+pct+'%"></div><div id="p'+seat+kind+'Preview" class="resourcePreviewFill"></div></div>'+ 
+    '<span id="p'+seat+kind+'Hint" class="resourceHint"></span></div>';
 }
 
 function drawLog(){
@@ -1382,7 +1459,7 @@ function drawCareControls(){
   var html='';
 
   html+='<div class="carePanel modePanel">';
-  html+='<div class="careHeader"><div><strong>🌿 Care Window</strong><span>Act while they choose.</span></div><div class="careMeter"><div id="careMeterFill" class="careMeterFill"></div></div></div>';
+  html+='<div class="careHeader"><div><strong>🌿 Care Window</strong><span>Act while they choose.</span><div id="careHeaderStatus" class="careHeaderStatus"></div></div><div class="careMeter"><div id="careMeterFill" class="careMeterFill"></div></div></div>';
 
   html+='<div class="careOptions">';
   html+='<div class="careSectionTitle">Tend</div>';
@@ -1423,7 +1500,20 @@ function selectCare(type){
   ensureBattleShape();
 
   if(!CARE_ACTIONS[type])type='soothe';
-  state.care[mySeat]={type:type,start:Date.now(),itemId:null,locked:false,baseHp:state.hp&&state.hp[mySeat]!==undefined?Number(state.hp[mySeat]||0):0};
+
+  // Switching is intentionally free. Re-clicking the same care does nothing so
+  // players cannot restart/reroll timing noise by button-spamming.
+  if(state.care[mySeat]&&state.care[mySeat].type===type)return;
+
+  state.care[mySeat]={
+    type:type,
+    start:Date.now(),
+    itemId:null,
+    locked:false,
+    baseHp:state.hp&&state.hp[mySeat]!==undefined?Number(state.hp[mySeat]||0):0,
+    baseStamina:state.stamina&&state.stamina[mySeat]!==undefined?Number(state.stamina[mySeat]||0):0,
+    baseFinisher:state.finisher&&state.finisher[mySeat]!==undefined?Number(state.finisher[mySeat]||0):0
+  };
   addLog(state.pets[mySeat].name+' begins '+CARE_ACTIONS[type].label+'.');
   selectedCareFx(mySeat,type);
   lastControlModeKey='';
@@ -1478,45 +1568,44 @@ function applyCareBeforeIncoming(seat){
   var care=state.care&&state.care[seat]?state.care[seat]:emptyCare();
   if(!care.type || care.type==='item')return;
 
-  var elapsed=Math.max(0,Math.min(CARE_WINDOW_MS,Date.now()-Number(care.start||Date.now())));
-  var seconds=Math.floor(elapsed/1000);
+  var elapsed=careElapsedMs(care);
+  var preview=carePreviewFor(seat,care,elapsed);
   var pet=state.pets[seat];
 
   if(care.type==='guard'){
+    // Guard has no blue growth segment because it is binary: it only matters if
+    // active at impact. The stamina cost is still paid in damage().
     state.guard[seat]=true;
     addLog(pet.name+' holds guard and prepares to absorb the next hit.');
     state.care[seat]=emptyCare();
     return;
   }
 
-  if(seconds<=0){
+  if(elapsed<=0){
     state.care[seat]=emptyCare();
     return;
   }
 
   if(care.type==='soothe'){
-    var baseHp=(care.baseHp!==undefined&&care.baseHp!==null)?Number(care.baseHp||0):Number(state.hp[seat]||0);
-    var maxWindowGain=pet.stats.maxHp*.05;
-    var slowGain=pet.stats.maxHp*.005*seconds;
-    var heal=Math.max(0,Math.min(maxWindowGain,slowGain));
     var before=Number(state.hp[seat]||0);
-    state.hp[seat]=Math.min(pet.stats.maxHp,Math.max(before,baseHp+heal));
+    state.hp[seat]=preview.hp;
     var gained=state.hp[seat]-before;
     if(gained>0)addLog(pet.name+' recovered '+formatHp(gained)+' HP from soothing care.');
   }else if(care.type==='steady'){
-    var staminaGain=Math.max(2,Math.min(18,seconds*3));
-    state.stamina[seat]=clampResource(Number(state.stamina[seat]||0)+staminaGain,0,100);
-    addLog(pet.name+' recovered '+staminaGain+' stamina from steady care.');
+    var oldStamina=Number(state.stamina[seat]||0);
+    state.stamina[seat]=preview.stamina;
+    var staminaGain=Math.floor(state.stamina[seat]-oldStamina);
+    if(staminaGain>0)addLog(pet.name+' recovered '+staminaGain+' stamina from steady care.');
   }else if(care.type==='treat'){
-    var reduction=elapsed>=6500?2:1;
-    var reduced=reduceWorstAilment(seat,reduction);
+    var reduced=reduceWorstAilment(seat,preview.treatReduction);
     if(reduced)addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
     else addLog(pet.name+' was treated, but had no ailment to reduce.');
   }else if(care.type==='lockin'){
-    var gain=Math.max(2,Math.min(28,Math.floor(seconds*3.2)));
-    state.finisher[seat]=clampResource(Number(state.finisher[seat]||0)+gain,0,100);
+    var oldFury=Number(state.finisher[seat]||0);
+    state.finisher[seat]=preview.finisher;
     state.finisherReady[seat]=state.finisher[seat]>=100;
-    addLog(pet.name+' locked in and built '+gain+' Fury.');
+    var gain=Math.floor(state.finisher[seat]-oldFury);
+    if(gain>0)addLog(pet.name+' locked in and built '+gain+' Fury.');
   }
 
   state.care[seat]=emptyCare();
@@ -1609,7 +1698,7 @@ function refreshCareLiveUI(){
   if(!state||mySeat===null||mySeat===undefined)return;
   ensureBattleShape();
   var care=state.care&&state.care[mySeat]?state.care[mySeat]:emptyCare();
-  var elapsed=(care.type&&care.start)?Math.max(0,Math.min(CARE_WINDOW_MS,Date.now()-Number(care.start||0))):0;
+  var elapsed=careElapsedMs(care);
   var pct=Math.min(100,Math.floor(elapsed/CARE_WINDOW_MS*100));
 
   if(fill){
@@ -1624,33 +1713,41 @@ function refreshCareLiveUI(){
 function updateCareMiniBars(care,elapsed){
   if(!state||mySeat===null||mySeat===undefined||!state.pets||!state.pets[mySeat])return;
   var pet=state.pets[mySeat];
-  var seconds=Math.floor(Math.max(0,elapsed)/1000);
   var active=care&&care.type?care.type:'';
+  var preview=carePreviewFor(mySeat,care,elapsed);
+  var header=document.getElementById('careHeaderStatus');
 
   var hpNow=Number(state.hp[mySeat]||0);
-  var sootheHeal=(active==='soothe')?Math.max(0,Math.min(pet.stats.maxHp*.05,pet.stats.maxHp*.005*seconds)):0;
-  var hpPct=Math.floor(Math.max(0,Math.min(100,(hpNow+sootheHeal)/pet.stats.maxHp*100)));
+  var hpPct=Math.floor(Math.max(0,Math.min(100,preview.hp/pet.stats.maxHp*100)));
   var hpBasePct=Math.floor(Math.max(0,Math.min(100,hpNow/pet.stats.maxHp*100)));
   setCareMini('soothe',hpPct,'HP '+hpBasePct+'% → '+hpPct+'%','linear-gradient(90deg,#86efac,#16a34a)');
 
   var ailment=findWorstAilment(mySeat);
-  var treatPct=ailment?(active==='treat'?Math.max(8,Math.min(100,Math.floor(elapsed/6500*100))):Math.min(35,Number(ailment.turns||0)*18)):0;
+  var treatPct=ailment?(active==='treat'?Math.max(8,Math.min(100,Math.floor(elapsed/CARE_TUNING.treatStrongMs*100))):Math.min(35,Number(ailment.turns||0)*18)):0;
   var treatText=ailment?(ailment.label+' '+ailment.turns+'t'):'No ailment';
-  if(active==='treat'&&ailment)treatText+=' · treating';
+  if(active==='treat'&&ailment)treatText+=' · -'+preview.treatReduction+'t';
   setCareMini('treat',treatPct,treatText,'linear-gradient(90deg,#bae6fd,#0284c7)');
 
   var staminaNow=Number(state.stamina&&state.stamina[mySeat]!==undefined?state.stamina[mySeat]:100);
-  var staminaGain=(active==='steady')?Math.max(0,Math.min(18,seconds*3)):0;
-  var staminaPct=Math.floor(Math.max(0,Math.min(100,staminaNow+staminaGain)));
+  var staminaPct=Math.floor(Math.max(0,Math.min(100,preview.stamina)));
   setCareMini('steady',staminaPct,'Stamina '+Math.floor(staminaNow)+'% → '+staminaPct+'%','linear-gradient(90deg,#fde68a,#f59e0b)');
 
   var guardPct=(active==='guard')?100:0;
-  setCareMini('guard',guardPct,(active==='guard'?'Guard ready · next hit reduced':'Guard next hit'),'linear-gradient(90deg,#93c5fd,#2563eb)');
+  setCareMini('guard',guardPct,(active==='guard'?'Guard armed · impact only':'Guard next hit'),'linear-gradient(90deg,#93c5fd,#2563eb)');
 
   var furyNow=Number(state.finisher&&state.finisher[mySeat]!==undefined?state.finisher[mySeat]:0);
-  var furyGain=(active==='lockin')?Math.max(0,Math.min(28,Math.floor(seconds*3.2))):0;
-  var furyPct=Math.floor(Math.max(0,Math.min(100,furyNow+furyGain)));
+  var furyPct=Math.floor(Math.max(0,Math.min(100,preview.finisher)));
   setCareMini('lockin',furyPct,(furyPct>=100?'Fury READY':'Fury '+Math.floor(furyNow)+'% → '+furyPct+'%'),'linear-gradient(90deg,#f97316,#facc15)');
+
+  if(header){
+    var msg='Switch freely. Blue bars show pending growth.';
+    if(active==='soothe')msg='Soothe pending: +'+formatHp(preview.healGain)+' HP';
+    if(active==='steady')msg='Steady pending: +'+Math.floor(preview.staminaGain)+' stamina';
+    if(active==='lockin')msg='Lock In pending: +'+Math.floor(preview.furyGain)+' Fury';
+    if(active==='guard')msg='Guard armed if impact lands now.';
+    if(active==='treat')msg=ailment?'Treat pending: -'+preview.treatReduction+' turn(s)':'Treat ready, no ailment.';
+    header.innerText=msg;
+  }
 }
 
 function setCareMini(id,pct,text,bg){
@@ -1664,64 +1761,91 @@ function setCareMini(id,pct,text,bg){
 }
 
 function projectedCarePreview(seat,care,elapsed){
-  ensureBattleShape();
-  if(seat===null||seat===undefined||!state||!state.pets||!state.pets[seat])return null;
-  var pet=state.pets[seat];
-  var seconds=Math.floor(Math.max(0,elapsed||0)/1000);
-  var hp=Number(state.hp&&state.hp[seat]!==undefined?state.hp[seat]:pet.stats.maxHp);
-  var stamina=Number(state.stamina&&state.stamina[seat]!==undefined?state.stamina[seat]:100);
-  var energy=Number(state.energy&&state.energy[seat]!==undefined?state.energy[seat]:5);
-  var finisher=Number(state.finisher&&state.finisher[seat]!==undefined?state.finisher[seat]:0);
-  var type=care&&care.type?care.type:'';
-
-  if(type==='soothe'){
-    var baseHp=(care.baseHp!==undefined&&care.baseHp!==null)?Number(care.baseHp||0):hp;
-    var heal=Math.max(0,Math.min(pet.stats.maxHp*.05,pet.stats.maxHp*.005*seconds));
-    hp=Math.min(pet.stats.maxHp,Math.max(hp,baseHp+heal));
-  }else if(type==='steady'){
-    var staminaGain=Math.max(0,Math.min(18,seconds*3));
-    stamina=clampResource(stamina+staminaGain,0,100);
-  }else if(type==='lockin'){
-    var furyGain=Math.max(0,Math.min(28,Math.floor(seconds*3.2)));
-    finisher=clampResource(finisher+furyGain,0,100);
-  }
-
-  return {hp:hp,stamina:stamina,energy:energy,finisher:finisher};
+  return carePreviewFor(seat,care,elapsed);
 }
 
 function refreshProjectedPetSide(seat,preview){
   if(!preview||!state||!state.pets||!state.pets[seat])return;
   var pet=state.pets[seat];
-  var hp=Math.max(0,Math.min(pet.stats.maxHp,Number(preview.hp||0)));
-  var hpPct=Math.max(0,Math.min(100,Math.floor(hp/pet.stats.maxHp*100)));
-  var hpFill=el('p'+seat+'Hp');
-  if(hpFill){
-    hpFill.style.width=hpPct+'%';
-    hpFill.className='hpFill '+(hpPct<30?'low':hpPct<60?'mid':'');
-  }
-  var hpText=el('p'+seat+'HpText');
-  if(hpText)hpText.innerText=formatHp(hp)+' / '+pet.stats.maxHp+' HP';
 
-  var fin=Math.floor(Math.max(0,Math.min(100,Number(preview.finisher||0))));
-  var finFill=el('p'+seat+'Finisher');
-  if(finFill){
-    finFill.style.width=fin+'%';
-    finFill.className='finisherFill '+(fin>=100?'ready':'');
+  // Base state stays normal-colored. Preview growth is blue and temporary.
+  var baseHp=Number(state.hp&&state.hp[seat]!==undefined?state.hp[seat]:pet.stats.maxHp);
+  setProjectedGainBar(seat,'Hp',baseHp,preview.hp,pet.stats.maxHp);
+  var hpText=el('p'+seat+'HpText');
+  if(hpText){
+    var gain=Math.max(0,Number(preview.hp||0)-baseHp);
+    hpText.innerText=formatHp(baseHp)+' / '+pet.stats.maxHp+' HP'+(gain>0?'  +'+formatHp(gain)+' pending':'');
   }
+
+  var baseFin=Number(state.finisher&&state.finisher[seat]!==undefined?state.finisher[seat]:0);
+  setProjectedGainBar(seat,'Finisher',baseFin,preview.finisher,100);
   var finText=el('p'+seat+'FinisherText');
-  if(finText)finText.innerText=(fin>=100?'Finisher READY':'Finisher '+fin+'%');
+  if(finText){
+    var finGain=Math.max(0,Math.floor(Number(preview.finisher||0)-baseFin));
+    var shown=Math.floor(Math.max(baseFin,Number(preview.finisher||0)));
+    finText.innerText=(shown>=100?'🔥 FINISHER READY':'Finisher '+Math.floor(baseFin)+'%')+(finGain>0?'  +'+finGain+' pending':'');
+  }
 
   var stats=el('p'+seat+'Stats');
   if(stats){
-    var energy=Math.floor(Math.max(0,Math.min(10,Number(preview.energy||0))));
-    var stamina=Math.floor(Math.max(0,Math.min(100,Number(preview.stamina||0))));
+    var energy=Math.floor(Math.max(0,Math.min(10,Number(state.energy&&state.energy[seat]!==undefined?state.energy[seat]:5))));
+    var stamina=Math.floor(Math.max(0,Math.min(100,Number(state.stamina&&state.stamina[seat]!==undefined?state.stamina[seat]:100))));
     stats.innerHTML=
       stat('Attack',effectiveAttack(seat))+
       stat('Defense',effectiveDefense(seat))+
       stat('Speed',effectiveSpeed(seat))+
       stat('Stance',stanceLabel(currentStance(seat)))+
-      '<div class="resourceGrid"><div class="resourcePill"><b>'+energy+'/10</b>Energy</div><div class="resourcePill"><b>'+stamina+'%</b>Stamina</div></div>';
+      resourceGridHtml(seat,energy,stamina);
+    setProjectedResourcePreview(seat,'stamina',stamina,preview.stamina,100);
+    setProjectedResourcePreview(seat,'energy',energy,preview.energy,10);
   }
+}
+
+function setProjectedGainBar(seat,kind,baseValue,previewValue,maxValue){
+  var previewEl=el('p'+seat+kind+'Preview');
+  if(!previewEl)return;
+  var basePct=Math.max(0,Math.min(100,(Number(baseValue||0)/Number(maxValue||100))*100));
+  var previewPct=Math.max(0,Math.min(100,(Number(previewValue||0)/Number(maxValue||100))*100));
+  var delta=Math.max(0,previewPct-basePct);
+  if(delta<.35){previewEl.style.display='none';previewEl.style.width='0%';return;}
+  previewEl.style.display='block';
+  previewEl.style.left=basePct+'%';
+  previewEl.style.width=delta+'%';
+}
+
+function setProjectedResourcePreview(seat,kind,baseValue,previewValue,maxValue){
+  var previewEl=el('p'+seat+kind+'Preview');
+  var hint=el('p'+seat+kind+'Hint');
+  if(!previewEl)return;
+  var basePct=Math.max(0,Math.min(100,(Number(baseValue||0)/Number(maxValue||100))*100));
+  var previewPct=Math.max(0,Math.min(100,(Number(previewValue||0)/Number(maxValue||100))*100));
+  var delta=Math.max(0,previewPct-basePct);
+  if(delta<.35){
+    previewEl.style.display='none';
+    previewEl.style.width='0%';
+    if(hint)hint.innerText='';
+    return;
+  }
+  previewEl.style.display='block';
+  previewEl.style.left=basePct+'%';
+  previewEl.style.width=delta+'%';
+  if(hint){
+    var gained=Math.floor(Math.max(0,Number(previewValue||0)-Number(baseValue||0)));
+    hint.innerText=gained>0?('+'+gained+' pending'):'';
+  }
+}
+
+function clearProjectedGainBars(seat){
+  ['Hp','Finisher'].forEach(function(kind){
+    var node=el('p'+seat+kind+'Preview');
+    if(node){node.style.display='none';node.style.width='0%';}
+  });
+  ['stamina','energy'].forEach(function(kind){
+    var node=el('p'+seat+kind+'Preview');
+    var hint=el('p'+seat+kind+'Hint');
+    if(node){node.style.display='none';node.style.width='0%';}
+    if(hint)hint.innerText='';
+  });
 }
 
 function findWorstAilment(seat){
@@ -1735,6 +1859,25 @@ function findWorstAilment(seat){
 }
 
 var CARE_WINDOW_MS=8000;
+
+/* ===== COMBAT v2.1: modular care tuning =====
+   Keep switching free. Balance happens through active-only effects, caps, and
+   gentle ramping. Each tuning value lives here so a tested feature can be
+   adjusted or removed without hunting through the battle loop. */
+var CARE_TUNING={
+  windowMs:CARE_WINDOW_MS,
+  rampMs:1250,
+  soothePerEffectiveSecondPct:.005,
+  sootheCapPct:.05,
+  steadyPerEffectiveSecond:3,
+  steadyCap:18,
+  lockInPerEffectiveSecond:3.2,
+  lockInCap:28,
+  treatSoftTurns:1,
+  treatStrongTurns:2,
+  treatStrongMs:6500
+};
+
 var CARE_ACTIONS={
   soothe:{label:'soothing care'},
   treat:{label:'treatment'},
@@ -1744,6 +1887,54 @@ var CARE_ACTIONS={
 };
 
 function emptyCare(){return {type:null,start:0,itemId:null,locked:false,baseHp:null};}
+
+function careElapsedMs(care){
+  if(!care||!care.type||!care.start)return 0;
+  return Math.max(0,Math.min(CARE_TUNING.windowMs,Date.now()-Number(care.start||0)));
+}
+
+function careEffectiveSeconds(elapsedMs){
+  // Free switching stays encouraged, but resource growth ramps into full value.
+  // This prevents fast Lock In flicker from being optimal while still rewarding
+  // quick tactical swaps for Guard/Treat/Soothe reads.
+  var sec=Math.max(0,Number(elapsedMs||0)/1000);
+  var ramp=Math.max(.1,Number(CARE_TUNING.rampMs||0)/1000);
+  if(sec<=ramp)return (sec*sec)/(2*ramp);
+  return sec-(ramp/2);
+}
+
+function carePreviewFor(seat,care,elapsedMs){
+  // Single source of truth for live blue preview and committed care values.
+  // applyCareBeforeIncoming() uses this same function, so UI and battle math stay aligned.
+  if(!state||!state.pets||!state.pets[seat])return {hp:0,stamina:0,energy:0,finisher:0,healGain:0,staminaGain:0,furyGain:0,treatReduction:0};
+  var pet=state.pets[seat];
+  var type=care&&care.type?care.type:'';
+  var elapsed=Math.max(0,Math.min(CARE_TUNING.windowMs,Number(elapsedMs||0)));
+  var eff=careEffectiveSeconds(elapsed);
+  var hp=Number(state.hp&&state.hp[seat]!==undefined?state.hp[seat]:pet.stats.maxHp);
+  var stamina=Number(state.stamina&&state.stamina[seat]!==undefined?state.stamina[seat]:100);
+  var energy=Number(state.energy&&state.energy[seat]!==undefined?state.energy[seat]:5);
+  var finisher=Number(state.finisher&&state.finisher[seat]!==undefined?state.finisher[seat]:0);
+  var out={hp:hp,stamina:stamina,energy:energy,finisher:finisher,healGain:0,staminaGain:0,furyGain:0,treatReduction:0,elapsed:elapsed,effectiveSeconds:eff};
+
+  if(type==='soothe'){
+    var baseHp=(care.baseHp!==undefined&&care.baseHp!==null)?Number(care.baseHp||0):hp;
+    var heal=Math.max(0,Math.min(pet.stats.maxHp*CARE_TUNING.sootheCapPct,pet.stats.maxHp*CARE_TUNING.soothePerEffectiveSecondPct*eff));
+    out.hp=Math.min(pet.stats.maxHp,Math.max(hp,baseHp+heal));
+    out.healGain=Math.max(0,out.hp-hp);
+  }else if(type==='steady'){
+    var staminaGain=Math.max(0,Math.min(CARE_TUNING.steadyCap,Math.floor(eff*CARE_TUNING.steadyPerEffectiveSecond)));
+    out.stamina=clampResource(stamina+staminaGain,0,100);
+    out.staminaGain=Math.max(0,out.stamina-stamina);
+  }else if(type==='lockin'){
+    var furyGain=Math.max(0,Math.min(CARE_TUNING.lockInCap,Math.floor(eff*CARE_TUNING.lockInPerEffectiveSecond)));
+    out.finisher=clampResource(finisher+furyGain,0,100);
+    out.furyGain=Math.max(0,out.finisher-finisher);
+  }else if(type==='treat'){
+    out.treatReduction=elapsed>=CARE_TUNING.treatStrongMs?CARE_TUNING.treatStrongTurns:CARE_TUNING.treatSoftTurns;
+  }
+  return out;
+}
 
 function escapeAttr(s){return String(s||'').replace(/[\\'\"]/g,'');}
 
