@@ -249,7 +249,7 @@ h1,h2,h3{margin:0}
   backdrop-filter:blur(18px);
   border:1px solid var(--line);
   border-radius:24px;
-  padding:12px;
+  padding:8px;
   box-shadow:0 20px 55px rgba(15,23,42,.13);
 }
 
@@ -459,8 +459,8 @@ button:disabled{
 }
 .carePanel{
   display:grid;
-  grid-template-columns:1.1fr .9fr;
-  gap:10px;
+  grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);
+  gap:8px;
   align-items:stretch;
 }
 .careHeader{
@@ -469,15 +469,15 @@ button:disabled{
   justify-content:space-between;
   gap:10px;
   align-items:center;
-  padding:8px 10px;
-  border-radius:16px;
+  padding:6px 10px;
+  border-radius:14px;
   background:rgba(255,255,255,.72);
   border:1px solid rgba(148,163,184,.28);
 }
-.careHeader strong{display:block;color:#0f172a}.careHeader span{font-size:12px;color:#64748b;font-weight:800}
+.careHeader strong{display:block;color:#0f172a;font-size:15px}.careHeader span{font-size:11px;color:#64748b;font-weight:800}
 .careMeter{
-  min-width:120px;
-  height:10px;
+  min-width:118px;
+  height:8px;
   border-radius:999px;
   overflow:hidden;
   background:#e5e7eb;
@@ -492,13 +492,13 @@ button:disabled{
 }
 .careOptions,.battleItems{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
 }
 .battleItems{grid-template-columns:repeat(2,1fr)}
 .careSectionTitle{
   grid-column:1 / -1;
-  font-size:12px;
+  font-size:11px;
   color:#64748b;
   font-weight:1000;
   text-transform:uppercase;
@@ -506,11 +506,11 @@ button:disabled{
 }
 .careBtn,.battleItemBtn{
   text-align:left;
-  min-height:64px;
-  border-radius:16px;
+  min-height:52px;
+  border-radius:14px;
   background:rgba(255,255,255,.86);
 }
-.careBtn strong,.battleItemBtn strong{display:block;font-size:13px}.careBtn span,.battleItemBtn span{display:block;font-size:11px;color:#64748b;margin-top:3px;line-height:1.2}
+.careBtn strong,.battleItemBtn strong{display:block;font-size:12px}.careBtn span,.battleItemBtn span{display:block;font-size:10px;color:#64748b;margin-top:2px;line-height:1.15}
 .careBtn.activeCare{
   border-color:#16a34a;
   box-shadow:0 0 0 2px rgba(22,163,74,.16),0 10px 22px rgba(22,163,74,.12);
@@ -542,11 +542,11 @@ button:disabled{
 .finisherFill.ready{animation:finisherPulse .85s ease-in-out infinite;box-shadow:0 0 14px rgba(250,204,21,.9)}
 @keyframes finisherPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
 .careMiniMeter{
-  height:7px;
+  height:6px;
   border-radius:999px;
   overflow:hidden;
   background:#e5e7eb;
-  margin-top:8px;
+  margin-top:5px;
   border:1px solid rgba(148,163,184,.22);
 }
 .careMiniFill{
@@ -557,8 +557,8 @@ button:disabled{
   transition:width .4s ease;
 }
 .careMiniText{
-  margin-top:4px;
-  font-size:10px;
+  margin-top:3px;
+  font-size:9px;
   color:#64748b;
   font-weight:900;
 }
@@ -586,13 +586,16 @@ button:disabled{
 @media(max-width:700px){
   .damageFloat{font-size:23px;top:34%}
   .damageFloat.finisher{font-size:27px}
-  .carePanel{grid-template-columns:1fr;gap:8px}
-  .careHeader{grid-column:1;align-items:flex-start;flex-direction:column}
-  .careMeter{width:100%}
-  .careOptions{grid-template-columns:repeat(4,1fr);gap:6px}
-  .battleItems{grid-template-columns:1fr 1fr;gap:6px}
-  .careBtn,.battleItemBtn{min-height:56px;padding:8px;border-radius:14px}
-  .careBtn strong,.battleItemBtn strong{font-size:12px}.careBtn span,.battleItemBtn span{font-size:10px}
+  .carePanel{grid-template-columns:1fr;gap:6px}
+  .careHeader{grid-column:1;align-items:center;flex-direction:row;padding:6px 8px}
+  .careHeader span{font-size:10px}
+  .careMeter{width:110px;min-width:90px}
+  .careOptions{grid-template-columns:repeat(4,1fr);gap:5px}
+  .battleItems{grid-template-columns:1fr 1fr;gap:5px}
+  .careBtn,.battleItemBtn{min-height:48px;padding:7px;border-radius:13px}
+  .careBtn strong,.battleItemBtn strong{font-size:11px}.careBtn span,.battleItemBtn span{font-size:9px}
+  .careMiniMeter{height:5px;margin-top:4px}
+  .careMiniText{font-size:9px}
 }
 @media(max-width:420px){
   .careOptions{grid-template-columns:1fr 1fr}
@@ -751,6 +754,8 @@ var itemCatalog={};
 var careUiTimer=null;
 var lastControlModeKey='';
 var lastActionFxKey='';
+var lastStateRequestAt=0;
+var lastSeenRemoteVersion=0;
 var state=null;
 var ready=false;
 var battleInstanceId=new URLSearchParams(location.search).get('battleInstance')||'';
@@ -888,6 +893,7 @@ function connectBattleInstance(){
     }
 
     if(msg.type==='battleInstanceMove'&&window.onMove){
+      if(msg.version!==undefined)lastSeenRemoteVersion=Number(msg.version||0);
       window.onMove(msg.data);
       return;
     }
@@ -1144,6 +1150,20 @@ function drawLog(){
   battleLog.scrollTop=battleLog.scrollHeight;
 }
 
+
+function requestFreshBattleState(reason){
+  var now=Date.now();
+  if(now-lastStateRequestAt<1200)return;
+  lastStateRequestAt=now;
+  try{
+    if(battleInstanceId&&instanceSocket&&instanceSocket.readyState===1){
+      instanceSocket.send(JSON.stringify({type:'battleInstanceRequestState',instanceId:battleInstanceId,reason:reason||'care-sync'}));
+    }else{
+      parent.postMessage({type:'move',data:{type:'gameStateRequest',reason:reason||'care-sync'}},'*');
+    }
+  }catch(e){}
+}
+
 function drawMoves(){
   var html='';
 
@@ -1177,6 +1197,7 @@ function drawMoves(){
     }else{
       refreshCareLiveUI();
     }
+    requestFreshBattleState('care-window');
     return;
   }
 
@@ -1242,7 +1263,7 @@ function drawCareControls(){
         '<strong>'+escapeHtml(item.name||entry.id)+' ×'+entry.quantity+'</strong><span>'+escapeHtml(item.description||battleItemSummary(item))+'</span></button>';
     });
   }else{
-    html+='<button class="battleItemBtn" disabled><strong>No battle items</strong><span>Only battleEnabled/battle-tagged items show here.</span></button>';
+    html+='<button class="battleItemBtn" disabled><strong>No battle items</strong><span>Only battle-enabled items show here.</span></button>';
   }
   html+='</div>';
   html+='</div>';
@@ -1340,7 +1361,7 @@ function applyCareBeforeIncoming(seat){
     if(reduced)addLog(pet.name+' recovered from '+reduced+' faster through treatment.');
     else addLog(pet.name+' was treated, but had no ailment to reduce.');
   }else if(care.type==='lockin'){
-    var gain=Math.max(8,Math.min(75,Math.floor(seconds*11)));
+    var gain=Math.max(4,Math.min(38,Math.floor(seconds*5.5)));
     state.finisher[seat]=clampResource(Number(state.finisher[seat]||0)+gain,0,100);
     state.finisherReady[seat]=state.finisher[seat]>=100;
     addLog(pet.name+' locked in and built '+gain+' finisher charge.');
@@ -1471,7 +1492,7 @@ function updateCareMiniBars(care,elapsed){
   setCareMini('steady',staminaPct,'Stamina '+Math.floor(staminaNow)+'% → '+staminaPct+'%','linear-gradient(90deg,#fde68a,#f59e0b)');
 
   var furyNow=Number(state.finisher&&state.finisher[mySeat]!==undefined?state.finisher[mySeat]:0);
-  var furyGain=(active==='lockin')?Math.max(0,Math.min(75,Math.floor(seconds*11))):0;
+  var furyGain=(active==='lockin')?Math.max(0,Math.min(38,Math.floor(seconds*5.5))):0;
   var furyPct=Math.floor(Math.max(0,Math.min(100,furyNow+furyGain)));
   setCareMini('lockin',furyPct,(furyPct>=100?'Fury READY':'Fury '+Math.floor(furyNow)+'% → '+furyPct+'%'),'linear-gradient(90deg,#f97316,#facc15)');
 }
@@ -2193,6 +2214,11 @@ function newBattle(){
 }
 
 function sync(){
+  if(state){
+    state.clientVersion=(Number(state.clientVersion||0)+1);
+    state.updatedAt=Date.now();
+    state.updatedBy=myPlayerName();
+  }
   window.sendMove({type:'battleState',state:state});
 }
 

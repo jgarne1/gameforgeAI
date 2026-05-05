@@ -5343,6 +5343,24 @@ wss.on('connection',ws=>{
       return;
     }
 
+    if(m.type==='battleInstanceRequestState'){
+      let name=ws.username||'Guest';
+      let instance=battleHall.instances[String(m.instanceId||ws.battleInstanceId||'')];
+      let pub=publicBattleInstance(instance,name);
+      if(!pub)return;
+      if(instance.state){
+        ws.send(JSON.stringify({
+          type:'battleInstanceMove',
+          instanceId:instance.id,
+          data:{type:'battleState',state:instance.state},
+          from:'server',
+          version:instance.version||0,
+          reason:m.reason||'state-request'
+        }));
+      }
+      return;
+    }
+
     if(m.type==='battleInstanceMove'){
       let name=ws.username||'Guest';
       let instance=battleHall.instances[String(m.instanceId||ws.battleInstanceId||'')];
@@ -5357,6 +5375,7 @@ wss.on('connection',ws=>{
         instance.version=(instance.version||0)+1;
       }
       (instance.players||[]).forEach(p=>sendToUser(p.username,{type:'battleInstanceMove',instanceId:instance.id,data:m.data,from:name,version:instance.version||0}));
+      return;
     }
 
     if(m.type==='battleHallChat'){
@@ -5627,6 +5646,19 @@ wss.on('connection',ws=>{
 
       if(r){
         ws.location='Game';
+
+        if(m.data&&m.data.type==='gameStateRequest'){
+          if(r.gameState){
+            ws.send(JSON.stringify({
+              type:'gameMove',
+              data:{type:r.gameStateType||'battleState',state:r.gameState},
+              from:'server',
+              version:r.gameVersion||0,
+              reason:m.data.reason||'state-request'
+            }));
+          }
+          return;
+        }
 
         if(m.data&&m.data.type==='lobbyReady'){
           r.ready=r.ready||{};

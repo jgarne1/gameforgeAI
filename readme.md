@@ -169,6 +169,14 @@ Care Window v1 behavior:
 - Battle item use is a quick Care Window action. If the player selects an item fast enough, its effect applies before the opponent's next move resolves.
 - A Care Window should be capped so stalling cannot create unlimited healing or recovery.
 
+
+Patch notes — Care/Finisher polish v1.4:
+
+- Care Mode should now be compact enough to act as a bottom control bar instead of covering the pet stage. The Tend row uses four compact cards on wider screens and tight mobile sizing on phones.
+- Lock In / Fury gain has been slowed by roughly 50% so Finisher moments require more commitment and do not fill from one short Care Window.
+- Pet Battle clients can now request a fresh battle state while stuck in Care Mode. The server responds with the latest room or Battle Hall instance state, helping both players recover if a move broadcast is missed or delayed.
+- This is still an iteration safety net, not a replacement for the future server-authoritative battle engine.
+
 Important implementation direction:
 
 - The current prototype may remain client-synced for iteration, but the final battle system must become server-authoritative.
