@@ -339,3 +339,15 @@ Fix:
 Future note:
 
 - Before live/ranked play, battle authority should continue moving toward server-owned validation for turn order, item consumption, and final combat results.
+
+### Pet Battle combat v1.6 live resource + arena polish
+
+This update tightens the Care Window after playtesting:
+
+- Soothe, Steady, Lock In, and battle-item effects should visually update the main pet panels, not only the Care cards.
+- HP previews are clamped to the pet's max HP so healing cannot display above 100%.
+- Stamina, Energy, and Finisher/Fury previews are clamped to their valid ranges and reflected in the top/main resource area while Care Mode is active.
+- The Care panel remains compact and should not dominate the arena.
+- Pet stage backgrounds were reduced with responsive sizing so the blue/pink battle stages stay inside their player panes instead of crowding the control area.
+
+Design note: Care Mode is intended to feel live without flicker. The panel should render once, then update existing bar widths/text/resource displays on the timer tick.

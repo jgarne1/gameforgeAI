@@ -131,7 +131,7 @@ h1,h2,h3{margin:0}
   display:flex;
   align-items:center;
   justify-content:center;
-  min-height:300px;
+  min-height:clamp(190px,32vh,270px);
 }
 
 .petStage.enemy{
@@ -141,15 +141,15 @@ h1,h2,h3{margin:0}
 }
 
 .petImg{
-  width:190px;
-  height:190px;
+  width:clamp(130px,20vh,180px);
+  height:clamp(130px,20vh,180px);
   object-fit:contain;
   filter:drop-shadow(0 20px 20px rgba(15,23,42,.25));
   animation:idle 2.4s ease-in-out infinite;
 }
 
 .petEmoji{
-  font-size:110px;
+  font-size:clamp(76px,13vh,108px);
   filter:drop-shadow(0 20px 20px rgba(15,23,42,.25));
   animation:idle 2.4s ease-in-out infinite;
 }
@@ -459,22 +459,22 @@ button:disabled{
 }
 .carePanel{
   display:grid;
-  grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);
-  gap:8px;
+  grid-template-columns:minmax(0,1.45fr) minmax(220px,.55fr);
+  gap:6px;
   align-items:stretch;
 }
 .careHeader{
   grid-column:1 / span 2;
   display:flex;
   justify-content:space-between;
-  gap:10px;
+  gap:8px;
   align-items:center;
-  padding:6px 10px;
+  padding:5px 9px;
   border-radius:14px;
   background:rgba(255,255,255,.72);
   border:1px solid rgba(148,163,184,.28);
 }
-.careHeader strong{display:block;color:#0f172a;font-size:15px}.careHeader span{font-size:11px;color:#64748b;font-weight:800}
+.careHeader strong{display:block;color:#0f172a;font-size:14px}.careHeader span{font-size:10px;color:#64748b;font-weight:800}
 .careMeter{
   min-width:118px;
   height:8px;
@@ -493,7 +493,7 @@ button:disabled{
 .careOptions,.battleItems{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:7px;
+  gap:6px;
 }
 .battleItems{grid-template-columns:repeat(2,1fr)}
 .careSectionTitle{
@@ -506,11 +506,12 @@ button:disabled{
 }
 .careBtn,.battleItemBtn{
   text-align:left;
-  min-height:52px;
+  min-height:46px;
+  padding:7px 8px;
   border-radius:14px;
   background:rgba(255,255,255,.86);
 }
-.careBtn strong,.battleItemBtn strong{display:block;font-size:12px}.careBtn span,.battleItemBtn span{display:block;font-size:10px;color:#64748b;margin-top:2px;line-height:1.15}
+.careBtn strong,.battleItemBtn strong{display:block;font-size:12px}.careBtn span,.battleItemBtn span{display:block;font-size:9px;color:#64748b;margin-top:1px;line-height:1.1}
 .careBtn.activeCare{
   border-color:#16a34a;
   box-shadow:0 0 0 2px rgba(22,163,74,.16),0 10px 22px rgba(22,163,74,.12);
@@ -542,11 +543,11 @@ button:disabled{
 .finisherFill.ready{animation:finisherPulse .85s ease-in-out infinite;box-shadow:0 0 14px rgba(250,204,21,.9)}
 @keyframes finisherPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
 .careMiniMeter{
-  height:6px;
+  height:5px;
   border-radius:999px;
   overflow:hidden;
   background:#e5e7eb;
-  margin-top:5px;
+  margin-top:4px;
   border:1px solid rgba(148,163,184,.22);
 }
 .careMiniFill{
@@ -557,7 +558,7 @@ button:disabled{
   transition:width .4s ease;
 }
 .careMiniText{
-  margin-top:3px;
+  margin-top:2px;
   font-size:9px;
   color:#64748b;
   font-weight:900;
@@ -1466,6 +1467,7 @@ function refreshCareLiveUI(){
   }
 
   updateCareMiniBars(care,elapsed);
+  refreshProjectedPetSide(mySeat,projectedCarePreview(mySeat,care,elapsed));
 }
 
 function updateCareMiniBars(care,elapsed){
@@ -1505,6 +1507,66 @@ function setCareMini(id,pct,text,bg){
     if(bg)fill.style.background=bg;
   }
   if(label)label.innerText=text||'';
+}
+
+function projectedCarePreview(seat,care,elapsed){
+  ensureBattleShape();
+  if(seat===null||seat===undefined||!state||!state.pets||!state.pets[seat])return null;
+  var pet=state.pets[seat];
+  var seconds=Math.floor(Math.max(0,elapsed||0)/1000);
+  var hp=Number(state.hp&&state.hp[seat]!==undefined?state.hp[seat]:pet.stats.maxHp);
+  var stamina=Number(state.stamina&&state.stamina[seat]!==undefined?state.stamina[seat]:100);
+  var energy=Number(state.energy&&state.energy[seat]!==undefined?state.energy[seat]:5);
+  var finisher=Number(state.finisher&&state.finisher[seat]!==undefined?state.finisher[seat]:0);
+  var type=care&&care.type?care.type:'';
+
+  if(type==='soothe'){
+    var heal=Math.max(0,Math.min(Math.ceil(pet.stats.maxHp*.08),seconds*2));
+    hp=Math.min(pet.stats.maxHp,hp+heal);
+  }else if(type==='steady'){
+    var staminaGain=Math.max(0,Math.min(18,seconds*3));
+    stamina=clampResource(stamina+staminaGain,0,100);
+  }else if(type==='lockin'){
+    var furyGain=Math.max(0,Math.min(38,Math.floor(seconds*5.5)));
+    finisher=clampResource(finisher+furyGain,0,100);
+  }
+
+  return {hp:hp,stamina:stamina,energy:energy,finisher:finisher};
+}
+
+function refreshProjectedPetSide(seat,preview){
+  if(!preview||!state||!state.pets||!state.pets[seat])return;
+  var pet=state.pets[seat];
+  var hp=Math.max(0,Math.min(pet.stats.maxHp,Number(preview.hp||0)));
+  var hpPct=Math.max(0,Math.min(100,Math.floor(hp/pet.stats.maxHp*100)));
+  var hpFill=el('p'+seat+'Hp');
+  if(hpFill){
+    hpFill.style.width=hpPct+'%';
+    hpFill.className='hpFill '+(hpPct<30?'low':hpPct<60?'mid':'');
+  }
+  var hpText=el('p'+seat+'HpText');
+  if(hpText)hpText.innerText=Math.round(hp)+' / '+pet.stats.maxHp+' HP';
+
+  var fin=Math.floor(Math.max(0,Math.min(100,Number(preview.finisher||0))));
+  var finFill=el('p'+seat+'Finisher');
+  if(finFill){
+    finFill.style.width=fin+'%';
+    finFill.className='finisherFill '+(fin>=100?'ready':'');
+  }
+  var finText=el('p'+seat+'FinisherText');
+  if(finText)finText.innerText=(fin>=100?'Finisher READY':'Finisher '+fin+'%');
+
+  var stats=el('p'+seat+'Stats');
+  if(stats){
+    var energy=Math.floor(Math.max(0,Math.min(10,Number(preview.energy||0))));
+    var stamina=Math.floor(Math.max(0,Math.min(100,Number(preview.stamina||0))));
+    stats.innerHTML=
+      stat('Attack',effectiveAttack(seat))+
+      stat('Defense',effectiveDefense(seat))+
+      stat('Speed',effectiveSpeed(seat))+
+      stat('Stance',stanceLabel(currentStance(seat)))+
+      '<div class="resourceGrid"><div class="resourcePill"><b>'+energy+'/10</b>Energy</div><div class="resourcePill"><b>'+stamina+'%</b>Stamina</div></div>';
+  }
 }
 
 function findWorstAilment(seat){
