@@ -302,31 +302,81 @@ button:disabled{
 
 @media(max-width:1000px){
   body{overflow:auto}
-  .wrap{height:auto}
+  .wrap{height:auto;min-height:100dvh}
   .arena{grid-template-columns:1fr}
   .moves{grid-template-columns:1fr 1fr}
 }
 
 
-/* ===== AI MOBILE USABILITY PATCH v1 =====
-   Phone layout only. Keeps the battle readable in the iframe. */
+/* ===== AI MOBILE DUEL VIEW PATCH v2 =====
+   Phone layout keeps both pets side-by-side, then places status/log below. */
 @media (max-width:700px){
   html,body{height:auto;min-height:100%;overflow:auto;}
-  .wrap{height:auto;min-height:100dvh;padding:8px;gap:8px;}
-  .top{align-items:flex-start;flex-direction:column;border-radius:18px;padding:10px;}
-  .top h1{font-size:20px;margin-bottom:4px;}
-  .arena{grid-template-columns:1fr!important;gap:8px;}
-  .side,.log,.controls{border-radius:18px;padding:10px;}
-  .side h2{font-size:17px;margin:0 0 4px;}
-  .petSprite{width:120px;height:120px;}
+  body{font-size:13px;}
+  .wrap{height:auto;min-height:100dvh;padding:7px;gap:7px;grid-template-rows:auto auto auto;}
+  .top{align-items:stretch;flex-direction:column;border-radius:18px;padding:9px;gap:8px;}
+  .top h1{font-size:19px;margin-bottom:2px;}
+  .top .muted{font-size:12px;line-height:1.25;}
+  .battleActions{justify-content:space-between;gap:6px;}
+  .battleActions .badge{flex:1;justify-content:center;min-width:0;padding:6px 7px;font-size:11px;}
+  .battleActions button{width:100%;padding:9px;border-radius:14px;}
+
+  .arena{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-areas:
+      "player opponent"
+      "center center";
+    gap:7px;
+  }
+  .arena > .side:first-child{grid-area:player;}
+  .arena > .center{grid-area:center;}
+  .arena > .side:last-child{grid-area:opponent;}
+
+  .side{
+    min-width:0;
+    border-radius:18px;
+    padding:8px;
+    gap:7px;
+    grid-template-rows:auto auto auto;
+  }
+  .side h2{font-size:15px;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .side .muted{font-size:11px;line-height:1.2;}
+  .hpBar{height:10px;margin:5px 0;}
+  .meterBar{height:6px;margin:4px 0 1px;}
+  .statusTags{gap:3px;min-height:16px;margin-top:4px;}
+  .statusTag{font-size:9px;padding:3px 5px;}
+
+  .petStage{min-height:112px;border-radius:18px;}
+  .petImg{width:104px;height:104px;}
+  .petEmoji{font-size:68px;}
+
+  .statGrid{grid-template-columns:1fr 1fr;gap:5px;}
+  .stat{border-radius:11px;padding:5px;font-size:10px;}
+
+  .center{gap:7px;}
+  .statusCard,.logCard,.controls{border-radius:18px;padding:9px;}
+  .statusCard h2{font-size:17px;}
+  .logCard h3{font-size:14px;}
+  .log{min-height:130px;height:130px;border-radius:14px;padding:8px;font-size:12px;}
+
   .moves{grid-template-columns:1fr 1fr!important;gap:7px;}
-  .moveBtn{min-height:68px;padding:9px;border-radius:14px;}
+  .moveBtn{min-height:64px;padding:8px;border-radius:14px;}
   .moveBtn strong{font-size:13px}.moveBtn span{font-size:11px;}
-  .statGrid{grid-template-columns:1fr 1fr;}
   .winner{font-size:18px;}
-  button{font-size:15px;}
+  button{font-size:14px;}
 }
-@media (max-width:420px){.moves{grid-template-columns:1fr!important}.petSprite{width:104px;height:104px}}
+
+@media (max-width:420px){
+  .wrap{padding:6px;gap:6px;}
+  .arena{gap:6px;}
+  .side{padding:7px;gap:6px;}
+  .petStage{min-height:96px;}
+  .petImg{width:88px;height:88px;}
+  .petEmoji{font-size:58px;}
+  .stat{padding:4px;font-size:9px;}
+  .moves{grid-template-columns:1fr 1fr!important;}
+  .moveBtn{min-height:60px;}
+}
 
 
 
