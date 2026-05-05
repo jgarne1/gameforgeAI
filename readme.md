@@ -460,3 +460,13 @@ Rules:
 - Current PetWorld sprite defaults assume 5 columns x 5 rows, 25 frames. If a future sheet uses a different layout, add metadata instead of hard-coding pet-specific logic into the renderer.
 - `games/petworld.html` now has a modular `PET_ANIM` controller. Set `PET_ANIM.enabled=false` to disable all sprite behavior and return to classic still-image rendering.
 - Runtime behavior: `walk` plays during PetWorld wandering, `idle` plays while resting if present, and `jump` plays briefly for playful/train/explore reactions if present. Missing `walk`, `idle`, or `jump` files are expected and safe.
+
+## PetWorld Sprite Animation v2.4 Notes
+
+This patch keeps sprite animation optional and still-image fallback intact, but improves the controller behavior:
+
+- Walk animation now uses long route-based movement instead of short random steps, so pets do not appear to walk in place.
+- When a walk sprite exists, pets sometimes walk off-screen and re-enter from the opposite side for a livelier habitat feel.
+- Feeding now pauses wandering, brings the pet toward center, shows the berry/snack moment, briefly freezes the pose, then returns to idle.
+- If idle/walk/jump sheets are missing, PetWorld falls back to the existing still-image look and behavior.
+- Tunable values live in `PET_ANIM`: `routePadding`, `minTravel`, and `offscreenChance`.
