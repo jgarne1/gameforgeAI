@@ -1685,12 +1685,12 @@ function startInteractiveAdventure(){
 
   var asset=petAssetPath(pet);
   PetWorldAdventureEngine.start({
-    pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality},
+    pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality,moves:pet.moves||[],moveDefs:moves||{}},
     zone:{id:'ember_hollow'},
     callbacks:{
       onStart:function(){
         addLog((pet.name||'Your pet')+' entered Ember Hollow with you.');
-        speak('Ember Hollow is open. Reach the Ember Tree, dodge hazards, solve the root gate, then return home.');
+        speak('Ember Hollow is open. Collect fragments, inspect story objects, then return home.');
       },
       onCollect:function(c){
         if(c&&c.type==='ember_shard')floatFx('✦');
@@ -1726,7 +1726,7 @@ async function completeInteractiveAdventure(payload,beforeLevel,beforeXp){
     }
     handleRewardResult(data.result&&data.result.xpResult);
     draw();
-    showAdventureReward(data,{name:'Ember Hollow',interactive:true},beforeLevel,afterLevel,beforeXp);
+    showAdventureReward(data,{name:'Ember Hollow'},beforeLevel,afterLevel,beforeXp);
     notify(data.message||'Adventure rewards saved!');
   }catch(err){
     notify('Adventure failed: '+err.message);
@@ -1822,9 +1822,6 @@ function showAdventureReward(data,zone,beforeLevel,afterLevel,beforeXp){
   if(result.item)lines.push(['Item Found','🎁 '+Number(result.quantity||1)+' '+itemName(result.item)]);
   if(result.learnedMove)lines.push(['Move Learned','✨ '+(result.learnedMove.name||result.learnedMove.id)]);
   if(result.xpResult&&result.xpResult.xpGained)lines.push(['XP Gained','✨ '+result.xpResult.xpGained]);
-  if(result.goalReached)lines.push(['Story Goal','🌳 Ember Tree reached']);
-  if(result.puzzlesSolved)lines.push(['Puzzles Solved','🗝️ '+result.puzzlesSolved]);
-  if(result.hazardsHit!==undefined)lines.push(['Hazards Hit','🔥 '+result.hazardsHit]);
   if(afterLevel>beforeLevel)lines.push(['Level Up','Lv '+beforeLevel+' → Lv '+afterLevel]);
   if(result.bonus&&result.bonus.length)result.bonus.forEach(function(b){lines.push(['Bonus',b])});
   if(!lines.length)lines.push(['Result',data.message||'Your companion returned safely.']);
@@ -1836,8 +1833,7 @@ function showAdventureReward(data,zone,beforeLevel,afterLevel,beforeXp){
   var hint=nextUnlockHint();
   if(hint)html+='<div class="nextUnlockHint">'+escapeHtml(hint)+'</div>';
 
-  if(zone&&zone.interactive)html+='<div class="rewardFooter"><button class="ghost" onclick="endAdventureOverlay()">Close</button><button class="gold" onclick="endAdventureOverlay(); startInteractiveAdventure();">Adventure Again</button></div>';
-  else html+='<div class="rewardFooter"><button class="ghost" onclick="endAdventureOverlay()">Close</button><button class="gold" onclick="endAdventureOverlay(); exploreSelectedZone();">Scout Again</button></div>';
+  html+='<div class="rewardFooter"><button class="ghost" onclick="endAdventureOverlay()">Close</button><button class="gold" onclick="endAdventureOverlay(); exploreSelectedZone();">Explore Again</button></div>';
   card.innerHTML=html;
   card.classList.add('show');
   el('adventureTitle').innerText=title;

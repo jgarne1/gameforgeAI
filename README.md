@@ -286,3 +286,50 @@ Current v3 content/behavior:
 
 Future mode note:
 The main wilderness adventure should remain pet-first. A future special top-down puzzle or shrine mode may allow swapping between the human/player and pet, but that should be treated as a specific activity instance, not the default PetWorld exploration identity.
+
+## Ember Hollow v5 — creature encounters and readable combat
+Ember Hollow now treats hostile creatures as visible world encounters, not random battles.
+
+Current encounter flow:
+- The pet remains the controllable character.
+- Creatures roam visibly in the world.
+- Creature sight range is intentionally hidden; do not render debug cones or visible aggro boxes in player builds.
+- A creature only notices the pet when the pet is roughly on the creature's level and moving in front of it.
+- Players can avoid some encounters by using ledges, jumping routes, or timing movement around patrols.
+- When spotted, exploration freezes into a short encounter intro: the creature walks toward the pet, a message appears, and the pet backflips/retreats into battle spacing.
+- Battle uses a compact bottom skill bar and should not permanently block the play area.
+- After victory, the creature calms/drifts away and exploration resumes.
+
+Creature art contract:
+```text
+/assets/creatures/{creatureId}/idle.png
+```
+
+Current examples:
+```text
+/assets/creatures/ember_wisp/idle.png
+/assets/creatures/root_beetle/idle.png
+```
+
+If the image is missing, the engine falls back to an emoji so the game remains playable while art is being produced.
+
+Future optional creature states:
+```text
+/assets/creatures/{creatureId}/alert.png
+/assets/creatures/{creatureId}/attack.png
+/assets/creatures/{creatureId}/stunned.png
+```
+
+Do not require these states yet. Single idle images are enough for the current milestone.
+
+Adventure combat philosophy:
+- Combat is important, but should interrupt exploration briefly rather than become the whole game.
+- Prefer visible, avoidable creatures over random encounters.
+- Keep battles short and readable.
+- Do not add giant combat menus or permanent UI that blocks traversal.
+- Use the pet's unlocked moves when available; provide safe fallback moves when move data is missing.
+
+Gameplay space rule:
+- Gameplay space is sacred.
+- Prompts, battle controls, and feedback must avoid covering jumps, platforms, hazards, and important collectible paths.
+- If an overlay blocks movement readability, redesign the overlay before adding more content.
