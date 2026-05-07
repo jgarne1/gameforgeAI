@@ -255,3 +255,34 @@ Later activity sheets:
 ```
 
 Do not generate all 100 pets before the contract is stable. Use a few pets first, verify the motion language, then batch-generate by release wave.
+
+## Ember Hollow v3 — pet-first gameplay correction
+Ember Hollow v3 corrects the main identity problem found during testing: the human should not be the controllable character in the main PetWorld wilderness adventure. The active pet is now the playable character.
+
+Current v3 goals:
+- Make the pet the center of control, camera focus, animation, collision, and feedback.
+- Remove the human avatar from the main side-scroll adventure mode.
+- Make solid platforms readable and actually landable.
+- Make collectibles obvious: bright sparks collect automatically when touched.
+- Make interactables obvious: signs, relics, chests, and gates glow/highlight when nearby and use E/tap.
+- Improve moment-to-moment feedback with popups, particle bursts, landing squash/stretch, hazard stumble feedback, and clearer objective text.
+
+Important gameplay readability rules added in v3:
+- Decorative background objects must not look collectible.
+- Collectibles should glow, pulse, and collect on touch.
+- Interactables should use a clear “Use E” / nearby highlight language.
+- Platforms that are gameplay surfaces should have clear orange tops, shadows, and consistent collision.
+- Hazards should be visibly different from background decoration and should give immediate feedback when touched.
+
+Current v3 content/behavior:
+- Pet is directly controlled.
+- No human avatar is rendered in Ember Hollow.
+- Orange-topped ledges are solid and can be landed on.
+- Ember sparks magnetize slightly and collect on touch.
+- Root Gate puzzle still requires 3 sparks.
+- Objects highlight when nearby and can be activated with E/tap.
+- Hazards cause a forgiving stumble/knockback instead of death.
+- Return Home still sends a compact payload to the server; server rewards remain authoritative.
+
+Future mode note:
+The main wilderness adventure should remain pet-first. A future special top-down puzzle or shrine mode may allow swapping between the human/player and pet, but that should be treated as a specific activity instance, not the default PetWorld exploration identity.
