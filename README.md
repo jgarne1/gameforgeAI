@@ -57,12 +57,12 @@ Server endpoint:
 
 The server validates and caps rewards. Client-reported collectibles are treated as requests, not truth.
 
-## Ember Hollow v1/v2 history
+## Ember Hollow v1
 Purpose:
 - First vertical slice of the living-world direction.
 - Proves that PetWorld can support story, collection, discovery, companion presence, and rewards without battle spam.
 
-v1 content:
+Current content:
 - Ember shard collectibles.
 - A scout NPC.
 - A sign.
@@ -70,9 +70,7 @@ v1 content:
 - A hidden cache discovery.
 - Return Home reward flow.
 
-v2 expands this into a longer side-scrolling adventure with a clear goal, hazards, platforms, a root-gate puzzle, stronger story discoveries, and better reward reporting.
-
-Do not expand into fishing, crafting, housing, or more zones until the side-scroll framework feels good.
+Do not overbuild Ember Hollow before the framework feels good.
 
 ## Items added
 - `ember_shard`: common material from Ember Hollow.
@@ -182,154 +180,38 @@ Future assistants should push back when a request would:
 The README is a living architecture document. Edit or delete old sections when the game direction improves.
 
 
-## Ember Hollow v2 — side-scroll gameplay prototype
-Ember Hollow has moved from a proof-of-direction prototype into a longer side-scrolling mini-adventure.
+## Ember Hollow v7 Expansion Pass
+Ember Hollow has moved from a short prototype into a three-act adventure level. The adventure engine still keeps the pet as the controllable character, but the zone now needs stronger level pacing:
 
-Current v2 goals:
-- Give the player a clear objective: reach the Ember Tree.
-- Keep the tone cozy, but add light tension through hazards.
-- Add puzzle progression without heavy quest-log complexity.
-- Make the pet feel present through following, alert behavior, and story reactions.
-- Keep rewards server-authoritative.
+- **Act 1: Outer Hollow** teaches movement, sparks, ledges, and light creature avoidance.
+- **Act 2: Deep Roots** adds darker atmosphere, more vertical routing, stronger hazards, and a mini-boss-style encounter.
+- **Act 3: Ember Core** escalates toward a final boss and ends with a cinematic Ember Tree awakening.
 
-Current Ember Hollow v2 content:
-- Longer horizontal route.
-- Clear objective text in the adventure HUD.
-- Ember shard collection.
-- Root Gate puzzle requiring 3 ember shards.
-- Light hazard dodging with emberfalls and thorn patches.
-- Platform/ledge traversal.
-- Faded Ember Relic discovery.
-- Hidden Root-Tucked Cache discovery.
-- Ember Tree story discovery.
-- Return Home reward flow with stats for goal reached, puzzles solved, and hazards hit.
+### Boss and completion rules
+- Normal creatures should create avoidable encounter pressure.
+- Mini-boss creatures may open the path forward or mark story escalation.
+- Final bosses should trigger a completion ritual instead of just disappearing.
+- A completed zone should use an emotional payoff screen, not only a generic Return Home button.
 
-Important design decision:
-- The main wilderness/exploration layer should lean side-scrolling because it keeps pets readable, supports animation personality, and creates cinematic region atmosphere.
-- This does not ban other modes. Short top-down RPG-like micro-adventures, shrine puzzles, indoor scenes, festivals, and special events are encouraged when they are launched as story/activity instances inside the same world.
+### Ending philosophy
+Every major adventure zone should have a unique completion identity. Ember Hollow ends with the Ember Tree awakening, the pet walking forward automatically, and a result card showing sparks, discoveries, creatures calmed, and stumbles. Future regions should get their own version of this payoff instead of reusing the same ending ceremony.
 
-## Adventure structure going forward
-Avoid creating many unrelated mini-game files. Instead, build world activities as reusable activity instances.
+## Ember Hollow v8 — Room-Based Adventure Direction
 
-Preferred layering:
-1. Home/index as living player base.
-2. PetWorld as companion care and world access.
-3. Side-scroll regions for main exploration.
-4. Activity instances for special gameplay styles:
-   - fishing
-   - top-down shrine puzzles
-   - short RPG scenes
-   - festivals
-   - caves
-   - memory sequences
-5. Battles for rivals, tournaments, danger, and story moments.
+Ember Hollow is no longer treated as one long flat strip. It is moving toward a Zelda/Metroid-inspired PetWorld adventure structure:
 
-All activities should share:
-- active pet
-- inventory
-- discoveries
-- bond/affection
-- currencies
-- server-authoritative rewards
+- Rooms/areas have names, moods, and short screen-transition title cards.
+- Interactions should create world changes, not just text popups.
+- Tools/items can unlock traversal and change the map.
+- Ember Hollow now uses meaningful tools such as the Ember Lantern and Root Claw.
+- Ability barriers should block progress until the correct tool is found, then open with feedback.
+- The main story hook is Mira's missing trail and the Ember Tree pulse.
+- Enemies should feel like inhabitants or guardians, not random combat spam.
+- Environment scenes should communicate story visually: camps, broken bridges, carvings, tracks, guardian roots.
 
-## Sprite needs after Ember Hollow v2
-No new sprite sheet is required immediately because Adventure v2 still falls back to the active pet image or emoji.
+Future adventure zones should preserve this split:
 
-Recommended next sprite sheets before heavy content expansion:
-```text
-{stage}_idle.png
-{stage}_walk.png
-{stage}_jump.png
-{stage}_react.png
-{stage}_happy.png
-{stage}_hurt.png
-```
+- Engine = movement, room transitions, collisions, encounters, item gates, UI, completion flow.
+- Zone content = rooms, platforms, hazards, creatures, tools, barriers, environmental scenes, story triggers.
 
-Later activity sheets:
-```text
-{stage}_fish.png
-{stage}_dig.png
-{stage}_hit.png
-{stage}_cast.png
-{stage}_celebrate.png
-```
-
-Do not generate all 100 pets before the contract is stable. Use a few pets first, verify the motion language, then batch-generate by release wave.
-
-## Ember Hollow v3 — pet-first gameplay correction
-Ember Hollow v3 corrects the main identity problem found during testing: the human should not be the controllable character in the main PetWorld wilderness adventure. The active pet is now the playable character.
-
-Current v3 goals:
-- Make the pet the center of control, camera focus, animation, collision, and feedback.
-- Remove the human avatar from the main side-scroll adventure mode.
-- Make solid platforms readable and actually landable.
-- Make collectibles obvious: bright sparks collect automatically when touched.
-- Make interactables obvious: signs, relics, chests, and gates glow/highlight when nearby and use E/tap.
-- Improve moment-to-moment feedback with popups, particle bursts, landing squash/stretch, hazard stumble feedback, and clearer objective text.
-
-Important gameplay readability rules added in v3:
-- Decorative background objects must not look collectible.
-- Collectibles should glow, pulse, and collect on touch.
-- Interactables should use a clear “Use E” / nearby highlight language.
-- Platforms that are gameplay surfaces should have clear orange tops, shadows, and consistent collision.
-- Hazards should be visibly different from background decoration and should give immediate feedback when touched.
-
-Current v3 content/behavior:
-- Pet is directly controlled.
-- No human avatar is rendered in Ember Hollow.
-- Orange-topped ledges are solid and can be landed on.
-- Ember sparks magnetize slightly and collect on touch.
-- Root Gate puzzle still requires 3 sparks.
-- Objects highlight when nearby and can be activated with E/tap.
-- Hazards cause a forgiving stumble/knockback instead of death.
-- Return Home still sends a compact payload to the server; server rewards remain authoritative.
-
-Future mode note:
-The main wilderness adventure should remain pet-first. A future special top-down puzzle or shrine mode may allow swapping between the human/player and pet, but that should be treated as a specific activity instance, not the default PetWorld exploration identity.
-
-## Ember Hollow v5 — creature encounters and readable combat
-Ember Hollow now treats hostile creatures as visible world encounters, not random battles.
-
-Current encounter flow:
-- The pet remains the controllable character.
-- Creatures roam visibly in the world.
-- Creature sight range is intentionally hidden; do not render debug cones or visible aggro boxes in player builds.
-- A creature only notices the pet when the pet is roughly on the creature's level and moving in front of it.
-- Players can avoid some encounters by using ledges, jumping routes, or timing movement around patrols.
-- When spotted, exploration freezes into a short encounter intro: the creature walks toward the pet, a message appears, and the pet backflips/retreats into battle spacing.
-- Battle uses a compact bottom skill bar and should not permanently block the play area.
-- After victory, the creature calms/drifts away and exploration resumes.
-
-Creature art contract:
-```text
-/assets/creatures/{creatureId}/idle.png
-```
-
-Current examples:
-```text
-/assets/creatures/ember_wisp/idle.png
-/assets/creatures/root_beetle/idle.png
-```
-
-If the image is missing, the engine falls back to an emoji so the game remains playable while art is being produced.
-
-Future optional creature states:
-```text
-/assets/creatures/{creatureId}/alert.png
-/assets/creatures/{creatureId}/attack.png
-/assets/creatures/{creatureId}/stunned.png
-```
-
-Do not require these states yet. Single idle images are enough for the current milestone.
-
-Adventure combat philosophy:
-- Combat is important, but should interrupt exploration briefly rather than become the whole game.
-- Prefer visible, avoidable creatures over random encounters.
-- Keep battles short and readable.
-- Do not add giant combat menus or permanent UI that blocks traversal.
-- Use the pet's unlocked moves when available; provide safe fallback moves when move data is missing.
-
-Gameplay space rule:
-- Gameplay space is sacred.
-- Prompts, battle controls, and feedback must avoid covering jumps, platforms, hazards, and important collectible paths.
-- If an overlay blocks movement readability, redesign the overlay before adding more content.
+Next architectural goal: move Ember Hollow content out of `adventure_engine.js` into a zone file such as `games/adventures/ember_hollow.js` once the gameplay direction stabilizes.
