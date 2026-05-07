@@ -2553,16 +2553,23 @@ const ADVENTURE_ZONES={
     id:'ember_hollow',
     name:'Ember Hollow',
     minLevel:1,
-    energyCost:12,
-    maxShards:6,
-    baseXp:7,
-    baseCoins:10,
+    energyCost:14,
+    maxShards:9,
+    baseXp:8,
+    baseCoins:12,
     shardItem:'ember_shard',
     discoveryXp:4,
     discoveryCoins:5,
+    goalXp:8,
+    goalCoins:8,
+    puzzleXp:5,
+    puzzleCoins:5,
+    cleanRunCoins:6,
     discoveries:{
       ember_relic:'Faded Ember Relic',
-      ember_cache:'Root-Tucked Cache'
+      ember_cache:'Root-Tucked Cache',
+      root_gate:'Root Gate Opened',
+      ember_tree:'The Ember Tree'
     }
   }
 };
@@ -2578,18 +2585,31 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
   profile.discoveries=profile.discoveries||{};
   profile.adventure=profile.adventure||{zones:{}};
   profile.adventure.zones=profile.adventure.zones||{};
-  profile.adventure.zones[zone.id]=profile.adventure.zones[zone.id]||{runs:0,shards:0,discoveries:{}};
+  profile.adventure.zones[zone.id]=profile.adventure.zones[zone.id]||{
+    runs:0,
+    clears:0,
+    shards:0,
+    discoveries:{},
+    puzzlesSolved:0,
+    bestHazardsHit:null
+  };
   let zoneProgress=profile.adventure.zones[zone.id];
 
   let collected=(payload&&payload.collected)||{};
   let rawShardCount=Number(collected.ember_shard||collected[zone.shardItem]||0);
   let shardCount=clamp(Math.floor(rawShardCount),0,zone.maxShards);
-  let discoveries=Array.isArray(payload&&payload.discoveries)?payload.discoveries.slice(0,8):[];
+
+  let stats=(payload&&payload.stats)||{};
+  let hazardsHit=clamp(Math.floor(Number(stats.hazardsHit||0)),0,12);
+  let puzzlesSolved=clamp(Math.floor(Number(stats.puzzlesSolved||0)),0,3);
+  let goalReached=stats.goalReached===true || stats.goalReached==='true';
+
+  let discoveries=Array.isArray(payload&&payload.discoveries)?payload.discoveries.slice(0,12):[];
   let newDiscoveries=[];
 
   pet.needs.energy=clamp(Number(pet.needs.energy||0)-zone.energyCost,0,100);
-  pet.needs.happiness=clamp(Number(pet.needs.happiness||0)+5,0,100);
-  pet.affection=clamp(Number(pet.affection||0)+3,0,100);
+  pet.needs.happiness=clamp(Number(pet.needs.happiness||0)+(goalReached?7:4),0,100);
+  pet.affection=clamp(Number(pet.affection||0)+(goalReached?4:3),0,100);
 
   if(shardCount>0){
     profile.inventory[zone.shardItem]=Number(profile.inventory[zone.shardItem]||0)+shardCount;
@@ -2608,16 +2628,44 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
   });
 
   zoneProgress.runs=Number(zoneProgress.runs||0)+1;
+  if(goalReached)zoneProgress.clears=Number(zoneProgress.clears||0)+1;
+  zoneProgress.puzzlesSolved=Math.max(Number(zoneProgress.puzzlesSolved||0),puzzlesSolved);
+  if(zoneProgress.bestHazardsHit===null||zoneProgress.bestHazardsHit===undefined){
+    zoneProgress.bestHazardsHit=hazardsHit;
+  }else{
+    zoneProgress.bestHazardsHit=Math.min(Number(zoneProgress.bestHazardsHit||0),hazardsHit);
+  }
   zoneProgress.lastRunAt=Date.now();
 
   let coins=zone.baseCoins+(shardCount*2)+(newDiscoveries.length*zone.discoveryCoins);
   let xp=zone.baseXp+shardCount+(newDiscoveries.length*zone.discoveryXp);
+
+  if(goalReached){
+    coins+=zone.goalCoins;
+    xp+=zone.goalXp;
+  }
+
+  if(puzzlesSolved>0){
+    coins+=puzzlesSolved*zone.puzzleCoins;
+    xp+=puzzlesSolved*zone.puzzleXp;
+  }
+
+  if(goalReached&&hazardsHit===0){
+    coins+=zone.cleanRunCoins;
+  }
+
+  // Hazards should create tension, not hard punishment. Cap the penalty so exploration stays cozy.
+  if(hazardsHit>0){
+    coins=Math.max(4,coins-Math.min(6,hazardsHit*2));
+  }
+
   if(pet.personality==='curious')xp+=2;
   if(pet.personality==='playful')coins+=3;
 
   profile.money=Number(profile.money||0)+coins;
   let xpResult=addPetXp(pet,xp);
 
+  let progressText=goalReached?'reached the Ember Tree':'explored part of the trail';
   let result={
     zone:zone.id,
     zoneName:zone.name,
@@ -2631,12 +2679,15 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
     learnedMove:xpResult.learnedMove||null,
     leveled:!!xpResult.leveled,
     discoveries:newDiscoveries,
-    message:pet.name+' returned from '+zone.name+' with '+shardCount+' ember shard'+(shardCount===1?'':'s')+', '+coins+' coins, and '+xp+' XP.'
+    hazardsHit,
+    puzzlesSolved,
+    goalReached,
+    message:pet.name+' '+progressText+' with '+shardCount+' ember shard'+(shardCount===1?'':'s')+', '+coins+' coins, and '+xp+' XP.'
   };
 
   trackQuest(profile,'explore',1);
   trackQuest(profile,'coinsEarned',coins);
-  trackQuest(profile,'bondGain',3);
+  trackQuest(profile,'bondGain',goalReached?4:3);
 
   pet.lastUpdated=Date.now();
   return result;
