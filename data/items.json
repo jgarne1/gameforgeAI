@@ -3216,5 +3216,37 @@
     ],
     "defaultShopId": "game_shop",
     "basePrice": 50
+  },
+  "ember_shard": {
+    "id": "ember_shard",
+    "name": "Ember Shard",
+    "category": "material",
+    "rarity": "common",
+    "description": "A warm glowing fragment found in Ember Hollow. Future crafting, story quests, and fishing bait systems can consume this.",
+    "image": "/assets/items/ember_shard.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "material",
+      "adventure",
+      "ember_hollow"
+    ]
+  },
+  "ancient_fragment": {
+    "id": "ancient_fragment",
+    "name": "Ancient Fragment",
+    "category": "material",
+    "rarity": "uncommon",
+    "description": "A broken piece of old world machinery. Reserved for future adventure discoveries and story crafting.",
+    "image": "/assets/items/ancient_fragment.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "material",
+      "relic",
+      "story"
+    ]
   }
 }

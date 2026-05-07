@@ -1778,6 +1778,9 @@ function normalizePetProfile(profile,username){
   profile.market.shopOpen=!!profile.market.shopOpen;
   profile.market.shopName=String(profile.market.shopName||((username||'Player')+"'s Stall")).slice(0,32);
   profile.market.shopTheme=String(profile.market.shopTheme||'classic').slice(0,24);
+  profile.discoveries=profile.discoveries||{};
+  profile.adventure=profile.adventure||{};
+  profile.adventure.zones=profile.adventure.zones||{};
   profile.pets=profile.pets||{};
 
   Object.keys(profile.pets).forEach(pid=>{
@@ -2540,6 +2543,100 @@ function resolveExplore(profile,pet,zoneId){
 
   trackQuest(profile,'explore',1);
   trackQuest(profile,'bondGain',2);
+
+  pet.lastUpdated=Date.now();
+  return result;
+}
+
+const ADVENTURE_ZONES={
+  ember_hollow:{
+    id:'ember_hollow',
+    name:'Ember Hollow',
+    minLevel:1,
+    energyCost:12,
+    maxShards:6,
+    baseXp:7,
+    baseCoins:10,
+    shardItem:'ember_shard',
+    discoveryXp:4,
+    discoveryCoins:5,
+    discoveries:{
+      ember_relic:'Faded Ember Relic',
+      ember_cache:'Root-Tucked Cache'
+    }
+  }
+};
+
+function resolveAdventureComplete(profile,pet,zoneId,payload={}){
+  let zone=ADVENTURE_ZONES[zoneId]||ADVENTURE_ZONES.ember_hollow;
+  let level=Number((pet&&pet.stats&&pet.stats.level)||1);
+  if(!pet||pet.stage==='egg')return {error:'Eggs cannot enter Adventure yet'};
+  if(level<zone.minLevel)return {error:zone.name+' requires level '+zone.minLevel};
+  if(Number(pet.needs.energy||0)<zone.energyCost)return {error:pet.name+' is too tired for Adventure'};
+
+  profile.inventory=profile.inventory||{};
+  profile.discoveries=profile.discoveries||{};
+  profile.adventure=profile.adventure||{zones:{}};
+  profile.adventure.zones=profile.adventure.zones||{};
+  profile.adventure.zones[zone.id]=profile.adventure.zones[zone.id]||{runs:0,shards:0,discoveries:{}};
+  let zoneProgress=profile.adventure.zones[zone.id];
+
+  let collected=(payload&&payload.collected)||{};
+  let rawShardCount=Number(collected.ember_shard||collected[zone.shardItem]||0);
+  let shardCount=clamp(Math.floor(rawShardCount),0,zone.maxShards);
+  let discoveries=Array.isArray(payload&&payload.discoveries)?payload.discoveries.slice(0,8):[];
+  let newDiscoveries=[];
+
+  pet.needs.energy=clamp(Number(pet.needs.energy||0)-zone.energyCost,0,100);
+  pet.needs.happiness=clamp(Number(pet.needs.happiness||0)+5,0,100);
+  pet.affection=clamp(Number(pet.affection||0)+3,0,100);
+
+  if(shardCount>0){
+    profile.inventory[zone.shardItem]=Number(profile.inventory[zone.shardItem]||0)+shardCount;
+    zoneProgress.shards=Number(zoneProgress.shards||0)+shardCount;
+  }
+
+  discoveries.forEach(id=>{
+    id=String(id||'').slice(0,40);
+    if(!id||!zone.discoveries[id])return;
+    let globalId=zone.id+':'+id;
+    if(!profile.discoveries[globalId]){
+      profile.discoveries[globalId]={id:globalId,zoneId:zone.id,discoveryId:id,name:zone.discoveries[id],foundAt:Date.now()};
+      newDiscoveries.push(zone.discoveries[id]);
+    }
+    zoneProgress.discoveries[id]=true;
+  });
+
+  zoneProgress.runs=Number(zoneProgress.runs||0)+1;
+  zoneProgress.lastRunAt=Date.now();
+
+  let coins=zone.baseCoins+(shardCount*2)+(newDiscoveries.length*zone.discoveryCoins);
+  let xp=zone.baseXp+shardCount+(newDiscoveries.length*zone.discoveryXp);
+  if(pet.personality==='curious')xp+=2;
+  if(pet.personality==='playful')coins+=3;
+
+  profile.money=Number(profile.money||0)+coins;
+  let xpResult=addPetXp(pet,xp);
+
+  let result={
+    zone:zone.id,
+    zoneName:zone.name,
+    kind:'adventure',
+    item:shardCount>0?zone.shardItem:null,
+    quantity:shardCount,
+    amount:coins,
+    coins,
+    xp,
+    xpResult,
+    learnedMove:xpResult.learnedMove||null,
+    leveled:!!xpResult.leveled,
+    discoveries:newDiscoveries,
+    message:pet.name+' returned from '+zone.name+' with '+shardCount+' ember shard'+(shardCount===1?'':'s')+', '+coins+' coins, and '+xp+' XP.'
+  };
+
+  trackQuest(profile,'explore',1);
+  trackQuest(profile,'coinsEarned',coins);
+  trackQuest(profile,'bondGain',3);
 
   pet.lastUpdated=Date.now();
   return result;
@@ -4629,6 +4726,25 @@ app.post('/api/pet/train',(req,res)=>{
     result,
     profile
   });
+});
+
+
+app.post('/api/pet/adventure/complete',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let zoneId=String(req.body.zoneId||'ember_hollow');
+  let payload=req.body.payload||{};
+  let profile=getPetProfile(username);
+  let petId=String(req.body.petId||profile.activePetId||'');
+  let pet=petId&&profile.pets?profile.pets[petId]:null;
+  if(!pet)pet=activePet(profile);
+
+  let result=resolveAdventureComplete(profile,pet,zoneId,payload);
+  if(result.error)return res.json({error:result.error});
+
+  savePetProfile(username,profile);
+  res.json({ok:true,message:result.message,result,profile});
 });
 
 app.post('/api/pet/explore',(req,res)=>{

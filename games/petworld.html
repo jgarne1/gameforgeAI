@@ -1121,6 +1121,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   </div>
 </div>
 
+<script src="/games/js/adventure_engine.js"></script>
 <script>
 var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
@@ -1291,7 +1292,7 @@ function drawDock(){
       var z=zones[id];
       html+='<option value="'+escapeAttr(id)+'" '+(id===selectedZoneId?'selected':'')+'>'+escapeHtml(z.name)+' · Lv '+Number(z.minLevel||1)+' · ⚡ '+Number(z.energyCost||0)+'</option>';
     });
-    html+='</select><button class="gold" onclick="exploreSelectedZone()">Adventure</button><button class="gold" onclick="openPetBattle()">Battle</button></div>';
+    html+='</select><button class="gold" onclick="startInteractiveAdventure()">Adventure</button><button class="sky" onclick="exploreSelectedZone()">Scout</button><button class="gold" onclick="openPetBattle()">Battle</button></div>';
     html+='<div class="dockActions compact">';
     html+='<button class="dockBtn good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Hunger</span></button>';
     html+='<button class="dockBtn blue" onclick="playPet()"><strong>🎾 Play</strong><span>Coins + XP</span></button>';
@@ -1521,7 +1522,7 @@ function detailBox(k,v){
 
 function drawZones(){
   var pet=activePet();
-  var html='<h3>Exploration Zones</h3><p class="muted">Zones unlock with level and offer different rewards.</p>';
+  var html='<h3>Scout Zones</h3><p class="muted">Quick solo scouting burns energy for light server-approved rewards. Interactive Adventure is for story, discoveries, and targeted rewards.</p><button class="gold" onclick="startInteractiveAdventure()" style="margin-bottom:10px">Enter Ember Hollow Adventure</button>';
   Object.keys(zones||{}).forEach(function(id){
     var z=zones[id];
     var level=Number((pet.stats&&pet.stats.level)||1);
@@ -1668,6 +1669,69 @@ async function trainPet(stat){
     triggerPetReaction('train');
     draw();
   }catch(err){notify('Train failed: '+err.message)}
+}
+
+
+function startInteractiveAdventure(){
+  if(localState.adventureBusy)return;
+  var pet=activePet();
+  if(!pet)return notify('No active pet loaded.');
+  if(pet.stage==='egg')return notify('Eggs cannot enter Adventure yet. Hatch a companion first.');
+  if(!window.PetWorldAdventureEngine)return notify('Adventure engine did not load.');
+
+  localState.adventureBusy=true;
+  var beforeLevel=Number((pet.stats&&pet.stats.level)||1);
+  var beforeXp=Number((pet.stats&&pet.stats.xp)||0);
+
+  var asset=petAssetPath(pet);
+  PetWorldAdventureEngine.start({
+    pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality},
+    zone:{id:'ember_hollow'},
+    callbacks:{
+      onStart:function(){
+        addLog((pet.name||'Your pet')+' entered Ember Hollow with you.');
+        speak('Ember Hollow is open. Collect fragments, inspect story objects, then return home.');
+      },
+      onCollect:function(c){
+        if(c&&c.type==='ember_shard')floatFx('✦');
+      },
+      onInteract:function(o){
+        if(o&&o.discoveryId)addLog('Discovery clue found: '+(o.title||o.discoveryId));
+      },
+      onCancel:function(){
+        localState.adventureBusy=false;
+        speak('You left the trail before turning in rewards.');
+      },
+      onComplete:function(payload){
+        completeInteractiveAdventure(payload,beforeLevel,beforeXp);
+      }
+    }
+  });
+}
+
+async function completeInteractiveAdventure(payload,beforeLevel,beforeXp){
+  try{
+    var res=await fetch('/api/pet/adventure/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,zoneId:payload.zoneId,payload:payload})});
+    var data=await res.json();
+    if(data.error){
+      localState.adventureBusy=false;
+      return notify(data.error);
+    }
+    profile=data.profile;
+    var updated=activePet();
+    var afterLevel=Number((updated&&updated.stats&&updated.stats.level)||beforeLevel);
+    addLog(data.message||'Adventure complete.');
+    if(data.result&&data.result.discoveries&&data.result.discoveries.length){
+      data.result.discoveries.forEach(function(d){addLog('Journal discovery: '+d)});
+    }
+    handleRewardResult(data.result&&data.result.xpResult);
+    draw();
+    showAdventureReward(data,{name:'Ember Hollow'},beforeLevel,afterLevel,beforeXp);
+    notify(data.message||'Adventure rewards saved!');
+  }catch(err){
+    notify('Adventure failed: '+err.message);
+  }
+  localState.adventureBusy=false;
 }
 
 function exploreSelectedZone(){
