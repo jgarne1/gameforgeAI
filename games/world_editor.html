@@ -9,10 +9,11 @@
   *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;overflow:hidden}
   .app{display:grid;grid-template-columns:310px minmax(0,1fr) 340px;height:100vh}
   .panel{background:linear-gradient(180deg,#0d1b2a,#08131f);border-right:1px solid var(--line);padding:14px;overflow:auto}.panel.right{border-right:0;border-left:1px solid var(--line)}
-  h1{font-size:18px;margin:0 0 10px} h2{font-size:13px;color:#bfe7ff;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}.hint{font-size:12px;color:var(--muted);line-height:1.35}.row{display:flex;gap:8px;align-items:center;margin:8px 0}.row>*{min-width:0} label{font-size:12px;color:#cfe7ff;display:block;margin:8px 0 4px}.field,select,textarea{width:100%;background:#07111d;color:var(--text);border:1px solid #27425e;border-radius:9px;padding:8px;font:inherit;font-size:13px}textarea{min-height:70px;resize:vertical}button{background:#12304a;color:#eaf6ff;border:1px solid #2d5e85;border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer}button:hover{background:#174466}.primary{background:#145d82;border-color:#38bdf8}.danger{background:#4c1522;border-color:#fb7185}.tool{width:100%;text-align:left;margin:4px 0}.tool.active{outline:2px solid var(--gold)}.viewer{position:relative;overflow:auto;background:#02060b}.stageWrap{position:relative;width:1600px;height:1080px;margin:30px;transform-origin:0 0}.stageWrap img{position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}.overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.poly.walkable{fill:rgba(34,197,94,.16);stroke:rgba(34,197,94,.95)}.poly.blocker{fill:rgba(251,113,133,.18);stroke:rgba(251,113,133,.95)}.poly.foreground{fill:rgba(192,132,252,.16);stroke:rgba(192,132,252,.95)}.shape{stroke-width:3;vector-effect:non-scaling-stroke;cursor:pointer}.circle.fishing{fill:rgba(56,189,248,.18);stroke:rgba(56,189,248,.95)}.circle.npc{fill:rgba(251,191,36,.18);stroke:rgba(251,191,36,.95)}.circle.chest{fill:rgba(168,85,247,.18);stroke:rgba(168,85,247,.95)}.circle.exit{fill:rgba(244,114,182,.18);stroke:rgba(244,114,182,.95)}.circle.spawn{fill:rgba(34,211,238,.20);stroke:rgba(34,211,238,.98)}.selected{filter:drop-shadow(0 0 7px #fff);stroke-width:5}.vertex{fill:#fff;stroke:#0f172a;stroke-width:2;cursor:grab}.snap{fill:#fb923c;stroke:#111827;stroke-width:3;cursor:grab}.cast{fill:#22d3ee;stroke:#111827;stroke-width:3;cursor:grab}.labelText{font:bold 18px Arial;fill:#fff;stroke:#000;stroke-width:4;paint-order:stroke;pointer-events:none}.list{display:flex;flex-direction:column;gap:5px}.item{display:flex;align-items:center;gap:6px;border:1px solid #23405a;border-radius:8px;padding:7px;background:#07111d;cursor:pointer}.item.active{border-color:#fff;background:#132b3f}.badge{font-size:11px;padding:2px 6px;border-radius:999px;background:#1f354b;color:#cde}.mini{font-size:11px;color:var(--muted)}.notice{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0d1b2a;border:1px solid #38bdf8;padding:10px 14px;border-radius:999px;opacity:0;transition:.2s;box-shadow:0 12px 36px rgba(0,0,0,.35)}.notice.show{opacity:1}.jsonOut{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;min-height:160px;font-size:11px}.kbd{border:1px solid #3a5874;border-radius:5px;padding:1px 5px;background:#07111d;color:#eaf6ff}
+  h1{font-size:18px;margin:0 0 10px} h2{font-size:13px;color:#bfe7ff;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}.hint{font-size:12px;color:var(--muted);line-height:1.35}.row{display:flex;gap:8px;align-items:center;margin:8px 0}.row>*{min-width:0} label{font-size:12px;color:#cfe7ff;display:block;margin:8px 0 4px}.field,select,textarea{width:100%;background:#07111d;color:var(--text);border:1px solid #27425e;border-radius:9px;padding:8px;font:inherit;font-size:13px}textarea{min-height:70px;resize:vertical}button{background:#12304a;color:#eaf6ff;border:1px solid #2d5e85;border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer}button:hover{background:#174466}.primary{background:#145d82;border-color:#38bdf8}.danger{background:#4c1522;border-color:#fb7185}.tool{width:100%;text-align:left;margin:4px 0}.tool.active{outline:2px solid var(--gold)}.viewer{position:relative;overflow:auto;background:#02060b}.stageWrap{position:relative;width:1600px;height:1080px;margin:30px;transform-origin:0 0}.stageWrap img{position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}.overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.poly.walkable{fill:rgba(34,197,94,.16);stroke:rgba(34,197,94,.95)}.poly.blocker{fill:rgba(251,113,133,.18);stroke:rgba(251,113,133,.95)}.poly.foreground{fill:rgba(192,132,252,.16);stroke:rgba(192,132,252,.95)}.shape{stroke-width:3;vector-effect:non-scaling-stroke;cursor:pointer}.circle.fishing{fill:rgba(56,189,248,.18);stroke:rgba(56,189,248,.95)}.circle.npc{fill:rgba(251,191,36,.18);stroke:rgba(251,191,36,.95)}.circle.chest{fill:rgba(168,85,247,.18);stroke:rgba(168,85,247,.95)}.circle.exit{fill:rgba(244,114,182,.18);stroke:rgba(244,114,182,.95)}.circle.spawn{fill:rgba(34,211,238,.20);stroke:rgba(34,211,238,.98)}.selected{filter:drop-shadow(0 0 7px #fff);stroke-width:5}.vertex{fill:#fff;stroke:#0f172a;stroke-width:2;cursor:grab}.snap{fill:#fb923c;stroke:#111827;stroke-width:3;cursor:grab}.cast{fill:#22d3ee;stroke:#111827;stroke-width:3;cursor:grab}.labelText{font:bold 18px Arial;fill:#fff;stroke:#000;stroke-width:4;paint-order:stroke;pointer-events:none}.list{display:flex;flex-direction:column;gap:5px}.item{display:flex;align-items:center;gap:6px;border:1px solid #23405a;border-radius:8px;padding:7px;background:#07111d;cursor:pointer}.item.active{border-color:#fff;background:#132b3f}.badge{font-size:11px;padding:2px 6px;border-radius:999px;background:#1f354b;color:#cde}.mini{font-size:11px;color:var(--muted)}.zoomBar{position:fixed;left:330px;top:12px;z-index:20;display:flex;align-items:center;gap:6px;background:rgba(7,17,29,.92);border:1px solid #28435f;border-radius:12px;padding:7px 9px;box-shadow:0 12px 30px rgba(0,0,0,.35)}.zoomBar button{padding:6px 9px;border-radius:8px}.zoomBar input{width:130px}.zoomReadout{font-size:12px;color:#cfe7ff;min-width:46px;text-align:center}.notice{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0d1b2a;border:1px solid #38bdf8;padding:10px 14px;border-radius:999px;opacity:0;transition:.2s;box-shadow:0 12px 36px rgba(0,0,0,.35)}.notice.show{opacity:1}.jsonOut{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;min-height:160px;font-size:11px}.kbd{border:1px solid #3a5874;border-radius:5px;padding:1px 5px;background:#07111d;color:#eaf6ff}
 </style>
 </head>
 <body>
+<div class="zoomBar" title="Zoom only changes the editor view. Saved scene coordinates stay the same."><button id="zoomOutBtn" type="button">−</button><input id="zoomSlider" type="range" min="35" max="200" step="5" value="100"><button id="zoomInBtn" type="button">+</button><button id="zoomResetBtn" type="button">100%</button><span id="zoomReadout" class="zoomReadout">100%</span></div>
 <div class="app">
   <aside class="panel">
     <h1>World Scene Editor</h1>
@@ -49,6 +50,7 @@ var sceneId='shadow_woods_dock';
 var sceneUrl='/assets/worlds/shadow_woods_dock.json';
 var scene={id:'shadow_woods_dock',name:'Shadow Woods Dock',background:'/assets/backgrounds/shadow_woods_fishing_scene.png',size:{w:1600,h:1080},spawn:{x:560,y:705,face:'up'},walkable:[],blockers:[],hotspots:[],interactables:[],foreground:[]};
 var selected=null, tool='select', drawing=null, drag=null;
+var zoom=1;
 var svg=document.getElementById('svg'), bg=document.getElementById('bg'), stage=document.getElementById('stage'), viewer=document.getElementById('viewer');
 var sceneSelect=document.getElementById('sceneSelect');
 var scenes=[{id:'shadow_woods_dock',name:'Shadow Woods Dock',url:'/assets/worlds/shadow_woods_dock.json'},{id:'shadow_woods_river_bend',name:'Shadow Woods - River Bend',url:'/assets/worlds/shadow_woods_river_bend.json'}];
@@ -61,6 +63,7 @@ function init(){
   document.getElementById('saveBtn').onclick=saveDraft;document.getElementById('clearDraftBtn').onclick=function(){localStorage.removeItem(key());notice('Browser draft cleared. Reload to use GitHub JSON.');};
   document.getElementById('exportBtn').onclick=exportText;document.getElementById('downloadBtn').onclick=downloadJson;
   document.getElementById('fileInput').onchange=importFile;
+  setupZoomControls();
   svg.addEventListener('pointerdown',onDown);window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);window.addEventListener('keydown',onKey);
   loadScene('shadow_woods_dock',true);
 }
@@ -73,11 +76,43 @@ function loadSceneRegistry(){
 function sceneOptions(current){return '<option value="">Unassigned / future scene</option>'+scenes.map(function(s){return '<option value="'+esc(s.id)+'" '+(s.id===current?'selected':'')+'>'+(s.name||s.id)+'</option>';}).join('');}
 function spawnOptions(){var points=(scene.spawnPoints||[]).map(function(p){return p.id;});return Array.from(new Set(points.concat(['default','from_fishing_dock','from_river_bend','from_house','from_cave','from_north_path']))).filter(Boolean).map(function(id){return '<option value="'+esc(id)+'"></option>';}).join('');}
 
+
+function setupZoomControls(){
+  var slider=el('zoomSlider'), out=el('zoomReadout'), reset=el('zoomResetBtn');
+  function setZoomPercent(p,keepCenter){
+    p=Math.max(35,Math.min(200,Math.round(p/5)*5));
+    zoom=p/100;
+    if(slider)slider.value=String(p);
+    if(out)out.textContent=p+'%';
+    if(reset)reset.textContent=p+'%';
+    applyZoom(keepCenter!==false);
+  }
+  el('zoomOutBtn').onclick=function(){setZoomPercent((zoom*100)-10,true);};
+  el('zoomInBtn').onclick=function(){setZoomPercent((zoom*100)+10,true);};
+  reset.onclick=function(){setZoomPercent(100,true);};
+  slider.oninput=function(){setZoomPercent(Number(slider.value),true);};
+  viewer.addEventListener('wheel',function(e){
+    if(!e.ctrlKey&&!e.metaKey)return;
+    e.preventDefault();
+    setZoomPercent((zoom*100)+(e.deltaY<0?10:-10),true);
+  },{passive:false});
+  setZoomPercent(100,false);
+}
+function applyZoom(keepCenter){
+  var oldW=stage.getBoundingClientRect().width||((scene.size&&scene.size.w)||1600);
+  var oldH=stage.getBoundingClientRect().height||((scene.size&&scene.size.h)||1080);
+  var cx=(viewer.scrollLeft+viewer.clientWidth/2)/Math.max(1,oldW);
+  var cy=(viewer.scrollTop+viewer.clientHeight/2)/Math.max(1,oldH);
+  stage.style.transform='scale('+zoom+')';
+  stage.style.marginRight=(30+((scene.size&&scene.size.w)||1600)*(zoom-1))+'px';
+  stage.style.marginBottom=(30+((scene.size&&scene.size.h)||1080)*(zoom-1))+'px';
+  if(keepCenter){requestAnimationFrame(function(){var nw=stage.getBoundingClientRect().width,nh=stage.getBoundingClientRect().height;viewer.scrollLeft=Math.max(0,cx*nw-viewer.clientWidth/2);viewer.scrollTop=Math.max(0,cy*nh-viewer.clientHeight/2);});}
+}
 function setTool(t){tool=t;document.querySelectorAll('.tool').forEach(function(b){b.classList.toggle('active',b.dataset.tool===tool);});drawing=null;render();}
 function loadScene(id,preferDraft){sceneId=id;var meta=scenes.find(function(s){return s.id===id})||scenes[0];sceneUrl=meta.url;var draft=preferDraft&&localStorage.getItem(key());if(draft){try{scene=normalize(JSON.parse(draft));notice('Loaded browser draft for '+id);renderAll();return;}catch(e){}}
  fetch(sceneUrl+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){scene=normalize(j);notice('Loaded '+sceneUrl);renderAll();}).catch(function(){notice('Could not load JSON. Using blank scene.');renderAll();});}
 function normalize(j){j=j||{};j.size=j.size||{w:1600,h:1080};j.walkable=j.walkable||[];j.blockers=j.blockers||[];j.hotspots=j.hotspots||[];j.interactables=j.interactables||[];j.foreground=j.foreground||[];j.spawnPoints=j.spawnPoints||[];return j;}
-function renderAll(){bg.src=scene.background||'';stage.style.width=(scene.size.w||1600)+'px';stage.style.height=(scene.size.h||1080)+'px';svg.setAttribute('viewBox','0 0 '+(scene.size.w||1600)+' '+(scene.size.h||1080));updateJson();render();}
+function renderAll(){bg.src=scene.background||'';stage.style.width=(scene.size.w||1600)+'px';stage.style.height=(scene.size.h||1080)+'px';svg.setAttribute('viewBox','0 0 '+(scene.size.w||1600)+' '+(scene.size.h||1080));applyZoom(false);updateJson();render();}
 function shapes(){var a=[];['walkable','blockers','foreground','hotspots','interactables','spawnPoints'].forEach(function(k){(scene[k]||[]).forEach(function(o){o._group=k;if(k==='spawnPoints'&&!o.type)o.type='spawn';a.push(o);});});return a;}
 function render(){var html='';
  shapes().forEach(function(o){var cls=o._group==='walkable'?'walkable':o._group==='blockers'?'blocker':o._group==='foreground'?'foreground':o._group==='spawnPoints'?'spawn':(o.type||o.kind||'hotspot');var sel=o===selected?' selected':'';if(o.points){html+='<polygon data-id="'+o.id+'" class="shape poly '+cls+sel+'" points="'+o.points.map(function(p){return p[0]+','+p[1]}).join(' ')+'"></polygon>';}
