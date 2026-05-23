@@ -1,0 +1,22 @@
+{
+  "scenes": [
+    {
+      "id": "shadow_woods_dock",
+      "name": "Shadow Woods - Fishing Dock",
+      "background": "/assets/backgrounds/shadow_woods_fishing_scene.png",
+      "json": "/assets/worlds/shadow_woods_dock.json"
+    },
+    {
+      "id": "shadow_woods_clean",
+      "name": "Shadow Woods - Clean Scene",
+      "background": "/assets/backgrounds/shadow_woods_clean_scene.png",
+      "json": "/assets/worlds/shadow_woods_dock.json"
+    },
+    {
+      "id": "sunny_meadows",
+      "name": "Sunny Meadows",
+      "background": "/assets/backgrounds/sunny_meadows_map.png",
+      "json": "/assets/worlds/sunny_meadows.json"
+    }
+  ]
+}
