@@ -1,64 +1,246 @@
 {
   "id": "shadow_woods_dock",
-  "name": "Shadow Woods Dock",
+  "name": "Shadow Woods - Fishing Dock",
   "background": "/assets/backgrounds/shadow_woods_fishing_scene.png",
-  "size": { "w": 1600, "h": 1080 },
-  "spawn": { "x": 560, "y": 705, "face": "up" },
+  "size": {
+    "w": 1600,
+    "h": 1080
+  },
+  "spawn": {
+    "x": 560,
+    "y": 705,
+    "face": "up"
+  },
+  "notes": "Use games/world_editor.html to tune these zones. Keep walkable generous; use blockers only for obvious obstacles.",
   "walkable": [
     {
-      "id": "main_forest_path",
+      "id": "main_path_and_dock",
       "type": "poly",
-      "label": "Main Forest Path",
-      "points": [[0,760],[90,700],[170,620],[235,520],[310,420],[410,315],[530,215],[625,245],[535,370],[455,485],[400,620],[320,760],[245,930],[200,1080],[0,1080]]
+      "label": "Main path + dock",
+      "points": [
+        [
+          0,
+          1080
+        ],
+        [
+          0,
+          760
+        ],
+        [
+          110,
+          690
+        ],
+        [
+          205,
+          600
+        ],
+        [
+          290,
+          495
+        ],
+        [
+          390,
+          390
+        ],
+        [
+          520,
+          235
+        ],
+        [
+          625,
+          245
+        ],
+        [
+          585,
+          345
+        ],
+        [
+          505,
+          470
+        ],
+        [
+          470,
+          555
+        ],
+        [
+          605,
+          540
+        ],
+        [
+          780,
+          560
+        ],
+        [
+          965,
+          630
+        ],
+        [
+          1025,
+          690
+        ],
+        [
+          915,
+          790
+        ],
+        [
+          720,
+          835
+        ],
+        [
+          510,
+          770
+        ],
+        [
+          410,
+          835
+        ],
+        [
+          330,
+          980
+        ],
+        [
+          292,
+          1080
+        ]
+      ]
     },
     {
-      "id": "dock_approach",
+      "id": "dock_tip_forgiving",
       "type": "poly",
-      "label": "Dock Approach",
-      "points": [[370,590],[520,575],[730,555],[940,625],[1005,705],[760,835],[570,810],[400,735]]
-    },
-    {
-      "id": "dock_walkable",
-      "type": "poly",
-      "label": "Dock Walkable",
-      "points": [[560,548],[750,560],[820,615],[775,710],[610,704],[500,635]]
+      "label": "Dock tip forgiving",
+      "points": [
+        [
+          615,
+          540
+        ],
+        [
+          850,
+          560
+        ],
+        [
+          1030,
+          645
+        ],
+        [
+          1050,
+          720
+        ],
+        [
+          930,
+          805
+        ],
+        [
+          700,
+          785
+        ],
+        [
+          530,
+          735
+        ],
+        [
+          465,
+          640
+        ]
+      ]
     }
   ],
   "blockers": [
-    { "id": "left_tree_mass", "type": "circle", "label": "Left Tree Mass", "x": 325, "y": 260, "r": 85 },
-    { "id": "upper_water_rock", "type": "circle", "label": "Upper Water Rock", "x": 930, "y": 230, "r": 95 },
-    { "id": "right_tree_mass", "type": "circle", "label": "Right Tree Mass", "x": 1120, "y": 210, "r": 115 },
-    { "id": "pond_rock", "type": "circle", "label": "Pond Rock", "x": 1010, "y": 380, "r": 70 },
-    { "id": "right_forest_wall", "type": "circle", "label": "Right Forest Wall", "x": 1250, "y": 450, "r": 140 }
+    {
+      "id": "left_lamp_post",
+      "type": "circle",
+      "label": "Lamp post",
+      "x": 330,
+      "y": 475,
+      "r": 32
+    },
+    {
+      "id": "sign_post",
+      "type": "circle",
+      "label": "Sign post",
+      "x": 455,
+      "y": 560,
+      "r": 28
+    },
+    {
+      "id": "dock_lamp_post",
+      "type": "circle",
+      "label": "Dock lamp post",
+      "x": 838,
+      "y": 548,
+      "r": 30
+    },
+    {
+      "id": "dock_rail_soft",
+      "type": "poly",
+      "label": "Dock rail soft blocker",
+      "points": [
+        [
+          835,
+          520
+        ],
+        [
+          895,
+          535
+        ],
+        [
+          875,
+          585
+        ],
+        [
+          825,
+          570
+        ]
+      ]
+    }
   ],
   "hotspots": [
     {
       "id": "dock_fishing",
       "type": "fishing",
-      "label": "Fishing Spot",
-      "x": 690,
-      "y": 640,
-      "r": 110,
-      "interactAt": { "x": 690, "y": 640 },
+      "kind": "fish",
+      "label": "Fishing dock",
+      "x": 760,
+      "y": 650,
+      "r": 135,
+      "interactAt": {
+        "x": 760,
+        "y": 650
+      },
       "face": "right",
-      "castTarget": { "x": 980, "y": 510 }
+      "castTarget": {
+        "x": 1015,
+        "y": 505
+      }
     },
     {
-      "id": "woods_path_exit",
+      "id": "deeper_woods_exit",
       "type": "exit",
-      "label": "Forest Path Exit",
+      "label": "Path deeper into Shadow Woods",
       "x": 185,
       "y": 280,
-      "r": 80
+      "r": 90
     }
   ],
   "foreground": [
     {
-      "id": "lower_canopy",
-      "type": "poly",
-      "label": "Lower Canopy Fade Zone",
-      "fadeWhenPlayerInside": true,
-      "points": [[0,840],[310,790],[530,865],[560,1080],[0,1080]]
+      "id": "bottom_canopy",
+      "type": "rect",
+      "label": "Bottom dark canopy",
+      "x": 0,
+      "y": 850,
+      "w": 1600,
+      "h": 230,
+      "fadeWhenPlayerInside": true
+    },
+    {
+      "id": "left_canopy",
+      "type": "rect",
+      "label": "Left forest edge",
+      "x": 0,
+      "y": 0,
+      "w": 190,
+      "h": 1080,
+      "fadeWhenPlayerInside": true
     }
   ]
 }

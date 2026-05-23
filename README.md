@@ -1,26 +1,18 @@
-# World Boundary Editor
+# World Boundary Editor v2
 
-Adds `games/world_editor.html`, a standalone editor for tuning map boundaries.
+Adds a practical visual editor for map boundaries.
 
-## How to use
-1. Drop these files into the project.
-2. Open `/games/world_editor.html` in the browser.
-3. Load the Shadow Woods sample JSON.
-4. Draw or edit polygons over the background.
-5. Export JSON and save it as a region file under `public/assets/worlds/`.
+Open: `/games/world_editor.html`
 
-## Controls
-- Click points to create a polygon.
-- Enter = finish polygon.
-- Escape = cancel polygon.
-- Drag white handles to reshape.
-- Right-click a vertex to delete it.
-- Delete/Backspace = delete selected shape.
+Workflow:
+1. Click **Load Shadow Woods**.
+2. Edit polygons/circles directly over the map.
+3. Drag white vertices to reshape.
+4. Click **Export JSON** or **Download**.
+5. Replace `public/assets/worlds/shadow_woods_dock.json` in GitHub.
 
-## Recommended region data model
-- `walkable`: areas the player may stand in.
-- `blockers`: hard obstacles such as water, trees, rocks, fences.
-- `hotspots`: fishing spots, exits, discoveries.
-- `foreground`: canopy/fog/fade zones that render above the player.
-
-This lets future maps be tuned by JSON instead of hard-coding boundaries into the engine.
+Notes:
+- Render/GitHub cannot be directly edited by the browser, so the editor exports/downloads JSON.
+- The engine now loads `public/assets/worlds/shadow_woods_dock.json`, so future maps can be tuned without editing engine code.
+- Use generous walkable polygons and small blockers. This keeps movement from feeling sticky.
+- In the game, press `B` to show boundaries and `R` to reset to spawn.

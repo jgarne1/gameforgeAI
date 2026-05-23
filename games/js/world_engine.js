@@ -7,6 +7,7 @@
   'use strict';
 
   var MAP_W=1600, MAP_H=1080;
+  var WORLD_JSON='/assets/worlds/shadow_woods_dock.json';
   var ASSETS={
     bg:'/assets/backgrounds/shadow_woods_fishing_scene.png',
     player:'/assets/sprites/wanderer_sheet.png'
@@ -20,6 +21,7 @@
     [[370,590],[520,575],[730,555],[910,635],[960,705],[760,805],[570,785],[400,725]],
     [[315,605],[455,575],[485,635],[400,705],[300,690]]
   ];
+  var BLOCK_AREAS=[];
   var SOFT_BLOCKS=[
     {x:930,y:230,r:95},{x:1120,y:210,r:115},{x:1010,y:380,r:70},{x:1250,y:450,r:140},{x:325,y:260,r:85}
   ];
@@ -68,9 +70,37 @@
   }
 
   function start(opts){
-    mount();opts=opts||{};engine.onClose=opts.onClose||null;engine.root.classList.remove('hidden');engine.running=true;engine.mode='explore';engine.keys={};engine.target=null;engine.fish=null;
-    engine.state={x:560,y:705,vx:0,vy:0,face:'up',moving:false,animTime:0,frame:0,animKey:''};
-    layout();toast('Walk to the dock. Press E or Space near the dock to begin fishing.');engine.last=performance.now();engine.raf=requestAnimationFrame(loop);
+    mount();
+    opts=opts||{};
+    loadWorldConfig(function(){ beginStart(opts); });
+  }
+  function beginStart(opts){
+    opts=opts||{};engine.onClose=opts.onClose||null;engine.root.classList.remove('hidden');engine.running=true;engine.mode='explore';engine.keys={};engine.target=null;engine.fish=null;
+    var spawn=(engine.regionConfig&&engine.regionConfig.spawn)||{x:560,y:705,face:'up'};
+    engine.state={x:Number(spawn.x||560),y:Number(spawn.y||705),vx:0,vy:0,face:spawn.face||'up',moving:false,animTime:0,frame:0,animKey:''};
+    if(!canStand(engine.state.x,engine.state.y)){
+      var safe=findNearestSafe(engine.state.x,engine.state.y);engine.state.x=safe.x;engine.state.y=safe.y;
+    }
+    layout();toast('Walk to the dock. Press E or Space near the dock to begin fishing. Press B for boundaries, R to reset.');engine.last=performance.now();engine.raf=requestAnimationFrame(loop);
+  }
+  function loadWorldConfig(done){
+    if(engine.regionConfig){done();return;}
+    fetch(WORLD_JSON+'?v='+(Date.now()),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('No config');return r.json();}).then(function(cfg){
+      engine.regionConfig=cfg||{};
+      if(cfg.background){ASSETS.bg=cfg.background;var bg=engine.world&&engine.world.querySelector('.swBg');if(bg)bg.src=ASSETS.bg;}
+      if(cfg.size){MAP_W=Number(cfg.size.w||MAP_W);MAP_H=Number(cfg.size.h||MAP_H);}
+      if(Array.isArray(cfg.walkable)&&cfg.walkable.length){WALK_AREAS=cfg.walkable.filter(function(s){return (s.type||'poly')==='poly'&&Array.isArray(s.points);}).map(function(s){return s.points;});}
+      BLOCK_AREAS=[];SOFT_BLOCKS=[];
+      if(Array.isArray(cfg.blockers)){cfg.blockers.forEach(function(s){if((s.type||'poly')==='poly'&&Array.isArray(s.points))BLOCK_AREAS.push(s.points);else if(s.type==='circle')SOFT_BLOCKS.push({x:Number(s.x),y:Number(s.y),r:Number(s.r||30)});else if(s.type==='rect')BLOCK_AREAS.push([[s.x,s.y],[s.x+s.w,s.y],[s.x+s.w,s.y+s.h],[s.x,s.y+s.h]]);});}
+      if(Array.isArray(cfg.hotspots)&&cfg.hotspots.length){HOTSPOTS=cfg.hotspots.map(function(h){return {id:h.id,type:h.kind||h.type||'hotspot',x:Number(h.x||(h.interactAt&&h.interactAt.x)||0),y:Number(h.y||(h.interactAt&&h.interactAt.y)||0),r:Number(h.r||h.radius||90),label:h.label||h.name||h.id,interactAt:h.interactAt,castTarget:h.castTarget,face:h.face};});
+        var fish=HOTSPOTS.find(function(h){return h.type==='fish'||h.type==='fishing';});if(fish){DOCK_SPOT={x:Number((fish.interactAt&&fish.interactAt.x)||fish.x),y:Number((fish.interactAt&&fish.interactAt.y)||fish.y),face:fish.face||'right'};if(fish.castTarget)FISH_TARGET={x:Number(fish.castTarget.x),y:Number(fish.castTarget.y)};}
+      }
+      buildDebugLayer();done();
+    }).catch(function(){done();});
+  }
+  function findNearestSafe(x,y){
+    for(var r=0;r<360;r+=24){for(var a=0;a<Math.PI*2;a+=Math.PI/8){var px=x+Math.cos(a)*r,py=y+Math.sin(a)*r;if(canStand(px,py))return {x:px,y:py};}}
+    return {x:560,y:705};
   }
   function stop(){engine.running=false;cancelAnimationFrame(engine.raf);if(engine.root)engine.root.classList.add('hidden');if(engine.onClose)engine.onClose();}
 
@@ -152,7 +182,7 @@
   function startFishing(){if(engine.mode!=='explore')return;engine.mode='fish';engine.fish={phase:'walk',power:0,t:0,biteAt:1.2+Math.random()*1.4,tension:0.5,fishPos:0.5,progress:0};toast('Walking to the dock...');engine.ui.classList.remove('hidden');}
   function onPointerDown(ev){if(!engine.running)return;engine.mouseDown=true;if(engine.mode==='explore'){var p=screenToWorld(ev);if(canStand(p.x,p.y)){engine.target=p;}else {var h=nearestHotspot(p.x,p.y);if(h&&h.type==='fish')startFishing();}}else if(engine.fish&&engine.fish.phase==='bite'){engine.fish.phase='reel';engine.fish.t=0;engine.fish.tension=0.5;engine.fish.progress=0;showFishing('Reel! Hold/release to follow the fish.','Keep tension near the marker');}}
   function onPointerUp(){engine.mouseDown=false;if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='aim'){castLine();}}
-  function onKey(e){if(!engine.running)return;var down=e.type==='keydown';engine.keys[e.code]=down;if(down&&e.code==='KeyB'){toggleDebug();e.preventDefault();return;}if(down&&e.code==='KeyR'){engine.state.x=560;engine.state.y=705;engine.state.vx=0;engine.state.vy=0;engine.target=null;toast('Reset to safe spawn.');e.preventDefault();return;}if(down&&(e.code==='Escape')){if(engine.mode==='fish')endFishing();else stop();}if(down&&(e.code==='KeyE')){if(Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();}if(down&&e.code==='Space'){if(engine.mode==='explore'&&Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();else if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='bite'){engine.fish.phase='reel';engine.fish.t=0;engine.fish.tension=0.5;engine.fish.progress=0;showFishing('Reel! Hold/release to follow the fish.','Keep tension near the marker');}}if(!down&&e.code==='Space'){if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='aim')castLine();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyW','KeyA','KeyS','KeyD','KeyE'].indexOf(e.code)>=0)e.preventDefault();}
+  function onKey(e){if(!engine.running)return;var down=e.type==='keydown';engine.keys[e.code]=down;if(down&&e.code==='KeyB'){toggleDebug();e.preventDefault();return;}if(down&&e.code==='KeyR'){var spawn=(engine.regionConfig&&engine.regionConfig.spawn)||{x:560,y:705};engine.state.x=spawn.x;engine.state.y=spawn.y;engine.state.vx=0;engine.state.vy=0;engine.target=null;toast('Reset to safe spawn.');e.preventDefault();return;}if(down&&(e.code==='Escape')){if(engine.mode==='fish')endFishing();else stop();}if(down&&(e.code==='KeyE')){if(Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();}if(down&&e.code==='Space'){if(engine.mode==='explore'&&Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();else if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='bite'){engine.fish.phase='reel';engine.fish.t=0;engine.fish.tension=0.5;engine.fish.progress=0;showFishing('Reel! Hold/release to follow the fish.','Keep tension near the marker');}}if(!down&&e.code==='Space'){if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='aim')castLine();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyW','KeyA','KeyS','KeyD','KeyE'].indexOf(e.code)>=0)e.preventDefault();}
   function castLine(){var f=engine.fish;if(!f||f.phase!=='aim')return;f.phase='wait';f.t=0;f.biteAt=1.2+Math.random()*1.6;showFishing('Cast placed. Watch the float.','Wait for movement');toast('The bobber lands with a soft glow.');}
   function catchFish(){var names=['Moonlit Minnow','Blackwater Glowfin','Whisper Koi'];var n=names[Math.floor(Math.random()*names.length)];if(engine.fish)engine.fish.phase='catch';toast('Caught '+n+'!');showFishing('Caught '+n+'!','Press Esc to close or cast again soon.');setTimeout(endFishing,1200);}
   function endFishing(){engine.mode='explore';engine.fish=null;engine.ui.classList.add('hidden');document.getElementById('swBobber').classList.add('hidden');document.getElementById('swLine').classList.add('hidden');}
@@ -160,7 +190,7 @@
   function pulseBobber(){var b=document.getElementById('swBobber');b.classList.remove('bite');void b.offsetWidth;b.classList.add('bite');}
   function toast(t){var el=document.getElementById('swToast');if(!el)return;el.textContent=t;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');}
   function nearestHotspot(x,y){var best=null,bd=9999;HOTSPOTS.forEach(function(h){var d=Math.hypot(x-h.x,y-h.y);if(d<h.r&&d<bd){best=h;bd=d;}});return best;}
-  function canStand(x,y){if(x<0||y<0||x>MAP_W||y>MAP_H)return false;var inside=WALK_AREAS.some(function(poly){return pointInPoly(x,y,poly);});if(!inside)return false;for(var i=0;i<SOFT_BLOCKS.length;i++){var b=SOFT_BLOCKS[i];if(Math.hypot(x-b.x,y-b.y)<b.r)return false;}return true;}
+  function canStand(x,y){if(x<0||y<0||x>MAP_W||y>MAP_H)return false;var inside=WALK_AREAS.some(function(poly){return pointInPoly(x,y,poly);});if(!inside)return false;for(var j=0;j<BLOCK_AREAS.length;j++){if(pointInPoly(x,y,BLOCK_AREAS[j]))return false;}for(var i=0;i<SOFT_BLOCKS.length;i++){var b=SOFT_BLOCKS[i];if(Math.hypot(x-b.x,y-b.y)<b.r)return false;}return true;}
   function pointInPoly(x,y,poly){var inside=false;for(var i=0,j=poly.length-1;i<poly.length;j=i++){var xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];var intersect=((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);if(intersect)inside=!inside;}return inside;}
   function preloadSpriteSheet(){
     var img=new Image();
@@ -173,7 +203,7 @@
   function buildDebugLayer(){
     var layer=document.getElementById('swDebugLayer');if(!layer)return;var html='';
     WALK_AREAS.forEach(function(poly){html+='<svg class="swDebugPoly" viewBox="0 0 '+MAP_W+' '+MAP_H+'"><polygon points="'+poly.map(function(p){return p[0]+','+p[1]}).join(' ')+'"></polygon></svg>';});
-    SOFT_BLOCKS.forEach(function(b){html+='<div class="swDebugBlock" style="left:'+(b.x-b.r)+'px;top:'+(b.y-b.r)+'px;width:'+(b.r*2)+'px;height:'+(b.r*2)+'px"></div>';});
+    BLOCK_AREAS.forEach(function(poly){html+='<svg class="swDebugPolySvg" viewBox="0 0 '+MAP_W+' '+MAP_H+'"><polygon class="swDebugBlockPoly" points="'+poly.map(function(p){return p[0]+','+p[1]}).join(' ')+'"></polygon></svg>';});SOFT_BLOCKS.forEach(function(b){html+='<div class="swDebugBlock" style="left:'+(b.x-b.r)+'px;top:'+(b.y-b.r)+'px;width:'+(b.r*2)+'px;height:'+(b.r*2)+'px"></div>';});
     HOTSPOTS.forEach(function(h){html+='<div class="swDebugHotspot" style="left:'+(h.x-h.r)+'px;top:'+(h.y-h.r)+'px;width:'+(h.r*2)+'px;height:'+(h.r*2)+'px"><span>'+h.id+'</span></div>';});
     layer.innerHTML=html;
   }
