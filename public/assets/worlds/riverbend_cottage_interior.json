@@ -1,0 +1,361 @@
+{
+  "id": "riverbend_cottage_interior",
+  "name": "Riverbend Cottage Interior",
+  "background": "/assets/backgrounds/riverbend_cottage_interior.png",
+  "size": {
+    "w": 1402,
+    "h": 1122
+  },
+  "spawn": {
+    "x": 701,
+    "y": 995,
+    "face": "up"
+  },
+  "spawnPoints": [
+    {
+      "id": "from_riverbend",
+      "label": "From River Bend door",
+      "x": 701,
+      "y": 995,
+      "face": "up"
+    },
+    {
+      "id": "door_south",
+      "label": "South door spawn",
+      "x": 701,
+      "y": 995,
+      "face": "up"
+    }
+  ],
+  "preloadScenes": [
+    "shadow_woods_river_bend"
+  ],
+  "notes": "Interior scene attached to River Bend. Background is clean gameplay art with no UI. Fireplace effects are separate reusable scene effects so the room does not feel frozen. Use the editor to tune walkable, blockers, exit, and effects.",
+  "walkable": [
+    {
+      "id": "main_floor",
+      "type": "poly",
+      "label": "Main cottage floor",
+      "points": [
+        [
+          235,
+          470
+        ],
+        [
+          340,
+          340
+        ],
+        [
+          1115,
+          340
+        ],
+        [
+          1225,
+          475
+        ],
+        [
+          1095,
+          900
+        ],
+        [
+          862,
+          900
+        ],
+        [
+          845,
+          1068
+        ],
+        [
+          560,
+          1068
+        ],
+        [
+          543,
+          900
+        ],
+        [
+          310,
+          900
+        ]
+      ]
+    },
+    {
+      "id": "entry_foyer",
+      "type": "poly",
+      "label": "Door foyer",
+      "points": [
+        [
+          540,
+          900
+        ],
+        [
+          865,
+          900
+        ],
+        [
+          865,
+          1115
+        ],
+        [
+          540,
+          1115
+        ]
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "north_wall",
+      "type": "poly",
+      "label": "Back wall / furniture line",
+      "points": [
+        [
+          245,
+          210
+        ],
+        [
+          1165,
+          205
+        ],
+        [
+          1225,
+          470
+        ],
+        [
+          1115,
+          340
+        ],
+        [
+          340,
+          340
+        ],
+        [
+          235,
+          470
+        ]
+      ]
+    },
+    {
+      "id": "left_bed_area",
+      "type": "poly",
+      "label": "Bed and nightstand",
+      "points": [
+        [
+          125,
+          455
+        ],
+        [
+          310,
+          420
+        ],
+        [
+          360,
+          700
+        ],
+        [
+          145,
+          735
+        ]
+      ]
+    },
+    {
+      "id": "fireplace_wall",
+      "type": "poly",
+      "label": "Fireplace stonework",
+      "points": [
+        [
+          750,
+          245
+        ],
+        [
+          940,
+          240
+        ],
+        [
+          970,
+          460
+        ],
+        [
+          725,
+          460
+        ]
+      ]
+    },
+    {
+      "id": "right_storage_area",
+      "type": "poly",
+      "label": "Right shelves and table",
+      "points": [
+        [
+          1040,
+          420
+        ],
+        [
+          1310,
+          470
+        ],
+        [
+          1260,
+          860
+        ],
+        [
+          1045,
+          820
+        ]
+      ]
+    },
+    {
+      "id": "bottom_wall",
+      "type": "poly",
+      "label": "Bottom wall rail",
+      "points": [
+        [
+          265,
+          875
+        ],
+        [
+          540,
+          875
+        ],
+        [
+          540,
+          955
+        ],
+        [
+          255,
+          945
+        ]
+      ]
+    },
+    {
+      "id": "bottom_wall_right",
+      "type": "poly",
+      "label": "Bottom wall rail right",
+      "points": [
+        [
+          865,
+          875
+        ],
+        [
+          1130,
+          875
+        ],
+        [
+          1140,
+          945
+        ],
+        [
+          865,
+          955
+        ]
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "id": "exit_to_riverbend",
+      "type": "exit",
+      "label": "Back to River Bend",
+      "x": 701,
+      "y": 1060,
+      "r": 70,
+      "targetScene": "shadow_woods_river_bend",
+      "targetSpawn": "from_house",
+      "face": "down",
+      "transition": "fade"
+    }
+  ],
+  "objects": [
+    {
+      "id": "fireplace_flame",
+      "type": "animatedOverlay",
+      "label": "Fireplace flame",
+      "sprite": "/assets/effects/fireplace_flame_sheet.png",
+      "x": 803,
+      "y": 305,
+      "w": 82,
+      "h": 82,
+      "frames": 4,
+      "fps": 8,
+      "layer": "overlay",
+      "opacity": 0.95
+    },
+    {
+      "id": "warm_dust_motes",
+      "type": "animatedOverlay",
+      "label": "Warm dust motes",
+      "sprite": "/assets/effects/warm_dust_motes_sheet.png",
+      "x": 360,
+      "y": 245,
+      "w": 720,
+      "h": 570,
+      "frames": 4,
+      "fps": 3,
+      "layer": "overlay",
+      "opacity": 0.45
+    }
+  ],
+  "ambientEffects": [
+    {
+      "id": "fireplace_warm_glow",
+      "type": "ambientEffect",
+      "effect": "fireplaceGlow",
+      "label": "Fireplace warm glow",
+      "x": 790,
+      "y": 300,
+      "w": 230,
+      "h": 200,
+      "opacity": 0.65,
+      "speed": 0.7,
+      "layer": "lighting"
+    },
+    {
+      "id": "door_lantern_glow",
+      "type": "ambientEffect",
+      "effect": "lanternGlow",
+      "label": "Door lantern glow",
+      "x": 735,
+      "y": 815,
+      "w": 145,
+      "h": 185,
+      "opacity": 0.42,
+      "speed": 0.45,
+      "layer": "lighting"
+    },
+    {
+      "id": "window_warm_light",
+      "type": "ambientEffect",
+      "effect": "windowLight",
+      "label": "Soft window light",
+      "x": 510,
+      "y": 165,
+      "w": 260,
+      "h": 360,
+      "opacity": 0.24,
+      "angle": 90,
+      "layer": "lighting"
+    }
+  ],
+  "interactables": [
+    {
+      "id": "read_fireplace",
+      "type": "interaction",
+      "label": "A warm fireplace crackles softly.",
+      "x": 850,
+      "y": 440,
+      "r": 55,
+      "prompt": "Inspect fireplace",
+      "text": "The fire is carefully tended. Someone lives here."
+    },
+    {
+      "id": "read_bed",
+      "type": "interaction",
+      "label": "A neatly made bed.",
+      "x": 250,
+      "y": 595,
+      "r": 55,
+      "prompt": "Inspect bed",
+      "text": "A small book rests on the pillow."
+    }
+  ]
+}

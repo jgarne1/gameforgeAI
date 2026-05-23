@@ -9,6 +9,11 @@
       "id": "shadow_woods_river_bend",
       "name": "Shadow Woods - River Bend",
       "url": "/assets/worlds/shadow_woods_river_bend.json"
+    },
+    {
+      "id": "riverbend_cottage_interior",
+      "name": "Riverbend Cottage Interior",
+      "url": "/assets/worlds/riverbend_cottage_interior.json"
     }
   ]
 }

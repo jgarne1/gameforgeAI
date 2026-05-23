@@ -596,5 +596,22 @@
       "h": 134,
       "fadeWhenPlayerInside": true
     }
+  ],
+  "preloadScenes": [
+    "riverbend_cottage_interior"
+  ],
+  "exits": [
+    {
+      "id": "enter_riverbend_cottage",
+      "type": "exit",
+      "label": "Enter riverside cottage",
+      "x": 240,
+      "y": 745,
+      "r": 75,
+      "targetScene": "riverbend_cottage_interior",
+      "targetSpawn": "from_riverbend",
+      "face": "up",
+      "transition": "fade"
+    }
   ]
 }
