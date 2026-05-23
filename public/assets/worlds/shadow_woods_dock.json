@@ -214,19 +214,26 @@
       "snapPosition": {
         "x": 760,
         "y": 650
-      }
+      },
+      "standArea": {
+        "x": 760,
+        "y": 650,
+        "r": 75
+      },
+      "castArea": {
+        "x": 1015,
+        "y": 505,
+        "r": 115
+      },
+      "difficulty": 1
     },
     {
       "id": "deeper_woods_exit",
       "type": "exit",
-      "label": "North trail to River Bend",
+      "label": "Path deeper into Shadow Woods",
       "x": 185,
       "y": 280,
-      "r": 90,
-      "kind": "exit",
-      "targetScene": "shadow_woods_river_bend",
-      "targetSpawn": "from_fishing_dock",
-      "text": "Follow the north trail toward the river bend."
+      "r": 90
     }
   ],
   "foreground": [
@@ -275,20 +282,58 @@
       "text": "Inside is a simple lure wrapped in dry leaves."
     }
   ],
-  "spawnPoints": [
+  "ambientEffects": [
     {
-      "id": "default",
-      "label": "Default dock spawn",
-      "x": 560,
-      "y": 705,
-      "face": "up"
+      "id": "dock_water_shimmer_01",
+      "type": "ambientEffect",
+      "label": "Dock water shimmer",
+      "effect": "pondShimmer",
+      "x": 835,
+      "y": 420,
+      "w": 360,
+      "h": 210,
+      "opacity": 0.55,
+      "density": 0.35,
+      "speed": 0.8
     },
     {
-      "id": "from_river_bend",
-      "label": "Return from River Bend",
-      "x": 210,
-      "y": 330,
-      "face": "down"
+      "id": "dock_ripple_01",
+      "type": "ambientEffect",
+      "label": "Fishing water ripple",
+      "effect": "waterRipple",
+      "x": 955,
+      "y": 455,
+      "w": 150,
+      "h": 110,
+      "opacity": 0.8,
+      "density": 0.45,
+      "speed": 1
+    },
+    {
+      "id": "dock_falling_leaves_01",
+      "type": "ambientEffect",
+      "label": "Falling leaves over dock path",
+      "effect": "fallingLeaves",
+      "x": 300,
+      "y": 130,
+      "w": 560,
+      "h": 520,
+      "opacity": 0.7,
+      "density": 0.4,
+      "speed": 0.75
+    },
+    {
+      "id": "dock_fireflies_01",
+      "type": "ambientEffect",
+      "label": "Fireflies near shoreline",
+      "effect": "fireflies",
+      "x": 430,
+      "y": 510,
+      "w": 260,
+      "h": 190,
+      "opacity": 0.8,
+      "density": 0.35,
+      "speed": 0.85
     }
   ]
 }
