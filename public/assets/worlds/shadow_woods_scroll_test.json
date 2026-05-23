@@ -11,7 +11,7 @@
     "y": 705,
     "face": "up"
   },
-  "notes": "Experimental scrolling overworld test. Safe to remove; existing dock scene remains unchanged.",
+  "notes": "Experimental scrolling overworld test. Safe to remove; existing dock scene remains unchanged. Camera tuned: zoomed out and player sprite enlarged for better RPG overworld readability.",
   "walkable": [
     {
       "id": "scroll_test_generous_overworld",
@@ -459,7 +459,8 @@
   "scrolling": true,
   "camera": {
     "mode": "scroll",
-    "scale": 1,
+    "scale": 0.82,
     "smooth": 0.13
-  }
+  },
+  "playerScale": 0.95
 }
