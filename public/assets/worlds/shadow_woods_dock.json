@@ -1,0 +1,64 @@
+{
+  "id": "shadow_woods_dock",
+  "name": "Shadow Woods Dock",
+  "background": "/assets/backgrounds/shadow_woods_fishing_scene.png",
+  "size": { "w": 1600, "h": 1080 },
+  "spawn": { "x": 560, "y": 705, "face": "up" },
+  "walkable": [
+    {
+      "id": "main_forest_path",
+      "type": "poly",
+      "label": "Main Forest Path",
+      "points": [[0,760],[90,700],[170,620],[235,520],[310,420],[410,315],[530,215],[625,245],[535,370],[455,485],[400,620],[320,760],[245,930],[200,1080],[0,1080]]
+    },
+    {
+      "id": "dock_approach",
+      "type": "poly",
+      "label": "Dock Approach",
+      "points": [[370,590],[520,575],[730,555],[940,625],[1005,705],[760,835],[570,810],[400,735]]
+    },
+    {
+      "id": "dock_walkable",
+      "type": "poly",
+      "label": "Dock Walkable",
+      "points": [[560,548],[750,560],[820,615],[775,710],[610,704],[500,635]]
+    }
+  ],
+  "blockers": [
+    { "id": "left_tree_mass", "type": "circle", "label": "Left Tree Mass", "x": 325, "y": 260, "r": 85 },
+    { "id": "upper_water_rock", "type": "circle", "label": "Upper Water Rock", "x": 930, "y": 230, "r": 95 },
+    { "id": "right_tree_mass", "type": "circle", "label": "Right Tree Mass", "x": 1120, "y": 210, "r": 115 },
+    { "id": "pond_rock", "type": "circle", "label": "Pond Rock", "x": 1010, "y": 380, "r": 70 },
+    { "id": "right_forest_wall", "type": "circle", "label": "Right Forest Wall", "x": 1250, "y": 450, "r": 140 }
+  ],
+  "hotspots": [
+    {
+      "id": "dock_fishing",
+      "type": "fishing",
+      "label": "Fishing Spot",
+      "x": 690,
+      "y": 640,
+      "r": 110,
+      "interactAt": { "x": 690, "y": 640 },
+      "face": "right",
+      "castTarget": { "x": 980, "y": 510 }
+    },
+    {
+      "id": "woods_path_exit",
+      "type": "exit",
+      "label": "Forest Path Exit",
+      "x": 185,
+      "y": 280,
+      "r": 80
+    }
+  ],
+  "foreground": [
+    {
+      "id": "lower_canopy",
+      "type": "poly",
+      "label": "Lower Canopy Fade Zone",
+      "fadeWhenPlayerInside": true,
+      "points": [[0,840],[310,790],[530,865],[560,1080],[0,1080]]
+    }
+  ]
+}

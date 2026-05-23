@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GameForge World Boundary Editor</title>
+  <style>
+    :root{
+      --bg:#07111f;--panel:#0c1728;--panel2:#111e33;--line:#28415f;--text:#eaf4ff;--muted:#9fb1c6;
+      --walk:#38d67a;--block:#ff5f69;--hot:#54b8ff;--fore:#d781ff;--spawn:#ffd166;
+    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;height:100vh;overflow:hidden}
+    .app{display:grid;grid-template-columns:320px minmax(0,1fr) 360px;height:100vh}
+    aside{background:linear-gradient(180deg,var(--panel),#081120);border-right:1px solid var(--line);padding:14px;overflow:auto}
+    .right{border-right:0;border-left:1px solid var(--line)}
+    h1{font-size:18px;margin:0 0 8px} h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#a7d4ff;margin:18px 0 8px}
+    p{font-size:12px;line-height:1.35;color:var(--muted);margin:6px 0 12px}
+    button,input,select,textarea{font:inherit} button{border:1px solid var(--line);background:#14243b;color:var(--text);border-radius:10px;padding:8px 10px;cursor:pointer;font-weight:700}
+    button:hover{background:#1a3151}.primary{background:#1e6eea;border-color:#61a5ff}.danger{background:#4a1620;border-color:#993241}.small{font-size:12px;padding:6px 8px;border-radius:8px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.row>*{min-width:0}.grow{flex:1}.field{display:grid;gap:5px;margin:8px 0}.field label{font-size:12px;color:#bdd7ef;font-weight:800}
+    input,select,textarea{width:100%;background:#07101d;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px}
+    textarea{height:260px;font-family:Consolas,monospace;font-size:11px;resize:vertical}.viewport{position:relative;overflow:hidden;background:#02050b}.stageWrap{position:absolute;inset:0;overflow:auto;padding:40px}.stage{position:relative;transform-origin:0 0;box-shadow:0 20px 80px rgba(0,0,0,.45);background:#111;border:1px solid #334}
+    #mapImg{position:absolute;left:0;top:0;width:100%;height:100%;user-select:none;pointer-events:none}.overlay{position:absolute;left:0;top:0;width:100%;height:100%;cursor:crosshair}.list{display:grid;gap:7px}.item{background:#0a1424;border:1px solid var(--line);border-radius:10px;padding:8px;display:grid;gap:4px}.item.active{outline:2px solid #fff}.item b{font-size:13px}.item small{color:var(--muted)}
+    .chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:3px 7px;border-radius:999px;background:#12243a;color:#d4e9ff}.chip.walkable{color:#aaffc8}.chip.blockers{color:#ffc0c5}.chip.hotspots{color:#bfe5ff}.chip.foreground{color:#efc6ff}
+    .help{background:#081525;border:1px solid var(--line);padding:10px;border-radius:12px}.kbd{font-family:Consolas,monospace;background:#01060d;border:1px solid #29435f;padding:1px 5px;border-radius:5px;color:#fff}.toggle{display:flex;gap:8px;align-items:center;margin:6px 0;font-size:13px;color:#cfe4f7}.toggle input{width:auto}.coords{position:absolute;left:12px;bottom:12px;padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.65);font-family:Consolas,monospace;font-size:12px;pointer-events:none}.modeBadge{position:absolute;right:12px;bottom:12px;padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.65);font-size:12px;pointer-events:none}.warn{color:#ffd166;font-size:12px}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>World Boundary Editor</h1>
+    <p>Draw and tune walkable areas, blockers, fishing spots, exits, and foreground fade zones over a map image. Export JSON and drop it into <b>public/assets/worlds/</b>.</p>
+
+    <h2>Map</h2>
+    <div class="field"><label>Background URL</label><input id="bgUrl" value="/assets/backgrounds/shadow_woods_fishing_scene.png"></div>
+    <div class="row"><button id="loadBg" class="primary">Load Image</button><button id="loadSample">Load Sample JSON</button></div>
+    <div class="row"><button id="zoomOut" class="small">− Zoom</button><button id="zoomIn" class="small">+ Zoom</button><button id="fit" class="small">Fit</button></div>
+
+    <h2>Create Shape</h2>
+    <div class="field"><label>Layer</label><select id="layer"><option value="walkable">Walkable</option><option value="blockers">Blocker</option><option value="hotspots">Hotspot</option><option value="foreground">Foreground Fade</option></select></div>
+    <div class="field"><label>Shape Type</label><select id="shapeType"><option value="poly">Polygon</option><option value="circle">Circle</option></select></div>
+    <div class="field"><label>Label</label><input id="shapeLabel" value="New Shape"></div>
+    <div class="row"><button id="newShape" class="primary">Start Shape</button><button id="finishShape">Finish</button><button id="cancelShape">Cancel</button></div>
+    <p class="help">Polygon: click points on the map, then <span class="kbd">Enter</span> or Finish. Drag points to reshape. Right-click a point to delete it. Circle: click center, then drag radius handle.</p>
+
+    <h2>Layers</h2>
+    <label class="toggle"><input type="checkbox" data-vis="walkable" checked> Walkable</label>
+    <label class="toggle"><input type="checkbox" data-vis="blockers" checked> Blockers</label>
+    <label class="toggle"><input type="checkbox" data-vis="hotspots" checked> Hotspots</label>
+    <label class="toggle"><input type="checkbox" data-vis="foreground" checked> Foreground</label>
+    <label class="toggle"><input type="checkbox" id="showGrid"> Grid</label>
+  </aside>
+
+  <main class="viewport">
+    <div class="stageWrap" id="stageWrap"><div class="stage" id="stage"><img id="mapImg" alt="map"><svg class="overlay" id="svg"></svg></div></div>
+    <div class="coords" id="coords">x:0 y:0</div><div class="modeBadge" id="modeBadge">Select / Drag</div>
+  </main>
+
+  <aside class="right">
+    <h2>Selected</h2>
+    <div id="selectedPanel" class="help">No shape selected.</div>
+    <h2>Shapes</h2>
+    <div class="list" id="shapeList"></div>
+    <h2>Export</h2>
+    <div class="row"><button id="exportJson" class="primary">Export JSON</button><button id="copyJson">Copy</button></div>
+    <textarea id="jsonOut" spellcheck="false"></textarea>
+    <p class="warn">This editor exports JSON only. For now, copy the JSON into the matching region file. Later we can add a server save endpoint.</p>
+  </aside>
+</div>
+<script>
+(function(){
+  const sampleUrl='/assets/worlds/shadow_woods_dock.json';
+  const state={scale:0.7,w:1600,h:1080,data:null,selected:null,creating:null,drag:null,visible:{walkable:true,blockers:true,hotspots:true,foreground:true},grid:false};
+  const stage=document.getElementById('stage'),img=document.getElementById('mapImg'),svg=document.getElementById('svg'),coords=document.getElementById('coords'),modeBadge=document.getElementById('modeBadge');
+  const layerColors={walkable:'#38d67a',blockers:'#ff5f69',hotspots:'#54b8ff',foreground:'#d781ff'};
+  function blank(){return {id:'custom_world',name:'Custom World',background:document.getElementById('bgUrl').value,size:{w:1600,h:1080},spawn:{x:560,y:705,face:'up'},walkable:[],blockers:[],hotspots:[],foreground:[]};}
+  state.data=blank();
+  function resize(){stage.style.width=state.w+'px';stage.style.height=state.h+'px';stage.style.transform='scale('+state.scale+')';svg.setAttribute('viewBox','0 0 '+state.w+' '+state.h');svg.setAttribute('width',state.w);svg.setAttribute('height',state.h);}
+  function loadBg(){img.src=document.getElementById('bgUrl').value;img.onload=()=>{state.w=img.naturalWidth||1600;state.h=img.naturalHeight||1080;state.data.size={w:state.w,h:state.h};resize();render();};}
+  function pt(evt){const r=svg.getBoundingClientRect();return {x:Math.round((evt.clientX-r.left)/state.scale),y:Math.round((evt.clientY-r.top)/state.scale)};}
+  function uid(prefix){return prefix+'_'+Math.random().toString(36).slice(2,8);}
+  function allShapes(){let out=[];['walkable','blockers','hotspots','foreground'].forEach(layer=>(state.data[layer]||[]).forEach(s=>out.push({layer,shape:s})));return out;}
+  function startShape(){const layer=document.getElementById('layer').value,type=document.getElementById('shapeType').value,label=document.getElementById('shapeLabel').value||'New Shape';const shape={id:uid(layer),type,label};if(type==='poly')shape.points=[];else{shape.x=state.w/2;shape.y=state.h/2;shape.r=60;}state.creating={layer,shape};modeBadge.textContent='Creating '+type+' on '+layer;}
+  function finishShape(){if(!state.creating)return;const {layer,shape}=state.creating;if(shape.type==='poly'&&shape.points.length<3){alert('Polygon needs at least 3 points.');return;}state.data[layer].push(shape);state.selected={layer,shape};state.creating=null;modeBadge.textContent='Select / Drag';render();}
+  function cancelShape(){state.creating=null;modeBadge.textContent='Select / Drag';render();}
+  function render(){resize();svg.innerHTML='';if(state.grid)drawGrid();allShapes().forEach(({layer,shape})=>{if(state.visible[layer])drawShape(layer,shape,false);});if(state.creating)drawShape(state.creating.layer,state.creating.shape,true);renderList();renderSelected();}
+  function drawGrid(){const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('opacity','.24');for(let x=0;x<state.w;x+=50){let l=line(x,0,x,state.h,'#fff',1);g.appendChild(l)}for(let y=0;y<state.h;y+=50){let l=line(0,y,state.w,y,'#fff',1);g.appendChild(l)}svg.appendChild(g);}
+  function line(x1,y1,x2,y2,c,w){const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke',c);l.setAttribute('stroke-width',w);return l;}
+  function drawShape(layer,shape,creating){const color=layerColors[layer];const active=state.selected&&state.selected.shape===shape;const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.dataset.id=shape.id;g.dataset.layer=layer;g.style.cursor='move';
+    if(shape.type==='circle'||shape.r){const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',shape.x);c.setAttribute('cy',shape.y);c.setAttribute('r',shape.r);c.setAttribute('fill',color);c.setAttribute('fill-opacity',layer==='hotspots'?'.22':'.14');c.setAttribute('stroke',active?'#fff':color);c.setAttribute('stroke-width',active?4:2);g.appendChild(c);const h=handle(shape.x+shape.r,shape.y,color);h.dataset.kind='radius';g.appendChild(h);}
+    else{const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');poly.setAttribute('points',shape.points.map(p=>p[0]+','+p[1]).join(' '));poly.setAttribute('fill',color);poly.setAttribute('fill-opacity',creating?'.10':'.16');poly.setAttribute('stroke',active?'#fff':color);poly.setAttribute('stroke-width',active?4:2);g.appendChild(poly);shape.points.forEach((p,i)=>{const h=handle(p[0],p[1],color);h.dataset.index=i;g.appendChild(h);});}
+    const label=document.createElementNS('http://www.w3.org/2000/svg','text');const center=getCenter(shape);label.setAttribute('x',center.x);label.setAttribute('y',center.y);label.setAttribute('fill','#fff');label.setAttribute('font-size','18');label.setAttribute('font-weight','800');label.setAttribute('text-anchor','middle');label.setAttribute('paint-order','stroke');label.setAttribute('stroke','#000');label.setAttribute('stroke-width','4');label.textContent=shape.label||shape.id;g.appendChild(label);
+    g.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.stopPropagation();state.selected={layer,shape};const p=pt(e);if(e.target.dataset.index!=null){state.drag={kind:'vertex',shape,idx:+e.target.dataset.index,start:p};}else if(e.target.dataset.kind==='radius'){state.drag={kind:'radius',shape,start:p};}else{state.drag={kind:'shape',shape,start:p,orig:JSON.parse(JSON.stringify(shape))};}render();});
+    svg.appendChild(g);
+  }
+  function handle(x,y,color){const h=document.createElementNS('http://www.w3.org/2000/svg','circle');h.setAttribute('cx',x);h.setAttribute('cy',y);h.setAttribute('r',8);h.setAttribute('fill','#fff');h.setAttribute('stroke',color);h.setAttribute('stroke-width',3);h.style.cursor='grab';return h;}
+  function getCenter(s){if(s.r)return {x:s.x,y:s.y};let x=0,y=0;(s.points||[]).forEach(p=>{x+=p[0];y+=p[1]});let n=Math.max(1,(s.points||[]).length);return {x:x/n,y:y/n};}
+  svg.addEventListener('pointerdown',e=>{const p=pt(e);if(state.creating){if(state.creating.shape.type==='poly'){state.creating.shape.points.push([p.x,p.y]);render();}else{state.creating.shape.x=p.x;state.creating.shape.y=p.y;state.drag={kind:'radius',shape:state.creating.shape,start:p};render();}return;}state.selected=null;render();});
+  svg.addEventListener('pointermove',e=>{const p=pt(e);coords.textContent='x:'+p.x+' y:'+p.y;if(!state.drag)return;const d=state.drag,dx=p.x-d.start.x,dy=p.y-d.start.y,s=d.shape;if(d.kind==='vertex'){s.points[d.idx]=[p.x,p.y];}else if(d.kind==='radius'){s.r=Math.max(8,Math.round(Math.hypot(p.x-s.x,p.y-s.y)));}else if(d.kind==='shape'){if(s.r){s.x=d.orig.x+dx;s.y=d.orig.y+dy;}else{s.points=d.orig.points.map(q=>[q[0]+dx,q[1]+dy]);}}render();});
+  window.addEventListener('pointerup',()=>{state.drag=null});
+  svg.addEventListener('contextmenu',e=>{e.preventDefault();const t=e.target;if(t.dataset.index!=null&&state.selected){const s=state.selected.shape;if(s.points&&s.points.length>3){s.points.splice(+t.dataset.index,1);render();}}});
+  window.addEventListener('keydown',e=>{if(e.key==='Enter')finishShape();if(e.key==='Escape')cancelShape();if((e.key==='Delete'||e.key==='Backspace')&&state.selected){const arr=state.data[state.selected.layer];const i=arr.indexOf(state.selected.shape);if(i>=0)arr.splice(i,1);state.selected=null;render();}});
+  function renderList(){const list=document.getElementById('shapeList');list.innerHTML='';allShapes().forEach(({layer,shape})=>{const div=document.createElement('div');div.className='item '+(state.selected&&state.selected.shape===shape?'active':'');div.innerHTML='<b>'+escapeHtml(shape.label||shape.id)+'</b><small><span class="chip '+layer+'">'+layer+'</span> '+(shape.type||'circle')+' • '+shape.id+'</small>';div.onclick=()=>{state.selected={layer,shape};render();};list.appendChild(div);});}
+  function renderSelected(){const p=document.getElementById('selectedPanel');if(!state.selected){p.innerHTML='No shape selected.';return;}const {layer,shape}=state.selected;p.innerHTML='<div class="field"><label>Label</label><input id="editLabel" value="'+escapeAttr(shape.label||'')+'"></div><div class="field"><label>ID</label><input id="editId" value="'+escapeAttr(shape.id||'')+'"></div><p><span class="chip '+layer+'">'+layer+'</span> '+(shape.type||'circle')+'</p><button id="deleteShape" class="danger">Delete Shape</button>';document.getElementById('editLabel').oninput=e=>{shape.label=e.target.value;render();};document.getElementById('editId').oninput=e=>{shape.id=e.target.value;render();};document.getElementById('deleteShape').onclick=()=>{const arr=state.data[layer];const i=arr.indexOf(shape);if(i>=0)arr.splice(i,1);state.selected=null;render();};}
+  function exportJson(){state.data.background=document.getElementById('bgUrl').value;state.data.size={w:state.w,h:state.h};document.getElementById('jsonOut').value=JSON.stringify(state.data,null,2);}
+  function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}function escapeAttr(s){return escapeHtml(s).replace(/'/g,'&#39;');}
+  async function loadSample(){try{const r=await fetch(sampleUrl);state.data=await r.json();document.getElementById('bgUrl').value=state.data.background;loadBg();}catch(e){alert('Could not load sample JSON. Make sure public/assets/worlds/shadow_woods_dock.json exists.');}}
+  document.getElementById('loadBg').onclick=loadBg;document.getElementById('loadSample').onclick=loadSample;document.getElementById('newShape').onclick=startShape;document.getElementById('finishShape').onclick=finishShape;document.getElementById('cancelShape').onclick=cancelShape;document.getElementById('exportJson').onclick=exportJson;document.getElementById('copyJson').onclick=async()=>{exportJson();await navigator.clipboard.writeText(document.getElementById('jsonOut').value);};
+  document.getElementById('zoomIn').onclick=()=>{state.scale=Math.min(2.5,state.scale+.1);resize();};document.getElementById('zoomOut').onclick=()=>{state.scale=Math.max(.15,state.scale-.1);resize();};document.getElementById('fit').onclick=()=>{const wrap=document.getElementById('stageWrap');state.scale=Math.min((wrap.clientWidth-80)/state.w,(wrap.clientHeight-80)/state.h);resize();};
+  document.querySelectorAll('[data-vis]').forEach(c=>c.onchange=()=>{state.visible[c.dataset.vis]=c.checked;render();});document.getElementById('showGrid').onchange=e=>{state.grid=e.target.checked;render();};
+  loadBg();setTimeout(()=>document.getElementById('fit').click(),250);
+})();
+</script>
+</body>
+</html>

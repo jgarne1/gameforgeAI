@@ -1,25 +1,26 @@
-# Shadow Woods vertical slice v1.1
+# World Boundary Editor
 
-Patch focus:
-- Fixes sprite-sheet frame slicing so the player no longer flashes/scrolls through two images at once.
-- Uses the 12-row animation contract: idle/walk/fishing rows, 128x128 frame cells.
-- Auto-detects whether the sheet is 768x1536 (6 columns) or 1024x1536 (8 columns) as long as each cell is 128x128.
-- Adds animation-state reset when changing direction/action to prevent flicker.
-- Adds `B` debug boundary overlay for walkable zones, blockers, and hotspots.
-- Adds `R` reset/unstuck to return to a safe spawn.
+Adds `games/world_editor.html`, a standalone editor for tuning map boundaries.
 
-Current controls:
-- WASD / arrows: move
-- Click/tap valid ground: move target
-- E or Space near dock: begin fishing
-- B: boundary debug overlay
-- R: reset to safe spawn
-- Esc: exit fishing / leave scene
+## How to use
+1. Drop these files into the project.
+2. Open `/games/world_editor.html` in the browser.
+3. Load the Shadow Woods sample JSON.
+4. Draw or edit polygons over the background.
+5. Export JSON and save it as a region file under `public/assets/worlds/`.
 
-Sprite contract:
-- transparent PNG
-- 128x128 cells
-- 12 rows
-- rows 1-4 idle down/up/left/right
-- rows 5-8 walk down/up/left/right
-- rows 9-12 fish idle/cast/reel/catch facing right
+## Controls
+- Click points to create a polygon.
+- Enter = finish polygon.
+- Escape = cancel polygon.
+- Drag white handles to reshape.
+- Right-click a vertex to delete it.
+- Delete/Backspace = delete selected shape.
+
+## Recommended region data model
+- `walkable`: areas the player may stand in.
+- `blockers`: hard obstacles such as water, trees, rocks, fences.
+- `hotspots`: fishing spots, exits, discoveries.
+- `foreground`: canopy/fog/fade zones that render above the player.
+
+This lets future maps be tuned by JSON instead of hard-coding boundaries into the engine.
