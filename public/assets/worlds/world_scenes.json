@@ -6,6 +6,11 @@
       "url": "/assets/worlds/shadow_woods_dock.json"
     },
     {
+      "id": "shadow_woods_scroll_test",
+      "name": "Shadow Woods - Scrolling Test",
+      "url": "/assets/worlds/shadow_woods_scroll_test.json"
+    },
+    {
       "id": "shadow_woods_river_bend",
       "name": "Shadow Woods - River Bend",
       "url": "/assets/worlds/shadow_woods_river_bend.json"

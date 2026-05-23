@@ -1,0 +1,465 @@
+{
+  "id": "shadow_woods_scroll_test",
+  "name": "Shadow Woods - Scrolling Overworld Test",
+  "background": "/assets/backgrounds/shadow_woods_fishing_scene.png",
+  "size": {
+    "w": 2400,
+    "h": 1600
+  },
+  "spawn": {
+    "x": 560,
+    "y": 705,
+    "face": "up"
+  },
+  "notes": "Experimental scrolling overworld test. Safe to remove; existing dock scene remains unchanged.",
+  "walkable": [
+    {
+      "id": "scroll_test_generous_overworld",
+      "type": "poly",
+      "label": "Scrollable overworld test bounds",
+      "points": [
+        [
+          80,
+          1540
+        ],
+        [
+          80,
+          1120
+        ],
+        [
+          230,
+          930
+        ],
+        [
+          420,
+          760
+        ],
+        [
+          590,
+          565
+        ],
+        [
+          760,
+          380
+        ],
+        [
+          980,
+          245
+        ],
+        [
+          1240,
+          235
+        ],
+        [
+          1460,
+          330
+        ],
+        [
+          1660,
+          510
+        ],
+        [
+          1880,
+          620
+        ],
+        [
+          2150,
+          800
+        ],
+        [
+          2310,
+          1030
+        ],
+        [
+          2320,
+          1420
+        ],
+        [
+          2130,
+          1540
+        ]
+      ]
+    },
+    {
+      "id": "left_lower_path",
+      "type": "poly",
+      "label": "Lower exploration path",
+      "points": [
+        [
+          80,
+          1540
+        ],
+        [
+          520,
+          1540
+        ],
+        [
+          760,
+          1320
+        ],
+        [
+          940,
+          1140
+        ],
+        [
+          900,
+          970
+        ],
+        [
+          620,
+          1000
+        ],
+        [
+          350,
+          1160
+        ],
+        [
+          80,
+          1320
+        ]
+      ]
+    },
+    {
+      "id": "right_river_path",
+      "type": "poly",
+      "label": "Right river path",
+      "points": [
+        [
+          1160,
+          760
+        ],
+        [
+          1510,
+          660
+        ],
+        [
+          1860,
+          690
+        ],
+        [
+          2180,
+          850
+        ],
+        [
+          2320,
+          1050
+        ],
+        [
+          2220,
+          1230
+        ],
+        [
+          1880,
+          1120
+        ],
+        [
+          1560,
+          980
+        ],
+        [
+          1280,
+          920
+        ]
+      ]
+    }
+  ],
+  "blockers": [],
+  "hotspots": [
+    {
+      "id": "dock_fishing",
+      "type": "fishing",
+      "kind": "fish",
+      "label": "Fishing dock",
+      "x": 760,
+      "y": 650,
+      "r": 135,
+      "interactAt": {
+        "x": 760,
+        "y": 650
+      },
+      "face": "right",
+      "castTarget": {
+        "x": 1015,
+        "y": 505
+      },
+      "snapPosition": {
+        "x": 760,
+        "y": 650
+      },
+      "standArea": {
+        "x": 760,
+        "y": 650,
+        "r": 75
+      },
+      "castArea": {
+        "x": 1015,
+        "y": 505,
+        "r": 115
+      },
+      "difficulty": 1
+    },
+    {
+      "id": "deeper_woods_exit",
+      "type": "exit",
+      "label": "Path deeper into Shadow Woods",
+      "x": 185,
+      "y": 280,
+      "r": 90
+    },
+    {
+      "id": "scroll_test_north_sign",
+      "type": "dialogue",
+      "kind": "dialogue",
+      "x": 1040,
+      "y": 300,
+      "r": 70,
+      "title": "Old Trail Sign",
+      "label": "Read sign",
+      "text": "The forest opens up from here. This is the first scrolling overworld test."
+    },
+    {
+      "id": "scroll_test_hidden_chest",
+      "type": "chest",
+      "kind": "chest",
+      "x": 1910,
+      "y": 1020,
+      "r": 72,
+      "title": "Mossy Chest",
+      "label": "Open mossy chest",
+      "text": "You found a weathered box. Treasure rewards can hook into inventory next."
+    },
+    {
+      "id": "scroll_test_second_fishing",
+      "type": "fishing",
+      "kind": "fish",
+      "x": 1840,
+      "y": 780,
+      "r": 110,
+      "label": "Fish the eastern river",
+      "standArea": {
+        "x": 1710,
+        "y": 845,
+        "r": 80
+      },
+      "castArea": {
+        "x": 1920,
+        "y": 690,
+        "r": 130
+      },
+      "face": "right",
+      "difficulty": 1.25
+    }
+  ],
+  "foreground": [
+    {
+      "id": "bottom_canopy",
+      "type": "rect",
+      "label": "Bottom dark canopy",
+      "x": 0,
+      "y": 850,
+      "w": 1600,
+      "h": 230,
+      "fadeWhenPlayerInside": true
+    },
+    {
+      "id": "left_canopy",
+      "type": "rect",
+      "label": "Left forest edge",
+      "x": 0,
+      "y": 0,
+      "w": 190,
+      "h": 1080,
+      "fadeWhenPlayerInside": true
+    }
+  ],
+  "interactables": [
+    {
+      "id": "old_fisher_npc",
+      "type": "npc",
+      "kind": "npc",
+      "label": "Old Fisher",
+      "x": 520,
+      "y": 660,
+      "r": 58,
+      "title": "Old Fisher",
+      "text": "The pond listens before it bites. Watch the glow, then reel gently."
+    },
+    {
+      "id": "mossy_chest",
+      "type": "chest",
+      "kind": "chest",
+      "label": "Mossy Chest",
+      "x": 430,
+      "y": 735,
+      "r": 50,
+      "title": "Mossy Chest",
+      "text": "Inside is a simple lure wrapped in dry leaves."
+    }
+  ],
+  "ambientEffects": [
+    {
+      "id": "dock_water_area_shimmer_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Water Surface Shimmer",
+      "effect": "waterSurfaceShimmer",
+      "points": [
+        [
+          815,
+          395
+        ],
+        [
+          1195,
+          415
+        ],
+        [
+          1215,
+          610
+        ],
+        [
+          1020,
+          660
+        ],
+        [
+          835,
+          585
+        ]
+      ],
+      "opacity": 0.58,
+      "density": 0.45,
+      "speed": 0.85,
+      "angle": 12
+    },
+    {
+      "id": "dock_slow_current_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Slow River Current",
+      "effect": "slowRiverCurrent",
+      "points": [
+        [
+          850,
+          430
+        ],
+        [
+          1180,
+          450
+        ],
+        [
+          1160,
+          570
+        ],
+        [
+          930,
+          605
+        ],
+        [
+          825,
+          545
+        ]
+      ],
+      "opacity": 0.36,
+      "density": 0.35,
+      "speed": 0.7,
+      "angle": 112
+    },
+    {
+      "id": "dock_water_edge_foam_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Water Edge Foam",
+      "effect": "waterEdgeFoam",
+      "x": 845,
+      "y": 520,
+      "w": 260,
+      "h": 80,
+      "opacity": 0.42,
+      "density": 0.35,
+      "speed": 0.9,
+      "angle": 0
+    },
+    {
+      "id": "dock_pond_ripple_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Pond Ripple",
+      "effect": "pondRipple",
+      "x": 955,
+      "y": 455,
+      "w": 150,
+      "h": 110,
+      "opacity": 0.65,
+      "density": 0.45,
+      "speed": 1,
+      "angle": 0
+    },
+    {
+      "id": "dock_falling_leaves_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Falling Leaves",
+      "effect": "fallingLeaves",
+      "x": 300,
+      "y": 130,
+      "w": 560,
+      "h": 520,
+      "opacity": 0.7,
+      "density": 0.4,
+      "speed": 0.75,
+      "angle": 0
+    },
+    {
+      "id": "dock_fireflies_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Fireflies near shoreline",
+      "effect": "fireflies",
+      "x": 430,
+      "y": 510,
+      "w": 260,
+      "h": 190,
+      "opacity": 0.8,
+      "density": 0.35,
+      "speed": 0.85,
+      "angle": 0
+    },
+    {
+      "id": "scroll_fireflies_left",
+      "type": "fireflies",
+      "x": 430,
+      "y": 1050,
+      "w": 420,
+      "h": 260,
+      "density": 16,
+      "opacity": 0.65
+    },
+    {
+      "id": "scroll_leaves_path",
+      "type": "leaves",
+      "x": 1000,
+      "y": 460,
+      "w": 720,
+      "h": 360,
+      "density": 18,
+      "speed": 0.55,
+      "opacity": 0.45
+    },
+    {
+      "id": "scroll_right_river_current",
+      "type": "riverCurrent",
+      "x": 1900,
+      "y": 720,
+      "w": 460,
+      "h": 180,
+      "speed": 0.45,
+      "opacity": 0.38,
+      "flowDirection": "right"
+    }
+  ],
+  "scrolling": true,
+  "camera": {
+    "mode": "scroll",
+    "scale": 1,
+    "smooth": 0.13
+  }
+}

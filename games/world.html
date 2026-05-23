@@ -26,7 +26,9 @@ function startWorld(){
   var boot=document.getElementById('boot');
   if(boot)boot.style.display='none';
   if(!window.PetWorldWorldEngine){alert('World engine did not load.');return;}
-  PetWorldWorldEngine.start({username:playerName(),sceneId:'shadow_woods_dock',onClose:function(){
+  var params=new URLSearchParams(location.search);
+  var scene=params.get('scene')||'shadow_woods_dock';
+  PetWorldWorldEngine.start({username:playerName(),sceneId:scene,onClose:function(){
     if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'world'},'*');}
   }});
 }
