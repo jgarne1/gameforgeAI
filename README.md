@@ -95,3 +95,9 @@ New supporting content:
 - Sunny Meadows fish: Meadow Darter, Sun Pip, Clover Carp, Brook Blinker, Glass Gill, Honeyfin
 
 Keep Ember Hollow intact for comparison while using Sunny Meadows as the new feel benchmark.
+
+## Sunny Meadows Painted Map Pass
+- Sunny Meadows now uses a single illustrated top-down map background at `public/assets/backgrounds/sunny_meadows_map.png`.
+- Gameplay uses invisible collision and fishing hotspots layered over the painted scene.
+- Fishing is now context-sensitive: stand near water and press Space/E or tap/click the water ripple.
+- Keep collisions broad and forgiving. Do not trace every object in the image; only block major water, cliffs, ruins, and tree trunks.
