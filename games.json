@@ -110,7 +110,7 @@
     "minPlayers": 1,
     "maxPlayers": 2,
     "seats": 2,
-    "icon": "📍",
+    "icon": "\ud83d\udccd",
     "showInLauncher": true,
     "requiresUnlock": true,
     "enabled": true
@@ -132,6 +132,17 @@
     "seats": 1
   },
   {
+    "id": "world",
+    "name": "Shadow Woods",
+    "file": "world.html",
+    "minPlayers": 1,
+    "maxPlayers": 1,
+    "seats": 1,
+    "icon": "\ud83c\udfa3",
+    "showInLauncher": true,
+    "enabled": true
+  },
+  {
     "id": "pixelquest",
     "name": "Pixel Quest",
     "file": "pixelquest.html",
@@ -146,7 +157,7 @@
     "minPlayers": 1,
     "maxPlayers": 2,
     "seats": 2,
-    "icon": "🎮",
+    "icon": "\ud83c\udfae",
     "showInLauncher": true,
     "requiresUnlock": true,
     "enabled": true

@@ -312,7 +312,7 @@ function scanGameFilesForAdmin(){
     let existing=byFile[file]||null;
     let id=existing?existing.id:safeGameId(file);
     let itemId=gameUnlockItemId(id);
-    let internal=CORE_FREE_GAME_IDS.has(id)||['launcher.html','market.html','inventory.html','petworld.html','petbattle.html','battlehall.html'].includes(file);
+    let internal=CORE_FREE_GAME_IDS.has(id)||['launcher.html','market.html','inventory.html','petworld.html','world.html','petbattle.html','battlehall.html'].includes(file);
     let missing=[];
     if(!existing)missing.push('games.json');
     if(existing&&existing.showInLauncher===undefined&&!internal)missing.push('showInLauncher flag');
@@ -342,6 +342,22 @@ function market(){return readJSON(marketFile,{listings:{},nextId:1})}
 function saveMarket(m){writeJSON(marketFile,m)}
 function social(){return normalizeSocial(readJSON(socialFile,{users:{}}))}
 function saveSocial(s){writeJSON(socialFile,normalizeSocial(s))}
+
+
+const FISH_CATALOG={
+  fish_drift_minnow:{name:'Drift Minnow',rarity:'common',value:4},
+  fish_bubble_guppy:{name:'Bubble Guppy',rarity:'common',value:5},
+  fish_moon_anchovy:{name:'Moon Anchovy',rarity:'common',value:6},
+  fish_glowfin:{name:'Glowfin',rarity:'uncommon',value:14},
+  fish_lantern_koi:{name:'Lantern Koi',rarity:'rare',value:35},
+  fish_shellback:{name:'Shellback',rarity:'uncommon',value:16},
+  fish_cave_eel:{name:'Cave Eel',rarity:'rare',value:42},
+  fish_tide_ray:{name:'Tide Ray',rarity:'rare',value:45},
+  fish_moon_jelly:{name:'Moon Jelly',rarity:'rare',value:50},
+  fish_ancient_coelafish:{name:'Ancient Coelafish',rarity:'legendary',value:180}
+};
+function fishDef(id){return FISH_CATALOG[id]||FISH_CATALOG.fish_drift_minnow;}
+function isFishItem(id){return String(id||'').indexOf('fish_')===0;}
 
 function itemCatalog(){
   return readJSON(itemsFile,SHOP_ITEMS);
@@ -463,7 +479,7 @@ function purchasableItemCatalog(){
 }
 
 
-const CORE_FREE_GAME_IDS=new Set(['petbattle','battlehall','petworld','market','inventory','launcher']);
+const CORE_FREE_GAME_IDS=new Set(['petbattle','battlehall','petworld','world','market','inventory','launcher']);
 const MASTER_GAME_ITEM_IDS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
 
 function itemUnlocksGame(item,itemId,gameId){
@@ -4988,6 +5004,52 @@ app.post('/api/pet/sell',(req,res)=>{
   });
 });
 
+
+
+app.post('/api/pet/fish/catch',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let itemId=String(req.body.itemId||'fish_drift_minnow').trim();
+  if(!isFishItem(itemId))itemId='fish_drift_minnow';
+
+  let profile=getPetProfile(username);
+  profile.inventory=profile.inventory||{};
+  profile.inventory[itemId]=Number(profile.inventory[itemId]||0)+1;
+  profile.fishing=profile.fishing||{};
+  profile.fishing.totalCaught=Number(profile.fishing.totalCaught||0)+1;
+  profile.fishing.lastCatch={itemId,name:(fishDef(itemId).name||itemId),rarity:(fishDef(itemId).rarity||'common'),sceneId:String(req.body.sceneId||''),caughtAt:Date.now()};
+
+  trackQuest(profile,'fishCaught',1);
+  savePetProfile(username,profile);
+  res.json({ok:true,message:'Caught '+fishDef(itemId).name+'!',catch:profile.fishing.lastCatch,profile});
+});
+
+app.post('/api/pet/fish/sell',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let mode=String(req.body.mode||'common').toLowerCase();
+  let profile=getPetProfile(username);
+  profile.inventory=profile.inventory||{};
+  let sold=[];
+  let coins=0;
+
+  Object.keys(profile.inventory).forEach(itemId=>{
+    if(!isFishItem(itemId))return;
+    let def=fishDef(itemId);
+    if(mode==='common'&&String(def.rarity||'common').toLowerCase()!=='common')return;
+    let qty=Math.max(0,Number(profile.inventory[itemId]||0));
+    if(qty<=0)return;
+    coins+=qty*Number(def.value||3);
+    sold.push({itemId,name:def.name,quantity:qty,coins:qty*Number(def.value||3)});
+    delete profile.inventory[itemId];
+  });
+
+  profile.money=Number(profile.money||0)+coins;
+  savePetProfile(username,profile);
+  res.json({ok:true,message:sold.length?'Sold fish for '+coins+' coins.':'No matching fish to sell.',sold,coins,profile});
+});
 
 /* ===== MARKETPLACE API ===== */
 

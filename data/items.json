@@ -3343,5 +3343,195 @@
       "fish",
       "shadow_woods"
     ]
+  },
+  "fish_drift_minnow": {
+    "id": "fish_drift_minnow",
+    "name": "Drift Minnow",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "common",
+    "description": "A small silver fish that follows gentle currents.",
+    "image": "/assets/items/fish_drift_minnow.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 4,
+    "basePrice": 4,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_bubble_guppy": {
+    "id": "fish_bubble_guppy",
+    "name": "Bubble Guppy",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "common",
+    "description": "A playful fish that leaves tiny bubbles behind.",
+    "image": "/assets/items/fish_bubble_guppy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 5,
+    "basePrice": 5,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_moon_anchovy": {
+    "id": "fish_moon_anchovy",
+    "name": "Moon Anchovy",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "common",
+    "description": "A pale fish that shines under dock lanterns.",
+    "image": "/assets/items/fish_moon_anchovy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 6,
+    "basePrice": 6,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_glowfin": {
+    "id": "fish_glowfin",
+    "name": "Glowfin",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "uncommon",
+    "description": "A luminous fish found near glowing tide pools.",
+    "image": "/assets/items/fish_glowfin.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 14,
+    "basePrice": 14,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_lantern_koi": {
+    "id": "fish_lantern_koi",
+    "name": "Lantern Koi",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "rare",
+    "description": "A rare koi whose scales pulse like lantern light.",
+    "image": "/assets/items/fish_lantern_koi.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 35,
+    "basePrice": 35,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_shellback": {
+    "id": "fish_shellback",
+    "name": "Shellback",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "uncommon",
+    "description": "A stubborn cave fish with a shell-like ridge.",
+    "image": "/assets/items/fish_shellback.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 16,
+    "basePrice": 16,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_cave_eel": {
+    "id": "fish_cave_eel",
+    "name": "Cave Eel",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "rare",
+    "description": "A quiet eel that lives in dark shell caverns.",
+    "image": "/assets/items/fish_cave_eel.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 42,
+    "basePrice": 42,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_tide_ray": {
+    "id": "fish_tide_ray",
+    "name": "Tide Ray",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "rare",
+    "description": "A broad deepwater ray that moves with the tide.",
+    "image": "/assets/items/fish_tide_ray.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 45,
+    "basePrice": 45,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_moon_jelly": {
+    "id": "fish_moon_jelly",
+    "name": "Moon Jelly",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "rare",
+    "description": "A drifting jellyfish-like catch with moonlit tendrils.",
+    "image": "/assets/items/fish_moon_jelly.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 50,
+    "basePrice": 50,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
+  },
+  "fish_ancient_coelafish": {
+    "id": "fish_ancient_coelafish",
+    "name": "Ancient Coelafish",
+    "category": "fishing",
+    "type": "Fish",
+    "rarity": "legendary",
+    "description": "An ancient fish rumored to appear in hidden tide pools.",
+    "image": "/assets/items/fish_ancient_coelafish.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "sellValue": 180,
+    "basePrice": 180,
+    "tags": [
+      "fish",
+      "fishing",
+      "catch"
+    ]
   }
 }

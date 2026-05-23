@@ -1122,7 +1122,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 </div>
 
 <script src="/games/js/adventure_engine.js"></script>
-<script src="/games/js/world_engine.js"></script>
 <script>
 var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
@@ -1293,7 +1292,7 @@ function drawDock(){
       var z=zones[id];
       html+='<option value="'+escapeAttr(id)+'" '+(id===selectedZoneId?'selected':'')+'>'+escapeHtml(z.name)+' · Lv '+Number(z.minLevel||1)+' · ⚡ '+Number(z.energyCost||0)+'</option>';
     });
-    html+='</select><button class="gold" onclick="startInteractiveAdventure()">Adventure</button><button class="gold" onclick="startShadowWoodsFishing()">Shadow Woods</button><button class="sky" onclick="exploreSelectedZone()">Scout</button><button class="gold" onclick="openPetBattle()">Battle</button></div>';
+    html+='</select><button class="gold" onclick="startInteractiveAdventure()">Adventure</button><button class="sky" onclick="exploreSelectedZone()">Scout</button><button class="gold" onclick="openPetBattle()">Battle</button></div>';
     html+='<div class="dockActions compact">';
     html+='<button class="dockBtn good" onclick="useItem(\'berry\')"><strong>🍓 Feed</strong><span>Hunger</span></button>';
     html+='<button class="dockBtn blue" onclick="playPet()"><strong>🎾 Play</strong><span>Coins + XP</span></button>';
