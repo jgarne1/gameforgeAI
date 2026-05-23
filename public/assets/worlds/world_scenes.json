@@ -2,8 +2,13 @@
   "scenes": [
     {
       "id": "shadow_woods_dock",
-      "name": "Shadow Woods Dock",
+      "name": "Shadow Woods - Fishing Dock",
       "url": "/assets/worlds/shadow_woods_dock.json"
+    },
+    {
+      "id": "shadow_woods_river_bend",
+      "name": "Shadow Woods - River Bend",
+      "url": "/assets/worlds/shadow_woods_river_bend.json"
     }
   ]
 }

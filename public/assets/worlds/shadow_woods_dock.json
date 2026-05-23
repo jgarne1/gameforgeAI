@@ -219,10 +219,14 @@
     {
       "id": "deeper_woods_exit",
       "type": "exit",
-      "label": "Path deeper into Shadow Woods",
+      "label": "North trail to River Bend",
       "x": 185,
       "y": 280,
-      "r": 90
+      "r": 90,
+      "kind": "exit",
+      "targetScene": "shadow_woods_river_bend",
+      "targetSpawn": "from_fishing_dock",
+      "text": "Follow the north trail toward the river bend."
     }
   ],
   "foreground": [
@@ -269,6 +273,22 @@
       "r": 50,
       "title": "Mossy Chest",
       "text": "Inside is a simple lure wrapped in dry leaves."
+    }
+  ],
+  "spawnPoints": [
+    {
+      "id": "default",
+      "label": "Default dock spawn",
+      "x": 560,
+      "y": 705,
+      "face": "up"
+    },
+    {
+      "id": "from_river_bend",
+      "label": "Return from River Bend",
+      "x": 210,
+      "y": 330,
+      "face": "down"
     }
   ]
 }

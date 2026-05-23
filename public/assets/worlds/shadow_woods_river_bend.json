@@ -1,0 +1,600 @@
+{
+  "id": "shadow_woods_river_bend",
+  "name": "Shadow Woods - River Bend",
+  "background": "/assets/backgrounds/shadow_woods_river_bend.png",
+  "size": {
+    "w": 1536,
+    "h": 1024
+  },
+  "spawn": {
+    "x": 740,
+    "y": 940,
+    "face": "up"
+  },
+  "spawnPoints": [
+    {
+      "id": "from_fishing_dock",
+      "label": "From Fishing Dock / south trail",
+      "x": 740,
+      "y": 940,
+      "face": "up"
+    },
+    {
+      "id": "from_house",
+      "label": "From riverside house",
+      "x": 240,
+      "y": 745,
+      "face": "down"
+    },
+    {
+      "id": "from_cave",
+      "label": "From hollow tree cave",
+      "x": 1250,
+      "y": 780,
+      "face": "left"
+    },
+    {
+      "id": "from_north_path",
+      "label": "From waterfall / north path",
+      "x": 1010,
+      "y": 135,
+      "face": "down"
+    }
+  ],
+  "notes": "First pass north zone. Entry from the fishing dock is at bottom center, because the player is coming from below. Use world_editor.html to tune all boundaries, fishing zones, exits, and destination scene/spawn values.",
+  "walkable": [
+    {
+      "id": "south_to_center_path",
+      "type": "poly",
+      "label": "South entry to center path",
+      "points": [
+        [
+          560,
+          1024
+        ],
+        [
+          920,
+          1024
+        ],
+        [
+          905,
+          900
+        ],
+        [
+          845,
+          810
+        ],
+        [
+          805,
+          700
+        ],
+        [
+          850,
+          590
+        ],
+        [
+          920,
+          500
+        ],
+        [
+          1045,
+          410
+        ],
+        [
+          1110,
+          285
+        ],
+        [
+          1115,
+          160
+        ],
+        [
+          1000,
+          120
+        ],
+        [
+          915,
+          250
+        ],
+        [
+          840,
+          365
+        ],
+        [
+          735,
+          480
+        ],
+        [
+          650,
+          610
+        ],
+        [
+          640,
+          760
+        ],
+        [
+          610,
+          900
+        ]
+      ]
+    },
+    {
+      "id": "left_riverbank_and_house",
+      "type": "poly",
+      "label": "Left bank + house dock approach",
+      "points": [
+        [
+          0,
+          745
+        ],
+        [
+          120,
+          670
+        ],
+        [
+          250,
+          615
+        ],
+        [
+          390,
+          560
+        ],
+        [
+          530,
+          505
+        ],
+        [
+          675,
+          480
+        ],
+        [
+          725,
+          565
+        ],
+        [
+          625,
+          675
+        ],
+        [
+          485,
+          725
+        ],
+        [
+          335,
+          805
+        ],
+        [
+          145,
+          870
+        ],
+        [
+          0,
+          900
+        ]
+      ]
+    },
+    {
+      "id": "bridge_crossing",
+      "type": "poly",
+      "label": "Small bridge crossing",
+      "points": [
+        [
+          470,
+          505
+        ],
+        [
+          685,
+          470
+        ],
+        [
+          750,
+          520
+        ],
+        [
+          710,
+          585
+        ],
+        [
+          485,
+          610
+        ],
+        [
+          420,
+          565
+        ]
+      ]
+    },
+    {
+      "id": "right_clearing_and_cave",
+      "type": "poly",
+      "label": "Right clearing + hollow tree cave",
+      "points": [
+        [
+          800,
+          650
+        ],
+        [
+          950,
+          590
+        ],
+        [
+          1120,
+          600
+        ],
+        [
+          1325,
+          690
+        ],
+        [
+          1536,
+          720
+        ],
+        [
+          1536,
+          910
+        ],
+        [
+          1295,
+          920
+        ],
+        [
+          1070,
+          870
+        ],
+        [
+          900,
+          805
+        ],
+        [
+          775,
+          735
+        ]
+      ]
+    },
+    {
+      "id": "upper_left_forest_path",
+      "type": "poly",
+      "label": "Upper left loop path",
+      "points": [
+        [
+          0,
+          410
+        ],
+        [
+          120,
+          350
+        ],
+        [
+          280,
+          310
+        ],
+        [
+          445,
+          310
+        ],
+        [
+          520,
+          390
+        ],
+        [
+          465,
+          485
+        ],
+        [
+          315,
+          475
+        ],
+        [
+          160,
+          520
+        ],
+        [
+          0,
+          575
+        ]
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "water_left_main",
+      "type": "poly",
+      "label": "Deep water left",
+      "points": [
+        [
+          0,
+          520
+        ],
+        [
+          160,
+          490
+        ],
+        [
+          335,
+          450
+        ],
+        [
+          480,
+          405
+        ],
+        [
+          585,
+          410
+        ],
+        [
+          615,
+          475
+        ],
+        [
+          505,
+          525
+        ],
+        [
+          340,
+          580
+        ],
+        [
+          160,
+          660
+        ],
+        [
+          0,
+          725
+        ]
+      ]
+    },
+    {
+      "id": "river_pool_center",
+      "type": "poly",
+      "label": "River pool center",
+      "points": [
+        [
+          510,
+          305
+        ],
+        [
+          760,
+          220
+        ],
+        [
+          930,
+          230
+        ],
+        [
+          990,
+          315
+        ],
+        [
+          910,
+          430
+        ],
+        [
+          760,
+          505
+        ],
+        [
+          615,
+          455
+        ]
+      ]
+    },
+    {
+      "id": "waterfall_rocks",
+      "type": "poly",
+      "label": "Waterfall rocks",
+      "points": [
+        [
+          650,
+          0
+        ],
+        [
+          980,
+          0
+        ],
+        [
+          1045,
+          125
+        ],
+        [
+          930,
+          210
+        ],
+        [
+          700,
+          215
+        ],
+        [
+          585,
+          110
+        ]
+      ]
+    },
+    {
+      "id": "house_body",
+      "type": "circle",
+      "label": "Riverside house body",
+      "x": 185,
+      "y": 680,
+      "r": 90
+    },
+    {
+      "id": "cave_tree_body",
+      "type": "circle",
+      "label": "Hollow tree body",
+      "x": 1245,
+      "y": 710,
+      "r": 115
+    },
+    {
+      "id": "dense_right_forest",
+      "type": "poly",
+      "label": "Dense right forest",
+      "points": [
+        [
+          1260,
+          0
+        ],
+        [
+          1536,
+          0
+        ],
+        [
+          1536,
+          650
+        ],
+        [
+          1320,
+          625
+        ],
+        [
+          1160,
+          520
+        ],
+        [
+          1150,
+          315
+        ]
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "south_return_exit",
+      "type": "exit",
+      "kind": "exit",
+      "label": "South trail back to Fishing Dock",
+      "x": 740,
+      "y": 970,
+      "r": 85,
+      "targetScene": "shadow_woods_dock",
+      "targetSpawn": "from_river_bend",
+      "text": "Return south to the fishing dock."
+    },
+    {
+      "id": "north_waterfall_exit",
+      "type": "exit",
+      "kind": "exit",
+      "label": "North path beyond the waterfall",
+      "x": 1010,
+      "y": 115,
+      "r": 85,
+      "targetScene": "",
+      "targetSpawn": "",
+      "text": "This path will later continue deeper into Shadow Woods."
+    },
+    {
+      "id": "riverside_house_entry",
+      "type": "exit",
+      "kind": "exit",
+      "label": "Riverside house door",
+      "x": 205,
+      "y": 720,
+      "r": 70,
+      "targetScene": "",
+      "targetSpawn": "",
+      "text": "Enter the riverside house once an interior scene exists."
+    },
+    {
+      "id": "hollow_tree_cave_entry",
+      "type": "exit",
+      "kind": "exit",
+      "label": "Hollow tree cave entrance",
+      "x": 1225,
+      "y": 760,
+      "r": 80,
+      "targetScene": "",
+      "targetSpawn": "",
+      "text": "Enter the hollow tree cave once that scene exists."
+    },
+    {
+      "id": "lower_river_fishing",
+      "type": "fishing",
+      "kind": "fish",
+      "label": "Lower river fishing spot",
+      "x": 670,
+      "y": 815,
+      "r": 120,
+      "interactAt": {
+        "x": 670,
+        "y": 815
+      },
+      "snapPosition": {
+        "x": 670,
+        "y": 815
+      },
+      "castTarget": {
+        "x": 520,
+        "y": 660
+      },
+      "face": "left"
+    },
+    {
+      "id": "waterfall_pool_fishing",
+      "type": "fishing",
+      "kind": "fish",
+      "label": "Waterfall pool fishing spot",
+      "x": 850,
+      "y": 395,
+      "r": 115,
+      "interactAt": {
+        "x": 850,
+        "y": 395
+      },
+      "snapPosition": {
+        "x": 850,
+        "y": 395
+      },
+      "castTarget": {
+        "x": 765,
+        "y": 300
+      },
+      "face": "up"
+    }
+  ],
+  "interactables": [
+    {
+      "id": "river_signpost",
+      "type": "npc",
+      "kind": "npc",
+      "label": "Trail Sign",
+      "x": 820,
+      "y": 515,
+      "r": 50,
+      "title": "Trail Sign",
+      "text": "South: Fishing Dock. North: Falls. East: Hollow Tree. West: Riverside House."
+    },
+    {
+      "id": "supply_crate",
+      "type": "chest",
+      "kind": "chest",
+      "label": "Supply Crate",
+      "x": 1285,
+      "y": 835,
+      "r": 45,
+      "title": "Supply Crate",
+      "text": "A weathered crate waits here. Later this can hold bait, coins, or a key item."
+    }
+  ],
+  "foreground": [
+    {
+      "id": "right_canopy",
+      "type": "rect",
+      "label": "Right canopy shade",
+      "x": 1250,
+      "y": 0,
+      "w": 286,
+      "h": 1024,
+      "fadeWhenPlayerInside": true
+    },
+    {
+      "id": "bottom_canopy",
+      "type": "rect",
+      "label": "Bottom canopy shade",
+      "x": 0,
+      "y": 890,
+      "w": 1536,
+      "h": 134,
+      "fadeWhenPlayerInside": true
+    }
+  ]
+}

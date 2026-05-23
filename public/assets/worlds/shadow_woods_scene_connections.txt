@@ -1,0 +1,50 @@
+Shadow Woods scene connection notes - first pass
+
+Coordinate rule:
+- All coordinates are local to each scene image, measured from the top-left corner.
+- Entry/spawn points should place the player just inside the new scene, facing toward the area they are entering.
+- Exit hotspots should sit slightly inside the visible path/door/cave mouth, not outside the playable boundary.
+
+Current connections:
+1) shadow_woods_dock -> shadow_woods_river_bend
+   - Exit hotspot: deeper_woods_exit / North trail to River Bend
+   - Target scene: shadow_woods_river_bend
+   - Target spawn: from_fishing_dock
+   - Reasoning: the player leaves the existing dock scene by heading north/up the trail, so they enter River Bend from the bottom/south edge and face up.
+
+2) shadow_woods_river_bend -> shadow_woods_dock
+   - Exit hotspot: south_return_exit / South trail back to Fishing Dock
+   - Target scene: shadow_woods_dock
+   - Target spawn: from_river_bend
+   - Reasoning: returning south from River Bend places the player near the north trail entrance in the dock scene, facing down.
+
+Future connections prepared in River Bend:
+3) riverside_house_entry
+   - Current target scene: unassigned
+   - Suggested future target scene: shadow_woods_riverside_house
+   - Suggested target spawn: from_front_door
+   - Place interior return exit back to shadow_woods_river_bend / from_house.
+
+4) hollow_tree_cave_entry
+   - Current target scene: unassigned
+   - Suggested future target scene: shadow_woods_hollow_tree_cave
+   - Suggested target spawn: from_tree_mouth
+   - Place cave return exit back to shadow_woods_river_bend / from_cave.
+
+5) north_waterfall_exit
+   - Current target scene: unassigned
+   - Suggested future target scene: shadow_woods_upper_falls
+   - Suggested target spawn: from_river_bend
+   - This should become the next northward expansion path.
+
+Fishing spots prepared in River Bend:
+- lower_river_fishing: lower river / bridge area
+- waterfall_pool_fishing: waterfall pool area
+
+Editor workflow:
+- Open games/world_editor.html.
+- Select a scene from the dropdown.
+- Use Add exit to place or adjust exits.
+- Use Add entry/spawn point to create named arrival points.
+- For an exit, set Target Scene and Target Spawn ID.
+- Use Save browser draft for quick testing, or Download JSON for a drop-in scene file.
