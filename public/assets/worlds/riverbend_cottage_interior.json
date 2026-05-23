@@ -267,21 +267,6 @@
   ],
   "objects": [
     {
-      "id": "fireplace_flame",
-      "type": "animatedOverlay",
-      "label": "Fireplace flame",
-      "sprite": "/assets/effects/fireplace_flame_sheet.png",
-      "x": 847,
-      "y": 366,
-      "w": 76,
-      "h": 76,
-      "frames": 4,
-      "fps": 10,
-      "layer": "overlay",
-      "opacity": 1.0,
-      "blend": "screen"
-    },
-    {
       "id": "warm_dust_motes",
       "type": "animatedOverlay",
       "label": "Warm dust motes",
@@ -299,17 +284,38 @@
   ],
   "ambientEffects": [
     {
+      "id": "editable_fireplace_flame",
+      "type": "ambientEffect",
+      "effect": "fireplaceFlame",
+      "label": "Editable fireplace flame",
+      "sprite": "/assets/effects/fireplace_flame_sheet.png",
+      "x": 825,
+      "y": 336,
+      "w": 74,
+      "h": 58,
+      "frames": 4,
+      "fps": 5,
+      "opacity": 0.92,
+      "glow": true,
+      "glowRadius": 135,
+      "glowOpacity": 0.68,
+      "flickerIntensity": 0.22,
+      "layer": "foreground",
+      "notes": "Move/resize/tune this in the admin editor. Use FPS 4-6 for cozy fireplace animation."
+    },
+    {
       "id": "fireplace_warm_glow",
       "type": "ambientEffect",
       "effect": "fireplaceWarmGlow",
       "label": "Fireplace warm glow",
-      "x": 735,
-      "y": 250,
-      "w": 285,
-      "h": 245,
-      "opacity": 0.52,
-      "speed": 0.7,
-      "layer": "lighting"
+      "x": 760,
+      "y": 300,
+      "w": 220,
+      "h": 180,
+      "opacity": 0.38,
+      "speed": 0.45,
+      "layer": "lighting",
+      "flickerIntensity": 0.18
     },
     {
       "id": "door_lantern_glow",
@@ -328,14 +334,15 @@
       "id": "window_warm_light",
       "type": "ambientEffect",
       "effect": "windowLightBeam",
-      "label": "Soft window light",
+      "label": "Soft window light beam",
       "x": 455,
       "y": 255,
       "w": 360,
       "h": 460,
-      "opacity": 0.18,
-      "angle": 90,
-      "layer": "lighting"
+      "opacity": 0.22,
+      "angle": 18,
+      "layer": "lighting",
+      "speed": 0.35
     },
     {
       "id": "room_dust_motes_soft",

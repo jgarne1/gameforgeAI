@@ -549,11 +549,34 @@
       d.style.setProperty('--density',Number(e.density==null?0.45:e.density));
       d.style.setProperty('--speed',Math.max(.15,Number(e.speed||1)));
       d.style.setProperty('--angle',(Number(e.angle||0))+'deg');
+      d.style.setProperty('--flicker',Number(e.flickerIntensity==null?0.28:e.flickerIntensity));
       if(Array.isArray(e.points)&&e.points.length>=3){
         d.style.clipPath='polygon('+e.points.map(function(p){return ((p[0]-box.x)/box.w*100).toFixed(2)+'% '+((p[1]-box.y)/box.h*100).toFixed(2)+'%';}).join(',')+')';
       }
-      var count=(cls==='leaves')?Math.max(8,Math.round(Number(e.density||0.45)*42)):(cls==='fireflies')?Math.max(8,Math.round(Number(e.density||0.45)*32)):(cls==='waterfallMist')?Math.max(14,Math.round(Number(e.density||0.55)*44)):(cls==='waterfallCascade')?Math.max(8,Math.round(Number(e.density||0.55)*18)):0;
-      for(var i=0;i<count;i++){var part=document.createElement('i');part.style.left=(Math.random()*100)+'%';part.style.top=(Math.random()*100)+'%';part.style.animationDelay=(-Math.random()*8)+'s';part.style.animationDuration=(5+Math.random()*7)/Math.max(.15,Number(e.speed||1))+'s';d.appendChild(part);}
+      if(cls==='fireplaceFlame'||cls==='torchFlame'||cls==='candleFlame'){
+        var sprite=e.sprite||'/assets/effects/fireplace_flame_sheet.png';
+        var frames=Math.max(1,Number(e.frames||4));
+        var fps=Math.max(1,Number(e.fps||5));
+        var inner=document.createElement('div');
+        inner.className='swAmbientSprite';
+        inner.style.backgroundImage='url('+sprite+')';
+        inner.style.backgroundSize=(frames*100)+'% 100%';
+        inner.style.animationDuration=(frames/fps)+'s';
+        inner.style.animationTimingFunction='steps('+frames+')';
+        d.appendChild(inner);
+        if(e.glow!==false){
+          var glow=document.createElement('b');
+          glow.className='swAmbientGlow';
+          var gr=Number(e.glowRadius||130);
+          glow.style.width=(gr*2)+'px'; glow.style.height=(gr*2)+'px';
+          glow.style.left=(box.w/2-gr)+'px'; glow.style.top=(box.h/2-gr)+'px';
+          glow.style.opacity=(e.glowOpacity==null?0.72:Number(e.glowOpacity));
+          d.appendChild(glow);
+        }
+      }else{
+        var count=(cls==='leaves')?Math.max(8,Math.round(Number(e.density||0.45)*42)):(cls==='fireflies')?Math.max(8,Math.round(Number(e.density||0.45)*32)):(cls==='dustMotes')?Math.max(10,Math.round(Number(e.density||0.45)*38)):(cls==='waterfallMist')?Math.max(14,Math.round(Number(e.density||0.55)*44)):(cls==='waterfallCascade')?Math.max(8,Math.round(Number(e.density||0.55)*18)):0;
+        for(var i=0;i<count;i++){var part=document.createElement('i');part.style.left=(Math.random()*100)+'%';part.style.top=(Math.random()*100)+'%';part.style.animationDelay=(-Math.random()*8)+'s';part.style.animationDuration=(5+Math.random()*7)/Math.max(.15,Number(e.speed||1))+'s';d.appendChild(part);}
+      }
       layer.appendChild(d);
     });
   }
@@ -577,6 +600,9 @@
     type=String(type||'').toLowerCase();
     if(type.indexOf('fall')>=0||type.indexOf('leaf')>=0)return 'leaves';
     if(type.indexOf('window')>=0||type.indexOf('sun')>=0||type.indexOf('ray')>=0||type.indexOf('beam')>=0)return 'windowLight';
+    if(type.indexOf('fireplaceflame')>=0||type==='fireplace'||type.indexOf('campfire')>=0)return 'fireplaceFlame';
+    if(type.indexOf('torchflame')>=0||type==='torch')return 'torchFlame';
+    if(type.indexOf('candleflame')>=0||type==='candle')return 'candleFlame';
     if(type.indexOf('fireplace')>=0||type.indexOf('lantern')>=0||type.indexOf('glow')>=0)return 'warmGlow';
     if(type.indexOf('dust')>=0||type.indexOf('mote')>=0)return 'dustMotes';
     if(type.indexOf('firefly')>=0)return 'fireflies';
@@ -736,7 +762,7 @@
 
 
 
-.swAnimatedOverlay{position:absolute;pointer-events:none;transform:translate(-50%,-50%);overflow:hidden;mix-blend-mode:screen}.swAnimatedOverlay .swAnimSprite{position:absolute;inset:0;background-repeat:no-repeat;animation:swAnimSheet 1s steps(4) infinite}.swAnimatedOverlay.fireplace_flame{filter:drop-shadow(0 0 10px rgba(255,166,54,.8)) drop-shadow(0 0 22px rgba(255,97,34,.35))}.swAnimatedOverlay.warm_dust_motes{mix-blend-mode:screen;filter:blur(.2px)}@keyframes swAnimSheet{from{background-position:0 0}to{background-position:100% 0}}
+.swAnimatedOverlay{position:absolute;pointer-events:none;transform:translate(-50%,-50%);overflow:hidden;mix-blend-mode:screen}.swAnimatedOverlay .swAnimSprite{position:absolute;inset:0;background-repeat:no-repeat;animation:swAnimSheet 1s steps(4) infinite}.swAnimatedOverlay.fireplace_flame{filter:drop-shadow(0 0 10px rgba(255,166,54,.8)) drop-shadow(0 0 22px rgba(255,97,34,.35))}.swAnimatedOverlay.warm_dust_motes{mix-blend-mode:screen;filter:blur(.2px)}@keyframes swAnimSheet{from{background-position:0 0}to{background-position:100% 0}}.swAmbientEffect.fireplaceFlame,.swAmbientEffect.torchFlame,.swAmbientEffect.candleFlame{overflow:visible;mix-blend-mode:screen;filter:drop-shadow(0 0 8px rgba(255,166,54,.78)) drop-shadow(0 0 18px rgba(255,84,32,.34));animation:swEditableFlameFlicker 1.45s ease-in-out infinite}.swAmbientEffect .swAmbientSprite{position:absolute;inset:0;background-repeat:no-repeat;background-position:0 0;animation:swAnimSheet 1s steps(4) infinite;z-index:2}.swAmbientEffect .swAmbientGlow{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,198,92,.42),rgba(255,110,42,.16) 42%,rgba(255,83,31,.05) 67%,transparent 76%);filter:blur(10px);mix-blend-mode:screen;z-index:1;animation:swWarmGlowPulse 1.65s ease-in-out infinite;pointer-events:none}@keyframes swEditableFlameFlicker{0%,100%{transform:scale(1);filter:drop-shadow(0 0 8px rgba(255,166,54,.72)) drop-shadow(0 0 18px rgba(255,84,32,.30))}50%{transform:scale(calc(1 + var(--flicker, .25) * .06),calc(1 + var(--flicker, .25) * .10));filter:drop-shadow(0 0 12px rgba(255,195,78,.9)) drop-shadow(0 0 24px rgba(255,84,32,.42))}}
 .swAmbientEffect.windowLight{background:linear-gradient(var(--angle),rgba(255,232,166,.0) 0%,rgba(255,232,166,.20) 35%,rgba(255,202,110,.12) 62%,rgba(255,232,166,.0) 100%);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);mix-blend-mode:screen;filter:blur(4px);animation:swWindowLightBreathe 4.8s ease-in-out infinite;opacity:.28}.swAmbientEffect.windowLight:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 16%,rgba(255,242,190,.12) 18% 24%,transparent 27% 50%,rgba(255,242,190,.10) 52% 57%,transparent 60%);opacity:.65}.swAmbientEffect.warmGlow{background:radial-gradient(circle,rgba(255,203,105,.42),rgba(255,137,47,.18) 40%,rgba(255,110,35,.06) 64%,transparent 76%);mix-blend-mode:screen;filter:blur(8px);animation:swWarmGlowPulse 1.45s ease-in-out infinite}.swAmbientEffect.dustMotes{background:transparent;mix-blend-mode:screen}.swAmbientEffect.dustMotes i{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,238,168,.55);box-shadow:0 0 9px rgba(255,220,126,.45);animation:swDustFloat 8s linear infinite}@keyframes swWindowLightBreathe{50%{opacity:.36;transform:translateY(2px)}}@keyframes swWarmGlowPulse{50%{opacity:.72;transform:scale(1.035)}}@keyframes swDustFloat{0%{transform:translateY(30px);opacity:0}15%{opacity:.85}100%{transform:translateY(-80px);opacity:0}}
 
 /* GameForge engine-editor extras */
