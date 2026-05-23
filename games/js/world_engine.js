@@ -671,6 +671,14 @@
   function toggleDebug(){engine.debug=!engine.debug;if(engine.root)engine.root.classList.toggle('showDebug',engine.debug);toast(engine.debug?'Boundary debug on.':'Boundary debug off.');}
   function makeFireflies(){if(!engine.fx)return;engine.fx.innerHTML='';var spots=[[370,380],[430,500],[1140,290],[1230,585],[270,740],[860,350],[620,240]];for(var i=0;i<42;i++){var s=spots[i%spots.length];var f=document.createElement('i');f.style.left=(s[0]+(Math.random()*180-90))+'px';f.style.top=(s[1]+(Math.random()*140-70))+'px';f.style.animationDelay=(-Math.random()*7)+'s';f.style.animationDuration=(4+Math.random()*5)+'s';engine.fx.appendChild(f);}}
   function makeMotes(){var m=document.getElementById('swMotes');if(!m)return;m.innerHTML='';for(var i=0;i<70;i++){var e=document.createElement('i');e.style.left=(Math.random()*MAP_W)+'px';e.style.top=(Math.random()*MAP_H)+'px';e.style.animationDelay=(-Math.random()*12)+'s';e.style.animationDuration=(8+Math.random()*10)+'s';m.appendChild(e);}}
+  function ambientDirectionAngle(e){
+    var d=String((e&&e.direction)||(e&&e.flowDirection)||'').trim();
+    var map={right:0,left:180,down:90,up:270,downRight:45,downLeft:135,upRight:315,upLeft:225,'down-right':45,'down-left':135,'up-right':315,'up-left':225};
+    if(d&&map[d]!=null)return map[d];
+    return Number((e&&e.angle)!=null?e.angle:0)||0;
+  }
+  function ambientDirectionName(e){return String((e&&e.direction)||(e&&e.flowDirection)||'custom');}
+
   function renderAmbientEffects(){
     var layer=document.getElementById('swAmbientLayer');if(!layer)return;layer.innerHTML='';
     var list=ambientEffectList();
@@ -680,12 +688,12 @@
       var cls=cssEffectClass(type);
       var d=document.createElement('div');
       d.className='swAmbientEffect '+cls;
-      d.dataset.id=e.id||'';d.dataset.effect=type;
+      d.dataset.id=e.id||'';d.dataset.effect=type;d.dataset.direction=ambientDirectionName(e);
       d.style.left=box.x+'px';d.style.top=box.y+'px';d.style.width=box.w+'px';d.style.height=box.h+'px';
       d.style.opacity=(e.opacity==null?(cls==='waterSurfaceShimmer'?0.55:0.82):Number(e.opacity));
       d.style.setProperty('--density',Number(e.density==null?0.45:e.density));
       d.style.setProperty('--speed',Math.max(.15,Number(e.speed||1)));
-      d.style.setProperty('--angle',(Number(e.angle||0))+'deg');
+      var flowAngle=ambientDirectionAngle(e);d.style.setProperty('--angle',flowAngle+'deg');d.style.setProperty('--flow-rotate',flowAngle+'deg');
       d.style.setProperty('--flicker',Number(e.flickerIntensity==null?0.28:e.flickerIntensity));
       if(Array.isArray(e.points)&&e.points.length>=3){
         d.style.clipPath='polygon('+e.points.map(function(p){return ((p[0]-box.x)/box.w*100).toFixed(2)+'% '+((p[1]-box.y)/box.h*100).toFixed(2)+'%';}).join(',')+')';
@@ -703,7 +711,7 @@
         inner.style.backgroundSize=(frames*100)+'% 100%';
         inner.style.animationDuration=(frames/fps/Math.max(.15,Number(e.speed||1)))+'s';
         inner.style.animationTimingFunction='steps('+frames+')';
-        inner.style.transform='rotate('+Number(e.angle||0)+'deg) scale(1.08)';
+        inner.style.transform='rotate('+flowAngle+'deg) scale(1.08)';
         d.appendChild(inner);
         if(cls==='waterfallCascade'||cls==='waterEdgeFoam'||cls==='waterfallMist'){
           var glow=document.createElement('b');
