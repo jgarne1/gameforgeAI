@@ -41,7 +41,7 @@
       "face": "down"
     }
   ],
-  "notes": "First pass north zone. Entry from the fishing dock is at bottom center, because the player is coming from below. Use world_editor.html to tune all boundaries, fishing zones, exits, and destination scene/spawn values.",
+  "notes": "First pass north zone. Entry from the fishing dock is at bottom center, because the player is coming from below. Use world_editor.html to tune all boundaries, fishing zones, exits, and destination scene/spawn values. Ambient water/waterfall FX are editor-placeable ambientEffects, not hard coded. Use world_editor.html to move, resize, duplicate, or tune them.",
   "walkable": [
     {
       "id": "south_to_center_path",
@@ -625,6 +625,310 @@
       "targetSpawn": "from_river_bend",
       "face": "right",
       "transition": "fade"
+    }
+  ],
+  "ambientEffects": [
+    {
+      "id": "riverbend_upper_pool_living_water",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Upper Pool Living Water",
+      "effect": "waterSurfaceShimmer",
+      "points": [
+        [
+          570,
+          210
+        ],
+        [
+          835,
+          210
+        ],
+        [
+          880,
+          335
+        ],
+        [
+          775,
+          405
+        ],
+        [
+          590,
+          365
+        ],
+        [
+          505,
+          290
+        ]
+      ],
+      "opacity": 0.58,
+      "density": 0.58,
+      "speed": 0.65,
+      "angle": 18,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_upper_pool_current",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Upper Pool Current Bands",
+      "effect": "slowRiverCurrent",
+      "points": [
+        [
+          545,
+          255
+        ],
+        [
+          845,
+          250
+        ],
+        [
+          825,
+          345
+        ],
+        [
+          650,
+          395
+        ],
+        [
+          520,
+          330
+        ]
+      ],
+      "opacity": 0.42,
+      "density": 0.46,
+      "speed": 0.82,
+      "angle": 112,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_lower_river_living_water",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Lower River Living Water",
+      "effect": "waterSurfaceShimmer",
+      "points": [
+        [
+          0,
+          475
+        ],
+        [
+          330,
+          500
+        ],
+        [
+          555,
+          625
+        ],
+        [
+          645,
+          710
+        ],
+        [
+          560,
+          830
+        ],
+        [
+          280,
+          858
+        ],
+        [
+          0,
+          805
+        ]
+      ],
+      "opacity": 0.54,
+      "density": 0.62,
+      "speed": 0.72,
+      "angle": 24,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_lower_river_current",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Lower River Current",
+      "effect": "slowRiverCurrent",
+      "points": [
+        [
+          0,
+          545
+        ],
+        [
+          300,
+          555
+        ],
+        [
+          535,
+          675
+        ],
+        [
+          560,
+          770
+        ],
+        [
+          315,
+          820
+        ],
+        [
+          0,
+          760
+        ]
+      ],
+      "opacity": 0.38,
+      "density": 0.5,
+      "speed": 0.9,
+      "angle": 124,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_center_stream_current",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Center Stream Current",
+      "effect": "slowRiverCurrent",
+      "points": [
+        [
+          590,
+          600
+        ],
+        [
+          755,
+          625
+        ],
+        [
+          850,
+          595
+        ],
+        [
+          805,
+          680
+        ],
+        [
+          675,
+          705
+        ],
+        [
+          590,
+          675
+        ]
+      ],
+      "opacity": 0.34,
+      "density": 0.38,
+      "speed": 0.72,
+      "angle": 105,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_waterfall_cascade_main",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Main Waterfall Cascade",
+      "effect": "waterfallCascade",
+      "x": 650,
+      "y": 48,
+      "w": 128,
+      "h": 178,
+      "opacity": 0.92,
+      "density": 0.86,
+      "speed": 1.08,
+      "angle": 90,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_waterfall_cascade_left",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Left Waterfall Veil",
+      "effect": "waterfallCascade",
+      "x": 606,
+      "y": 60,
+      "w": 72,
+      "h": 150,
+      "opacity": 0.55,
+      "density": 0.58,
+      "speed": 0.92,
+      "angle": 90,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_waterfall_base_mist",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Waterfall Base Mist",
+      "effect": "waterfallMist",
+      "x": 570,
+      "y": 165,
+      "w": 260,
+      "h": 105,
+      "opacity": 0.62,
+      "density": 0.78,
+      "speed": 0.65,
+      "angle": 0,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_falls_foam",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Waterfall Foam Bloom",
+      "effect": "waterEdgeFoam",
+      "x": 590,
+      "y": 180,
+      "w": 235,
+      "h": 110,
+      "opacity": 0.68,
+      "density": 0.72,
+      "speed": 0.85,
+      "angle": 0,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_dock_foam",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Dock Post Foam",
+      "effect": "waterEdgeFoam",
+      "x": 365,
+      "y": 545,
+      "w": 205,
+      "h": 85,
+      "opacity": 0.42,
+      "density": 0.46,
+      "speed": 0.75,
+      "angle": 0,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_lower_ripple_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Lower River Ripple",
+      "effect": "pondRipple",
+      "x": 95,
+      "y": 560,
+      "w": 130,
+      "h": 95,
+      "opacity": 0.46,
+      "density": 0.35,
+      "speed": 0.7,
+      "angle": 0,
+      "layer": "water"
+    },
+    {
+      "id": "riverbend_pool_sparkle_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Pool Sparkle Ripple",
+      "effect": "splashRing",
+      "x": 680,
+      "y": 285,
+      "w": 110,
+      "h": 80,
+      "opacity": 0.48,
+      "density": 0.28,
+      "speed": 0.55,
+      "angle": 0,
+      "layer": "water"
     }
   ]
 }
