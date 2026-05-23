@@ -1,0 +1,575 @@
+{
+  "id": "shadow_woods_crystal_cave",
+  "name": "Shadow Woods - Crystal Cave",
+  "background": "/assets/backgrounds/shadow_woods_crystal_cave.png",
+  "size": {
+    "w": 1536,
+    "h": 989
+  },
+  "spawn": {
+    "x": 1260,
+    "y": 230,
+    "face": "down"
+  },
+  "spawnPoints": [
+    {
+      "id": "from_river_bend",
+      "label": "From River Bend cave mouth",
+      "x": 1260,
+      "y": 230,
+      "face": "down"
+    },
+    {
+      "id": "from_deeper_mine",
+      "label": "From deeper mine passage",
+      "x": 1320,
+      "y": 715,
+      "face": "left"
+    },
+    {
+      "id": "from_underground_pool",
+      "label": "From underground pool",
+      "x": 210,
+      "y": 640,
+      "face": "right"
+    }
+  ],
+  "preloadScenes": [
+    "shadow_woods_river_bend"
+  ],
+  "sceneType": "cave",
+  "allowFishing": false,
+  "playerScale": 1.14,
+  "notes": "First-pass cave scene attached to River Bend. Background is clean gameplay art with no UI. Use the admin editor to tune walkable polygons, blockers, exits, water areas, and ambient effects.",
+  "walkable": [
+    {
+      "id": "main_cave_path",
+      "type": "poly",
+      "label": "Main crystal cave path",
+      "points": [
+        [
+          1110,
+          165
+        ],
+        [
+          1375,
+          185
+        ],
+        [
+          1398,
+          305
+        ],
+        [
+          1285,
+          395
+        ],
+        [
+          1110,
+          455
+        ],
+        [
+          1010,
+          515
+        ],
+        [
+          875,
+          560
+        ],
+        [
+          690,
+          595
+        ],
+        [
+          500,
+          575
+        ],
+        [
+          365,
+          515
+        ],
+        [
+          300,
+          430
+        ],
+        [
+          370,
+          330
+        ],
+        [
+          560,
+          275
+        ],
+        [
+          760,
+          235
+        ],
+        [
+          970,
+          175
+        ]
+      ]
+    },
+    {
+      "id": "central_floor",
+      "type": "poly",
+      "label": "Central open floor",
+      "points": [
+        [
+          420,
+          430
+        ],
+        [
+          600,
+          345
+        ],
+        [
+          880,
+          315
+        ],
+        [
+          1115,
+          360
+        ],
+        [
+          1170,
+          500
+        ],
+        [
+          1065,
+          650
+        ],
+        [
+          830,
+          745
+        ],
+        [
+          545,
+          715
+        ],
+        [
+          360,
+          620
+        ],
+        [
+          290,
+          505
+        ]
+      ]
+    },
+    {
+      "id": "left_pool_walkway",
+      "type": "poly",
+      "label": "Left pool bridge/walkway",
+      "points": [
+        [
+          0,
+          420
+        ],
+        [
+          165,
+          390
+        ],
+        [
+          275,
+          455
+        ],
+        [
+          320,
+          560
+        ],
+        [
+          250,
+          710
+        ],
+        [
+          50,
+          790
+        ],
+        [
+          0,
+          760
+        ]
+      ]
+    },
+    {
+      "id": "lower_tracks_path",
+      "type": "poly",
+      "label": "Lower mine track path",
+      "points": [
+        [
+          745,
+          735
+        ],
+        [
+          920,
+          680
+        ],
+        [
+          1125,
+          650
+        ],
+        [
+          1385,
+          680
+        ],
+        [
+          1536,
+          755
+        ],
+        [
+          1536,
+          900
+        ],
+        [
+          1300,
+          900
+        ],
+        [
+          1030,
+          835
+        ],
+        [
+          815,
+          820
+        ]
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "left_pool_water_block",
+      "type": "poly",
+      "label": "Underground water pool",
+      "points": [
+        [
+          0,
+          200
+        ],
+        [
+          245,
+          205
+        ],
+        [
+          360,
+          300
+        ],
+        [
+          300,
+          430
+        ],
+        [
+          160,
+          405
+        ],
+        [
+          0,
+          445
+        ]
+      ]
+    },
+    {
+      "id": "upper_stalactite_wall",
+      "type": "poly",
+      "label": "Upper cave wall",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          1536,
+          0
+        ],
+        [
+          1536,
+          155
+        ],
+        [
+          1260,
+          145
+        ],
+        [
+          1080,
+          105
+        ],
+        [
+          870,
+          155
+        ],
+        [
+          690,
+          135
+        ],
+        [
+          470,
+          190
+        ],
+        [
+          280,
+          150
+        ],
+        [
+          0,
+          200
+        ]
+      ]
+    },
+    {
+      "id": "right_crystal_cluster_block",
+      "type": "circle",
+      "label": "Large crystal cluster",
+      "x": 1120,
+      "y": 430,
+      "r": 115
+    },
+    {
+      "id": "lower_crystal_cluster_block",
+      "type": "circle",
+      "label": "Lower crystal cluster",
+      "x": 845,
+      "y": 650,
+      "r": 85
+    },
+    {
+      "id": "bottom_rock_wall",
+      "type": "poly",
+      "label": "Bottom rock wall",
+      "points": [
+        [
+          0,
+          900
+        ],
+        [
+          1536,
+          900
+        ],
+        [
+          1536,
+          989
+        ],
+        [
+          0,
+          989
+        ]
+      ]
+    }
+  ],
+  "waterAreas": [
+    {
+      "id": "left_underground_pool",
+      "type": "poly",
+      "label": "Left underground pool water",
+      "effect": "waterSurfaceShimmer",
+      "points": [
+        [
+          0,
+          245
+        ],
+        [
+          210,
+          225
+        ],
+        [
+          340,
+          305
+        ],
+        [
+          305,
+          470
+        ],
+        [
+          155,
+          500
+        ],
+        [
+          0,
+          520
+        ]
+      ],
+      "opacity": 0.42,
+      "speed": 0.35
+    },
+    {
+      "id": "pool_current",
+      "type": "poly",
+      "label": "Subtle blue cave current",
+      "effect": "slowRiverCurrent",
+      "points": [
+        [
+          0,
+          310
+        ],
+        [
+          225,
+          300
+        ],
+        [
+          315,
+          405
+        ],
+        [
+          230,
+          540
+        ],
+        [
+          60,
+          600
+        ],
+        [
+          0,
+          580
+        ]
+      ],
+      "opacity": 0.28,
+      "speed": 0.22
+    }
+  ],
+  "ambientEffects": [
+    {
+      "id": "cave_pool_shimmer",
+      "type": "ambientEffect",
+      "effect": "waterSurfaceShimmer",
+      "label": "Cave pool shimmer",
+      "x": 0,
+      "y": 245,
+      "w": 360,
+      "h": 285,
+      "opacity": 0.35,
+      "speed": 0.35,
+      "layer": "water"
+    },
+    {
+      "id": "blue_crystal_glow_big",
+      "type": "ambientEffect",
+      "effect": "crystalGlow",
+      "label": "Large blue crystal glow",
+      "x": 1040,
+      "y": 330,
+      "w": 240,
+      "h": 230,
+      "opacity": 0.55,
+      "speed": 0.25,
+      "glow": true,
+      "glowRadius": 220,
+      "layer": "lighting"
+    },
+    {
+      "id": "blue_crystal_glow_center",
+      "type": "ambientEffect",
+      "effect": "crystalGlow",
+      "label": "Center crystal glow",
+      "x": 770,
+      "y": 600,
+      "w": 170,
+      "h": 145,
+      "opacity": 0.42,
+      "speed": 0.25,
+      "glow": true,
+      "glowRadius": 150,
+      "layer": "lighting"
+    },
+    {
+      "id": "cave_dust_motes",
+      "type": "ambientEffect",
+      "effect": "dustMotes",
+      "label": "Cave dust motes",
+      "x": 180,
+      "y": 110,
+      "w": 1150,
+      "h": 670,
+      "opacity": 0.22,
+      "density": 0.28,
+      "speed": 0.18,
+      "layer": "overlay"
+    },
+    {
+      "id": "lantern_warm_glow_entry",
+      "type": "ambientEffect",
+      "effect": "lanternGlow",
+      "label": "Entry lantern glow",
+      "x": 1210,
+      "y": 85,
+      "w": 185,
+      "h": 190,
+      "opacity": 0.42,
+      "glow": true,
+      "glowRadius": 160,
+      "flickerIntensity": 0.08,
+      "layer": "lighting"
+    }
+  ],
+  "exits": [
+    {
+      "id": "exit_to_river_bend",
+      "type": "exit",
+      "label": "Back to River Bend",
+      "x": 1265,
+      "y": 170,
+      "r": 85,
+      "targetScene": "shadow_woods_river_bend",
+      "targetSpawn": "from_cave",
+      "face": "down",
+      "transition": "fade"
+    },
+    {
+      "id": "exit_deeper_mine_locked",
+      "type": "exit",
+      "label": "Deeper mine passage",
+      "x": 1340,
+      "y": 805,
+      "r": 70,
+      "targetScene": "",
+      "targetSpawn": "",
+      "face": "right",
+      "transition": "fade",
+      "locked": true,
+      "notes": "Future scene hook. Assign targetScene/targetSpawn in editor when the deeper mine is built."
+    },
+    {
+      "id": "exit_pool_grotto_future",
+      "type": "exit",
+      "label": "Underground pool path",
+      "x": 120,
+      "y": 675,
+      "r": 70,
+      "targetScene": "",
+      "targetSpawn": "",
+      "face": "left",
+      "transition": "fade",
+      "locked": true,
+      "notes": "Future scene hook. Could connect to hidden fishing grotto later."
+    }
+  ],
+  "interactables": [
+    {
+      "id": "inspect_large_crystal",
+      "type": "interaction",
+      "label": "Glowing crystal",
+      "x": 1120,
+      "y": 405,
+      "r": 70,
+      "prompt": "Inspect crystal",
+      "text": "The crystal hums softly, casting blue light across the cave floor."
+    },
+    {
+      "id": "inspect_mine_cart",
+      "type": "interaction",
+      "label": "Old mine cart",
+      "x": 820,
+      "y": 575,
+      "r": 55,
+      "prompt": "Inspect cart",
+      "text": "The cart is full of chipped blue stones. Someone worked here long ago."
+    },
+    {
+      "id": "inspect_pool",
+      "type": "interaction",
+      "label": "Underground pool",
+      "x": 170,
+      "y": 430,
+      "r": 70,
+      "prompt": "Inspect pool",
+      "text": "The water is cold and impossibly clear. Tiny lights drift below the surface."
+    }
+  ]
+}

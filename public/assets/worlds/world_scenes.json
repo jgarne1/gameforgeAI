@@ -14,6 +14,11 @@
       "id": "riverbend_cottage_interior",
       "name": "Riverbend Cottage Interior",
       "url": "/assets/worlds/riverbend_cottage_interior.json"
+    },
+    {
+      "id": "shadow_woods_crystal_cave",
+      "name": "Shadow Woods - Crystal Cave",
+      "url": "/assets/worlds/shadow_woods_crystal_cave.json"
     }
   ]
 }

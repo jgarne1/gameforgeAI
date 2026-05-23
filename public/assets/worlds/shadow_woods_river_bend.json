@@ -561,7 +561,7 @@
       "y": 515,
       "r": 50,
       "title": "Trail Sign",
-      "text": "South: Fishing Dock. North: Falls. East: Hollow Tree. West: Riverside House."
+      "text": "South: Fishing Dock. North: Falls. East: Crystal Cave. West: Riverside House."
     },
     {
       "id": "supply_crate",
@@ -598,7 +598,8 @@
     }
   ],
   "preloadScenes": [
-    "riverbend_cottage_interior"
+    "riverbend_cottage_interior",
+    "shadow_woods_crystal_cave"
   ],
   "exits": [
     {
@@ -611,6 +612,18 @@
       "targetScene": "riverbend_cottage_interior",
       "targetSpawn": "from_riverbend",
       "face": "up",
+      "transition": "fade"
+    },
+    {
+      "id": "enter_crystal_cave",
+      "type": "exit",
+      "label": "Enter Crystal Cave",
+      "x": 1250,
+      "y": 780,
+      "r": 75,
+      "targetScene": "shadow_woods_crystal_cave",
+      "targetSpawn": "from_river_bend",
+      "face": "right",
       "transition": "fade"
     }
   ]
