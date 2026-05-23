@@ -1,143 +1,113 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>GameForge World Editor</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GameForge World Scene Editor</title>
 <style>
-:root{--bg:#06101d;--panel:#0d1929;--panel2:#12243a;--line:#2c4969;--text:#edf7ff;--muted:#9fb2c7;--walk:#52e889;--block:#ff6572;--hot:#62c1ff;--fore:#d68cff;--gold:#f4c86b;--draft:#ffd166}*{box-sizing:border-box}body{margin:0;height:100vh;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;overflow:hidden}.app{display:grid;grid-template-columns:360px minmax(0,1fr) 410px;height:100vh}.side{background:linear-gradient(180deg,var(--panel),#07101b);border-right:1px solid var(--line);padding:14px;overflow:auto}.right{border-right:0;border-left:1px solid var(--line)}h1{font-size:20px;margin:0 0 5px}h2{font-size:12px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.1em;color:#a9d8ff}.hint,.mini{font-size:12px;color:var(--muted);line-height:1.45}.hint{background:#081626;border:1px solid var(--line);border-radius:12px;padding:10px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.field{display:grid;gap:5px;margin:8px 0}label{font-size:12px;font-weight:800;color:#c5ddf4}button,input,select,textarea{font:inherit}button{border:1px solid var(--line);background:#152840;color:var(--text);border-radius:10px;padding:8px 10px;cursor:pointer;font-weight:800}button:hover{background:#1e385a}.primary{background:#1e6eea;border-color:#76b6ff}.good{background:#12532f;border-color:#48d483}.danger{background:#531522;border-color:#bf4255}.gold{background:#4d3611;border-color:#e7bd52}.small{font-size:12px;padding:6px 8px;border-radius:8px}input,select,textarea{width:100%;background:#07101d;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px}textarea{height:260px;font:12px Consolas,monospace;resize:vertical}.viewer{position:relative;background:#02060b;overflow:hidden}.stageWrap{position:absolute;inset:0;overflow:auto;padding:34px}.stage{position:relative;background:#111;box-shadow:0 30px 100px rgba(0,0,0,.55);transform-origin:0 0}.stage img{position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}.stage svg{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}.coords,.mode{position:absolute;bottom:12px;padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.72);font:12px Consolas,monospace;pointer-events:none}.coords{left:12px}.mode{right:12px}.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:900;background:#14243b}.walkable{color:#a8ffc8}.blockers{color:#ffc3c9}.hotspots{color:#c5e8ff}.foreground{color:#f1c8ff}.shape{background:#091727;border:1px solid var(--line);border-radius:10px;padding:8px;display:grid;gap:4px;margin-bottom:7px}.shape.active{outline:2px solid white}.toggle{display:block;margin:6px 0;font-size:13px}.toggle input{width:auto;margin-right:7px}.toolbar{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:8px;justify-content:center;pointer-events:none;z-index:4}.toolbar span{background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 12px;color:#fff;font-size:12px}.kbd{font:11px Consolas,monospace;background:#020811;border:1px solid #365578;border-radius:5px;padding:1px 5px;color:#fff}.warn{color:#ffd166}.ok{color:#91ffbb}.draftStatus{font-size:12px;border:1px solid #7a5e1d;background:#241b09;color:#ffd166;border-radius:10px;padding:8px;margin-top:8px}.split{display:grid;grid-template-columns:1fr 1fr;gap:8px}.muted{color:var(--muted)}
+  :root{--bg:#07111d;--panel:#0d1b2a;--line:#28435f;--text:#eaf6ff;--muted:#9db4c8;--blue:#38bdf8;--green:#22c55e;--red:#fb7185;--gold:#fbbf24;--purple:#c084fc;}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;overflow:hidden}
+  .app{display:grid;grid-template-columns:310px minmax(0,1fr) 340px;height:100vh}
+  .panel{background:linear-gradient(180deg,#0d1b2a,#08131f);border-right:1px solid var(--line);padding:14px;overflow:auto}.panel.right{border-right:0;border-left:1px solid var(--line)}
+  h1{font-size:18px;margin:0 0 10px} h2{font-size:13px;color:#bfe7ff;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}.hint{font-size:12px;color:var(--muted);line-height:1.35}.row{display:flex;gap:8px;align-items:center;margin:8px 0}.row>*{min-width:0} label{font-size:12px;color:#cfe7ff;display:block;margin:8px 0 4px}.field,select,textarea{width:100%;background:#07111d;color:var(--text);border:1px solid #27425e;border-radius:9px;padding:8px;font:inherit;font-size:13px}textarea{min-height:70px;resize:vertical}button{background:#12304a;color:#eaf6ff;border:1px solid #2d5e85;border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer}button:hover{background:#174466}.primary{background:#145d82;border-color:#38bdf8}.danger{background:#4c1522;border-color:#fb7185}.tool{width:100%;text-align:left;margin:4px 0}.tool.active{outline:2px solid var(--gold)}.viewer{position:relative;overflow:auto;background:#02060b}.stageWrap{position:relative;width:1600px;height:1080px;margin:30px;transform-origin:0 0}.stageWrap img{position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}.overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.poly.walkable{fill:rgba(34,197,94,.16);stroke:rgba(34,197,94,.95)}.poly.blocker{fill:rgba(251,113,133,.18);stroke:rgba(251,113,133,.95)}.poly.foreground{fill:rgba(192,132,252,.16);stroke:rgba(192,132,252,.95)}.shape{stroke-width:3;vector-effect:non-scaling-stroke;cursor:pointer}.circle.fishing{fill:rgba(56,189,248,.18);stroke:rgba(56,189,248,.95)}.circle.npc{fill:rgba(251,191,36,.18);stroke:rgba(251,191,36,.95)}.circle.chest{fill:rgba(168,85,247,.18);stroke:rgba(168,85,247,.95)}.circle.exit{fill:rgba(244,114,182,.18);stroke:rgba(244,114,182,.95)}.selected{filter:drop-shadow(0 0 7px #fff);stroke-width:5}.vertex{fill:#fff;stroke:#0f172a;stroke-width:2;cursor:grab}.snap{fill:#fb923c;stroke:#111827;stroke-width:3;cursor:grab}.cast{fill:#22d3ee;stroke:#111827;stroke-width:3;cursor:grab}.labelText{font:bold 18px Arial;fill:#fff;stroke:#000;stroke-width:4;paint-order:stroke;pointer-events:none}.list{display:flex;flex-direction:column;gap:5px}.item{display:flex;align-items:center;gap:6px;border:1px solid #23405a;border-radius:8px;padding:7px;background:#07111d;cursor:pointer}.item.active{border-color:#fff;background:#132b3f}.badge{font-size:11px;padding:2px 6px;border-radius:999px;background:#1f354b;color:#cde}.mini{font-size:11px;color:var(--muted)}.notice{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0d1b2a;border:1px solid #38bdf8;padding:10px 14px;border-radius:999px;opacity:0;transition:.2s;box-shadow:0 12px 36px rgba(0,0,0,.35)}.notice.show{opacity:1}.jsonOut{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;min-height:160px;font-size:11px}.kbd{border:1px solid #3a5874;border-radius:5px;padding:1px 5px;background:#07111d;color:#eaf6ff}
 </style>
 </head>
 <body>
 <div class="app">
-  <aside class="side">
-    <h1>World Boundary Editor</h1>
-    <div class="hint"><b>Workflow:</b><br>1. Pick a scene.<br>2. Edit zones visually.<br>3. Click <b>Save Draft</b> while testing.<br>4. Click <b>Download JSON</b> when ready.<br>5. Replace the matching file in GitHub.</div>
-
-    <h2>Scene Selection</h2>
-    <div class="field"><label>Scene</label><select id="sceneSelect"></select></div>
-    <div class="row"><button id="loadScene" class="primary">Load Scene</button><button id="reloadJson">Reload Repo JSON</button></div>
-    <div class="field"><label>Background image path</label><input id="bg"></div>
-    <div class="field"><label>Region JSON path</label><input id="jsonPath"></div>
-    <div class="row"><button id="loadCustom">Load Custom Paths</button><button id="loadBlank">Blank For Image</button></div>
-
-    <h2>In-Browser Save</h2>
-    <div class="row"><button id="saveDraft" class="gold">Save Draft</button><button id="loadDraft">Load Draft</button><button id="clearDraft" class="danger">Clear Draft</button></div>
-    <div id="draftStatus" class="draftStatus">No scene loaded yet.</div>
-    <p class="mini">Drafts save to this browser using localStorage. They survive refreshes, but they do not update GitHub until you download/copy the JSON and commit it.</p>
-
-    <h2>Import / View</h2>
-    <div class="row"><button id="importBtn">Import JSON File</button><input id="fileIn" type="file" accept=".json,application/json" style="display:none"></div>
-    <div class="row"><button id="zoomOut" class="small">− Zoom</button><button id="zoomIn" class="small">+ Zoom</button><button id="fit" class="small">Fit</button></div>
-
-    <h2>Create / Edit</h2>
-    <div class="field"><label>Layer</label><select id="layer"><option value="walkable">Walkable area</option><option value="blockers">Blocker</option><option value="hotspots">Hotspot</option><option value="foreground">Foreground fade</option></select></div>
-    <div class="field"><label>Shape</label><select id="shapeKind"><option value="poly">Custom polygon</option><option value="circle">Circle</option><option value="rect">Rectangle</option></select></div>
-    <div class="field"><label>Label</label><input id="label" value="New zone"></div>
-    <div class="row"><button id="start" class="primary">Start Drawing</button><button id="finish" class="good">Finish</button><button id="cancel">Cancel</button></div>
-    <p class="mini">Polygon: click points, then Finish or <span class="kbd">Enter</span>. Drag white dots to reshape. Right-click a polygon point to delete it. Delete key removes selected shape.</p>
-
-    <h2>Visibility</h2>
-    <label class="toggle"><input type="checkbox" data-vis="walkable" checked> Walkable</label>
-    <label class="toggle"><input type="checkbox" data-vis="blockers" checked> Blockers</label>
-    <label class="toggle"><input type="checkbox" data-vis="hotspots" checked> Hotspots</label>
-    <label class="toggle"><input type="checkbox" data-vis="foreground" checked> Foreground</label>
-    <label class="toggle"><input type="checkbox" id="grid"> Grid</label>
+  <aside class="panel">
+    <h1>World Scene Editor</h1>
+    <p class="hint">Edit the map visually. Browser Save lets the game use your draft while testing. Download JSON when ready to commit to GitHub.</p>
+    <h2>Scene</h2>
+    <select id="sceneSelect"></select>
+    <div class="row"><button id="loadBtn" class="primary">Load Scene</button><button id="reloadBtn">Reload File</button></div>
+    <div class="row"><button id="saveBtn" class="primary">Save Browser Draft</button><button id="clearDraftBtn">Clear Draft</button></div>
+    <div class="row"><button id="exportBtn">Export JSON</button><button id="downloadBtn">Download JSON</button></div>
+    <label>Import/replace JSON</label><input type="file" id="fileInput" class="field" accept="application/json,.json">
+    <h2>Create</h2>
+    <button class="tool" data-tool="select">Select / drag</button>
+    <button class="tool" data-tool="walkable">Draw walkable polygon</button>
+    <button class="tool" data-tool="blocker">Draw blocker polygon</button>
+    <button class="tool" data-tool="foreground">Draw foreground fade polygon</button>
+    <button class="tool" data-tool="fishing">Add fishing zone</button>
+    <button class="tool" data-tool="npc">Add NPC/dialogue</button>
+    <button class="tool" data-tool="chest">Add chest</button>
+    <button class="tool" data-tool="exit">Add exit</button>
+    <p class="hint">Polygon tool: click points, then press <span class="kbd">Enter</span> to finish or <span class="kbd">Esc</span> to cancel. Drag vertices after selecting.</p>
+    <h2>Objects</h2><div id="objectList" class="list"></div>
   </aside>
-
-  <main class="viewer">
-    <div class="toolbar"><span id="topMsg">Choose a scene and load it.</span></div>
-    <div class="stageWrap" id="wrap"><div class="stage" id="stage"><img id="img" alt="world map"><svg id="svg"></svg></div></div>
-    <div class="coords" id="coords">x:0 y:0</div><div class="mode" id="mode">select</div>
-  </main>
-
-  <aside class="side right">
-    <h2>Selected Shape</h2><div id="selected" class="hint">Nothing selected.</div>
-    <h2>Shapes</h2><div id="list"></div>
-    <h2>Export</h2>
-    <div class="row"><button id="export" class="primary">Preview JSON</button><button id="copy">Copy JSON</button><button id="download" class="good">Download JSON</button></div>
-    <textarea id="out" spellcheck="false"></textarea>
-    <p class="mini warn">Direct GitHub save is intentionally not done from the browser. Use Download or Copy, then replace the JSON file in your repo.</p>
+  <main class="viewer" id="viewer"><div class="stageWrap" id="stage"><img id="bg"><svg id="svg" class="overlay" viewBox="0 0 1600 1080"></svg></div></main>
+  <aside class="panel right">
+    <h1>Selected</h1><div id="props"><p class="hint">Select or create something to edit it.</p></div>
+    <h2>JSON Preview</h2><textarea id="jsonOut" class="jsonOut" readonly></textarea>
   </aside>
-</div>
-
+</div><div id="notice" class="notice"></div>
 <script>
 (function(){
-const NS='http://www.w3.org/2000/svg';
-const COLORS={walkable:'#52e889',blockers:'#ff6572',hotspots:'#62c1ff',foreground:'#d68cff'};
-const DEFAULT_SCENES=[
-  {id:'shadow_woods_dock',name:'Shadow Woods - Fishing Dock',background:'/assets/backgrounds/shadow_woods_fishing_scene.png',json:'/assets/worlds/shadow_woods_dock.json'},
-  {id:'shadow_woods_clean',name:'Shadow Woods - Clean Scene',background:'/assets/backgrounds/shadow_woods_clean_scene.png',json:'/assets/worlds/shadow_woods_dock.json'},
-  {id:'sunny_meadows',name:'Sunny Meadows',background:'/assets/backgrounds/sunny_meadows_map.png',json:'/assets/worlds/sunny_meadows.json'}
-];
-const STATE={scale:.72,w:1600,h:1080,data:null,selected:null,creating:null,drag:null,currentScene:null,vis:{walkable:true,blockers:true,hotspots:true,foreground:true},grid:false,dirty:false,lastSave:0};
-const img=document.getElementById('img'),stage=document.getElementById('stage'),svg=document.getElementById('svg'),wrap=document.getElementById('wrap');
-
-function sceneKey(id){return 'gf_world_editor_draft_'+id;}
-function msg(t){document.getElementById('topMsg').textContent=t;}
-function setStatus(t){document.getElementById('draftStatus').innerHTML=t;}
-function field(id){return document.getElementById(id).value;}
-function setField(id,v){document.getElementById(id).value=v||'';}
-function blank(id,name,bg,json){return {id:id||'new_scene',name:name||'New Scene',background:bg||field('bg')||'',jsonPath:json||field('jsonPath')||'',size:{w:STATE.w,h:STATE.h},spawn:{x:Math.round(STATE.w*.35),y:Math.round(STATE.h*.65),face:'up'},walkable:[],blockers:[],hotspots:[],foreground:[]};}
-function ensureArrays(d){['walkable','blockers','hotspots','foreground'].forEach(k=>{if(!Array.isArray(d[k]))d[k]=[]});return d;}
-function resize(){stage.style.width=STATE.w+'px';stage.style.height=STATE.h+'px';stage.style.transform='scale('+STATE.scale+')';svg.setAttribute('viewBox','0 0 '+STATE.w+' '+STATE.h);svg.setAttribute('width',STATE.w);svg.setAttribute('height',STATE.h);}
-function fit(){if(!STATE.w||!STATE.h)return;STATE.scale=Math.max(.1,Math.min((wrap.clientWidth-80)/STATE.w,(wrap.clientHeight-80)/STATE.h));resize();}
-function loadImage(src){if(!src){msg('No background image path set.');return;}img.src=src;img.onload=()=>{STATE.w=img.naturalWidth||1600;STATE.h=img.naturalHeight||1080;if(STATE.data)STATE.data.size={w:STATE.w,h:STATE.h};resize();render();setTimeout(fit,60);msg('Map loaded. Edit zones, then Save Draft or Download JSON.');};img.onerror=()=>msg('Image failed to load: '+src);}
-async function initScenes(){let scenes=DEFAULT_SCENES.slice();try{let r=await fetch('/assets/worlds/world_scenes.json?v='+Date.now(),{cache:'no-store'});if(r.ok){let j=await r.json();if(Array.isArray(j.scenes)&&j.scenes.length)scenes=j.scenes;}}catch(e){}window.GF_WORLD_EDITOR_SCENES=scenes;let s=document.getElementById('sceneSelect');s.innerHTML='';scenes.forEach(sc=>{let o=document.createElement('option');o.value=sc.id;o.textContent=sc.name||sc.id;s.appendChild(o)});if(scenes[0])selectScene(scenes[0].id,false);}
-function getScene(id){return (window.GF_WORLD_EDITOR_SCENES||DEFAULT_SCENES).find(s=>s.id===id)||(window.GF_WORLD_EDITOR_SCENES||DEFAULT_SCENES)[0];}
-function selectScene(id,load){let sc=getScene(id);if(!sc)return;STATE.currentScene=sc;document.getElementById('sceneSelect').value=sc.id;setField('bg',sc.background);setField('jsonPath',sc.json);STATE.data=blank(sc.id,sc.name,sc.background,sc.json);updateDraftStatus();if(load)loadScene(false);}
-async function loadScene(forceRepo){let sc=STATE.currentScene||getScene(document.getElementById('sceneSelect').value);if(!sc)return;STATE.currentScene=sc;setField('bg',sc.background);setField('jsonPath',sc.json);let draft=localStorage.getItem(sceneKey(sc.id));if(draft&&!forceRepo){try{STATE.data=ensureArrays(JSON.parse(draft));STATE.data.background=STATE.data.background||sc.background;STATE.data.jsonPath=STATE.data.jsonPath||sc.json;loadImage(STATE.data.background);STATE.dirty=false;updateDraftStatus('Loaded saved browser draft.');return;}catch(e){}}
-try{let r=await fetch(sc.json+'?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('Missing JSON');STATE.data=ensureArrays(await r.json());STATE.data.id=STATE.data.id||sc.id;STATE.data.name=STATE.data.name||sc.name;STATE.data.background=STATE.data.background||sc.background;STATE.data.jsonPath=sc.json;loadImage(STATE.data.background);STATE.dirty=false;updateDraftStatus('Loaded repo JSON.');}catch(e){STATE.data=blank(sc.id,sc.name,sc.background,sc.json);loadImage(sc.background);STATE.dirty=false;updateDraftStatus('No repo JSON found. Started blank.');}}
-function loadCustom(){let bg=field('bg'),json=field('jsonPath'),id=(json.split('/').pop()||'custom.json').replace(/\.json$/,'');STATE.currentScene={id,name:id,background:bg,json};loadScene(true);}
-function saveDraft(){if(!STATE.data)return;localStorage.setItem(sceneKey(STATE.data.id||'custom'),exportText());STATE.lastSave=Date.now();STATE.dirty=false;updateDraftStatus('Draft saved in this browser.');}
-function loadDraft(){let id=(STATE.data&&STATE.data.id)||(STATE.currentScene&&STATE.currentScene.id);if(!id)return alert('No scene loaded.');let draft=localStorage.getItem(sceneKey(id));if(!draft)return alert('No draft saved for this scene.');STATE.data=ensureArrays(JSON.parse(draft));setField('bg',STATE.data.background);if(STATE.data.jsonPath)setField('jsonPath',STATE.data.jsonPath);loadImage(STATE.data.background);STATE.dirty=false;updateDraftStatus('Loaded saved browser draft.');}
-function clearDraft(){let id=(STATE.data&&STATE.data.id)||(STATE.currentScene&&STATE.currentScene.id);if(!id)return;if(confirm('Clear browser draft for this scene?')){localStorage.removeItem(sceneKey(id));STATE.dirty=false;updateDraftStatus('Draft cleared.');}}
-function updateDraftStatus(extra){let id=(STATE.data&&STATE.data.id)||(STATE.currentScene&&STATE.currentScene.id)||'none';let has=localStorage.getItem(sceneKey(id));let status=has?'<span class="ok">Saved browser draft exists.</span>':'<span class="muted">No browser draft saved.</span>';if(STATE.dirty)status+=' <span class="warn">Unsaved editor changes.</span>';if(extra)status='<b>'+extra+'</b><br>'+status;setStatus(status+'<br><span class="muted">Scene:</span> '+id);}
-function markDirty(){STATE.dirty=true;updateDraftStatus();}
-function pt(e){let r=svg.getBoundingClientRect();return {x:Math.round((e.clientX-r.left)/STATE.scale),y:Math.round((e.clientY-r.top)/STATE.scale)};}
-function uid(layer){return layer+'_'+Math.random().toString(36).slice(2,8)}
-function all(){let a=[];['walkable','blockers','hotspots','foreground'].forEach(layer=>(STATE.data[layer]||[]).forEach(shape=>a.push({layer,shape})));return a;}
-function start(){let layer=field('layer'),type=field('shapeKind'),label=field('label')||'New zone';let shape={id:uid(layer),type,label};if(type==='poly')shape.points=[];if(type==='circle'){shape.x=Math.round(STATE.w/2);shape.y=Math.round(STATE.h/2);shape.r=80;}if(type==='rect'){shape.x=200;shape.y=200;shape.w=180;shape.h=100;}STATE.creating={layer,shape};STATE.selected={layer,shape};document.getElementById('mode').textContent='drawing '+type;render();}
-function finish(){if(!STATE.creating)return;let {layer,shape}=STATE.creating;if(shape.type==='poly'&&shape.points.length<3){alert('Polygon needs 3+ points.');return;}STATE.data[layer].push(shape);STATE.selected={layer,shape};STATE.creating=null;document.getElementById('mode').textContent='select';markDirty();render();}
-function cancel(){STATE.creating=null;document.getElementById('mode').textContent='select';render();}
-function render(){resize();svg.innerHTML='';if(STATE.grid)drawGrid();all().forEach(o=>{if(STATE.vis[o.layer])drawShape(o.layer,o.shape)});if(STATE.creating)drawShape(STATE.creating.layer,STATE.creating.shape,true);renderList();renderSelected();}
-function drawGrid(){for(let x=0;x<STATE.w;x+=64)svg.appendChild(line(x,0,x,STATE.h,'rgba(255,255,255,.08)',1));for(let y=0;y<STATE.h;y+=64)svg.appendChild(line(0,y,STATE.w,y,'rgba(255,255,255,.08)',1));}
-function drawShape(layer,s,temp){let color=COLORS[layer]||'#fff',g=el('g');let selected=STATE.selected&&STATE.selected.shape===s;let fill=color+(layer==='walkable'?'44':'33');let stroke=selected?'#fff':color;if(s.type==='circle'){g.appendChild(el('circle',{cx:s.x,cy:s.y,r:s.r,fill,stroke,'stroke-width':selected?4:2}));g.appendChild(labelAt(s.x,s.y,s.label||s.id));if(selected||temp){g.appendChild(handle(s.x,s.y,color,0));g.appendChild(handle(s.x+s.r,s.y,color,'radius'));}}else if(s.type==='rect'){g.appendChild(el('rect',{x:s.x,y:s.y,width:s.w,height:s.h,fill,stroke,'stroke-width':selected?4:2}));let c=center(s);g.appendChild(labelAt(c.x,c.y,s.label||s.id));if(selected||temp){[[s.x,s.y],[s.x+s.w,s.y],[s.x+s.w,s.y+s.h],[s.x,s.y+s.h]].forEach((p,i)=>g.appendChild(handle(p[0],p[1],color,i)));}}else{let pts=(s.points||[]).map(p=>p.join(',')).join(' ');if(s.points&&s.points.length){g.appendChild(el('polygon',{points:pts,fill,stroke,'stroke-width':selected?4:2}));let c=center(s);g.appendChild(labelAt(c.x,c.y,s.label||s.id));if(selected||temp)s.points.forEach((p,i)=>g.appendChild(handle(p[0],p[1],color,i)));}}
-g.dataset.layer=layer;g.style.cursor='move';g.addEventListener('pointerdown',e=>{if(STATE.creating)return;e.stopPropagation();STATE.selected={layer,shape:s};let p=pt(e);if(e.target.dataset.index!=null)STATE.drag={kind:'vertex',shape:s,idx:e.target.dataset.index,start:p,orig:clone(s)};else if(e.target.dataset.kind==='radius')STATE.drag={kind:'radius',shape:s,start:p};else STATE.drag={kind:'shape',shape:s,start:p,orig:clone(s)};render();});svg.appendChild(g);}
-function labelAt(x,y,text){let t=el('text',{x,y,fill:'#fff','font-size':16,'text-anchor':'middle','dominant-baseline':'middle','paint-order':'stroke',stroke:'#000','stroke-width':4});t.textContent=text;return t;}
-function handle(x,y,color,index){let h=el('circle',{cx:x,cy:y,r:8,fill:'#fff',stroke:color,'stroke-width':3});if(index!==undefined&&index!==null)h.dataset.index=index;if(index==='radius'){h.dataset.kind='radius';delete h.dataset.index;}return h;}
-function center(s){if(s.r!=null)return{x:s.x,y:s.y};if(s.w!=null)return{x:s.x+s.w/2,y:s.y+s.h/2};let x=0,y=0,n=(s.points||[]).length||1;(s.points||[]).forEach(p=>{x+=p[0];y+=p[1]});return{x:x/n,y:y/n};}
-function el(n,a){let e=document.createElementNS(NS,n);if(a)Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e;}
-function line(x1,y1,x2,y2,c,w){return el('line',{x1,y1,x2,y2,stroke:c,'stroke-width':w});}
-function clone(o){return JSON.parse(JSON.stringify(o));}
-svg.addEventListener('pointerdown',e=>{let p=pt(e);if(STATE.creating){let s=STATE.creating.shape;if(s.type==='poly'){s.points.push([p.x,p.y]);}else if(s.type==='circle'){s.x=p.x;s.y=p.y;STATE.drag={kind:'radius',shape:s,start:p};}else if(s.type==='rect'){s.x=p.x;s.y=p.y;s.w=1;s.h=1;STATE.drag={kind:'rect',shape:s,start:p};}markDirty();render();return;}STATE.selected=null;render();});
-svg.addEventListener('pointermove',e=>{let p=pt(e);document.getElementById('coords').textContent='x:'+p.x+' y:'+p.y;if(!STATE.drag)return;let d=STATE.drag,s=d.shape,dx=p.x-d.start.x,dy=p.y-d.start.y;if(d.kind==='vertex'){if(s.points){s.points[+d.idx]=[p.x,p.y];}else if(s.w!=null){let ox=d.orig.x,oy=d.orig.y,ow=d.orig.w,oh=d.orig.h;if(+d.idx===0){s.x=p.x;s.y=p.y;s.w=ox+ow-p.x;s.h=oy+oh-p.y}else if(+d.idx===1){s.y=p.y;s.w=p.x-ox;s.h=oy+oh-p.y}else if(+d.idx===2){s.w=p.x-ox;s.h=p.y-oy}else{s.x=p.x;s.w=ox+ow-p.x;s.h=p.y-oy}}}else if(d.kind==='radius'){s.r=Math.max(10,Math.round(Math.hypot(p.x-s.x,p.y-s.y)));}else if(d.kind==='rect'){s.w=p.x-s.x;s.h=p.y-s.y;}else if(d.kind==='shape'){if(s.r!=null){s.x=d.orig.x+dx;s.y=d.orig.y+dy;}else if(s.w!=null){s.x=d.orig.x+dx;s.y=d.orig.y+dy;}else{s.points=d.orig.points.map(q=>[q[0]+dx,q[1]+dy]);}}markDirty();render();});
-window.addEventListener('pointerup',()=>STATE.drag=null);
-svg.addEventListener('contextmenu',e=>{e.preventDefault();if(e.target.dataset.index!=null&&STATE.selected&&STATE.selected.shape.points&&STATE.selected.shape.points.length>3){STATE.selected.shape.points.splice(+e.target.dataset.index,1);markDirty();render();}});
-window.addEventListener('keydown',e=>{if(e.key==='Enter')finish();if(e.key==='Escape')cancel();if((e.key==='Delete'||e.key==='Backspace')&&STATE.selected&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){removeSelected();}});
-function removeSelected(){if(!STATE.selected)return;let a=STATE.data[STATE.selected.layer],i=a.indexOf(STATE.selected.shape);if(i>=0)a.splice(i,1);STATE.selected=null;markDirty();render();}
-function renderList(){let l=document.getElementById('list');l.innerHTML='';all().forEach(({layer,shape})=>{let d=document.createElement('div');d.className='shape '+(STATE.selected&&STATE.selected.shape===shape?'active':'');d.innerHTML='<b>'+esc(shape.label||shape.id)+'</b><small><span class="badge '+layer+'">'+layer+'</span> '+(shape.type||'poly')+'</small>';d.onclick=()=>{STATE.selected={layer,shape};render();};l.appendChild(d);});}
-function renderSelected(){let p=document.getElementById('selected');if(!STATE.selected){p.innerHTML='Nothing selected.';return;}let {layer,shape}=STATE.selected;p.innerHTML='<div class="field"><label>Label</label><input id="selLabel" value="'+attr(shape.label||'')+'"></div><div class="field"><label>ID</label><input id="selId" value="'+attr(shape.id||'')+'"></div><p><span class="badge '+layer+'">'+layer+'</span> '+(shape.type||'poly')+'</p><button id="del" class="danger">Delete selected</button>';document.getElementById('selLabel').oninput=e=>{shape.label=e.target.value;markDirty();renderList();};document.getElementById('selId').oninput=e=>{shape.id=e.target.value;markDirty();renderList();};document.getElementById('del').onclick=removeSelected;}
-function normalizeRects(){['walkable','blockers','hotspots','foreground'].forEach(layer=>{(STATE.data[layer]||[]).forEach(s=>{if(s.w<0){s.x+=s.w;s.w=Math.abs(s.w);}if(s.h<0){s.y+=s.h;s.h=Math.abs(s.h);}});});}
-function exportText(){normalizeRects();STATE.data.background=field('bg');STATE.data.jsonPath=field('jsonPath');STATE.data.size={w:STATE.w,h:STATE.h};return JSON.stringify(STATE.data,null,2);}
-function preview(){document.getElementById('out').value=exportText();msg('JSON preview updated.');}
-async function copy(){preview();await navigator.clipboard.writeText(document.getElementById('out').value);msg('Copied JSON to clipboard.');}
-function download(){let txt=exportText(),blob=new Blob([txt],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(STATE.data.id||'world')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);}
-function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
-function attr(s){return esc(s).replace(/"/g,'&quot;');}
-
-document.getElementById('sceneSelect').onchange=e=>selectScene(e.target.value,false);
-document.getElementById('loadScene').onclick=()=>loadScene(false);
-document.getElementById('reloadJson').onclick=()=>loadScene(true);
-document.getElementById('loadCustom').onclick=loadCustom;
-document.getElementById('loadBlank').onclick=()=>{let sc=STATE.currentScene||{id:'custom',name:'Custom',json:field('jsonPath'),background:field('bg')};STATE.data=blank(sc.id,sc.name,field('bg'),field('jsonPath'));loadImage(field('bg'));markDirty();};
-document.getElementById('saveDraft').onclick=saveDraft;document.getElementById('loadDraft').onclick=loadDraft;document.getElementById('clearDraft').onclick=clearDraft;
-document.getElementById('importBtn').onclick=()=>document.getElementById('fileIn').click();
-document.getElementById('fileIn').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{STATE.data=ensureArrays(JSON.parse(r.result));setField('bg',STATE.data.background||field('bg'));if(STATE.data.jsonPath)setField('jsonPath',STATE.data.jsonPath);loadImage(field('bg'));markDirty();};r.readAsText(f);};
-document.getElementById('start').onclick=start;document.getElementById('finish').onclick=finish;document.getElementById('cancel').onclick=cancel;document.getElementById('export').onclick=preview;document.getElementById('copy').onclick=copy;document.getElementById('download').onclick=download;
-document.getElementById('zoomIn').onclick=()=>{STATE.scale=Math.min(3,STATE.scale+.1);resize();};document.getElementById('zoomOut').onclick=()=>{STATE.scale=Math.max(.1,STATE.scale-.1);resize();};document.getElementById('fit').onclick=fit;
-document.querySelectorAll('[data-vis]').forEach(c=>c.onchange=()=>{STATE.vis[c.dataset.vis]=c.checked;render();});document.getElementById('grid').onchange=e=>{STATE.grid=e.target.checked;render();};
-initScenes().then(()=>loadScene(false));
+'use strict';
+var sceneId='shadow_woods_dock';
+var sceneUrl='/assets/worlds/shadow_woods_dock.json';
+var scene={id:'shadow_woods_dock',name:'Shadow Woods Dock',background:'/assets/backgrounds/shadow_woods_fishing_scene.png',size:{w:1600,h:1080},spawn:{x:560,y:705,face:'up'},walkable:[],blockers:[],hotspots:[],interactables:[],foreground:[]};
+var selected=null, tool='select', drawing=null, drag=null;
+var svg=document.getElementById('svg'), bg=document.getElementById('bg'), stage=document.getElementById('stage'), viewer=document.getElementById('viewer');
+var sceneSelect=document.getElementById('sceneSelect');
+var scenes=[{id:'shadow_woods_dock',name:'Shadow Woods Dock',url:'/assets/worlds/shadow_woods_dock.json'}];
+function init(){
+  sceneSelect.innerHTML=scenes.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
+  document.querySelectorAll('.tool').forEach(function(b){b.onclick=function(){setTool(b.dataset.tool);};});setTool('select');
+  document.getElementById('loadBtn').onclick=function(){loadScene(sceneSelect.value,true)};
+  document.getElementById('reloadBtn').onclick=function(){localStorage.removeItem(key());loadScene(sceneId,false)};
+  document.getElementById('saveBtn').onclick=saveDraft;document.getElementById('clearDraftBtn').onclick=function(){localStorage.removeItem(key());notice('Browser draft cleared. Reload to use GitHub JSON.');};
+  document.getElementById('exportBtn').onclick=exportText;document.getElementById('downloadBtn').onclick=downloadJson;
+  document.getElementById('fileInput').onchange=importFile;
+  svg.addEventListener('pointerdown',onDown);window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);window.addEventListener('keydown',onKey);
+  loadScene('shadow_woods_dock',true);
+}
+function key(){return 'gfWorldSceneDraft:'+sceneId;}
+function setTool(t){tool=t;document.querySelectorAll('.tool').forEach(function(b){b.classList.toggle('active',b.dataset.tool===tool);});drawing=null;render();}
+function loadScene(id,preferDraft){sceneId=id;var meta=scenes.find(function(s){return s.id===id})||scenes[0];sceneUrl=meta.url;var draft=preferDraft&&localStorage.getItem(key());if(draft){try{scene=normalize(JSON.parse(draft));notice('Loaded browser draft for '+id);renderAll();return;}catch(e){}}
+ fetch(sceneUrl+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){scene=normalize(j);notice('Loaded '+sceneUrl);renderAll();}).catch(function(){notice('Could not load JSON. Using blank scene.');renderAll();});}
+function normalize(j){j=j||{};j.size=j.size||{w:1600,h:1080};j.walkable=j.walkable||[];j.blockers=j.blockers||[];j.hotspots=j.hotspots||[];j.interactables=j.interactables||[];j.foreground=j.foreground||[];return j;}
+function renderAll(){bg.src=scene.background||'';stage.style.width=(scene.size.w||1600)+'px';stage.style.height=(scene.size.h||1080)+'px';svg.setAttribute('viewBox','0 0 '+(scene.size.w||1600)+' '+(scene.size.h||1080));updateJson();render();}
+function shapes(){var a=[];['walkable','blockers','foreground','hotspots','interactables'].forEach(function(k){(scene[k]||[]).forEach(function(o){o._group=k;a.push(o);});});return a;}
+function render(){var html='';
+ shapes().forEach(function(o){var cls=o._group==='walkable'?'walkable':o._group==='blockers'?'blocker':o._group==='foreground'?'foreground':(o.type||o.kind||'hotspot');var sel=o===selected?' selected':'';if(o.points){html+='<polygon data-id="'+o.id+'" class="shape poly '+cls+sel+'" points="'+o.points.map(function(p){return p[0]+','+p[1]}).join(' ')+'"></polygon>';}
+ else {var r=o.r||o.radius||60;html+='<circle data-id="'+o.id+'" class="shape circle '+cls+sel+'" cx="'+o.x+'" cy="'+o.y+'" r="'+r+'"></circle>';}
+ var lx=o.x,ly=o.y;if(o.points){var c=centroid(o.points);lx=c.x;ly=c.y;}html+='<text class="labelText" x="'+lx+'" y="'+(ly-((o.r||60)+8))+'">'+(o.label||o.id||'')+'</text>';});
+ if(selected&&selected.points){selected.points.forEach(function(p,i){html+='<circle class="vertex" data-vertex="'+i+'" cx="'+p[0]+'" cy="'+p[1]+'" r="8"></circle>';});}
+ if(selected&&(selected.type==='fishing'||selected.kind==='fish'||selected.kind==='fishing')){var sp=selected.snapPosition||selected.interactAt||{x:selected.x,y:selected.y};var ct=selected.castTarget||{x:selected.x+220,y:selected.y-100};html+='<rect class="snap" data-special="snap" x="'+(sp.x-9)+'" y="'+(sp.y-9)+'" width="18" height="18"></rect><text class="labelText" x="'+(sp.x+12)+'" y="'+(sp.y-12)+'">stand</text>';html+='<circle class="cast" data-special="cast" cx="'+ct.x+'" cy="'+ct.y+'" r="10"></circle><text class="labelText" x="'+(ct.x+14)+'" y="'+(ct.y-12)+'">cast</text>';}
+ if(drawing&&drawing.points.length){html+='<polyline class="shape poly '+drawing.group+'" points="'+drawing.points.map(function(p){return p[0]+','+p[1]}).join(' ')+'" fill="none"></polyline>';drawing.points.forEach(function(p){html+='<circle class="vertex" cx="'+p[0]+'" cy="'+p[1]+'" r="6"></circle>';});}
+ svg.innerHTML=html;renderList();renderProps();}
+function renderList(){var box=document.getElementById('objectList');box.innerHTML=shapes().map(function(o){return '<div class="item '+(o===selected?'active':'')+'" data-id="'+o.id+'"><span class="badge">'+o._group+'</span><b>'+o.id+'</b><span class="mini">'+(o.type||o.kind||o.label||'')+'</span></div>';}).join('');box.querySelectorAll('.item').forEach(function(el){el.onclick=function(){selected=byId(el.dataset.id);setTool('select');render();};});}
+function renderProps(){var box=document.getElementById('props');if(!selected){box.innerHTML='<p class="hint">Select or create something to edit it.</p>';return;}var isCircle=!selected.points;box.innerHTML=''
+ +'<label>ID</label><input class="field" id="p_id" value="'+esc(selected.id||'')+'">'
+ +'<label>Label</label><input class="field" id="p_label" value="'+esc(selected.label||'')+'">'
+ +(isCircle?'<div class="row"><div><label>X</label><input class="field" id="p_x" type="number" value="'+Math.round(selected.x||0)+'"></div><div><label>Y</label><input class="field" id="p_y" type="number" value="'+Math.round(selected.y||0)+'"></div><div><label>Radius</label><input class="field" id="p_r" type="number" value="'+Math.round(selected.r||selected.radius||60)+'"></div></div>':'')
+ +((selected.type==='fishing'||selected.kind==='fish'||selected.kind==='fishing')?fishingProps():'')
+ +((selected.type==='npc'||selected.kind==='npc'||selected.type==='chest'||selected.kind==='chest'||selected.type==='dialogue')?'<label>Title</label><input class="field" id="p_title" value="'+esc(selected.title||'')+'"><label>Text / Dialogue</label><textarea id="p_text" class="field">'+esc(selected.text||selected.dialogue||'')+'</textarea>':'')
+ +((selected.type==='exit'||selected.kind==='exit')?'<label>Target Scene</label><input class="field" id="p_targetScene" value="'+esc(selected.targetScene||'')+'"><label>Target Spawn</label><input class="field" id="p_targetSpawn" value="'+esc(selected.targetSpawn||'')+'">':'')
+ +'<div class="row"><button id="applyProps" class="primary">Apply</button><button id="deleteObj" class="danger">Delete</button></div>';
+ document.getElementById('applyProps').onclick=applyProps;document.getElementById('deleteObj').onclick=deleteSelected;}
+function fishingProps(){var sp=selected.snapPosition||selected.interactAt||{x:selected.x,y:selected.y};var ct=selected.castTarget||{x:selected.x+220,y:selected.y-100};return '<h2>Fishing Setup</h2><div class="row"><div><label>Stand X</label><input class="field" id="p_snapx" type="number" value="'+Math.round(sp.x)+'"></div><div><label>Stand Y</label><input class="field" id="p_snapy" type="number" value="'+Math.round(sp.y)+'"></div></div><div class="row"><div><label>Cast X</label><input class="field" id="p_castx" type="number" value="'+Math.round(ct.x)+'"></div><div><label>Cast Y</label><input class="field" id="p_casty" type="number" value="'+Math.round(ct.y)+'"></div></div><label>Face Direction</label><select id="p_face"><option>right</option><option>left</option><option>up</option><option>down</option></select>';}
+function applyProps(){if(!selected)return;var old=selected.id;selected.id=val('p_id')||selected.id;selected.label=val('p_label')||selected.label;if(!selected.points){selected.x=num('p_x',selected.x);selected.y=num('p_y',selected.y);selected.r=num('p_r',selected.r||selected.radius||60);selected.radius=selected.r;}if(el('p_title'))selected.title=val('p_title');if(el('p_text')){selected.text=val('p_text');selected.dialogue=selected.text;}if(el('p_targetScene'))selected.targetScene=val('p_targetScene');if(el('p_targetSpawn'))selected.targetSpawn=val('p_targetSpawn');if(el('p_snapx')){selected.snapPosition={x:num('p_snapx',selected.x),y:num('p_snapy',selected.y)};selected.interactAt={x:selected.snapPosition.x,y:selected.snapPosition.y};selected.castTarget={x:num('p_castx',selected.x+220),y:num('p_casty',selected.y-100)};selected.face=val('p_face')||selected.face||'right';}updateJson();render();notice('Updated '+(selected.id||old));}
+function onDown(e){var p=pt(e);var t=e.target;if(tool==='walkable'||tool==='blocker'||tool==='foreground'){if(!drawing)drawing={group:tool==='blocker'?'blockers':tool,points:[]};drawing.points.push([p.x,p.y]);render();return;}if(tool==='fishing'||tool==='npc'||tool==='chest'||tool==='exit'){var o=createCircle(tool,p.x,p.y);selected=o;setTool('select');updateJson();render();return;}if(t.dataset.vertex){drag={kind:'vertex',idx:+t.dataset.vertex};return;}if(t.dataset.special){drag={kind:t.dataset.special};return;}var id=t.dataset.id;if(id){selected=byId(id);if(selected&&selected.points){drag={kind:'shape',start:p,orig:selected.points.map(function(q){return [q[0],q[1]];})};}else if(selected){drag={kind:'circle',start:p,orig:{x:selected.x,y:selected.y}};}render();return;}selected=null;render();}
+function onMove(e){if(!drag||!selected)return;var p=pt(e);if(drag.kind==='vertex'){selected.points[drag.idx]=[p.x,p.y];}else if(drag.kind==='circle'){selected.x=drag.orig.x+(p.x-drag.start.x);selected.y=drag.orig.y+(p.y-drag.start.y);}else if(drag.kind==='shape'){selected.points=drag.orig.map(function(q){return [q[0]+(p.x-drag.start.x),q[1]+(p.y-drag.start.y)];});}else if(drag.kind==='snap'){selected.snapPosition={x:p.x,y:p.y};selected.interactAt={x:p.x,y:p.y};}else if(drag.kind==='cast'){selected.castTarget={x:p.x,y:p.y};}updateJson();render();}
+function onUp(){drag=null;}
+function onKey(e){if(e.key==='Enter'&&drawing){finishDrawing();}if(e.key==='Escape'){drawing=null;render();}if(e.key==='Delete'&&selected)deleteSelected();}
+function finishDrawing(){if(!drawing||drawing.points.length<3){drawing=null;render();return;}var group=drawing.group;var arr=scene[group]||(scene[group]=[]);arr.push({id:group+'_'+Date.now(),type:'poly',label:group,points:drawing.points});drawing=null;updateJson();render();}
+function createCircle(kind,x,y){var group='hotspots',o={id:kind+'_'+Date.now(),type:kind,kind:kind,label:kind,x:x,y:y,r:80};if(kind==='fishing'){o.type='fishing';o.kind='fish';o.label='Fishing Spot';o.r=120;o.snapPosition={x:x,y:y};o.interactAt={x:x,y:y};o.castTarget={x:x+220,y:y-110};o.face='right';}if(kind==='npc'){group='interactables';o.type='npc';o.label='NPC';o.title='Mysterious Stranger';o.text='Hello there.';}if(kind==='chest'){group='interactables';o.type='chest';o.label='Chest';o.title='Old Chest';o.text='You found something useful.';}if(kind==='exit'){o.type='exit';o.kind='exit';o.label='Scene Exit';o.targetScene='';o.targetSpawn='';}scene[group]=scene[group]||[];scene[group].push(o);return o;}
+function byId(id){return shapes().find(function(o){return String(o.id)===String(id);});}
+function deleteSelected(){if(!selected)return;['walkable','blockers','foreground','hotspots','interactables'].forEach(function(k){scene[k]=(scene[k]||[]).filter(function(o){return o!==selected;});});selected=null;updateJson();render();}
+function updateJson(){document.getElementById('jsonOut').value=JSON.stringify(clean(scene),null,2);}
+function clean(j){var c=JSON.parse(JSON.stringify(j));function strip(a){(a||[]).forEach(function(o){delete o._group;});}['walkable','blockers','foreground','hotspots','interactables'].forEach(function(k){strip(c[k]);});return c;}
+function saveDraft(){localStorage.setItem(key(),JSON.stringify(clean(scene)));notice('Saved browser draft. Refresh PetWorld to test it.');}
+function exportText(){updateJson();navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('jsonOut').value);notice('JSON copied to clipboard.');}
+function downloadJson(){var blob=new Blob([JSON.stringify(clean(scene),null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(scene.id||sceneId)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);}
+function importFile(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{scene=normalize(JSON.parse(r.result));selected=null;renderAll();notice('Imported JSON. Save browser draft or download when ready.');}catch(err){notice('Invalid JSON.');}};r.readAsText(f);}
+function pt(e){var r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;return {x:Math.round((e.clientX-r.left)/r.width*vb.width),y:Math.round((e.clientY-r.top)/r.height*vb.height)};}
+function centroid(points){var x=0,y=0;points.forEach(function(p){x+=p[0];y+=p[1];});return {x:x/points.length,y:y/points.length};}
+function val(id){var e=el(id);return e?e.value:'';}function num(id,def){var n=Number(val(id));return Number.isFinite(n)?n:def;}function el(id){return document.getElementById(id);}function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
+function notice(t){var n=document.getElementById('notice');n.textContent=t;n.classList.add('show');clearTimeout(notice._t);notice._t=setTimeout(function(){n.classList.remove('show')},2200);}
+init();
 })();
 </script>
 </body>

@@ -210,6 +210,10 @@
       "castTarget": {
         "x": 1015,
         "y": 505
+      },
+      "snapPosition": {
+        "x": 760,
+        "y": 650
       }
     },
     {
@@ -241,6 +245,30 @@
       "w": 190,
       "h": 1080,
       "fadeWhenPlayerInside": true
+    }
+  ],
+  "interactables": [
+    {
+      "id": "old_fisher_npc",
+      "type": "npc",
+      "kind": "npc",
+      "label": "Old Fisher",
+      "x": 520,
+      "y": 660,
+      "r": 58,
+      "title": "Old Fisher",
+      "text": "The pond listens before it bites. Watch the glow, then reel gently."
+    },
+    {
+      "id": "mossy_chest",
+      "type": "chest",
+      "kind": "chest",
+      "label": "Mossy Chest",
+      "x": 430,
+      "y": 735,
+      "r": 50,
+      "title": "Mossy Chest",
+      "text": "Inside is a simple lure wrapped in dry leaves."
     }
   ]
 }

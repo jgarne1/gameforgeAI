@@ -14,7 +14,7 @@
   };
   var SPRITE={cols:6,rows:12,w:128,h:128,naturalW:768,naturalH:1536,loaded:false};
   var engine={mounted:false,running:false,root:null,viewport:null,world:null,playerEl:null,shadowEl:null,fx:null,ui:null,scale:1,offX:0,offY:0,
-    keys:{}, mouseDown:false, state:null, target:null, mode:'explore', fish:null, raf:0, last:0, onClose:null,debug:false};
+    keys:{}, mouseDown:false, state:null, target:null, mode:'explore', fish:null, activeHotspot:null, raf:0, last:0, onClose:null,debug:false};
 
   var WALK_AREAS=[
     [[0,760],[90,700],[170,620],[235,520],[310,420],[410,315],[530,215],[625,245],[535,370],[455,485],[400,620],[320,760],[245,930],[200,1080],[0,1080]],
@@ -85,18 +85,43 @@
   }
   function loadWorldConfig(done){
     if(engine.regionConfig){done();return;}
-    fetch(WORLD_JSON+'?v='+(Date.now()),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('No config');return r.json();}).then(function(cfg){
+    function applyConfig(cfg){
       engine.regionConfig=cfg||{};
       if(cfg.background){ASSETS.bg=cfg.background;var bg=engine.world&&engine.world.querySelector('.swBg');if(bg)bg.src=ASSETS.bg;}
       if(cfg.size){MAP_W=Number(cfg.size.w||MAP_W);MAP_H=Number(cfg.size.h||MAP_H);}
       if(Array.isArray(cfg.walkable)&&cfg.walkable.length){WALK_AREAS=cfg.walkable.filter(function(s){return (s.type||'poly')==='poly'&&Array.isArray(s.points);}).map(function(s){return s.points;});}
       BLOCK_AREAS=[];SOFT_BLOCKS=[];
       if(Array.isArray(cfg.blockers)){cfg.blockers.forEach(function(s){if((s.type||'poly')==='poly'&&Array.isArray(s.points))BLOCK_AREAS.push(s.points);else if(s.type==='circle')SOFT_BLOCKS.push({x:Number(s.x),y:Number(s.y),r:Number(s.r||30)});else if(s.type==='rect')BLOCK_AREAS.push([[s.x,s.y],[s.x+s.w,s.y],[s.x+s.w,s.y+s.h],[s.x,s.y+s.h]]);});}
-      if(Array.isArray(cfg.hotspots)&&cfg.hotspots.length){HOTSPOTS=cfg.hotspots.map(function(h){return {id:h.id,type:h.kind||h.type||'hotspot',x:Number(h.x||(h.interactAt&&h.interactAt.x)||0),y:Number(h.y||(h.interactAt&&h.interactAt.y)||0),r:Number(h.r||h.radius||90),label:h.label||h.name||h.id,interactAt:h.interactAt,castTarget:h.castTarget,face:h.face};});
-        var fish=HOTSPOTS.find(function(h){return h.type==='fish'||h.type==='fishing';});if(fish){DOCK_SPOT={x:Number((fish.interactAt&&fish.interactAt.x)||fish.x),y:Number((fish.interactAt&&fish.interactAt.y)||fish.y),face:fish.face||'right'};if(fish.castTarget)FISH_TARGET={x:Number(fish.castTarget.x),y:Number(fish.castTarget.y)};}
-      }
+      HOTSPOTS=[];
+      if(Array.isArray(cfg.hotspots)&&cfg.hotspots.length){HOTSPOTS=cfg.hotspots.map(normalizeHotspot);}
+      if(Array.isArray(cfg.interactables)&&cfg.interactables.length){HOTSPOTS=HOTSPOTS.concat(cfg.interactables.map(normalizeHotspot));}
+      var fish=HOTSPOTS.find(function(h){return isFishingHotspot(h);});
+      if(fish)applyFishingHotspot(fish);
       buildDebugLayer();done();
-    }).catch(function(){done();});
+    }
+    try{
+      var draft=localStorage.getItem('gfWorldSceneDraft:shadow_woods_dock');
+      if(draft){applyConfig(JSON.parse(draft));return;}
+    }catch(_e){}
+    fetch(WORLD_JSON+'?v='+(Date.now()),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('No config');return r.json();}).then(applyConfig).catch(function(){done();});
+  }
+  function normalizeHotspot(h){
+    var type=h.kind||h.type||'hotspot';
+    return {
+      id:h.id||('hotspot_'+Math.floor(Math.random()*99999)),type:type,kind:h.kind||type,
+      x:Number(h.x||(h.interactAt&&h.interactAt.x)||0),y:Number(h.y||(h.interactAt&&h.interactAt.y)||0),
+      r:Number(h.r||h.radius||90),label:h.label||h.name||h.id||type,
+      text:h.text||h.dialogue||'',title:h.title||h.label||h.name||'',
+      interactAt:h.interactAt,snapPosition:h.snapPosition,castTarget:h.castTarget,face:h.face||h.faceDirection,
+      targetScene:h.targetScene,targetSpawn:h.targetSpawn,reward:h.reward||null
+    };
+  }
+  function isFishingHotspot(h){return h&&(h.type==='fish'||h.type==='fishing'||h.kind==='fish'||h.kind==='fishing');}
+  function applyFishingHotspot(h){
+    engine.activeHotspot=h;
+    var pos=h.snapPosition||h.interactAt||{x:h.x,y:h.y};
+    DOCK_SPOT={x:Number(pos.x),y:Number(pos.y),face:h.face||'right'};
+    if(h.castTarget)FISH_TARGET={x:Number(h.castTarget.x),y:Number(h.castTarget.y)};
   }
   function findNearestSafe(x,y){
     for(var r=0;r<360;r+=24){for(var a=0;a<Math.PI*2;a+=Math.PI/8){var px=x+Math.cos(a)*r,py=y+Math.sin(a)*r;if(canStand(px,py))return {x:px,y:py};}}
@@ -172,7 +197,7 @@
   function getAnim(){
     var st=engine.state, f=engine.fish;
     if(engine.mode==='fish'){
-      if(f&&f.phase==='walk')return {key:'walk_right',fps:7,frames:frames(6,6)};
+      if(f&&f.phase==='walk')return {key:'walk_right',fps:7,frames:frames(7,6)};
       if(f&&f.phase==='aim')return {key:'fish_cast_right',fps:5,frames:frames(9,6)};
       if(f&&f.phase==='reel')return {key:'fish_reel_right',fps:6,frames:frames(10,6)};
       if(f&&f.phase==='catch')return {key:'fish_catch_right',fps:5,frames:frames(11,4)};
@@ -181,18 +206,28 @@
     if(st.moving){
       if(st.face==='down')return {key:'walk_down',fps:7,frames:frames(4,6)};
       if(st.face==='up')return {key:'walk_up',fps:7,frames:frames(5,6)};
-      if(st.face==='left')return {key:'walk_left',fps:7,frames:frames(6,6),flip:true};
-      return {key:'walk_right',fps:7,frames:frames(6,6)};
+      if(st.face==='left')return {key:'walk_left',fps:7,frames:frames(6,6)};
+      return {key:'walk_right',fps:7,frames:frames(7,6)};
     }
-    if(st.face==='up')return {key:'idle_up',fps:2.2,frames:frames(1,4)};
-    if(st.face==='left')return {key:'idle_left',fps:2.2,frames:frames(2,4),flip:true};
-    if(st.face==='right')return {key:'idle_right',fps:2.2,frames:frames(2,4)};
-    return {key:'idle_down',fps:2.2,frames:frames(0,4)};
+    if(st.face==='up')return {key:'idle_up',fps:1.8,frames:frames(1,4)};
+    if(st.face==='left')return {key:'idle_left',fps:1.8,frames:frames(2,4)};
+    if(st.face==='right')return {key:'idle_right',fps:1.8,frames:frames(3,4)};
+    return {key:'idle_down',fps:1.8,frames:frames(0,4)};
   }
-  function startFishing(){if(engine.mode!=='explore')return;engine.mode='fish';engine.fish={phase:'walk',power:0,t:0,biteAt:1.2+Math.random()*1.4,tension:0.5,fishPos:0.5,progress:0};toast('Walking to the dock...');engine.ui.classList.remove('hidden');}
-  function onPointerDown(ev){if(!engine.running)return;engine.mouseDown=true;if(engine.mode==='explore'){var p=screenToWorld(ev);if(canStand(p.x,p.y)){engine.target=p;}else {var h=nearestHotspot(p.x,p.y);if(h&&h.type==='fish')startFishing();}}else if(engine.fish&&engine.fish.phase==='bite'){engine.fish.phase='reel';engine.fish.t=0;engine.fish.tension=0.5;engine.fish.progress=0;showFishing('Reel! Hold/release to follow the fish.','Keep tension near the marker');}}
+  function startFishing(h){if(engine.mode!=='explore')return;if(h)applyFishingHotspot(h);engine.mode='fish';engine.fish={phase:'walk',power:0,t:0,biteAt:1.2+Math.random()*1.4,tension:0.5,fishPos:0.5,progress:0};toast('Walking to the fishing spot...');engine.ui.classList.remove('hidden');}
+  function useHotspot(h){
+    if(!h)return false;
+    if(isFishingHotspot(h)){startFishing(h);return true;}
+    if(h.type==='npc'||h.type==='dialogue'||h.kind==='npc'){toast((h.title?h.title+': ':'')+(h.text||'They have nothing to say yet.'));return true;}
+    if(h.type==='chest'||h.kind==='chest'){toast((h.title?h.title+': ':'')+(h.text||'You found something interesting.'));return true;}
+    if(h.type==='exit'||h.kind==='exit'){toast(h.label||'This path will lead to another scene soon.');return true;}
+    if(h.text){toast((h.title?h.title+': ':'')+h.text);return true;}
+    return false;
+  }
+  function nearestUsableHotspot(){return nearestHotspot(engine.state.x,engine.state.y);}
+  function onPointerDown(ev){if(!engine.running)return;engine.mouseDown=true;if(engine.mode==='explore'){var p=screenToWorld(ev);var h=nearestHotspot(p.x,p.y);if(h&&(!canStand(p.x,p.y)||Math.hypot(p.x-h.x,p.y-h.y)<h.r*.75)){if(useHotspot(h))return;}if(canStand(p.x,p.y)){engine.target=p;}}else if(engine.fish&&engine.fish.phase==='bite'){engine.fish.phase='reel';engine.fish.t=0;engine.fish.tension=0.5;engine.fish.progress=0;showFishing('Reel! Hold/release to follow the fish.','Keep tension near the marker');}}
   function onPointerUp(){engine.mouseDown=false;if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='aim'){castLine();}}
-  function onKey(e){if(!engine.running)return;var down=e.type==='keydown';engine.keys[e.code]=down;if(down&&e.code==='KeyB'){toggleDebug();e.preventDefault();return;}if(down&&e.code==='KeyR'){var spawn=(engine.regionConfig&&engine.regionConfig.spawn)||{x:560,y:705};engine.state.x=spawn.x;engine.state.y=spawn.y;engine.state.vx=0;engine.state.vy=0;engine.target=null;toast('Reset to safe spawn.');e.preventDefault();return;}if(down&&(e.code==='Escape')){if(engine.mode==='fish')endFishing();else stop();}if(down&&(e.code==='KeyE')){if(Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();}if(down&&e.code==='Space'){if(engine.mode==='explore'&&Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();else if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='bite'){engine.fish.phase='reel';engine.fish.t=0;engine.fish.tension=0.5;engine.fish.progress=0;showFishing('Reel! Hold/release to follow the fish.','Keep tension near the marker');}}if(!down&&e.code==='Space'){if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='aim')castLine();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyW','KeyA','KeyS','KeyD','KeyE'].indexOf(e.code)>=0)e.preventDefault();}
+  function onKey(e){if(!engine.running)return;var down=e.type==='keydown';engine.keys[e.code]=down;if(down&&e.code==='KeyB'){toggleDebug();e.preventDefault();return;}if(down&&e.code==='KeyR'){var spawn=(engine.regionConfig&&engine.regionConfig.spawn)||{x:560,y:705};engine.state.x=spawn.x;engine.state.y=spawn.y;engine.state.vx=0;engine.state.vy=0;engine.target=null;toast('Reset to safe spawn.');e.preventDefault();return;}if(down&&(e.code==='Escape')){if(engine.mode==='fish')endFishing();else stop();}if(down&&(e.code==='KeyE')){var uh=nearestUsableHotspot();if(uh)useHotspot(uh);else if(Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();}if(down&&e.code==='Space'){var sh=nearestUsableHotspot();if(engine.mode==='explore'&&sh&&isFishingHotspot(sh))startFishing(sh);else if(engine.mode==='explore'&&Math.hypot(engine.state.x-DOCK_SPOT.x,engine.state.y-DOCK_SPOT.y)<120)startFishing();else if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='bite'){engine.fish.phase='reel';engine.fish.t=0;engine.fish.tension=0.5;engine.fish.progress=0;showFishing('Reel! Hold/release to follow the fish.','Keep tension near the marker');}}if(!down&&e.code==='Space'){if(engine.mode==='fish'&&engine.fish&&engine.fish.phase==='aim')castLine();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyW','KeyA','KeyS','KeyD','KeyE'].indexOf(e.code)>=0)e.preventDefault();}
   function castLine(){var f=engine.fish;if(!f||f.phase!=='aim')return;f.phase='wait';f.t=0;f.biteAt=1.2+Math.random()*1.6;showFishing('Cast placed. Watch the float.','Wait for movement');toast('The bobber lands with a soft glow.');}
   function catchFish(){var names=['Moonlit Minnow','Blackwater Glowfin','Whisper Koi'];var n=names[Math.floor(Math.random()*names.length)];if(engine.fish)engine.fish.phase='catch';toast('Caught '+n+'!');showFishing('Caught '+n+'!','Press Esc to close or cast again soon.');setTimeout(endFishing,1200);}
   function endFishing(){engine.mode='explore';engine.fish=null;engine.ui.classList.add('hidden');document.getElementById('swBobber').classList.add('hidden');document.getElementById('swLine').classList.add('hidden');}
