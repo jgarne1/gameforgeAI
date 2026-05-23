@@ -5388,6 +5388,50 @@ function pushPresence(){
 }
 
 
+
+
+// -----------------------------
+// Multiplayer overworld support
+// -----------------------------
+const worldPlayers=new Map(); // socket -> public world state
+function worldRoomName(sceneId){return 'world:' + String(sceneId||'shadow_woods_dock').replace(/[^a-zA-Z0-9_:\-]/g,'_');}
+function worldPlayerPublic(ws){
+  const st=worldPlayers.get(ws)||{};
+  return {
+    id:ws.worldId||'',
+    username:ws.username||st.username||'Wanderer',
+    sceneId:st.sceneId||'shadow_woods_dock',
+    x:Number(st.x||0),
+    y:Number(st.y||0),
+    face:st.face||'down',
+    moving:!!st.moving,
+    mode:st.mode||'explore',
+    ts:Date.now()
+  };
+}
+function worldPeersFor(sceneId,excludeWs){
+  const room=worldRoomName(sceneId);
+  return [...worldPlayers.keys()]
+    .filter(c=>c&&c!==excludeWs&&c.readyState===1&&c.worldRoom===room)
+    .map(c=>worldPlayerPublic(c));
+}
+function broadcastWorld(sceneId,obj,excludeWs){
+  const room=worldRoomName(sceneId);
+  const msg=JSON.stringify(obj);
+  [...worldPlayers.keys()].forEach(c=>{
+    if(c&&c!==excludeWs&&c.readyState===1&&c.worldRoom===room)c.send(msg);
+  });
+}
+function leaveWorld(ws){
+  const st=worldPlayers.get(ws);
+  if(!st)return;
+  worldPlayers.delete(ws);
+  broadcastWorld(st.sceneId,{type:'worldLeave',id:ws.worldId||'',username:ws.username||st.username||'Wanderer'},ws);
+  ws.worldRoom='';
+  if(ws.location==='World')ws.location=ws.roomId?'Room':'Home';
+  pushPresence();
+}
+
 app.get('/api/battlehall/inventory',(req,res)=>{
   let username=String(req.query.user||'').trim();
   if(!username)return res.status(400).json({ok:false,error:'Missing username'});
@@ -5418,6 +5462,46 @@ wss.on('connection',ws=>{
       ws.username=String(m.username||'').trim();
       ws.location=ws.roomId?'Room':'Home';
       pushPresence();
+    }
+
+
+
+    if(m.type==='worldJoin'){
+      const username=String(m.username||ws.username||'').trim()||'Wanderer';
+      const sceneId=String(m.sceneId||'shadow_woods_dock').trim()||'shadow_woods_dock';
+      const previous=worldPlayers.get(ws);
+      if(previous&&previous.sceneId!==sceneId){
+        broadcastWorld(previous.sceneId,{type:'worldLeave',id:ws.worldId||'',username:ws.username||username},ws);
+      }
+      ws.username=username;
+      ws.location='World';
+      ws.worldId=ws.worldId||('wp_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4));
+      ws.worldRoom=worldRoomName(sceneId);
+      worldPlayers.set(ws,{username,sceneId,x:Number(m.x||0),y:Number(m.y||0),face:m.face||'down',moving:!!m.moving,mode:m.mode||'explore',updatedAt:Date.now()});
+      ws.send(JSON.stringify({type:'worldWelcome',id:ws.worldId,sceneId,peers:worldPeersFor(sceneId,ws)}));
+      broadcastWorld(sceneId,{type:'worldJoin',player:worldPlayerPublic(ws)},ws);
+      pushPresence();
+      return;
+    }
+
+    if(m.type==='worldMove'){
+      const st=worldPlayers.get(ws);
+      if(!st)return;
+      st.x=Number(m.x||st.x||0);st.y=Number(m.y||st.y||0);st.face=String(m.face||st.face||'down');st.moving=!!m.moving;st.mode=String(m.mode||st.mode||'explore');st.updatedAt=Date.now();
+      broadcastWorld(st.sceneId,{type:'worldMove',player:worldPlayerPublic(ws)},ws);
+      return;
+    }
+
+    if(m.type==='worldEvent'){
+      const st=worldPlayers.get(ws);
+      if(!st)return;
+      broadcastWorld(st.sceneId,{type:'worldEvent',id:ws.worldId||'',username:ws.username||st.username||'Wanderer',event:m.event||{},ts:Date.now()},ws);
+      return;
+    }
+
+    if(m.type==='worldLeave'){
+      leaveWorld(ws);
+      return;
     }
 
     if(m.type==='battleChallengeCreate'||m.type==='sendChallenge'){
@@ -5975,6 +6059,7 @@ wss.on('connection',ws=>{
   });
 
   ws.on('close',()=>{
+    leaveWorld(ws);
     const closingUser=ws.username||'';
     const closingRoomId=ws.roomId||'';
     clients.delete(ws);
