@@ -33,6 +33,7 @@
     {id:'dock',type:'fish',x:690,y:640,r:110,label:'Fish from the dock'},
     {id:'path',type:'exit',x:185,y:280,r:80,label:'Path deeper into Shadow Woods'}
   ];
+  var WATER_AREAS=[];
 
   function mount(){
     if(engine.mounted)return;
@@ -478,26 +479,34 @@
   function makeMotes(){var m=document.getElementById('swMotes');if(!m)return;m.innerHTML='';for(var i=0;i<70;i++){var e=document.createElement('i');e.style.left=(Math.random()*MAP_W)+'px';e.style.top=(Math.random()*MAP_H)+'px';e.style.animationDelay=(-Math.random()*12)+'s';e.style.animationDuration=(8+Math.random()*10)+'s';m.appendChild(e);}}
   function renderAmbientEffects(){
     var layer=document.getElementById('swAmbientLayer');if(!layer)return;layer.innerHTML='';
-    var list=(engine.regionConfig&&engine.regionConfig.ambientEffects)||[];
+    var list=ambientEffectList();
     list.forEach(function(e){
-      var type=e.effect||e.type||'waterSurfaceShimmer';
-      var box=ambientBounds(e);if(!box)return;
+      var type=e.effect||e.waterEffect||e.type||'waterSurfaceShimmer';
+      var box=ambientBounds(e);if(!box||box.w<2||box.h<2)return;
+      var cls=cssEffectClass(type);
       var d=document.createElement('div');
-      d.className='swAmbientEffect '+cssEffectClass(type);
+      d.className='swAmbientEffect '+cls;
       d.dataset.id=e.id||'';d.dataset.effect=type;
       d.style.left=box.x+'px';d.style.top=box.y+'px';d.style.width=box.w+'px';d.style.height=box.h+'px';
-      d.style.opacity=(e.opacity==null?0.78:Number(e.opacity));
+      d.style.opacity=(e.opacity==null?(cls==='waterSurfaceShimmer'?0.55:0.82):Number(e.opacity));
       d.style.setProperty('--density',Number(e.density==null?0.45:e.density));
-      d.style.setProperty('--speed',Number(e.speed||1));
+      d.style.setProperty('--speed',Math.max(.15,Number(e.speed||1)));
       d.style.setProperty('--angle',(Number(e.angle||0))+'deg');
       if(Array.isArray(e.points)&&e.points.length>=3){
         d.style.clipPath='polygon('+e.points.map(function(p){return ((p[0]-box.x)/box.w*100).toFixed(2)+'% '+((p[1]-box.y)/box.h*100).toFixed(2)+'%';}).join(',')+')';
       }
-      var cls=cssEffectClass(type);
-      var count=(cls==='leaves')?Math.max(8,Math.round(Number(e.density||0.45)*42)):(cls==='fireflies')?Math.max(8,Math.round(Number(e.density||0.45)*32)):(cls==='waterfallMist')?Math.max(10,Math.round(Number(e.density||0.45)*38)):0;
-      for(var i=0;i<count;i++){var part=document.createElement('i');part.style.left=(Math.random()*100)+'%';part.style.top=(Math.random()*100)+'%';part.style.animationDelay=(-Math.random()*8)+'s';part.style.animationDuration=(5+Math.random()*7)/Number(e.speed||1)+'s';d.appendChild(part);}
+      var count=(cls==='leaves')?Math.max(8,Math.round(Number(e.density||0.45)*42)):(cls==='fireflies')?Math.max(8,Math.round(Number(e.density||0.45)*32)):(cls==='waterfallMist')?Math.max(14,Math.round(Number(e.density||0.55)*44)):(cls==='waterfallCascade')?Math.max(8,Math.round(Number(e.density||0.55)*18)):0;
+      for(var i=0;i<count;i++){var part=document.createElement('i');part.style.left=(Math.random()*100)+'%';part.style.top=(Math.random()*100)+'%';part.style.animationDelay=(-Math.random()*8)+'s';part.style.animationDuration=(5+Math.random()*7)/Math.max(.15,Number(e.speed||1))+'s';d.appendChild(part);}
       layer.appendChild(d);
     });
+  }
+  function ambientEffectList(){
+    var cfg=engine.regionConfig||{};
+    var list=[];
+    list=list.concat(cfg.ambientEffects||[]);
+    (cfg.sceneObjects||[]).forEach(function(o){var t=o.type||o.kind||'';if(t==='ambientEffect'||t==='waterArea'||t==='waterfx'||t==='effect')list.push(o);});
+    (cfg.terrainAreas||[]).forEach(function(o){var terrain=String(o.terrain||o.effect||'').toLowerCase();if(terrain==='water'||terrain==='river'||terrain==='pond')list.push(Object.assign({},o,{type:'ambientEffect',effect:o.effect||'waterSurfaceShimmer'}));});
+    return list;
   }
   function ambientBounds(e){
     if(Array.isArray(e.points)&&e.points.length>=3){
@@ -522,6 +531,31 @@
 
 
 
+  function rebuildWaterAreas(){
+    WATER_AREAS=[];
+    ambientEffectList().forEach(function(o){
+      var eff=String(o.effect||o.waterEffect||o.type||'').toLowerCase();
+      var isWater=eff.indexOf('water')>=0||eff.indexOf('river')>=0||eff.indexOf('pond')>=0||eff.indexOf('ripple')>=0||eff.indexOf('shimmer')>=0||eff.indexOf('current')>=0||eff.indexOf('foam')>=0||String(o.type||'').toLowerCase()==='waterarea';
+      if(isWater)WATER_AREAS.push(o);
+    });
+    var cfg=engine.regionConfig||{};
+    (cfg.waterAreas||[]).forEach(function(o){WATER_AREAS.push(o);});
+  }
+  function pointInWaterArea(x,y){
+    for(var i=0;i<WATER_AREAS.length;i++){if(pointInObject(x,y,WATER_AREAS[i]))return true;}
+    return false;
+  }
+  function castValidation(x,y){
+    var hasWater=WATER_AREAS&&WATER_AREAS.length>0;
+    if(hasWater){return pointInWaterArea(x,y)?{ok:true,reason:'Cast landed in water.'}:{ok:false,reason:'Aim for the animated water area.'};}
+    var f=engine.fish||{}, spot=f.hotspot||{};
+    var ca=spot.castArea||spot.castTarget||{};
+    if(ca&&ca.x!=null&&ca.y!=null){
+      var r=Number(ca.r||ca.radius||spot.castRadius||125);
+      return Math.hypot(x-Number(ca.x),y-Number(ca.y))<=r?{ok:true,reason:'Cast landed in the fishing area.'}:{ok:false,reason:'Aim into the fishing cast circle.'};
+    }
+    return Math.hypot(x-FISH_TARGET.x,y-FISH_TARGET.y)<=150?{ok:true,reason:'Cast landed near the fishing target.'}:{ok:false,reason:'Aim closer to the water.'};
+  }
   function sceneObjects(){
     var cfg=engine.regionConfig||{};
     return [].concat(cfg.sceneObjects||[],cfg.interactables||[],cfg.hotspots||[],cfg.terrainAreas||[],cfg.triggerZones||[],cfg.textBoxes||[],cfg.lights||[],cfg.cameraZones||[]);
@@ -608,6 +642,9 @@
 .swAmbientEffect.waterfallMist{background:radial-gradient(ellipse at 50% 50%,rgba(215,245,255,.30),rgba(160,225,255,.15) 42%,transparent 74%);mix-blend-mode:screen;filter:blur(9px);animation:swWaterfallMist 3.8s ease-in-out infinite;opacity:.62}.swAmbientEffect.waterfallMist i{position:absolute;width:18px;height:8px;border-radius:999px;background:rgba(230,250,255,.24);filter:blur(3px);animation:swMistParticle 4.8s ease-in-out infinite}
 .swAmbientEffect.pondRipple:before,.swAmbientEffect.splashRing:before{content:'';position:absolute;inset:18%;border-radius:50%;border:2px solid rgba(135,218,255,.42);box-shadow:0 0 14px rgba(135,218,255,.18);animation:swAmbientRipple 2.2s linear infinite}.swAmbientEffect.pondRipple:after,.swAmbientEffect.splashRing:after{content:'';position:absolute;inset:34%;border-radius:50%;border:1px solid rgba(224,246,255,.34);animation:swAmbientRipple 2.2s linear infinite .7s}.swAmbientEffect.splashRing{animation:swSplashPulse 1.2s ease-out infinite}
 @keyframes swWaterSurfaceShimmer{0%,100%{transform:translate(0,0) scale(1);opacity:.34}50%{transform:translate(8px,-5px) scale(1.015);opacity:.55}}@keyframes swWaterSparkleDrift{0%{background-position:0 0,0 0,0 0}100%{background-position:70px -28px,-95px 42px,55px 30px}}@keyframes swRiverCurrent{0%,100%{transform:translateX(-4px);opacity:.28}50%{transform:translateX(10px);opacity:.48}}@keyframes swRiverSoftBand{to{transform:translateX(70%)}}@keyframes swEdgeFoam{50%{opacity:.72;transform:scale(1.025)}}@keyframes swWaterfallCascade{to{background-position:0 38px,0 38px}}@keyframes swWaterfallCascade2{to{background-position:0 58px}}@keyframes swWaterfallBaseFoam{50%{opacity:.72;transform:translateY(4px) scale(1.05)}}@keyframes swWaterfallMist{50%{opacity:.72;transform:translateY(8px) scale(1.04)}}@keyframes swMistParticle{50%{transform:translate(22px,-12px);opacity:.25}}@keyframes swSplashPulse{50%{filter:brightness(1.25)}}
+
+/* Water FX visibility pass: these are intentionally stronger than the first subtle debug-looking pass. */
+.swAmbientEffect.waterSurfaceShimmer{background:radial-gradient(ellipse at 18% 32%,rgba(210,250,255,.22),transparent 21%),radial-gradient(ellipse at 46% 62%,rgba(90,210,255,.16),transparent 24%),radial-gradient(ellipse at 74% 38%,rgba(245,255,255,.18),transparent 20%),radial-gradient(ellipse at 35% 86%,rgba(80,185,255,.12),transparent 25%);mix-blend-mode:screen;filter:blur(.8px);animation:swWaterSurfaceShimmer 2.7s ease-in-out infinite;opacity:.62}.swAmbientEffect.waterSurfaceShimmer:after{content:'';position:absolute;inset:-20%;background:linear-gradient(115deg,transparent 0 42%,rgba(225,250,255,.16) 48%,rgba(120,220,255,.10) 53%,transparent 60%);animation:swWaterSheen 4.2s linear infinite;opacity:.65}.swAmbientEffect.slowRiverCurrent{background:radial-gradient(ellipse at 15% 45%,rgba(150,230,255,.14),transparent 34%),radial-gradient(ellipse at 70% 55%,rgba(230,255,255,.12),transparent 32%);mix-blend-mode:screen;filter:blur(1px);animation:swRiverCurrent 3.2s ease-in-out infinite;opacity:.50}.swAmbientEffect.slowRiverCurrent:after{content:'';position:absolute;inset:-10%;background:linear-gradient(var(--angle),transparent 0 36%,rgba(220,250,255,.14) 48%,transparent 60%);animation:swRiverSoftBand 3.4s linear infinite}.swAmbientEffect.waterEdgeFoam{background:radial-gradient(ellipse at 22% 70%,rgba(245,255,255,.50),transparent 38%),radial-gradient(ellipse at 65% 42%,rgba(210,245,255,.34),transparent 40%),radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.22),transparent 56%);mix-blend-mode:screen;filter:blur(1.8px);animation:swEdgeFoam 1.4s ease-in-out infinite;opacity:.72}.swAmbientEffect.waterfallCascade{background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(112,210,255,.24) 48%,rgba(255,255,255,.32)),repeating-linear-gradient(90deg,rgba(190,245,255,.00) 0 8px,rgba(185,238,255,.34) 10px 14px,rgba(255,255,255,.30) 16px 18px,rgba(190,245,255,.08) 20px 28px);mix-blend-mode:screen;filter:blur(.45px);animation:swWaterfallCascade .26s linear infinite;opacity:.90}.swAmbientEffect.waterfallCascade i{position:absolute;top:-20%;width:5px;height:42%;border-radius:999px;background:rgba(245,255,255,.45);filter:blur(2px);animation:swFallStreak 1.1s linear infinite}.swAmbientEffect.waterfallMist{background:radial-gradient(ellipse at 50% 62%,rgba(230,250,255,.42),rgba(150,225,255,.22) 45%,transparent 75%);mix-blend-mode:screen;filter:blur(7px);animation:swWaterfallMist 2.8s ease-in-out infinite;opacity:.76}.swAmbientEffect.pondRipple:before,.swAmbientEffect.splashRing:before{border-width:3px;border-color:rgba(175,232,255,.58)}@keyframes swWaterSheen{0%{transform:translateX(-65%)}100%{transform:translateX(65%)}}@keyframes swFallStreak{0%{transform:translateY(-70%);opacity:.15}20%{opacity:.55}100%{transform:translateY(330%);opacity:.05}}
 
 
 /* GameForge engine-editor extras */
