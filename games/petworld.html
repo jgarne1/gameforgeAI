@@ -1122,7 +1122,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 </div>
 
 <script src="/games/js/adventure_engine.js"></script>
-<script src="/games/js/sunny_meadows_engine.js"></script>
+<script src="/games/js/world_engine.js"></script>
 <script>
 var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
@@ -1523,7 +1523,7 @@ function detailBox(k,v){
 
 function drawZones(){
   var pet=activePet();
-  var html='<h3>Scout Zones</h3><p class="muted">Quick solo scouting burns energy for light server-approved rewards. Interactive Adventure is for story, discoveries, and targeted rewards.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><button class="gold" onclick="startInteractiveAdventure()">Enter Ember Hollow Adventure</button><button class="sky" onclick="startSunnyMeadowsAdventure()">Enter Sunny Meadows</button></div>';
+  var html='<h3>Scout Zones</h3><p class="muted">Quick solo scouting burns energy for light server-approved rewards. Interactive regions are for story, discoveries, fishing, and world progression.</p><div style="display:grid;gap:8px;margin-bottom:10px"><button class="gold" onclick="startShadowWoodsWorld()">Enter Shadow Woods World</button><button class="ghost" onclick="startInteractiveAdventure()">Enter Ember Hollow Prototype</button></div>';
   Object.keys(zones||{}).forEach(function(id){
     var z=zones[id];
     var level=Number((pet.stats&&pet.stats.level)||1);
@@ -1673,35 +1673,66 @@ async function trainPet(stat){
 }
 
 
-
-function startSunnyMeadowsAdventure(){
+function startShadowWoodsWorld(){
   if(localState.adventureBusy)return;
   var pet=activePet();
   if(!pet)return notify('No active pet loaded.');
-  if(pet.stage==='egg')return notify('Eggs cannot enter Sunny Meadows yet. Hatch a companion first.');
-  if(!window.SunnyMeadowsEngine)return notify('Sunny Meadows engine did not load.');
+  if(pet.stage==='egg')return notify('Eggs cannot enter the world yet. Hatch a companion first.');
+  if(!window.PetWorldWorldEngine)return notify('World engine did not load.');
 
   localState.adventureBusy=true;
   var beforeLevel=Number((pet.stats&&pet.stats.level)||1);
   var beforeXp=Number((pet.stats&&pet.stats.xp)||0);
   var asset=petAssetPath(pet);
-  SunnyMeadowsEngine.start({
-    pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality,moves:pet.moves||[],moveDefs:moves||{}},
-    fishingGear:{inventory:(profile&&profile.inventory)||{}},
+
+  PetWorldWorldEngine.start({
+    regionId:'shadow_woods',
+    pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality},
     callbacks:{
       onStart:function(){
-        addLog((pet.name||'Your pet')+' entered Sunny Meadows.');
-        speak('Sunny Meadows is open. Explore softly, follow ripples, and fish where the water feels alive.');
+        addLog((pet.name||'Your pet')+' followed you into Shadow Woods.');
+        speak('Shadow Woods is open. Explore the painted map, discover firefly ponds, and try fishing.');
       },
-      onCancel:function(){
-        localState.adventureBusy=false;
-        speak('You left Sunny Meadows before turning in rewards.');
+      onCollect:function(c){
+        if(c&&c.type==='shadow_glimmer')floatFx('✦');
+      },
+      onDiscover:function(s){
+        addLog('Shadow Woods discovery: '+(s.title||s.id));
+      },
+      onFish:function(f){
+        addLog('Caught fish: '+(f.name||f.id));
+        floatFx('🐟');
       },
       onComplete:function(payload){
-        completeInteractiveAdventure(payload,beforeLevel,beforeXp);
+        completeWorldAdventure(payload,beforeLevel,beforeXp,{name:'Shadow Woods'});
       }
     }
   });
+}
+
+async function completeWorldAdventure(payload,beforeLevel,beforeXp,zoneInfo){
+  try{
+    var res=await fetch('/api/pet/adventure/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,zoneId:payload.zoneId||'shadow_woods',payload:payload})});
+    var data=await res.json();
+    if(data.error){
+      localState.adventureBusy=false;
+      return notify(data.error);
+    }
+    profile=data.profile;
+    var updated=activePet();
+    var afterLevel=Number((updated&&updated.stats&&updated.stats.level)||beforeLevel);
+    addLog(data.message||'World adventure complete.');
+    if(payload.fishCaught&&payload.fishCaught.length){
+      addLog('Fishing journal: '+payload.fishCaught.map(function(f){return f.name||f.id}).join(', '));
+    }
+    handleRewardResult(data.result&&data.result.xpResult);
+    draw();
+    showAdventureReward(data,zoneInfo||{name:'World'},beforeLevel,afterLevel,beforeXp);
+    notify(data.message||'World progress saved!');
+  }catch(err){
+    notify('World adventure failed: '+err.message);
+  }
+  localState.adventureBusy=false;
 }
 
 function startInteractiveAdventure(){
@@ -1716,20 +1747,16 @@ function startInteractiveAdventure(){
   var beforeXp=Number((pet.stats&&pet.stats.xp)||0);
 
   var asset=petAssetPath(pet);
-  var adventureZoneId=(selectedZoneId==='tidepools')?'tidepools':'ember_hollow';
-  var adventureZoneName=adventureZoneId==='tidepools'?'Tide Pools':'Ember Hollow';
   PetWorldAdventureEngine.start({
     pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality,moves:pet.moves||[],moveDefs:moves||{}},
-    zone:{id:adventureZoneId},
-    fishingGear:{inventory:(profile&&profile.inventory)||{}},
+    zone:{id:'ember_hollow'},
     callbacks:{
       onStart:function(){
-        addLog((pet.name||'Your pet')+' entered '+adventureZoneName+' with you.');
-        speak(adventureZoneName+' is open. Explore naturally, collect by touch, and return home to save rewards.');
+        addLog((pet.name||'Your pet')+' entered Ember Hollow with you.');
+        speak('Ember Hollow is open. Collect fragments, inspect story objects, then return home.');
       },
       onCollect:function(c){
         if(c&&c.type==='ember_shard')floatFx('✦');
-        if(c&&c.type==='tide_pearl')floatFx('◌');
       },
       onInteract:function(o){
         if(o&&o.discoveryId)addLog('Discovery clue found: '+(o.title||o.discoveryId));
@@ -1762,7 +1789,7 @@ async function completeInteractiveAdventure(payload,beforeLevel,beforeXp){
     }
     handleRewardResult(data.result&&data.result.xpResult);
     draw();
-    showAdventureReward(data,{name:(data.result&&data.result.zoneName)||'Adventure'},beforeLevel,afterLevel,beforeXp);
+    showAdventureReward(data,{name:'Ember Hollow'},beforeLevel,afterLevel,beforeXp);
     notify(data.message||'Adventure rewards saved!');
   }catch(err){
     notify('Adventure failed: '+err.message);
