@@ -44,7 +44,7 @@
       +'<div class="swViewport" id="swViewport">'
       +  '<div class="swWorld" id="swWorld">'
       +    '<img class="swBg" id="swBg" src="'+ASSETS.bg+'" draggable="false" alt="Shadow Woods">'
-      +    '<div class="swWaterGlow"></div><div class="swMist"></div><div class="swAmbientLayer" id="swAmbientLayer"></div><div class="swCastAim hidden" id="swCastAim"></div><div class="swFireflies" id="swFireflies"></div><div class="swMotes" id="swMotes"></div>'
+      +    '<div class="swWaterGlow"></div><div class="swMist"></div><div class="swToneLayer" id="swToneLayer"></div><div class="swAmbientLayer" id="swAmbientLayer"></div><div class="swLightLayer" id="swLightLayer"></div><div class="swObjectLayer" id="swObjectLayer"></div><div class="swTerrainParticles" id="swTerrainParticles"></div><div class="swInteractionIcons" id="swInteractionIcons"></div><div class="swCastAim hidden" id="swCastAim"></div><div class="swFireflies" id="swFireflies"></div><div class="swMotes" id="swMotes"></div>'
       +    '<div class="swDebugLayer" id="swDebugLayer"></div>'
       +    '<div class="swBobber hidden" id="swBobber"></div><div class="swLine hidden" id="swLine"></div>'
       +    '<div class="swShadow" id="swShadow"></div><div class="swPlayer" id="swPlayer"><div class="swSprite"></div></div>'
@@ -108,6 +108,7 @@
           if(fish)applyFishingHotspot(fish);
           renderAmbientEffects();
           rebuildWaterAreas();
+          renderSceneExtras();
           buildDebugLayer();
           preloadConnectedScenes();
           done();
@@ -299,6 +300,8 @@
         s.face=s.vy>0?'down':'up';
       }
     }
+    updateTriggerZones(dt);
+    updateTerrainParticles(dt);
     updateActionHint();
   }
   function updateFishing(dt){
@@ -362,6 +365,7 @@
     sprite.style.transform=(anim.flip?'scaleX(-1)':'scaleX(1)')+' translateY('+stepBob+'px)';
     engine.shadowEl.style.transform='scale(1)';
     engine.playerEl.style.zIndex=Math.round(s.y);
+    updateOcclusionFade();
     var bob=document.getElementById('swBobber'),line=document.getElementById('swLine'),aim=document.getElementById('swCastAim');
     if(engine.fish&&(engine.fish.phase==='ready'||engine.fish.phase==='aim')){var prev=engine.fish.preview||{x:FISH_TARGET.x,y:FISH_TARGET.y};var valid=pointInCastArea(prev.x,prev.y);aim.classList.remove('hidden');aim.style.left=prev.x+'px';aim.style.top=prev.y+'px';aim.classList.toggle('valid',valid);aim.classList.toggle('invalid',!valid);}else{aim.classList.add('hidden');aim.classList.remove('invalid');}
     if(engine.fish&&(engine.fish.phase==='wait'||engine.fish.phase==='bite'||engine.fish.phase==='reel'||engine.fish.phase==='badcast')){bob.classList.remove('hidden');line.classList.remove('hidden');var bx=engine.fish.bobberX||FISH_TARGET.x,by=engine.fish.bobberY||FISH_TARGET.y;bob.style.left=bx+'px';bob.style.top=by+'px';bob.classList.toggle('bad',engine.fish.phase==='badcast');var dx=bx-s.x,dy=by-(s.y-52);line.style.left=s.x+'px';line.style.top=(s.y-52)+'px';line.style.width=Math.hypot(dx,dy)+'px';line.style.transform='rotate('+Math.atan2(dy,dx)+'rad)';}else{bob.classList.add('hidden');line.classList.add('hidden');bob.classList.remove('bad');}
@@ -395,7 +399,7 @@
   function useHotspot(h){
     if(!h)return false;
     if(isFishingHotspot(h)){startFishing(h);return true;}
-    if(h.type==='npc'||h.type==='dialogue'||h.kind==='npc'){toast((h.title?h.title+': ':'')+(h.text||'They have nothing to say yet.'));return true;}
+    if(h.type==='npc'||h.type==='dialogue'||h.type==='textBox'||h.kind==='npc'||h.kind==='dialogue'){showDialogueBubble(h);toast((h.title?h.title+': ':'')+(h.text||h.dialogue||'They have nothing to say yet.'));return true;}
     if(h.type==='chest'||h.kind==='chest'){toast((h.title?h.title+': ':'')+(h.text||'You found something interesting.'));return true;}
     if(h.type==='exit'||h.kind==='exit'){transitionToScene(h.targetScene,h.targetSpawn);return true;}
     if(h.text){toast((h.title?h.title+': ':'')+h.text);return true;}
@@ -517,6 +521,81 @@
   }
 
 
+
+  function sceneObjects(){
+    var cfg=engine.regionConfig||{};
+    return [].concat(cfg.sceneObjects||[],cfg.interactables||[],cfg.hotspots||[],cfg.terrainAreas||[],cfg.triggerZones||[],cfg.textBoxes||[],cfg.lights||[],cfg.cameraZones||[]);
+  }
+  function renderSceneExtras(){
+    renderToneLayer();renderObjectLayer();renderLightLayer();renderInteractionIcons();
+  }
+  function renderToneLayer(){
+    var el=document.getElementById('swToneLayer');if(!el)return;
+    var cfg=engine.regionConfig||{}, mood=(cfg.timeOfDay||cfg.mood||'night');
+    el.className='swToneLayer '+String(mood).toLowerCase();
+    el.style.opacity=(cfg.tintOpacity==null?'1':String(cfg.tintOpacity));
+  }
+  function renderObjectLayer(){
+    var layer=document.getElementById('swObjectLayer');if(!layer)return;layer.innerHTML='';
+    sceneObjects().forEach(function(o){
+      var type=o.type||o.kind||'';
+      if(type==='textBox'||type==='sign'||type==='readable'){
+        var d=document.createElement('div');d.className='swSceneMarker text';d.style.left=(Number(o.x||0)-16)+'px';d.style.top=(Number(o.y||0)-22)+'px';d.textContent='📜';d.title=o.label||o.title||'Read';layer.appendChild(d);
+      }
+      if(type==='cameraZone'){
+        var c=document.createElement('div');c.className='swCameraMood';c.style.left=Number(o.x||0)+'px';c.style.top=Number(o.y||0)+'px';c.style.width=Number(o.w||220)+'px';c.style.height=Number(o.h||160)+'px';c.style.opacity=0;layer.appendChild(c);
+      }
+    });
+  }
+  function renderLightLayer(){
+    var layer=document.getElementById('swLightLayer');if(!layer)return;layer.innerHTML='';
+    sceneObjects().forEach(function(o){
+      var type=o.type||o.kind||''; if(type!=='light'&&type!=='lantern'&&type!=='campfire')return;
+      var d=document.createElement('div');d.className='swLight '+(o.lightType||type||'warm');
+      var r=Number(o.r||o.radius||180);d.style.left=(Number(o.x||0)-r)+'px';d.style.top=(Number(o.y||0)-r)+'px';d.style.width=(r*2)+'px';d.style.height=(r*2)+'px';
+      d.style.opacity=(o.opacity==null?0.72:o.opacity);layer.appendChild(d);
+    });
+  }
+  function renderInteractionIcons(){
+    var layer=document.getElementById('swInteractionIcons');if(!layer)return;layer.innerHTML='';
+    HOTSPOTS.forEach(function(h){
+      if(h.type==='exit'||h.kind==='exit'||isFishingHotspot(h)||h.type==='npc'||h.type==='chest'||h.type==='dialogue'||h.type==='textBox'){
+        var d=document.createElement('div');d.className='swInteractIcon '+(h.type||h.kind||'');
+        d.style.left=(h.x-13)+'px';d.style.top=(h.y-(h.r||60)-32)+'px';
+        d.textContent=isFishingHotspot(h)?'🎣':(h.type==='exit'||h.kind==='exit')?'➜':(h.type==='chest')?'✦':(h.type==='npc')?'!':'…';
+        layer.appendChild(d);
+      }
+    });
+  }
+  function updateTriggerZones(dt){
+    var cfg=engine.regionConfig||{}, list=(cfg.triggerZones||cfg.sceneObjects||[]).filter(function(o){return (o.type||o.kind)==='trigger';});
+    var hit=null;list.forEach(function(o){if(pointInObject(engine.state.x,engine.state.y,o))hit=o;});
+    if(hit&&engine.lastTriggerId!==hit.id){engine.lastTriggerId=hit.id;if(hit.text||hit.title)toast((hit.title?hit.title+': ':'')+(hit.text||''));}
+    if(!hit)engine.lastTriggerId='';
+  }
+  function updateTerrainParticles(dt){
+    if(!engine.state||!engine.state.moving)return;engine.footTimer=(engine.footTimer||0)+dt;if(engine.footTimer<0.22)return;engine.footTimer=0;
+    var cfg=engine.regionConfig||{}, list=(cfg.terrainAreas||[]).concat((cfg.sceneObjects||[]).filter(function(o){return (o.type||'')==='terrain';}));
+    var terrain='default';list.forEach(function(o){if(pointInObject(engine.state.x,engine.state.y,o))terrain=o.terrain||o.effect||'grass';});
+    if(terrain==='default')return;var layer=document.getElementById('swTerrainParticles');if(!layer)return;
+    var p=document.createElement('i');p.className='swFoot '+terrain;p.style.left=(engine.state.x+(Math.random()*14-7))+'px';p.style.top=(engine.state.y+6)+'px';layer.appendChild(p);setTimeout(function(){p.remove();},900);
+  }
+  function updateOcclusionFade(){
+    var cfg=engine.regionConfig||{}, polys=(cfg.foreground||[]).concat((cfg.sceneObjects||[]).filter(function(o){return (o.type||'')==='occlusion';}));
+    var under=false;polys.forEach(function(o){if(pointInObject(engine.state.x,engine.state.y,o))under=true;});
+    if(engine.playerEl)engine.playerEl.classList.toggle('swOccluded',under);
+  }
+  function pointInObject(x,y,o){
+    if(!o)return false;if(Array.isArray(o.points)&&o.points.length>=3)return pointInPoly(x,y,o.points);
+    if(o.r||o.radius)return Math.hypot(x-Number(o.x||0),y-Number(o.y||0))<=Number(o.r||o.radius||0);
+    if(o.w||o.h)return x>=Number(o.x||0)&&y>=Number(o.y||0)&&x<=Number(o.x||0)+Number(o.w||0)&&y<=Number(o.y||0)+Number(o.h||0);
+    return false;
+  }
+  function showDialogueBubble(h){
+    var layer=document.getElementById('swInteractionIcons');if(!layer)return;
+    var b=document.createElement('div');b.className='swDialogueBubble';b.style.left=(h.x-80)+'px';b.style.top=(h.y-(h.r||60)-72)+'px';b.textContent=h.text||h.dialogue||h.title||'...';layer.appendChild(b);setTimeout(function(){b.remove();},2600);
+  }
+
   function injectStyles(){if(document.getElementById('gfWorldEngineStyles'))return;var s=document.createElement('style');s.id='gfWorldEngineStyles';s.textContent=`
 .swRoot{position:fixed;inset:0;z-index:100000;background:#02060b;color:#f7e7bf;font-family:Georgia,'Times New Roman',serif}.swRoot.hidden{display:none}.swViewport{position:absolute;inset:0;overflow:hidden;background:#02060b}.swWorld{position:absolute;left:0;top:0;width:${MAP_W}px;height:${MAP_H}px;transform-origin:0 0}.swBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;pointer-events:none}.swWaterGlow{position:absolute;left:640px;top:340px;width:760px;height:520px;border-radius:45%;background:radial-gradient(circle,rgba(36,170,255,.20),transparent 65%);mix-blend-mode:screen;animation:swWater 3.4s ease-in-out infinite;pointer-events:none}.swMist{position:absolute;left:840px;top:100px;width:420px;height:210px;background:radial-gradient(ellipse,rgba(95,180,255,.22),transparent 65%);filter:blur(12px);animation:swMist 5s ease-in-out infinite}.swCanopy{position:absolute;inset:0;background:radial-gradient(ellipse at 8% 93%,rgba(0,0,0,.72),transparent 20%),radial-gradient(ellipse at 92% 95%,rgba(0,0,0,.58),transparent 24%),radial-gradient(ellipse at 40% 4%,rgba(0,0,0,.55),transparent 20%);pointer-events:none;mix-blend-mode:multiply}.swPlayer{position:absolute;width:128px;height:128px;margin-left:-64px;margin-top:-104px;transition:filter .12s linear;transform:scale(.70);transform-origin:50% 88%;will-change:left,top}.swSprite{width:128px;height:128px;background-repeat:no-repeat;background-size:768px 2048px;image-rendering:auto;overflow:hidden;background-color:transparent;backface-visibility:hidden;will-change:background-position}.swShadow{position:absolute;width:30px;height:7px;margin-left:-15px;margin-top:-3px;border-radius:50%;background:rgba(0,0,0,.16);filter:blur(1.5px);pointer-events:none;transform-origin:50% 50%}.swHotspot{position:absolute;border-radius:50%;pointer-events:none}.swHotspot.dock{left:630px;top:575px;width:145px;height:110px;background:radial-gradient(ellipse,rgba(61,184,255,.24),rgba(61,184,255,.05) 45%,transparent 70%);animation:swPulse 2s ease-in-out infinite}.swHotspot.path{left:135px;top:215px;width:100px;height:120px;background:radial-gradient(ellipse,rgba(255,207,102,.15),transparent 65%)}.swBobber{position:absolute;width:20px;height:20px;margin-left:-10px;margin-top:-10px;border-radius:50%;background:#f04d66;box-shadow:0 0 14px #9df,0 0 0 10px rgba(63,190,255,.15);z-index:800}.swBobber.hidden,.swLine.hidden{display:none}.swBobber:after{content:'';position:absolute;left:-26px;top:-26px;width:72px;height:72px;border:2px solid rgba(140,220,255,.58);border-radius:50%;animation:swRipple 1.4s linear infinite}.swBobber.bite{animation:swBite .22s linear 5}.swLine{position:absolute;height:2px;background:linear-gradient(90deg,rgba(255,241,199,.92),rgba(160,220,255,.45));transform-origin:0 50%;z-index:790;pointer-events:none}.swCastAim{position:absolute;width:54px;height:54px;margin-left:-27px;margin-top:-27px;border-radius:50%;border:3px solid rgba(255,100,100,.85);background:radial-gradient(circle,rgba(255,100,100,.20),transparent 65%);z-index:760;pointer-events:none;box-shadow:0 0 14px rgba(255,70,70,.7)}.swCastAim.valid{border-color:rgba(134,239,172,.95);background:radial-gradient(circle,rgba(134,239,172,.22),transparent 65%);box-shadow:0 0 18px rgba(134,239,172,.7)}.swCastAim.invalid{border-color:rgba(255,115,115,.95);background:radial-gradient(circle,rgba(255,80,80,.20),transparent 65%);box-shadow:0 0 18px rgba(255,80,80,.55)}.swCastAim.hidden{display:none}.swBobber.bad{background:#555;box-shadow:0 0 10px rgba(255,80,80,.65)}.swAmbientLayer{position:absolute;inset:0;pointer-events:none;z-index:120}.swAmbientEffect{position:absolute;pointer-events:none;overflow:hidden}.swAmbientEffect.ripple:before{content:'';position:absolute;inset:12%;border-radius:50%;border:3px solid rgba(135,218,255,.42);box-shadow:0 0 18px rgba(135,218,255,.22);animation:swAmbientRipple 2.2s linear infinite}.swAmbientEffect.ripple:after{content:'';position:absolute;inset:28%;border-radius:50%;border:2px solid rgba(224,246,255,.35);animation:swAmbientRipple 2.2s linear infinite .7s}.swAmbientEffect.shimmer{background:linear-gradient(110deg,transparent,rgba(150,230,255,.18),transparent);mix-blend-mode:screen;animation:swShimmer 2.8s ease-in-out infinite}.swAmbientEffect.waterfall{background:repeating-linear-gradient(90deg,rgba(180,240,255,.0) 0 8px,rgba(180,240,255,.20) 9px 13px,rgba(255,255,255,.12) 14px 18px);filter:blur(.5px);mix-blend-mode:screen;animation:swFalls .7s linear infinite}.swAmbientEffect.foam{background:radial-gradient(ellipse,rgba(230,250,255,.48),transparent 62%);filter:blur(3px);mix-blend-mode:screen;animation:swFoam 1.8s ease-in-out infinite}.swAmbientEffect.mist{background:radial-gradient(ellipse,rgba(200,235,255,.30),transparent 70%);filter:blur(8px);animation:swMist 4s ease-in-out infinite}.swAmbientEffect.leaves i{position:absolute;width:9px;height:5px;border-radius:70% 20%;background:rgba(205,143,55,.78);box-shadow:0 0 4px rgba(0,0,0,.25);animation:swLeafDrift 7s linear infinite}.swAmbientEffect.fireflies i{position:absolute;width:5px;height:5px;border-radius:50%;background:#fbff9d;box-shadow:0 0 12px #eaff77;animation:swFly 6s ease-in-out infinite}.swFireflies i{position:absolute;width:6px;height:6px;border-radius:50%;background:#fbff9d;box-shadow:0 0 14px #eaff77,0 0 24px rgba(114,213,255,.35);animation:swFly 7s ease-in-out infinite;pointer-events:none}.swMotes i{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(114,196,255,.65);box-shadow:0 0 8px rgba(114,196,255,.7);animation:swMote 12s linear infinite;pointer-events:none}.swHud{position:absolute;inset:0;pointer-events:none}.swHud button{pointer-events:auto}.swStatus{position:absolute;left:24px;top:20px;display:flex;gap:12px;align-items:center;padding:8px 14px;border:1px solid rgba(218,169,83,.65);border-radius:18px;background:linear-gradient(180deg,rgba(8,12,18,.72),rgba(8,12,18,.34));box-shadow:0 12px 30px rgba(0,0,0,.45)}.portrait{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle,#704323,#1b1110);border:2px solid #d7a857}.bar{width:150px;height:14px;border-radius:999px;background:#160d0b;border:1px solid #d7a857;margin:5px 0;overflow:hidden}.bar span{display:block;height:100%;width:100%}.bar.hp span{background:linear-gradient(90deg,#a82931,#e66b5e)}.bar.sp span{width:72%;background:linear-gradient(90deg,#2465b8,#66c5f0)}.swTitle{position:absolute;left:50%;top:24px;transform:translateX(-50%);font-size:30px;font-weight:800;text-shadow:0 3px 10px #000}.swTitle span{color:#d8b56b;margin:0 8px}.swClose{position:absolute;right:22px;top:20px;background:rgba(0,0,0,.45);color:#f5d99a;border:1px solid #d7a857;border-radius:999px;padding:8px 14px;font-weight:bold}.swQuest{position:absolute;right:32px;top:178px;width:300px;padding:16px 18px;border:1px solid rgba(218,169,83,.8);border-radius:10px;background:rgba(7,8,12,.72);box-shadow:0 14px 40px rgba(0,0,0,.55)}.swQuest b{color:#ffe28a}.swQuest p{margin:8px 0 0;color:#f6e5c3;line-height:1.35}.swToast{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:rgba(3,6,10,.65);border:1px solid rgba(218,169,83,.55);opacity:.0;transition:.25s;box-shadow:0 12px 30px rgba(0,0,0,.45)}.swToast.show{opacity:1}.swActionHint{position:absolute;left:50%;bottom:172px;transform:translateX(-50%);padding:9px 14px;border-radius:999px;background:rgba(28,46,32,.82);border:1px solid rgba(134,239,172,.55);color:#eaffcf;font:800 14px Arial,sans-serif;box-shadow:0 10px 26px rgba(0,0,0,.45);letter-spacing:.02em}.swActionHint.hidden{display:none}.swHotbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:6px;padding:8px;border:1px solid rgba(218,169,83,.7);border-radius:14px;background:rgba(6,7,10,.68)}.swHotbar button{width:58px;height:58px;background:rgba(24,20,16,.85);color:#ffe9bd;border:1px solid rgba(218,169,83,.75);border-radius:8px;font-weight:bold}.swHotbar span{font-size:24px}.swFishing{position:absolute;right:32px;bottom:100px;width:360px;padding:18px 20px;border:1px solid rgba(218,169,83,.9);border-radius:14px;background:rgba(7,8,12,.76);box-shadow:0 16px 45px rgba(0,0,0,.62)}.swFishing.hidden{display:none}.swFishing h3{text-align:center;margin:0 0 10px;font-size:25px}.swFishing p{margin:0 0 12px;text-align:center}.swFishing small{display:block;text-align:center;margin-top:8px;color:#ffefbf}.swCastBar{position:relative;height:20px;border-radius:999px;background:linear-gradient(90deg,#65b846,#f6d452,#bd3d2e);border:2px solid #d7a857;overflow:hidden}.swCastBar i{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.25)}.swCastBar em{position:absolute;top:-5px;width:5px;height:30px;background:#fff;border-radius:3px;box-shadow:0 0 9px #fff}.swNearDock .swHotspot.dock{box-shadow:0 0 22px rgba(111,213,255,.75)}.swDebugLayer{position:absolute;inset:0;display:none;pointer-events:none;z-index:2000}.showDebug .swDebugLayer{display:block}.swDebugPoly{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.swDebugPoly polygon{fill:rgba(71,255,124,.16);stroke:rgba(71,255,124,.85);stroke-width:3}.swDebugBlock{position:absolute;border-radius:50%;background:rgba(255,70,70,.18);border:3px solid rgba(255,70,70,.85)}.swDebugHotspot{position:absolute;border-radius:50%;background:rgba(75,180,255,.18);border:3px solid rgba(75,180,255,.9);display:grid;place-items:center;color:white;font:700 18px Arial;text-shadow:0 2px 6px #000}.swSceneTransition{position:absolute;inset:0;z-index:50000;display:grid;place-items:center;background:#02060b;opacity:0;pointer-events:none;transition:opacity .24s ease}.swSceneTransition.show{opacity:1;pointer-events:auto}.swSceneTransition:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(42,77,91,.18),rgba(0,0,0,.74) 62%,#000 100%);transform:scale(1.08);animation:swTransitionDrift 1.2s ease-in-out infinite alternate}.swSceneTransitionText{position:relative;font:800 24px Georgia,'Times New Roman',serif;color:#ffe4a3;text-shadow:0 3px 14px #000;letter-spacing:.04em;opacity:.9}
 @keyframes swTransitionDrift{from{transform:scale(1.04)}to{transform:scale(1.12)}}@keyframes swWater{50%{opacity:.62;transform:scale(1.03)}}@keyframes swMist{50%{opacity:.5;transform:translateY(8px)}}@keyframes swPulse{50%{opacity:.35;transform:scale(1.04)}}@keyframes swRipple{to{transform:scale(1.9);opacity:0}}@keyframes swBite{50%{transform:translateY(-12px) scale(1.15)}}@keyframes swFly{50%{transform:translate(28px,-22px);opacity:.45}}@keyframes swMote{to{transform:translateY(-120px);opacity:0}}@keyframes swAmbientRipple{0%{transform:scale(.5);opacity:.75}100%{transform:scale(1.65);opacity:0}}@keyframes swShimmer{50%{opacity:.35;transform:translateX(16px)}}@keyframes swFalls{to{background-position:0 28px}}@keyframes swFoam{50%{opacity:.45;transform:scale(1.04)}}@keyframes swLeafDrift{0%{transform:translateY(-30px) translateX(0) rotate(0);opacity:0}12%{opacity:.85}100%{transform:translateY(230px) translateX(70px) rotate(250deg);opacity:0}}
@@ -529,6 +608,10 @@
 .swAmbientEffect.waterfallMist{background:radial-gradient(ellipse at 50% 50%,rgba(215,245,255,.30),rgba(160,225,255,.15) 42%,transparent 74%);mix-blend-mode:screen;filter:blur(9px);animation:swWaterfallMist 3.8s ease-in-out infinite;opacity:.62}.swAmbientEffect.waterfallMist i{position:absolute;width:18px;height:8px;border-radius:999px;background:rgba(230,250,255,.24);filter:blur(3px);animation:swMistParticle 4.8s ease-in-out infinite}
 .swAmbientEffect.pondRipple:before,.swAmbientEffect.splashRing:before{content:'';position:absolute;inset:18%;border-radius:50%;border:2px solid rgba(135,218,255,.42);box-shadow:0 0 14px rgba(135,218,255,.18);animation:swAmbientRipple 2.2s linear infinite}.swAmbientEffect.pondRipple:after,.swAmbientEffect.splashRing:after{content:'';position:absolute;inset:34%;border-radius:50%;border:1px solid rgba(224,246,255,.34);animation:swAmbientRipple 2.2s linear infinite .7s}.swAmbientEffect.splashRing{animation:swSplashPulse 1.2s ease-out infinite}
 @keyframes swWaterSurfaceShimmer{0%,100%{transform:translate(0,0) scale(1);opacity:.34}50%{transform:translate(8px,-5px) scale(1.015);opacity:.55}}@keyframes swWaterSparkleDrift{0%{background-position:0 0,0 0,0 0}100%{background-position:70px -28px,-95px 42px,55px 30px}}@keyframes swRiverCurrent{0%,100%{transform:translateX(-4px);opacity:.28}50%{transform:translateX(10px);opacity:.48}}@keyframes swRiverSoftBand{to{transform:translateX(70%)}}@keyframes swEdgeFoam{50%{opacity:.72;transform:scale(1.025)}}@keyframes swWaterfallCascade{to{background-position:0 38px,0 38px}}@keyframes swWaterfallCascade2{to{background-position:0 58px}}@keyframes swWaterfallBaseFoam{50%{opacity:.72;transform:translateY(4px) scale(1.05)}}@keyframes swWaterfallMist{50%{opacity:.72;transform:translateY(8px) scale(1.04)}}@keyframes swMistParticle{50%{transform:translate(22px,-12px);opacity:.25}}@keyframes swSplashPulse{50%{filter:brightness(1.25)}}
+
+
+/* GameForge engine-editor extras */
+.swToneLayer,.swLightLayer,.swObjectLayer,.swTerrainParticles,.swInteractionIcons{position:absolute;inset:0;pointer-events:none;z-index:20}.swToneLayer{mix-blend-mode:multiply;z-index:18}.swToneLayer.night{background:radial-gradient(ellipse at 58% 38%,rgba(0,0,0,0),rgba(6,12,32,.18) 55%,rgba(0,0,0,.20));}.swToneLayer.evening{background:rgba(80,35,10,.12)}.swToneLayer.fog{background:radial-gradient(ellipse at center,rgba(220,245,255,.10),rgba(185,220,255,.08),transparent)}.swLightLayer{z-index:31;mix-blend-mode:screen}.swLight{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,224,139,.72),rgba(255,160,55,.22) 32%,rgba(255,160,55,.07) 55%,transparent 72%);filter:blur(7px);animation:swLightFlicker 2.4s ease-in-out infinite}.swLight.cool{background:radial-gradient(circle,rgba(155,220,255,.60),rgba(85,160,255,.18) 42%,transparent 72%)}.swLight.campfire{animation-duration:.85s}.swObjectLayer{z-index:34}.swSceneMarker{position:absolute;font-size:24px;filter:drop-shadow(0 4px 8px #000)}.swInteractionIcons{z-index:2200}.swInteractIcon{position:absolute;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(5,10,18,.72);border:1px solid rgba(255,226,138,.75);color:#ffe7a6;font:800 15px Arial;box-shadow:0 0 12px rgba(255,218,130,.22);animation:swIconBob 1.6s ease-in-out infinite}.swDialogueBubble{position:absolute;max-width:260px;padding:10px 12px;border-radius:14px;background:rgba(7,8,12,.84);border:1px solid rgba(255,226,138,.75);color:#fff3cb;font:700 14px Arial;line-height:1.25;box-shadow:0 12px 30px rgba(0,0,0,.5);animation:swBubbleIn .18s ease-out}.swPlayer.swOccluded{opacity:.58;filter:brightness(.92)}.swTerrainParticles{z-index:33}.swFoot{position:absolute;width:12px;height:6px;border-radius:50%;background:rgba(235,225,180,.36);transform:translate(-50%,-50%);animation:swFootFade .85s ease-out forwards}.swFoot.water{background:rgba(155,225,255,.48);box-shadow:0 0 8px rgba(155,225,255,.35)}.swFoot.leaves{background:rgba(188,135,55,.38)}.swFoot.wood{background:rgba(210,160,85,.28)}@keyframes swIconBob{50%{transform:translateY(-5px)}}@keyframes swBubbleIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}@keyframes swFootFade{to{opacity:0;transform:translate(-50%,-50%) scale(2.1)}}@keyframes swLightFlicker{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:.85;transform:scale(1.05)}}
 
 `;document.head.appendChild(s);}
 

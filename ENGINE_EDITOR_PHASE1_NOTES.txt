@@ -1,0 +1,6 @@
+GameForge World Engine / Editor Phase 1
+Drop-in files:
+- games/js/world_engine.js
+- games/world_editor.html
+
+This patch is designed as a safe layered upgrade. It organizes the editor UI and adds optional scene systems without requiring a full scene schema migration.
