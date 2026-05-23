@@ -284,35 +284,106 @@
   ],
   "ambientEffects": [
     {
-      "id": "dock_water_shimmer_01",
+      "id": "dock_water_area_shimmer_01",
       "type": "ambientEffect",
-      "label": "Dock water shimmer",
-      "effect": "pondShimmer",
-      "x": 835,
-      "y": 420,
-      "w": 360,
-      "h": 210,
-      "opacity": 0.55,
-      "density": 0.35,
-      "speed": 0.8
+      "kind": "ambient",
+      "label": "Water Surface Shimmer",
+      "effect": "waterSurfaceShimmer",
+      "points": [
+        [
+          815,
+          395
+        ],
+        [
+          1195,
+          415
+        ],
+        [
+          1215,
+          610
+        ],
+        [
+          1020,
+          660
+        ],
+        [
+          835,
+          585
+        ]
+      ],
+      "opacity": 0.58,
+      "density": 0.45,
+      "speed": 0.85,
+      "angle": 12
     },
     {
-      "id": "dock_ripple_01",
+      "id": "dock_slow_current_01",
       "type": "ambientEffect",
-      "label": "Fishing water ripple",
-      "effect": "waterRipple",
+      "kind": "ambient",
+      "label": "Slow River Current",
+      "effect": "slowRiverCurrent",
+      "points": [
+        [
+          850,
+          430
+        ],
+        [
+          1180,
+          450
+        ],
+        [
+          1160,
+          570
+        ],
+        [
+          930,
+          605
+        ],
+        [
+          825,
+          545
+        ]
+      ],
+      "opacity": 0.36,
+      "density": 0.35,
+      "speed": 0.7,
+      "angle": 112
+    },
+    {
+      "id": "dock_water_edge_foam_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Water Edge Foam",
+      "effect": "waterEdgeFoam",
+      "x": 845,
+      "y": 520,
+      "w": 260,
+      "h": 80,
+      "opacity": 0.42,
+      "density": 0.35,
+      "speed": 0.9,
+      "angle": 0
+    },
+    {
+      "id": "dock_pond_ripple_01",
+      "type": "ambientEffect",
+      "kind": "ambient",
+      "label": "Pond Ripple",
+      "effect": "pondRipple",
       "x": 955,
       "y": 455,
       "w": 150,
       "h": 110,
-      "opacity": 0.8,
+      "opacity": 0.65,
       "density": 0.45,
-      "speed": 1
+      "speed": 1,
+      "angle": 0
     },
     {
       "id": "dock_falling_leaves_01",
       "type": "ambientEffect",
-      "label": "Falling leaves over dock path",
+      "kind": "ambient",
+      "label": "Falling Leaves",
       "effect": "fallingLeaves",
       "x": 300,
       "y": 130,
@@ -320,11 +391,13 @@
       "h": 520,
       "opacity": 0.7,
       "density": 0.4,
-      "speed": 0.75
+      "speed": 0.75,
+      "angle": 0
     },
     {
       "id": "dock_fireflies_01",
       "type": "ambientEffect",
+      "kind": "ambient",
       "label": "Fireflies near shoreline",
       "effect": "fireflies",
       "x": 430,
@@ -333,7 +406,8 @@
       "h": 190,
       "opacity": 0.8,
       "density": 0.35,
-      "speed": 0.85
+      "speed": 0.85,
+      "angle": 0
     }
   ]
 }
