@@ -74,3 +74,24 @@ Fishing design rules:
 - Fishing should create stories: hidden ponds, rare shadows, tide timing, and journal completion.
 - Future tank/aquarium storage should be visual and limited, so rare fish feel meaningful.
 - Future cooking can use fish later, but it should stay lightweight and companion-focused.
+
+## Sunny Meadows v1 — Top-Down Quality Benchmark
+
+Sunny Meadows is a separate region from Ember Hollow and is intended to test the newer PetWorld direction without removing the older side-scrolling prototype.
+
+Design goals:
+- top-down exploration instead of platforming
+- calmer, more polished movement and camera feel
+- fishing as a world system, not a single minigame
+- hidden ponds and water ripples as natural discovery cues
+- minimal UI and no heavy combat loop
+- touch/click movement support plus keyboard movement
+- completion through `/api/pet/adventure/complete` using `zoneId: sunny_meadows`
+
+New supporting content:
+- Sunny Dew collectible
+- Meadow Charm key item
+- Meadow Reed Rod and Honey Lure
+- Sunny Meadows fish: Meadow Darter, Sun Pip, Clover Carp, Brook Blinker, Glass Gill, Honeyfin
+
+Keep Ember Hollow intact for comparison while using Sunny Meadows as the new feel benchmark.

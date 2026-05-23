@@ -605,5 +605,39 @@
     "keeperImage": "/assets/shops/tide_tackle_keeper.png",
     "forceOpen": false,
     "forceClosed": false
+  },
+  "meadow_tackle": {
+    "id": "meadow_tackle",
+    "name": "Meadow Tackle",
+    "icon": "\ud83c\udfa3",
+    "theme": "fishing",
+    "description": "Gentle rods and lures for ponds, creeks, and hidden meadow springs.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "meadow_reed_rod": {
+        "price": 42,
+        "stock": "infinite"
+      },
+      "plain_hook": {
+        "price": 8,
+        "stock": "infinite"
+      },
+      "honey_lure": {
+        "price": 38,
+        "stock": "infinite"
+      },
+      "glow_lure": {
+        "price": 45,
+        "stock": "infinite"
+      }
+    },
+    "openHour": 5,
+    "closeHour": 23,
+    "bannerImage": "/assets/shops/meadow_tackle_banner.png",
+    "keeperImage": "/assets/shops/meadow_tackle_keeper.png",
+    "forceOpen": false,
+    "forceClosed": false
   }
 }

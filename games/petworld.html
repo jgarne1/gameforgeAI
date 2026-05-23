@@ -1122,6 +1122,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 </div>
 
 <script src="/games/js/adventure_engine.js"></script>
+<script src="/games/js/sunny_meadows_engine.js"></script>
 <script>
 var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
@@ -1522,7 +1523,7 @@ function detailBox(k,v){
 
 function drawZones(){
   var pet=activePet();
-  var html='<h3>Scout Zones</h3><p class="muted">Quick solo scouting burns energy for light server-approved rewards. Interactive Adventure is for story, discoveries, and targeted rewards.</p><button class="gold" onclick="startInteractiveAdventure()" style="margin-bottom:10px">Enter Ember Hollow Adventure</button>';
+  var html='<h3>Scout Zones</h3><p class="muted">Quick solo scouting burns energy for light server-approved rewards. Interactive Adventure is for story, discoveries, and targeted rewards.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><button class="gold" onclick="startInteractiveAdventure()">Enter Ember Hollow Adventure</button><button class="sky" onclick="startSunnyMeadowsAdventure()">Enter Sunny Meadows</button></div>';
   Object.keys(zones||{}).forEach(function(id){
     var z=zones[id];
     var level=Number((pet.stats&&pet.stats.level)||1);
@@ -1671,6 +1672,37 @@ async function trainPet(stat){
   }catch(err){notify('Train failed: '+err.message)}
 }
 
+
+
+function startSunnyMeadowsAdventure(){
+  if(localState.adventureBusy)return;
+  var pet=activePet();
+  if(!pet)return notify('No active pet loaded.');
+  if(pet.stage==='egg')return notify('Eggs cannot enter Sunny Meadows yet. Hatch a companion first.');
+  if(!window.SunnyMeadowsEngine)return notify('Sunny Meadows engine did not load.');
+
+  localState.adventureBusy=true;
+  var beforeLevel=Number((pet.stats&&pet.stats.level)||1);
+  var beforeXp=Number((pet.stats&&pet.stats.xp)||0);
+  var asset=petAssetPath(pet);
+  SunnyMeadowsEngine.start({
+    pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality,moves:pet.moves||[],moveDefs:moves||{}},
+    fishingGear:{inventory:(profile&&profile.inventory)||{}},
+    callbacks:{
+      onStart:function(){
+        addLog((pet.name||'Your pet')+' entered Sunny Meadows.');
+        speak('Sunny Meadows is open. Explore softly, follow ripples, and fish where the water feels alive.');
+      },
+      onCancel:function(){
+        localState.adventureBusy=false;
+        speak('You left Sunny Meadows before turning in rewards.');
+      },
+      onComplete:function(payload){
+        completeInteractiveAdventure(payload,beforeLevel,beforeXp);
+      }
+    }
+  });
+}
 
 function startInteractiveAdventure(){
   if(localState.adventureBusy)return;

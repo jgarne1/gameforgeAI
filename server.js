@@ -2594,6 +2594,29 @@ const ADVENTURE_ZONES={
       glow_lure:'Glow Lure Found',
       root_worm:'Root Worm Bait Found'
     }
+  },
+  sunny_meadows:{
+    id:'sunny_meadows',
+    name:'Sunny Meadows',
+    minLevel:1,
+    energyCost:8,
+    maxShards:8,
+    baseXp:6,
+    baseCoins:8,
+    shardItem:'sunny_dew',
+    discoveryXp:3,
+    discoveryCoins:4,
+    goalXp:6,
+    goalCoins:8,
+    puzzleXp:3,
+    puzzleCoins:4,
+    cleanRunCoins:4,
+    discoveries:{
+      old_windmill:'Old Windmill',
+      willow_tracks:'Tiny Tracks at Willow Pond',
+      hidden_spring_found:'Hidden Spring',
+      meadow_charm:'Meadow Charm'
+    }
   }
 };
 
@@ -2640,7 +2663,7 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
   }
 
   let caughtFish=Array.isArray(payload&&payload.caughtFish)?payload.caughtFish.slice(0,20):[];
-  let validFish=new Set(['fish_drift_minnow','fish_bubble_guppy','fish_moon_anchovy','fish_glowfin','fish_lantern_koi','fish_shellback','fish_cave_eel','fish_tide_ray','fish_moon_jelly','fish_ancient_coelafish']);
+  let validFish=new Set(['fish_drift_minnow','fish_bubble_guppy','fish_moon_anchovy','fish_glowfin','fish_lantern_koi','fish_shellback','fish_cave_eel','fish_tide_ray','fish_moon_jelly','fish_ancient_coelafish','fish_meadow_darter','fish_sun_pip','fish_clover_carp','fish_brook_blinker','fish_glass_gill','fish_honeyfin']);
   let fishCaught=[];
   if(caughtFish.length){
     profile.fishing=profile.fishing||{journal:{},tank:{fish:[],capacity:12},stats:{caught:0,sold:0}};
@@ -2658,7 +2681,7 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
   }
 
   let keyItems=Array.isArray(payload&&payload.keyItems)?payload.keyItems.slice(0,12):[];
-  let validKeyItems=new Set(['ember_lantern','root_claw','mira_charm','glow_lure','root_worm']);
+  let validKeyItems=new Set(['ember_lantern','root_claw','mira_charm','glow_lure','root_worm','meadow_charm']);
   keyItems.forEach(id=>{
     id=String(id||'').slice(0,60);
     if(!validKeyItems.has(id))return;

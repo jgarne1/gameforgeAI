@@ -3509,5 +3509,174 @@
       "tidepools"
     ],
     "basePrice": 90
+  },
+  "sunny_dew": {
+    "id": "sunny_dew",
+    "name": "Sunny Dew",
+    "category": "collectible",
+    "rarity": "common",
+    "description": "A warm meadow spark gathered from Sunny Meadows.",
+    "image": "/assets/items/sunny_dew.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "sunny_meadows",
+      "collectible"
+    ],
+    "basePrice": 4
+  },
+  "meadow_charm": {
+    "id": "meadow_charm",
+    "name": "Meadow Charm",
+    "category": "key_item",
+    "rarity": "uncommon",
+    "description": "A small flower charm that hums near peaceful fishing water.",
+    "image": "/assets/items/meadow_charm.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "sunny_meadows",
+      "adventure",
+      "key_item"
+    ],
+    "basePrice": 0
+  },
+  "meadow_reed_rod": {
+    "id": "meadow_reed_rod",
+    "name": "Meadow Reed Rod",
+    "category": "fishing_gear",
+    "rarity": "common",
+    "description": "A light rod tuned for ponds, creeks, and gentle meadow fish.",
+    "image": "/assets/items/meadow_reed_rod.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "rod",
+      "sunny_meadows"
+    ],
+    "basePrice": 42
+  },
+  "honey_lure": {
+    "id": "honey_lure",
+    "name": "Honey Lure",
+    "category": "fishing_gear",
+    "rarity": "uncommon",
+    "description": "A sweet lure that draws shy meadow fish from flower-lined pools.",
+    "image": "/assets/items/honey_lure.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "lure",
+      "sunny_meadows"
+    ],
+    "basePrice": 38
+  },
+  "fish_meadow_darter": {
+    "id": "fish_meadow_darter",
+    "name": "Meadow Darter",
+    "category": "fish",
+    "rarity": "common",
+    "description": "A quick little fish that darts through sunny shallows.",
+    "image": "/assets/items/fish_meadow_darter.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "sunny_meadows"
+    ],
+    "basePrice": 5
+  },
+  "fish_sun_pip": {
+    "id": "fish_sun_pip",
+    "name": "Sun Pip",
+    "category": "fish",
+    "rarity": "common",
+    "description": "A round bright fish that nibbles near warm pond edges.",
+    "image": "/assets/items/fish_sun_pip.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "sunny_meadows"
+    ],
+    "basePrice": 6
+  },
+  "fish_clover_carp": {
+    "id": "fish_clover_carp",
+    "name": "Clover Carp",
+    "category": "fish",
+    "rarity": "uncommon",
+    "description": "A gentle carp with clover-shaped markings.",
+    "image": "/assets/items/fish_clover_carp.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "sunny_meadows"
+    ],
+    "basePrice": 12
+  },
+  "fish_brook_blinker": {
+    "id": "fish_brook_blinker",
+    "name": "Brook Blinker",
+    "category": "fish",
+    "rarity": "uncommon",
+    "description": "A creek fish that flashes silver before it bites.",
+    "image": "/assets/items/fish_brook_blinker.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "sunny_meadows"
+    ],
+    "basePrice": 14
+  },
+  "fish_glass_gill": {
+    "id": "fish_glass_gill",
+    "name": "Glass Gill",
+    "category": "fish",
+    "rarity": "rare",
+    "description": "A nearly transparent fish found in hidden springs.",
+    "image": "/assets/items/fish_glass_gill.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "sunny_meadows"
+    ],
+    "basePrice": 24
+  },
+  "fish_honeyfin": {
+    "id": "fish_honeyfin",
+    "name": "Honeyfin",
+    "category": "fish",
+    "rarity": "rare",
+    "description": "A golden meadow fish drawn to sweet lures and quiet water.",
+    "image": "/assets/items/fish_honeyfin.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "sunny_meadows"
+    ],
+    "basePrice": 28
   }
 }
