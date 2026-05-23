@@ -8,7 +8,7 @@
   },
   "spawn": {
     "x": 701,
-    "y": 995,
+    "y": 925,
     "face": "up"
   },
   "spawnPoints": [
@@ -16,14 +16,14 @@
       "id": "from_riverbend",
       "label": "From River Bend door",
       "x": 701,
-      "y": 995,
+      "y": 925,
       "face": "up"
     },
     {
       "id": "door_south",
       "label": "South door spawn",
       "x": 701,
-      "y": 995,
+      "y": 925,
       "face": "up"
     }
   ],
@@ -271,69 +271,85 @@
       "type": "animatedOverlay",
       "label": "Fireplace flame",
       "sprite": "/assets/effects/fireplace_flame_sheet.png",
-      "x": 803,
-      "y": 305,
-      "w": 82,
-      "h": 82,
+      "x": 847,
+      "y": 366,
+      "w": 76,
+      "h": 76,
       "frames": 4,
-      "fps": 8,
+      "fps": 10,
       "layer": "overlay",
-      "opacity": 0.95
+      "opacity": 1.0,
+      "blend": "screen"
     },
     {
       "id": "warm_dust_motes",
       "type": "animatedOverlay",
       "label": "Warm dust motes",
       "sprite": "/assets/effects/warm_dust_motes_sheet.png",
-      "x": 360,
-      "y": 245,
-      "w": 720,
-      "h": 570,
+      "x": 710,
+      "y": 520,
+      "w": 760,
+      "h": 640,
       "frames": 4,
-      "fps": 3,
+      "fps": 2,
       "layer": "overlay",
-      "opacity": 0.45
+      "opacity": 0.2,
+      "blend": "screen"
     }
   ],
   "ambientEffects": [
     {
       "id": "fireplace_warm_glow",
       "type": "ambientEffect",
-      "effect": "fireplaceGlow",
+      "effect": "fireplaceWarmGlow",
       "label": "Fireplace warm glow",
-      "x": 790,
-      "y": 300,
-      "w": 230,
-      "h": 200,
-      "opacity": 0.65,
+      "x": 735,
+      "y": 250,
+      "w": 285,
+      "h": 245,
+      "opacity": 0.52,
       "speed": 0.7,
       "layer": "lighting"
     },
     {
       "id": "door_lantern_glow",
       "type": "ambientEffect",
-      "effect": "lanternGlow",
+      "effect": "lanternWarmGlow",
       "label": "Door lantern glow",
       "x": 735,
       "y": 815,
       "w": 145,
       "h": 185,
-      "opacity": 0.42,
+      "opacity": 0.28,
       "speed": 0.45,
       "layer": "lighting"
     },
     {
       "id": "window_warm_light",
       "type": "ambientEffect",
-      "effect": "windowLight",
+      "effect": "windowLightBeam",
       "label": "Soft window light",
-      "x": 510,
-      "y": 165,
-      "w": 260,
-      "h": 360,
-      "opacity": 0.24,
+      "x": 455,
+      "y": 255,
+      "w": 360,
+      "h": 460,
+      "opacity": 0.18,
       "angle": 90,
       "layer": "lighting"
+    },
+    {
+      "id": "room_dust_motes_soft",
+      "type": "ambientEffect",
+      "effect": "dustMotes",
+      "label": "Soft dust motes",
+      "x": 280,
+      "y": 250,
+      "w": 900,
+      "h": 620,
+      "density": 0.28,
+      "opacity": 0.28,
+      "speed": 0.55,
+      "layer": "overlay"
     }
   ],
   "interactables": [
@@ -357,5 +373,8 @@
       "prompt": "Inspect bed",
       "text": "A small book rests on the pillow."
     }
-  ]
+  ],
+  "playerScale": 0.86,
+  "allowFishing": false,
+  "sceneType": "interior"
 }
