@@ -660,11 +660,14 @@
           290
         ]
       ],
-      "opacity": 0.58,
-      "density": 0.58,
-      "speed": 0.65,
+      "opacity": 0.46,
+      "density": 0.38,
+      "speed": 0.35,
       "angle": 18,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/living_water_sheet.png",
+      "frames": 6,
+      "fps": 2
     },
     {
       "id": "riverbend_upper_pool_current",
@@ -694,11 +697,14 @@
           330
         ]
       ],
-      "opacity": 0.42,
-      "density": 0.46,
-      "speed": 0.82,
+      "opacity": 0.32,
+      "density": 0.3,
+      "speed": 0.42,
       "angle": 112,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/river_current_sheet.png",
+      "frames": 6,
+      "fps": 3
     },
     {
       "id": "riverbend_lower_river_living_water",
@@ -736,11 +742,14 @@
           805
         ]
       ],
-      "opacity": 0.54,
-      "density": 0.62,
-      "speed": 0.72,
+      "opacity": 0.46,
+      "density": 0.38,
+      "speed": 0.35,
       "angle": 24,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/living_water_sheet.png",
+      "frames": 6,
+      "fps": 2
     },
     {
       "id": "riverbend_lower_river_current",
@@ -774,11 +783,14 @@
           760
         ]
       ],
-      "opacity": 0.38,
-      "density": 0.5,
-      "speed": 0.9,
+      "opacity": 0.32,
+      "density": 0.3,
+      "speed": 0.42,
       "angle": 124,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/river_current_sheet.png",
+      "frames": 6,
+      "fps": 3
     },
     {
       "id": "riverbend_center_stream_current",
@@ -812,11 +824,14 @@
           675
         ]
       ],
-      "opacity": 0.34,
-      "density": 0.38,
-      "speed": 0.72,
+      "opacity": 0.32,
+      "density": 0.3,
+      "speed": 0.42,
       "angle": 105,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/river_current_sheet.png",
+      "frames": 6,
+      "fps": 3
     },
     {
       "id": "riverbend_waterfall_cascade_main",
@@ -828,11 +843,14 @@
       "y": 48,
       "w": 128,
       "h": 178,
-      "opacity": 0.92,
-      "density": 0.86,
-      "speed": 1.08,
+      "opacity": 0.86,
+      "density": 0.46,
+      "speed": 0.55,
       "angle": 90,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/waterfall_cascade_sheet.png",
+      "frames": 6,
+      "fps": 7
     },
     {
       "id": "riverbend_waterfall_cascade_left",
@@ -845,10 +863,13 @@
       "w": 72,
       "h": 150,
       "opacity": 0.55,
-      "density": 0.58,
-      "speed": 0.92,
+      "density": 0.46,
+      "speed": 0.55,
       "angle": 90,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/waterfall_cascade_sheet.png",
+      "frames": 6,
+      "fps": 7
     },
     {
       "id": "riverbend_waterfall_base_mist",
@@ -860,11 +881,14 @@
       "y": 165,
       "w": 260,
       "h": 105,
-      "opacity": 0.62,
-      "density": 0.78,
-      "speed": 0.65,
+      "opacity": 0.54,
+      "density": 0.42,
+      "speed": 0.38,
       "angle": 0,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/waterfall_mist_sheet.png",
+      "frames": 6,
+      "fps": 4
     },
     {
       "id": "riverbend_falls_foam",
@@ -876,11 +900,14 @@
       "y": 180,
       "w": 235,
       "h": 110,
-      "opacity": 0.68,
-      "density": 0.72,
-      "speed": 0.85,
+      "opacity": 0.58,
+      "density": 0.36,
+      "speed": 0.42,
       "angle": 0,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/waterfall_splash_sheet.png",
+      "frames": 6,
+      "fps": 5
     },
     {
       "id": "riverbend_dock_foam",
@@ -893,10 +920,13 @@
       "w": 205,
       "h": 85,
       "opacity": 0.42,
-      "density": 0.46,
-      "speed": 0.75,
+      "density": 0.36,
+      "speed": 0.42,
       "angle": 0,
-      "layer": "water"
+      "layer": "water",
+      "sprite": "/assets/effects/waterfall_splash_sheet.png",
+      "frames": 6,
+      "fps": 5
     },
     {
       "id": "riverbend_lower_ripple_01",
