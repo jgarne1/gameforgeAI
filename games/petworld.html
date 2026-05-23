@@ -1684,16 +1684,20 @@ function startInteractiveAdventure(){
   var beforeXp=Number((pet.stats&&pet.stats.xp)||0);
 
   var asset=petAssetPath(pet);
+  var adventureZoneId=(selectedZoneId==='tidepools')?'tidepools':'ember_hollow';
+  var adventureZoneName=adventureZoneId==='tidepools'?'Tide Pools':'Ember Hollow';
   PetWorldAdventureEngine.start({
     pet:{name:pet.name,emoji:pet.emoji,asset:asset,type:pet.type,personality:pet.personality,moves:pet.moves||[],moveDefs:moves||{}},
-    zone:{id:'ember_hollow'},
+    zone:{id:adventureZoneId},
+    fishingGear:{inventory:(profile&&profile.inventory)||{}},
     callbacks:{
       onStart:function(){
-        addLog((pet.name||'Your pet')+' entered Ember Hollow with you.');
-        speak('Ember Hollow is open. Collect fragments, inspect story objects, then return home.');
+        addLog((pet.name||'Your pet')+' entered '+adventureZoneName+' with you.');
+        speak(adventureZoneName+' is open. Explore naturally, collect by touch, and return home to save rewards.');
       },
       onCollect:function(c){
         if(c&&c.type==='ember_shard')floatFx('✦');
+        if(c&&c.type==='tide_pearl')floatFx('◌');
       },
       onInteract:function(o){
         if(o&&o.discoveryId)addLog('Discovery clue found: '+(o.title||o.discoveryId));
@@ -1726,7 +1730,7 @@ async function completeInteractiveAdventure(payload,beforeLevel,beforeXp){
     }
     handleRewardResult(data.result&&data.result.xpResult);
     draw();
-    showAdventureReward(data,{name:'Ember Hollow'},beforeLevel,afterLevel,beforeXp);
+    showAdventureReward(data,{name:(data.result&&data.result.zoneName)||'Adventure'},beforeLevel,afterLevel,beforeXp);
     notify(data.message||'Adventure rewards saved!');
   }catch(err){
     notify('Adventure failed: '+err.message);

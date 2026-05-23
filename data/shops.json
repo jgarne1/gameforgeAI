@@ -2,7 +2,7 @@
   "snack_shack": {
     "id": "snack_shack",
     "name": "Snack Shack",
-    "icon": "🍓",
+    "icon": "\ud83c\udf53",
     "theme": "food",
     "description": "Food, treats, and quick hunger fixes.",
     "unlock": {
@@ -60,7 +60,7 @@
   "care_clinic": {
     "id": "care_clinic",
     "name": "Care Clinic",
-    "icon": "🧼",
+    "icon": "\ud83e\uddfc",
     "theme": "care",
     "description": "Cleaning, rest, and wellness supplies.",
     "unlock": {
@@ -122,7 +122,7 @@
   "egg_lab": {
     "id": "egg_lab",
     "name": "Egg Lab",
-    "icon": "🥚",
+    "icon": "\ud83e\udd5a",
     "theme": "egg",
     "description": "Egg influence tools. Advanced tools should be unlockable.",
     "unlock": {
@@ -201,7 +201,7 @@
   "training_dojo": {
     "id": "training_dojo",
     "name": "Training Dojo",
-    "icon": "🏋️",
+    "icon": "\ud83c\udfcb\ufe0f",
     "theme": "training",
     "description": "Stat growth tools and practice gear.",
     "unlock": {
@@ -259,7 +259,7 @@
   "toy_box": {
     "id": "toy_box",
     "name": "Toy Box",
-    "icon": "🧸",
+    "icon": "\ud83e\uddf8",
     "theme": "fun",
     "description": "Toys, fun items, and personality-shaping play.",
     "unlock": {
@@ -313,7 +313,7 @@
   "explorer_supply": {
     "id": "explorer_supply",
     "name": "Explorer Supply",
-    "icon": "🧭",
+    "icon": "\ud83e\udded",
     "theme": "explore",
     "description": "Maps, boosters, and discovery tools.",
     "unlock": {
@@ -364,7 +364,7 @@
   "curio_market": {
     "id": "curio_market",
     "name": "Curio Market",
-    "icon": "✨",
+    "icon": "\u2728",
     "theme": "cosmetic",
     "description": "Cosmetics, profile effects, oddities, and rotating rares.",
     "unlock": {
@@ -426,7 +426,7 @@
   "battle_shop": {
     "id": "battle_shop",
     "name": "Battle Shop",
-    "icon": "⚔️",
+    "icon": "\u2694\ufe0f",
     "theme": "battle",
     "description": "Battle consumables and future battle unlocks.",
     "unlock": {
@@ -469,7 +469,7 @@
   "game_shop": {
     "id": "game_shop",
     "name": "Game Shop",
-    "icon": "🎮",
+    "icon": "\ud83c\udfae",
     "theme": "games",
     "description": "Game cartridges and table unlocks. Buy one to host that game from the launcher.",
     "unlock": {
@@ -562,6 +562,48 @@
     "bannerImage": "/assets/shops/game_shop_banner.png",
     "keeperImage": "/assets/shops/game_shop_keeper.png",
     "forceOpen": true,
+    "forceClosed": false
+  },
+  "tide_tackle": {
+    "id": "tide_tackle",
+    "name": "Tide Tackle",
+    "icon": "\ud83c\udfa3",
+    "theme": "fishing",
+    "description": "Rods, lures, and bait for Tide Pools fishing.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "driftwood_rod": {
+        "price": 35,
+        "stock": "infinite"
+      },
+      "plain_hook": {
+        "price": 8,
+        "stock": "infinite"
+      },
+      "glow_lure": {
+        "price": 45,
+        "stock": "infinite"
+      },
+      "root_worm": {
+        "price": 16,
+        "stock": "infinite"
+      },
+      "emberglass_rod": {
+        "price": 95,
+        "stock": 6
+      },
+      "tidewoven_pole": {
+        "price": 180,
+        "stock": 3
+      }
+    },
+    "openHour": 5,
+    "closeHour": 23,
+    "bannerImage": "/assets/shops/tide_tackle_banner.png",
+    "keeperImage": "/assets/shops/tide_tackle_keeper.png",
+    "forceOpen": false,
     "forceClosed": false
   }
 }

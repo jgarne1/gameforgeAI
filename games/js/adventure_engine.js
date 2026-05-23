@@ -1,11 +1,11 @@
 /*
-  GameForge AI Adventure Engine v9.1
+  GameForge AI Adventure Engine v10
   Purpose: reusable pet-first side-scrolling exploration layer for PetWorld activities.
   - Not a standalone game.
   - The active pet is the controllable character; no human avatar is shown in the main wilderness mode.
   - Client handles feel, movement, solid platforms, hazards, local collectibles, puzzles, creatures, and interactions.
   - Server remains authoritative for profile rewards through /api/pet/adventure/complete.
-  - Combat is quick encounter mode: visible roaming creatures spot the pet, walk up, trigger a message, then battle begins. v9.1 fixes the passage/door system: rooted tunnels, direction-safe arrival spawns, transition cooldowns, and no back-and-forth portal loops.
+  - Combat is quick encounter mode: visible roaming creatures spot the pet, walk up, trigger a message, then battle begins. v10 adds Tide Pools fishing as a second exploration pillar: hidden fishing spots, quick non-clunky casting/reeling, simple rod/lure support, fish collection payloads, and lightweight aquarium/sell hooks.
 */
 (function(){
   'use strict';
@@ -136,17 +136,89 @@
     ]
   };
 
+
+  var TIDE_POOLS_ZONE={
+    id:'tidepools',
+    name:'Tide Pools',
+    subtitle:'Follow glowing tidewater, find hidden ponds, test lures, and build your first fish collection.',
+    width:4300,
+    timeLimitMs:540000,
+    player:{x:90,y:0,w:62,h:74,maxSpeed:5.05,accel:.44,friction:.82,jump:14.1,gravity:.60,coyoteMs:150,jumpBufferMs:160},
+    goalX:4050,
+    exitX:4180,
+    requiredGateShards:0,
+    rooms:[
+      {id:'moon_dock',name:'Moon Dock',from:0,to:860,subtitle:'A quiet boardwalk where fish shadows ripple under lantern light.',mood:'safe'},
+      {id:'glow_pools',name:'Glow Pools',from:860,to:1780,subtitle:'Small tide pools hide fish that react to different lures.',mood:'mystery'},
+      {id:'shell_cave',name:'Shell Cave',from:1780,to:2820,subtitle:'A low cave opens when the tide settles.',mood:'secret'},
+      {id:'deep_tide',name:'Deep Tide',from:2820,to:4300,subtitle:'Rare fish move slowly beneath the blue water.',mood:'clear'}
+    ],
+    collectibles:[
+      {id:'tide_pearl_1',type:'tide_pearl',x:260,y:20,emoji:'◌',hint:'Dock pearl'},
+      {id:'tide_pearl_2',type:'tide_pearl',x:740,y:104,emoji:'◌',hint:'High dock pearl'},
+      {id:'tide_pearl_3',type:'tide_pearl',x:1160,y:18,emoji:'◌',hint:'Glow pool pearl'},
+      {id:'tide_pearl_4',type:'tide_pearl',x:1540,y:138,emoji:'◌',hint:'Hidden tide pearl'},
+      {id:'tide_pearl_5',type:'tide_pearl',x:2240,y:18,emoji:'◌',hint:'Shell cave pearl'},
+      {id:'tide_pearl_6',type:'tide_pearl',x:3320,y:112,emoji:'◌',hint:'Deep tide pearl'}
+    ],
+    platforms:[
+      {id:'dock_ledge_1',x:370,y:72,w:330,h:24,label:'dock ledge'},
+      {id:'glow_ledge_1',x:1010,y:96,w:390,h:24,label:'salt ledge'},
+      {id:'glow_ledge_2',x:1420,y:132,w:330,h:24,label:'salt ledge'},
+      {id:'cave_ledge_1',x:2040,y:86,w:430,h:24,label:'shell ledge'},
+      {id:'deep_ledge_1',x:3040,y:82,w:370,h:24,label:'tide ledge'},
+      {id:'deep_ledge_2',x:3540,y:132,w:390,h:24,label:'tide ledge'}
+    ],
+    hazards:[
+      {id:'foam_surge_1',kind:'tide',x:1290,y:0,w:170,h:46,emoji:'🌊',damage:1,text:'A tide surge splashes over the stones. Your companion shakes it off.'},
+      {id:'shell_spike_1',kind:'bramble',x:2460,y:0,w:150,h:22,emoji:'🐚',damage:1,text:'Sharp shells scrape underpaw.'},
+      {id:'foam_surge_2',kind:'tide',x:3180,y:0,w:190,h:50,emoji:'🌊',damage:1,text:'The pool swells. Wait for the tide to breathe out.'}
+    ],
+    gates:[],
+    barriers:[],
+    portals:[
+      {id:'shell_cave_entry',x:1765,y:0,w:125,h:118,toX:2030,toY:0,name:'Shell Cave',direction:'right',text:'Your pet slips through a low shell tunnel.'},
+      {id:'shell_cave_exit',x:1980,y:0,w:125,h:118,toX:1710,toY:0,name:'Glow Pools Return',direction:'left',text:'The shell tunnel curls back toward the glow pools.'}
+    ],
+    fishingSpots:[
+      {id:'dock_pool',name:'Moon Dock Pool',x:520,y:0,w:210,h:68,water:'calm',rarity:'common',hint:'Small shadows circle the dock.',fish:['drift_minnow','bubble_guppy','moon_anchovy']},
+      {id:'glow_pool',name:'Glow Pool',x:1340,y:0,w:260,h:72,water:'glow',rarity:'uncommon',requiresLure:'glow_lure',hint:'Something luminous flickers below.',fish:['glowfin','bubble_guppy','lantern_koi']},
+      {id:'shell_cave_pool',name:'Shell Cave Pool',x:2315,y:0,w:270,h:72,water:'cave',rarity:'uncommon',requiresLure:'root_worm',hint:'Slow cave fish brush against the stones.',fish:['shellback','cave_eel','drift_minnow']},
+      {id:'deep_tide_pool',name:'Deep Tide Pool',x:3455,y:0,w:320,h:82,water:'deep',rarity:'rare',requiresRod:'tidewoven_pole',hint:'Large shadows move in patient circles.',fish:['tide_ray','moon_jelly','ancient_coelafish']}
+    ],
+    keyItems:[
+      {id:'glow_lure',name:'Glow Lure',x:860,y:0,emoji:'🪝',text:'A soft blue lure. It attracts luminous tide fish.'},
+      {id:'root_worm',name:'Root Worm Bait',x:1905,y:0,emoji:'🪱',text:'Cave fish love this bait. It wiggles even when still.'}
+    ],
+    creatures:[
+      {id:'tide_crab_1',name:'Tide Crab',type:'water',x:980,y:0,w:78,h:58,emoji:'🦀',image:'/assets/creatures/tide_crab/idle.png',patrolMin:890,patrolMax:1160,speed:.55,facing:1,vision:150,visionY:62,hp:34,attack:4,xp:4,coin:3,message:'A Tide Crab skitters into your path!'},
+      {id:'moon_jelly_wisp',name:'Moon Jelly Wisp',type:'water',x:3045,y:82,w:78,h:78,emoji:'🪼',image:'/assets/creatures/moon_jelly/idle.png',patrolMin:2920,patrolMax:3320,speed:.48,facing:-1,vision:180,visionY:82,hp:42,attack:5,xp:6,coin:4,message:'A Moon Jelly Wisp pulses toward your pet.'}
+    ],
+    interactables:[
+      {id:'dock_note',kind:'scene',x:320,y:0,emoji:'📝',title:'Dock Note',text:'Mira wrote: “Fish shadows change with lure, tide, and hidden water. Do not mark every pool. Let curiosity lead.”',discoveryId:'dock_note',auto:true},
+      {id:'first_tank_hint',kind:'scene',x:3720,y:0,emoji:'🐟',title:'Old Aquarium Crate',text:'A cracked aquarium crate sits near the deep tide. Useful catches can be stored at home later; common fish can be sold quickly.',discoveryId:'aquarium_crate',auto:true}
+    ],
+    ambientEvents:[
+      'Small fish break the surface, then vanish under moonlit ripples.',
+      'Your pet watches bubbles drift toward a hidden pool.',
+      'A distant bell buoy rings once in the fog.',
+      'The tide breathes in, then quietly pulls back.',
+      'A rare shadow moves below the water, too slow to be a minnow.'
+    ]
+  };
+
   var engine={
     mounted:false,running:false,zone:null,root:null,scene:null,world:null,hud:null,objective:null,prompt:null,skillBar:null,
     petEl:null,cameraX:0,keys:{},collected:{},collectedIds:{},touched:{},discoveries:{},openedGates:{},hazardsHit:{},puzzlesSolved:{},defeatedCreatures:{},
     goalReached:false,startedAt:0,raf:0,lastAmbientAt:0,lastHitAt:0,lastLandingAt:0,lastSightAt:0,lastGroundedAt:0,jumpQueuedUntil:0,state:null,callbacks:{},pet:null,nearest:null,actionBtn:null,touch:null,
-    creatures:[],mode:'explore',encounter:null,battle:null,completion:null,completionOverlay:null,roomOverlay:null,currentRoomId:'',keyItems:{},openedBarriers:{},worldFlags:{},transition:null,transitionCooldownUntil:0,lastPortalId:''
+    creatures:[],mode:'explore',encounter:null,battle:null,completion:null,completionOverlay:null,roomOverlay:null,currentRoomId:'',keyItems:{},openedBarriers:{},worldFlags:{},transition:null,transitionCooldownUntil:0,lastPortalId:'',fishing:null,caughtFish:[],fishJournal:{}
   };
 
   function mergeZone(zone){
-    var z=Object.assign({},DEFAULT_ZONE,zone||{});
-    z.player=Object.assign({},DEFAULT_ZONE.player,(zone&&zone.player)||{});
-    ['collectibles','platforms','hazards','gates','creatures','interactables','portals','ambientEvents'].forEach(function(k){z[k]=(zone&&zone[k])?zone[k].slice():DEFAULT_ZONE[k].slice();});
+    var base=(zone&&String(zone.id||'')==='tidepools')?TIDE_POOLS_ZONE:DEFAULT_ZONE;
+    var z=Object.assign({},base,zone||{});
+    z.player=Object.assign({},base.player,(zone&&zone.player)||{});
+    ['collectibles','platforms','hazards','gates','creatures','interactables','portals','barriers','keyItems','fishingSpots','ambientEvents','rooms'].forEach(function(k){z[k]=(zone&&zone[k])?zone[k].slice():((base[k]||[]).slice?base[k].slice():base[k]);});
     return z;
   }
 
@@ -154,6 +226,7 @@
     if(engine.mounted)return;
     engine.callbacks=(options&&options.callbacks)||{};
     injectStyles();
+    injectFishingStyles();
     engine.root=document.createElement('div');
     engine.root.id='gfAdventureRoot';
     engine.root.className='gfAdventure hidden';
@@ -188,7 +261,7 @@
   }
 
   function start(options){
-    mount(options||{});engine.zone=mergeZone((options&&options.zone)||{});engine.callbacks=(options&&options.callbacks)||engine.callbacks||{};engine.pet=(options&&options.pet)||{};
+    mount(options||{});engine.zone=mergeZone((options&&options.zone)||{});engine.callbacks=(options&&options.callbacks)||engine.callbacks||{};engine.pet=(options&&options.pet)||{};engine.fishingGear=(options&&options.fishingGear)||{};
     engine.collected={};engine.collectedIds={};engine.touched={};engine.discoveries={};engine.openedGates={};engine.hazardsHit={};engine.puzzlesSolved={};engine.defeatedCreatures={};engine.keyItems={};engine.openedBarriers={};engine.worldFlags={};engine.goalReached=false;
     engine.startedAt=Date.now();engine.lastAmbientAt=Date.now();engine.lastHitAt=0;engine.lastLandingAt=0;engine.lastSightAt=0;engine.lastGroundedAt=Date.now();engine.jumpQueuedUntil=0;engine.cameraX=0;engine.mode='explore';engine.encounter=null;engine.battle=null;engine.completion=null;engine.transition=null;engine.transitionCooldownUntil=0;engine.lastPortalId='';engine.currentRoomId='';engine.touch=null;if(engine.roomOverlay){engine.roomOverlay.classList.add('hidden');engine.roomOverlay.innerHTML='';}if(engine.completionOverlay){engine.completionOverlay.classList.add('hidden');engine.completionOverlay.innerHTML='';}
     engine.state={x:engine.zone.player.x,y:0,prevY:0,vx:0,vy:0,onGround:true,facing:1,health:3,landed:false,locked:false};
@@ -203,12 +276,13 @@
     var z=engine.zone,html='';
     html+='<div class="gfAdvLayer mountains"></div><div class="gfAdvLayer trees"></div><div class="gfAdvPathGlow"></div><div class="gfAdvGround"></div>';
     html+=renderRooms();html+=renderEnvironmentScenes();
-    html+='<div class="gfAdvLandmark start">Camp Trail</div><div class="gfAdvLandmark deep" style="left:3425px">Deep Roots</div><div class="gfAdvLandmark core" style="left:4580px">Guardian Ring</div><div class="gfAdvLandmark tree" style="left:'+(z.goalX-60)+'px">Ember Tree</div>';
+    html+=renderLandmarks();
     (z.platforms||[]).forEach(function(p){html+='<div class="gfAdvPlatform" data-pid="'+esc(p.id)+'" style="left:'+num(p.x)+'px;bottom:'+(GROUND_H+num(p.y))+'px;width:'+num(p.w)+'px;height:'+num(p.h)+'px"><span></span></div>';});
     (z.hazards||[]).forEach(function(h){var cls=' '+(h.kind||'hazard');html+='<div class="gfAdvHazard'+cls+'" data-hid="'+esc(h.id)+'" style="left:'+num(h.x)+'px;bottom:'+(GROUND_H+num(h.y))+'px;width:'+num(h.w)+'px;height:'+num(h.h)+'px"><span>'+esc(h.emoji||'⚠️')+'</span></div>';});
     (z.keyItems||[]).forEach(function(k){html+='<button class="gfAdvKeyItem gfAdvUsable" data-kid="'+esc(k.id)+'" style="left:'+num(k.x)+'px;bottom:'+(GROUND_H+34+num(k.y))+'px"><span>'+esc(k.emoji||'🔑')+'</span><b>'+esc(k.name||'Item')+'</b></button>';});
     (z.barriers||[]).forEach(function(b){html+='<button class="gfAdvBarrier gfAdvUsable" data-bid="'+esc(b.id)+'" style="left:'+num(b.x)+'px;bottom:'+(GROUND_H+num(b.y))+'px;width:'+num(b.w)+'px;height:'+num(b.h)+'px"><span>'+esc(b.emoji||'🚪')+'</span><b>'+esc(b.name||'Barrier')+'</b></button>';});
     (z.portals||[]).forEach(function(pt){html+='<div class="gfAdvPortal '+esc(pt.direction||'right')+'" data-ptid="'+esc(pt.id)+'" style="left:'+num(pt.x)+'px;bottom:'+(GROUND_H+num(pt.y))+'px;width:'+num(pt.w||120)+'px;height:'+num(pt.h||120)+'px"><span></span><b>'+esc(pt.name||'Root Passage')+'</b></div>';});
+    (z.fishingSpots||[]).forEach(function(fs){html+='<div class="gfFishingSpot '+esc(fs.water||'calm')+'" data-fishspot="'+esc(fs.id)+'" style="left:'+num(fs.x)+'px;bottom:'+(GROUND_H+num(fs.y))+'px;width:'+num(fs.w||230)+'px;height:'+num(fs.h||70)+'px"><span></span><b>'+esc(fs.name||'Fishing Spot')+'</b></div>';});
     (z.gates||[]).forEach(function(g){html+='<button class="gfAdvGate gfAdvUsable" data-gid="'+esc(g.id)+'" style="left:'+num(g.x)+'px;bottom:'+(GROUND_H+num(g.y))+'px;width:'+num(g.w)+'px;height:'+num(g.h)+'px"><b>Root Gate</b><span>Need 3 ✦</span></button>';});
     engine.creatures.forEach(function(c){html+='<div class="gfAdvCreature" data-eid="'+esc(c.id)+'" style="left:'+num(c.x)+'px;bottom:'+(GROUND_H+num(c.y))+'px;width:'+num(c.w||74)+'px;height:'+num(c.h||74)+'px">'+creatureMarkup(c)+'</div>';});
     (z.interactables||[]).forEach(function(o){html+='<div class="gfAdvThing gfAdvScenePickup '+esc(o.kind||'thing')+'" data-iid="'+esc(o.id)+'" style="left:'+num(o.x)+'px;bottom:'+(GROUND_H+12+num(o.y))+'px"><span>'+esc(o.emoji||'✨')+'</span></div>';});
@@ -227,7 +301,7 @@
   function creatureMarkup(c){var img=c.image?'<img src="'+esc(c.image)+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'">':'';return img+'<span '+(c.image?'style="display:none"':'')+'>'+esc(c.emoji||'👾')+'</span><em>'+esc(c.name||'Creature')+'</em>';}
   function petMarkup(pet){pet=pet||{};var src=pet.asset||pet.image||'';var emoji=pet.emoji||'🐾';var label=pet.name?'<em>'+esc(pet.name)+'</em>':'';if(src)return '<img src="'+esc(src)+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'"><span style="display:none">'+esc(emoji)+'</span>'+label;return '<span>'+esc(emoji)+'</span>'+label;}
 
-  function loop(){if(!engine.running)return;if(engine.mode==='explore'){updatePhysics();updateCreatures();checkCreatureSight();checkHazards();checkCollectibles();checkAbilityItems();checkSceneDiscoveries();checkPortals();checkBossTriggers();checkRoomTransition();checkGoal();maybeAmbient();}else if(engine.mode==='encounterIntro'){updateEncounterIntro();}else if(engine.mode==='roomTransition'){updateRoomTransition();}else if(engine.mode==='ending'){updateEnding();}updateCamera();updatePositions();updateCreaturePositions();updateNearest();engine.raf=requestAnimationFrame(loop);}
+  function loop(){if(!engine.running)return;if(engine.mode==='explore'){updatePhysics();updateCreatures();checkCreatureSight();checkHazards();checkCollectibles();checkAbilityItems();checkSceneDiscoveries();checkPortals();checkFishingSpots();checkBossTriggers();checkRoomTransition();checkGoal();maybeAmbient();}else if(engine.mode==='fishing'){updateFishing();}else if(engine.mode==='encounterIntro'){updateEncounterIntro();}else if(engine.mode==='roomTransition'){updateRoomTransition();}else if(engine.mode==='ending'){updateEnding();}updateCamera();updatePositions();updateCreaturePositions();updateNearest();engine.raf=requestAnimationFrame(loop);}
 
   function updatePhysics(){
     var s=engine.state,z=engine.zone,p=z.player,now=Date.now();
@@ -295,6 +369,14 @@
     pop(c.miniBoss?'Path Opened!':'Victory!',engine.state.x,engine.state.y+98,'good');burst(engine.state.x,GROUND_H+engine.state.y+50,'solve');updateHud();
   }
 
+
+
+  function renderLandmarks(){
+    if(engine.zone&&engine.zone.id==='tidepools'){
+      return '<div class="gfAdvLandmark start">Moon Dock</div><div class="gfAdvLandmark deep" style="left:1880px">Shell Cave</div><div class="gfAdvLandmark core" style="left:3260px">Deep Tide</div><div class="gfAdvLandmark tree" style="left:'+(engine.zone.goalX-60)+'px">Old Aquarium</div>';
+    }
+    return '<div class="gfAdvLandmark start">Camp Trail</div><div class="gfAdvLandmark deep" style="left:3425px">Deep Roots</div><div class="gfAdvLandmark core" style="left:4580px">Guardian Ring</div><div class="gfAdvLandmark tree" style="left:'+(engine.zone.goalX-60)+'px">Ember Tree</div>';
+  }
 
   function renderRooms(){
     return (engine.zone.rooms||[]).map(function(r){
@@ -449,6 +531,11 @@
         var node=engine.world&&engine.world.querySelector('[data-hid="'+cssEscape(h.id)+'"]');if(node)node.classList.toggle('hot',hot);
         if(!hot)return;
         hy=GROUND_H+6;hh=Math.max(38,Number(h.h||70));
+      }else if(h.kind==='tide'){
+        var surge=((now+Number(h.x||0)*5)%2600)>1250;
+        var node2=engine.world&&engine.world.querySelector('[data-hid="'+cssEscape(h.id)+'"]');if(node2)node2.classList.toggle('hot',surge);
+        if(!surge)return;
+        hy=GROUND_H+4;hh=Math.max(28,Number(h.h||46));
       }else if(h.kind==='bramble'){
         hy=GROUND_H+2;hh=Math.max(18,Number(h.h||24));
       }
@@ -464,9 +551,165 @@
     (engine.zone.barriers||[]).forEach(function(b){if(engine.openedBarriers[b.id])return;var d=Math.abs(s.x-(b.x+b.w/2))+Math.abs(s.y-b.y)*.8;if(d<135&&d<dist){nearest={type:'barrier',id:b.id,obj:b};dist=d;}});
     (engine.zone.gates||[]).forEach(function(g){if(engine.openedGates[g.id])return;var d=Math.abs(s.x-(g.x+g.w/2))+Math.abs(s.y-g.y)*.8;if(d<126&&d<dist){nearest={type:'gate',id:g.id,obj:g};dist=d;}});engine.nearest=nearest;if(nearest){var sel=nearest.type==='gate'?'[data-gid="'+cssEscape(nearest.id)+'"]':'[data-bid="'+cssEscape(nearest.id)+'"]';var n=engine.world.querySelector(sel);if(n)n.classList.add('near');}
     updateTouchAction();}
-  function tryInteract(){if(engine.mode!=='explore')return;if(!engine.nearest){say('Sparks, tools, chests, and discoveries are collected by touch. Only sealed paths need Use.');return;}if(engine.nearest.type==='gate')tryGate(engine.nearest.id);else if(engine.nearest.type==='barrier')tryBarrier(engine.nearest.id);}
+  function tryInteract(){if(engine.mode!=='explore')return;if(!engine.nearest){if(engine.nearestFishing)return beginFishing(engine.nearestFishing);say('Sparks, tools, chests, discoveries, and fishing spots are discovered in-world. Only sealed paths need Use.');return;}if(engine.nearest.type==='gate')tryGate(engine.nearest.id);else if(engine.nearest.type==='barrier')tryBarrier(engine.nearest.id);}
   function interact(id){var o=findById(engine.zone.interactables,id);if(!o)return;engine.touched[id]=true;var node=engine.world.querySelector('[data-iid="'+cssEscape(id)+'"]');if(node)node.classList.add('used');if(o.discoveryId)engine.discoveries[o.discoveryId]=true;applyWorldEffect(o.effect,o);say((o.title?o.title+': ':'')+(o.text||'Your pet investigates.'));pop(o.discoveryId?'Discovery!':'Use',o.x,o.y+108,o.discoveryId?'good':'info');pulseWorld(o.kind==='story'?'story':'soft');if(engine.callbacks.onInteract)engine.callbacks.onInteract(o);updateHud();}
   function tryGate(id){var g=findById(engine.zone.gates,id);if(!g)return;if(engine.openedGates[id])return;var need=(g.requires&&g.requires.ember_shard)||engine.zone.requiredGateShards||3;var have=Number(engine.collected.ember_shard||0);if(have<need){say((g.text||'The gate is sealed.')+' You have '+have+'/'+need+' sparks.');pop(have+'/'+need+' sparks',g.x+g.w/2,g.y+130,'bad');return;}engine.openedGates[id]=true;engine.puzzlesSolved[id]=true;var node=engine.world.querySelector('[data-gid="'+cssEscape(id)+'"]');if(node)node.classList.add('open');say('The root gate opens. Your pet pushes forward as the hollow gets warmer.');pop('Gate opened!',g.x+g.w/2,g.y+155,'good');burst(g.x+g.w/2,GROUND_H+90,'solve');pulseWorld('solve');updateHud();}
+
+  function checkFishingSpots(){
+    if(engine.mode!=='explore'||!(engine.zone.fishingSpots||[]).length)return;
+    var s=engine.state,best=null,bestD=9999;
+    (engine.zone.fishingSpots||[]).forEach(function(fs){
+      var cx=Number(fs.x||0)+Number(fs.w||230)/2;
+      var d=Math.abs(s.x-cx)+Math.abs(s.y-Number(fs.y||0))*.8;
+      var node=engine.world&&engine.world.querySelector('[data-fishspot="'+cssEscape(fs.id)+'"]');
+      if(node)node.classList.toggle('near',d<150);
+      if(d<150&&d<bestD){best=fs;bestD=d;}
+    });
+    engine.nearestFishing=best;
+    if(best&&Date.now()-Number(engine._lastFishHintAt||0)>3500){
+      engine._lastFishHintAt=Date.now();
+      say((best.hint||'Fish shadows ripple here.')+' Press E / Use to fish.');
+    }
+  }
+
+  function beginFishing(spot){
+    if(!spot||engine.mode!=='explore')return;
+    var gate=fishSpotGate(spot);
+    if(gate){say(gate);pop('Need gear',spot.x+(spot.w||230)/2,spot.y+95,'bad');return;}
+    engine.mode='fishing';
+    engine.state.vx=0;engine.state.vy=0;
+    engine.fishing={spot:spot,phase:'ready',startedAt:Date.now(),biteAt:0,fish:null,progress:0,tension:34,escaped:false};
+    renderFishingBar();
+    engine.skillBar.classList.remove('hidden');
+    say('Fishing at '+(spot.name||'the water')+'. Cast when ready.');
+  }
+
+  function fishSpotGate(spot){
+    var gear=engine.fishingGear||{};
+    var inv=gear.inventory||{};
+    if(spot.requiresRod&&!inv[spot.requiresRod])return (spot.name||'This water')+' needs '+friendly(spot.requiresRod)+'.';
+    if(spot.requiresLure&&!inv[spot.requiresLure]&&!engine.keyItems[spot.requiresLure])return (spot.name||'This water')+' reacts to '+friendly(spot.requiresLure)+'.';
+    return '';
+  }
+
+  function renderFishingBar(){
+    var f=engine.fishing;if(!f){engine.skillBar.classList.add('hidden');return;}
+    var rod=fishingOwned('tidewoven_pole')?'Tidewoven Pole':(fishingOwned('emberglass_rod')?'Emberglass Rod':'Driftwood Rod');
+    var lure=fishingOwned('glow_lure')?'Glow Lure':(fishingOwned('root_worm')?'Root Worm':'Plain Hook');
+    var title=f.spot?f.spot.name:'Fishing';
+    var body='';
+    if(f.phase==='ready'){
+      body='<button class="fishPrimary" onclick="PetWorldAdventureEngine._fishCast()">Cast</button><button onclick="PetWorldAdventureEngine._fishCancel()">Step Away</button>';
+    }else if(f.phase==='waiting'){
+      body='<div class="fishMeter waiting"><i style="width:'+Math.min(100,((Date.now()-f.startedAt)/Math.max(1,(f.biteAt-f.startedAt)))*100)+'%"></i></div><button onclick="PetWorldAdventureEngine._fishCancel()">Cancel</button>';
+    }else if(f.phase==='hook'){
+      body='<button class="fishPrimary" onclick="PetWorldAdventureEngine._fishHook()">Set Hook!</button><button onclick="PetWorldAdventureEngine._fishCancel()">Let It Go</button>';
+    }else if(f.phase==='reel'){
+      body='<div class="fishMeter"><i style="width:'+Math.round(f.progress)+'%"></i></div><div class="fishTension"><i style="left:'+Math.round(f.tension)+'%"></i></div><button class="fishPrimary" onclick="PetWorldAdventureEngine._fishReel()">Reel</button><button onclick="PetWorldAdventureEngine._fishEase()">Ease</button>';
+    }else if(f.phase==='caught'){
+      body='<button class="fishPrimary" onclick="PetWorldAdventureEngine._fishKeep()">Keep Fishing</button><button onclick="PetWorldAdventureEngine._fishCancel()">Done</button>';
+    }
+    engine.skillBar.innerHTML='<div class="gfFishingMini"><b>🎣 '+esc(title)+'</b><span>'+esc(rod)+' · '+esc(lure)+'</span></div><div class="gfFishingBody">'+body+'</div>';
+  }
+
+  function fishingOwned(id){
+    var gear=engine.fishingGear||{},inv=gear.inventory||{};
+    return !!(inv[id]||engine.keyItems[id]);
+  }
+
+  function fishCast(){
+    var f=engine.fishing;if(!f||f.phase!=='ready')return;
+    f.phase='waiting';f.startedAt=Date.now();f.biteAt=f.startedAt+650+Math.floor(Math.random()*950);
+    say('The lure lands softly. Watch the ripples.');
+    renderFishingBar();
+  }
+
+  function fishHook(){
+    var f=engine.fishing;if(!f||f.phase!=='hook')return;
+    f.phase='reel';f.progress=12;f.tension=35;f.lastTick=Date.now();
+    say('Hooked! Tap Reel, but ease off if tension climbs too high.');
+    renderFishingBar();
+  }
+
+  function fishReel(){
+    var f=engine.fishing;if(!f||f.phase!=='reel')return;
+    f.progress+=12+Math.random()*7;
+    f.tension+=12+Math.random()*8;
+    if(f.progress>=100)return catchFish();
+    if(f.tension>=96)return fishEscape('The line snaps loose!');
+    renderFishingBar();
+  }
+
+  function fishEase(){
+    var f=engine.fishing;if(!f||f.phase!=='reel')return;
+    f.tension=Math.max(18,f.tension-20);
+    f.progress=Math.max(0,f.progress-2);
+    say('You give the fish a little slack.');
+    renderFishingBar();
+  }
+
+  function updateFishing(){
+    var f=engine.fishing;if(!f)return;
+    if(f.phase==='waiting'){
+      if(Date.now()>=f.biteAt){f.phase='hook';f.fish=chooseFish(f.spot);say('Bite! Set the hook.');pop('Bite!',engine.state.x,engine.state.y+96,'good');}
+      renderFishingBar();
+    }else if(f.phase==='reel'){
+      f.tension=Math.max(8,f.tension-.35);
+      if(Date.now()-Number(f._lastRender||0)>120){f._lastRender=Date.now();renderFishingBar();}
+    }
+  }
+
+  function chooseFish(spot){
+    var list=(spot&&spot.fish&&spot.fish.length)?spot.fish:['drift_minnow'];
+    var pick=list[Math.floor(Math.random()*list.length)];
+    var defs={
+      drift_minnow:{id:'fish_drift_minnow',name:'Drift Minnow',rarity:'common',value:5},
+      bubble_guppy:{id:'fish_bubble_guppy',name:'Bubble Guppy',rarity:'common',value:6},
+      moon_anchovy:{id:'fish_moon_anchovy',name:'Moon Anchovy',rarity:'common',value:7},
+      glowfin:{id:'fish_glowfin',name:'Glowfin',rarity:'uncommon',value:12},
+      lantern_koi:{id:'fish_lantern_koi',name:'Lantern Koi',rarity:'rare',value:24},
+      shellback:{id:'fish_shellback',name:'Shellback',rarity:'uncommon',value:13},
+      cave_eel:{id:'fish_cave_eel',name:'Cave Eel',rarity:'rare',value:22},
+      tide_ray:{id:'fish_tide_ray',name:'Tide Ray',rarity:'rare',value:30},
+      moon_jelly:{id:'fish_moon_jelly',name:'Moon Jelly',rarity:'rare',value:28},
+      ancient_coelafish:{id:'fish_ancient_coelafish',name:'Ancient Coelafish',rarity:'legendary',value:90}
+    };
+    return defs[pick]||defs.drift_minnow;
+  }
+
+  function catchFish(){
+    var f=engine.fishing;if(!f)return;
+    var fish=f.fish||chooseFish(f.spot);
+    f.phase='caught';f.progress=100;f.tension=32;
+    engine.caughtFish=engine.caughtFish||[];
+    engine.caughtFish.push({id:fish.id,name:fish.name,rarity:fish.rarity,value:fish.value,spot:f.spot&&f.spot.id});
+    engine.fishJournal[fish.id]=true;
+    pop('Caught '+fish.name+'!',engine.state.x,engine.state.y+100,fish.rarity==='legendary'?'good':'info');
+    burst(engine.state.x,GROUND_H+engine.state.y+50,'water');
+    say('Caught '+fish.name+'! It was added to your fishing satchel.');
+    renderFishingBar();updateHud();
+  }
+
+  function fishEscape(msg){
+    var f=engine.fishing;if(!f)return;
+    say(msg||'The fish got away.');
+    pop('Escaped',engine.state.x,engine.state.y+96,'bad');
+    f.phase='ready';f.progress=0;f.tension=34;renderFishingBar();
+  }
+
+  function fishCancel(){
+    engine.fishing=null;
+    if(engine.skillBar)engine.skillBar.classList.add('hidden');
+    engine.mode='explore';
+    say('You step away from the water.');
+  }
+
+  function fishKeep(){
+    var spot=engine.fishing&&engine.fishing.spot;
+    engine.fishing={spot:spot,phase:'ready',startedAt:Date.now(),biteAt:0,fish:null,progress:0,tension:34};
+    renderFishingBar();
+  }
+
   function checkBossTriggers(){
     if(engine.mode!=='explore')return;
     var guardian=findById(engine.creatures,'root_guardian');
@@ -507,10 +750,34 @@
       beginCompletionSequence();
     }
   }
-  function complete(){var duration=Date.now()-engine.startedAt;var payload={zoneId:engine.zone.id,items:Object.assign({},engine.collected),collectedIds:Object.keys(engine.collectedIds),discoveries:Object.keys(engine.discoveries),puzzlesSolved:Object.keys(engine.puzzlesSolved),keyItems:Object.keys(engine.keyItems),openedBarriers:Object.keys(engine.openedBarriers),defeatedCreatures:Object.keys(engine.defeatedCreatures),stumbles:Object.keys(engine.hazardsHit).reduce(function(a,k){return a+Number(engine.hazardsHit[k]||0)},0),goalReached:!!engine.goalReached,durationMs:duration};stop(true,payload);}
+  function complete(){var duration=Date.now()-engine.startedAt;var payload={zoneId:engine.zone.id,items:Object.assign({},engine.collected),collectedIds:Object.keys(engine.collectedIds),discoveries:Object.keys(engine.discoveries),puzzlesSolved:Object.keys(engine.puzzlesSolved),keyItems:Object.keys(engine.keyItems),openedBarriers:Object.keys(engine.openedBarriers),defeatedCreatures:Object.keys(engine.defeatedCreatures),stumbles:Object.keys(engine.hazardsHit).reduce(function(a,k){return a+Number(engine.hazardsHit[k]||0)},0),goalReached:!!engine.goalReached,caughtFish:(engine.caughtFish||[]),fishJournal:Object.keys(engine.fishJournal||{}),durationMs:duration};stop(true,payload);}
   function stop(completed,payload){if(!engine.running)return;engine.running=false;cancelAnimationFrame(engine.raf);engine.root.classList.add('hidden');engine.skillBar.classList.add('hidden');engine.mode='explore';if(completed&&engine.callbacks.onComplete)engine.callbacks.onComplete(payload||{});if(!completed&&engine.callbacks.onCancel)engine.callbacks.onCancel();}
 
-  function updateHud(){var shards=Number(engine.collected.ember_shard||0),stumbles=Object.keys(engine.hazardsHit).reduce(function(a,k){return a+Number(engine.hazardsHit[k]||0)},0),wins=Object.keys(engine.defeatedCreatures).length;engine.hud.innerText=shards+' sparks • '+Object.keys(engine.keyItems).length+' tools • '+wins+' calmed';var gateOpen=!!engine.openedGates.root_gate;if(engine.mode==='ending')engine.objective.innerText='Ember Hollow Cleared';else if(engine.mode==='battle')engine.objective.innerText='Choose a move';else if(!gateOpen)engine.objective.innerText='Open the Root Gate';else if(!engine.keyItems.ember_lantern)engine.objective.innerText='Find the Ember Lantern';else if(!engine.openedBarriers.dark_root_veil)engine.objective.innerText='Reveal the dark roots';else if(!engine.keyItems.root_claw)engine.objective.innerText='Find the Root Claw';else if(!engine.openedBarriers.claw_root_tangle)engine.objective.innerText='Open the core path';else if(!engine.goalReached)engine.objective.innerText='Reach the Ember Tree';else engine.objective.innerText='Return Home';}
+  function updateHud(){
+    var shards=Number(engine.collected.ember_shard||0),pearls=Number(engine.collected.tide_pearl||0),wins=Object.keys(engine.defeatedCreatures).length,fish=(engine.caughtFish||[]).length;
+    if(engine.zone&&engine.zone.id==='tidepools'){
+      engine.hud.innerText=pearls+' pearls • '+fish+' fish • '+Object.keys(engine.keyItems).length+' gear';
+      if(engine.mode==='fishing')engine.objective.innerText='Land the catch';
+      else if(!engine.keyItems.glow_lure)engine.objective.innerText='Find the Glow Lure';
+      else if(!engine.keyItems.root_worm)engine.objective.innerText='Find cave bait';
+      else if(!engine.goalReached)engine.objective.innerText='Find hidden fishing waters';
+      else engine.objective.innerText='Return Home';
+      return;
+    }
+    var stumbles=Object.keys(engine.hazardsHit).reduce(function(a,k){return a+Number(engine.hazardsHit[k]||0)},0);
+    engine.hud.innerText=shards+' sparks • '+Object.keys(engine.keyItems).length+' tools • '+wins+' calmed';
+    var gateOpen=!!engine.openedGates.root_gate;
+    if(engine.mode==='ending')engine.objective.innerText='Ember Hollow Cleared';
+    else if(engine.mode==='battle')engine.objective.innerText='Choose a move';
+    else if(!gateOpen)engine.objective.innerText='Open the Root Gate';
+    else if(!engine.keyItems.ember_lantern)engine.objective.innerText='Find the Ember Lantern';
+    else if(!engine.openedBarriers.dark_root_veil)engine.objective.innerText='Reveal the dark roots';
+    else if(!engine.keyItems.root_claw)engine.objective.innerText='Find the Root Claw';
+    else if(!engine.openedBarriers.claw_root_tangle)engine.objective.innerText='Open the core path';
+    else if(!engine.goalReached)engine.objective.innerText='Reach the Ember Tree';
+    else engine.objective.innerText='Return Home';
+  }
+
   function maybeAmbient(){var now=Date.now();if(now-engine.lastAmbientAt<9000)return;engine.lastAmbientAt=now;var arr=engine.zone.ambientEvents||[];if(arr.length)say(arr[Math.floor(Math.random()*arr.length)]);}
   function say(text){engine.prompt.innerText=text;engine.prompt.classList.remove('pulse');void engine.prompt.offsetWidth;engine.prompt.classList.add('pulse');}
   function sayOnce(key,text){engine._said=engine._said||{};if(engine._said[key])return;engine._said[key]=true;say(text);}
@@ -574,5 +841,13 @@
     document.head.appendChild(s);
   }
 
-  window.PetWorldAdventureEngine={mount:mount,start:start,stop:stop,isRunning:function(){return engine.running;}};
+
+  function injectFishingStyles(){
+    if(document.getElementById('gfFishingStyles'))return;
+    var s=document.createElement('style');s.id='gfFishingStyles';
+    s.textContent='.gfFishingSpot{position:absolute;z-index:4;border-radius:50%;background:radial-gradient(ellipse at center,rgba(56,189,248,.42),rgba(14,165,233,.20) 48%,rgba(15,23,42,.08) 78%);border:1px solid rgba(125,211,252,.38);box-shadow:0 0 28px rgba(56,189,248,.22),inset 0 0 24px rgba(255,255,255,.08);transform:translateX(-50%);overflow:hidden}.gfFishingSpot:before{content:"";position:absolute;inset:9px;border-radius:50%;background:radial-gradient(circle at 34% 42%,rgba(255,255,255,.42),transparent 10%),radial-gradient(circle at 68% 58%,rgba(255,255,255,.28),transparent 9%);animation:gfFishRipple 2.2s ease-in-out infinite}.gfFishingSpot span{position:absolute;left:18%;right:18%;bottom:45%;height:7px;border-radius:999px;background:rgba(2,6,23,.45);box-shadow:34px 16px 0 rgba(2,6,23,.28),-22px 24px 0 rgba(2,6,23,.22);animation:gfFishShadow 3.4s ease-in-out infinite}.gfFishingSpot b{position:absolute;left:50%;bottom:-19px;transform:translateX(-50%);font-size:9px;color:#bae6fd;background:rgba(15,23,42,.68);border:1px solid rgba(125,211,252,.24);padding:2px 7px;border-radius:999px;white-space:nowrap;opacity:.0;transition:.18s}.gfFishingSpot.near{filter:drop-shadow(0 0 16px rgba(56,189,248,.8));border-color:rgba(186,230,253,.72)}.gfFishingSpot.near b{opacity:1}.gfFishingSpot.glow{background:radial-gradient(ellipse at center,rgba(34,211,238,.58),rgba(59,130,246,.24) 48%,rgba(15,23,42,.08) 78%)}.gfFishingSpot.cave{background:radial-gradient(ellipse at center,rgba(45,212,191,.46),rgba(15,118,110,.22) 48%,rgba(15,23,42,.08) 78%)}.gfFishingSpot.deep{background:radial-gradient(ellipse at center,rgba(96,165,250,.52),rgba(30,64,175,.28) 54%,rgba(15,23,42,.10) 82%)}.gfFishingMini{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#bae6fd;font-weight:1000;font-size:12px;margin-bottom:6px}.gfFishingMini span{color:#e0f2fe;font-size:11px}.gfFishingBody{display:flex;align-items:center;gap:8px}.gfFishingBody button{flex:1;border:1px solid rgba(125,211,252,.24);border-radius:13px;background:rgba(15,23,42,.72);color:#fff;font-weight:1000;padding:9px 10px;cursor:pointer}.gfFishingBody button.fishPrimary{background:linear-gradient(135deg,#0284c7,#22d3ee);color:#031522}.fishMeter{position:relative;flex:2;height:14px;border-radius:999px;overflow:hidden;background:rgba(2,6,23,.78);border:1px solid rgba(125,211,252,.26)}.fishMeter i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#22d3ee,#facc15);border-radius:999px}.fishMeter.waiting i{background:linear-gradient(90deg,#1e293b,#38bdf8)}.fishTension{position:relative;flex:1;height:14px;border-radius:999px;background:linear-gradient(90deg,#22c55e 0 45%,#facc15 45% 76%,#ef4444 76%);border:1px solid rgba(255,255,255,.18)}.fishTension i{position:absolute;top:-5px;width:6px;height:24px;border-radius:999px;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.9)}@keyframes gfFishRipple{0%,100%{transform:scale(.96);opacity:.72}50%{transform:scale(1.04);opacity:1}}@keyframes gfFishShadow{0%,100%{transform:translateX(-9px)}50%{transform:translateX(14px)}}';
+    document.head.appendChild(s);
+  }
+
+  window.PetWorldAdventureEngine={mount:mount,start:start,stop:stop,isRunning:function(){return engine.running;},_fishCast:fishCast,_fishHook:fishHook,_fishReel:fishReel,_fishEase:fishEase,_fishCancel:fishCancel,_fishKeep:fishKeep};
 })();

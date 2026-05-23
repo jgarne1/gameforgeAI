@@ -2520,23 +2520,18 @@
   "tide_pearl": {
     "id": "tide_pearl",
     "name": "Tide Pearl",
-    "category": "material",
-    "rarity": "uncommon",
-    "description": "A cool pearl used in future crafting.",
+    "category": "collectible",
+    "rarity": "common",
+    "description": "A smooth pearl found along glowing tidewater paths.",
     "image": "/assets/items/tide_pearl.png",
     "placeholderImage": "/assets/items/placeholder_item.png",
     "stackable": true,
     "usable": false,
-    "effects": [],
     "tags": [
-      "material",
-      "mergeable"
+      "collectible",
+      "tidepools"
     ],
-    "merge": {
-      "group": "element_pearls",
-      "count": 3,
-      "result": "tide_orb"
-    }
+    "basePrice": 3
   },
   "moon_wisp": {
     "id": "moon_wisp",
@@ -3248,5 +3243,271 @@
       "relic",
       "story"
     ]
+  },
+  "driftwood_rod": {
+    "id": "driftwood_rod",
+    "name": "Driftwood Rod",
+    "category": "fishing_gear",
+    "rarity": "common",
+    "description": "A simple starter rod for calm ponds and shoreline pools.",
+    "image": "/assets/items/driftwood_rod.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "rod"
+    ],
+    "basePrice": 35
+  },
+  "emberglass_rod": {
+    "id": "emberglass_rod",
+    "name": "Emberglass Rod",
+    "category": "fishing_gear",
+    "rarity": "uncommon",
+    "description": "A warmer rod that steadies unusual glowing catches.",
+    "image": "/assets/items/emberglass_rod.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "rod"
+    ],
+    "basePrice": 95
+  },
+  "tidewoven_pole": {
+    "id": "tidewoven_pole",
+    "name": "Tidewoven Pole",
+    "category": "fishing_gear",
+    "rarity": "rare",
+    "description": "A flexible pole built for deep tide pools and heavy fish shadows.",
+    "image": "/assets/items/tidewoven_pole.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "rod"
+    ],
+    "basePrice": 180
+  },
+  "plain_hook": {
+    "id": "plain_hook",
+    "name": "Plain Hook",
+    "category": "fishing_gear",
+    "rarity": "common",
+    "description": "A reliable hook for small shoreline fish.",
+    "image": "/assets/items/plain_hook.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "lure"
+    ],
+    "basePrice": 8
+  },
+  "glow_lure": {
+    "id": "glow_lure",
+    "name": "Glow Lure",
+    "category": "fishing_gear",
+    "rarity": "uncommon",
+    "description": "A soft blue lure that attracts luminous fish in glowing tide pools.",
+    "image": "/assets/items/glow_lure.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": false,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "lure"
+    ],
+    "basePrice": 45
+  },
+  "root_worm": {
+    "id": "root_worm",
+    "name": "Root Worm Bait",
+    "category": "fishing_gear",
+    "rarity": "uncommon",
+    "description": "Cave fish love this bait. It wiggles even when still.",
+    "image": "/assets/items/root_worm.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fishing",
+      "bait"
+    ],
+    "basePrice": 16
+  },
+  "fish_drift_minnow": {
+    "id": "fish_drift_minnow",
+    "name": "Drift Minnow",
+    "category": "fish",
+    "rarity": "common",
+    "description": "A small silver fish that follows gentle currents.",
+    "image": "/assets/items/fish_drift_minnow.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 5
+  },
+  "fish_bubble_guppy": {
+    "id": "fish_bubble_guppy",
+    "name": "Bubble Guppy",
+    "category": "fish",
+    "rarity": "common",
+    "description": "A playful fish that leaves tiny bubbles behind.",
+    "image": "/assets/items/fish_bubble_guppy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 6
+  },
+  "fish_moon_anchovy": {
+    "id": "fish_moon_anchovy",
+    "name": "Moon Anchovy",
+    "category": "fish",
+    "rarity": "common",
+    "description": "A pale fish that shines under dock lanterns.",
+    "image": "/assets/items/fish_moon_anchovy.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 7
+  },
+  "fish_glowfin": {
+    "id": "fish_glowfin",
+    "name": "Glowfin",
+    "category": "fish",
+    "rarity": "uncommon",
+    "description": "A luminous fish found near glowing tide pools.",
+    "image": "/assets/items/fish_glowfin.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 12
+  },
+  "fish_lantern_koi": {
+    "id": "fish_lantern_koi",
+    "name": "Lantern Koi",
+    "category": "fish",
+    "rarity": "rare",
+    "description": "A rare koi whose scales pulse like lantern light.",
+    "image": "/assets/items/fish_lantern_koi.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 24
+  },
+  "fish_shellback": {
+    "id": "fish_shellback",
+    "name": "Shellback",
+    "category": "fish",
+    "rarity": "uncommon",
+    "description": "A stubborn cave fish with a shell-like ridge.",
+    "image": "/assets/items/fish_shellback.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 13
+  },
+  "fish_cave_eel": {
+    "id": "fish_cave_eel",
+    "name": "Cave Eel",
+    "category": "fish",
+    "rarity": "rare",
+    "description": "A quiet eel that lives in dark shell caverns.",
+    "image": "/assets/items/fish_cave_eel.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 22
+  },
+  "fish_tide_ray": {
+    "id": "fish_tide_ray",
+    "name": "Tide Ray",
+    "category": "fish",
+    "rarity": "rare",
+    "description": "A broad deepwater ray that moves with the tide.",
+    "image": "/assets/items/fish_tide_ray.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 30
+  },
+  "fish_moon_jelly": {
+    "id": "fish_moon_jelly",
+    "name": "Moon Jelly",
+    "category": "fish",
+    "rarity": "rare",
+    "description": "A drifting jellyfish-like catch with moonlit tendrils.",
+    "image": "/assets/items/fish_moon_jelly.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 28
+  },
+  "fish_ancient_coelafish": {
+    "id": "fish_ancient_coelafish",
+    "name": "Ancient Coelafish",
+    "category": "fish",
+    "rarity": "legendary",
+    "description": "An ancient fish rumored to appear only in the deepest hidden tide pools.",
+    "image": "/assets/items/fish_ancient_coelafish.png",
+    "placeholderImage": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "tags": [
+      "fish",
+      "fishing",
+      "tidepools"
+    ],
+    "basePrice": 90
   }
 }

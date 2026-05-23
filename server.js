@@ -2571,6 +2571,29 @@ const ADVENTURE_ZONES={
       root_gate:'Root Gate Opened',
       ember_tree:'The Ember Tree'
     }
+  },
+  tidepools:{
+    id:'tidepools',
+    name:'Tide Pools',
+    minLevel:1,
+    energyCost:12,
+    maxShards:12,
+    baseXp:7,
+    baseCoins:10,
+    shardItem:'tide_pearl',
+    discoveryXp:4,
+    discoveryCoins:5,
+    goalXp:7,
+    goalCoins:7,
+    puzzleXp:4,
+    puzzleCoins:4,
+    cleanRunCoins:4,
+    discoveries:{
+      dock_note:'Mira’s Dock Note',
+      aquarium_crate:'Old Aquarium Crate',
+      glow_lure:'Glow Lure Found',
+      root_worm:'Root Worm Bait Found'
+    }
   }
 };
 
@@ -2616,6 +2639,32 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
     zoneProgress.shards=Number(zoneProgress.shards||0)+shardCount;
   }
 
+  let caughtFish=Array.isArray(payload&&payload.caughtFish)?payload.caughtFish.slice(0,20):[];
+  let validFish=new Set(['fish_drift_minnow','fish_bubble_guppy','fish_moon_anchovy','fish_glowfin','fish_lantern_koi','fish_shellback','fish_cave_eel','fish_tide_ray','fish_moon_jelly','fish_ancient_coelafish']);
+  let fishCaught=[];
+  if(caughtFish.length){
+    profile.fishing=profile.fishing||{journal:{},tank:{fish:[],capacity:12},stats:{caught:0,sold:0}};
+    profile.fishing.journal=profile.fishing.journal||{};
+    profile.fishing.stats=profile.fishing.stats||{caught:0,sold:0};
+    caughtFish.forEach(f=>{
+      let id=String((f&&f.id)||'').slice(0,60);
+      if(!validFish.has(id))return;
+      profile.inventory[id]=Number(profile.inventory[id]||0)+1;
+      profile.fishing.journal[id]=profile.fishing.journal[id]||{id,firstCaughtAt:Date.now(),count:0};
+      profile.fishing.journal[id].count=Number(profile.fishing.journal[id].count||0)+1;
+      profile.fishing.stats.caught=Number(profile.fishing.stats.caught||0)+1;
+      fishCaught.push(id);
+    });
+  }
+
+  let keyItems=Array.isArray(payload&&payload.keyItems)?payload.keyItems.slice(0,12):[];
+  let validKeyItems=new Set(['ember_lantern','root_claw','mira_charm','glow_lure','root_worm']);
+  keyItems.forEach(id=>{
+    id=String(id||'').slice(0,60);
+    if(!validKeyItems.has(id))return;
+    if(!profile.inventory[id])profile.inventory[id]=1;
+  });
+
   discoveries.forEach(id=>{
     id=String(id||'').slice(0,40);
     if(!id||!zone.discoveries[id])return;
@@ -2639,6 +2688,11 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
 
   let coins=zone.baseCoins+(shardCount*2)+(newDiscoveries.length*zone.discoveryCoins);
   let xp=zone.baseXp+shardCount+(newDiscoveries.length*zone.discoveryXp);
+
+  if(fishCaught&&fishCaught.length){
+    coins+=fishCaught.length*3;
+    xp+=Math.min(10,fishCaught.length*2);
+  }
 
   if(goalReached){
     coins+=zone.goalCoins;
@@ -2682,7 +2736,8 @@ function resolveAdventureComplete(profile,pet,zoneId,payload={}){
     hazardsHit,
     puzzlesSolved,
     goalReached,
-    message:pet.name+' '+progressText+' with '+shardCount+' ember shard'+(shardCount===1?'':'s')+', '+coins+' coins, and '+xp+' XP.'
+    caughtFish:fishCaught||[],
+    message:pet.name+' '+progressText+' with '+shardCount+' '+(zone.shardItem==='tide_pearl'?'tide pearl':'ember shard')+(shardCount===1?'':'s')+(fishCaught&&fishCaught.length?(', '+fishCaught.length+' fish'):'')+', '+coins+' coins, and '+xp+' XP.'
   };
 
   trackQuest(profile,'explore',1);
@@ -4777,6 +4832,49 @@ app.post('/api/pet/train',(req,res)=>{
     result,
     profile
   });
+});
+
+
+
+app.post('/api/pet/fish/sell',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+
+  let profile=getPetProfile(username);
+  profile.inventory=profile.inventory||{};
+  profile.fishing=profile.fishing||{journal:{},tank:{fish:[],capacity:12},stats:{caught:0,sold:0}};
+  profile.fishing.stats=profile.fishing.stats||{caught:0,sold:0};
+
+  let mode=String(req.body.mode||'common');
+  const fishValues={
+    fish_drift_minnow:5,
+    fish_bubble_guppy:6,
+    fish_moon_anchovy:7,
+    fish_glowfin:12,
+    fish_lantern_koi:24,
+    fish_shellback:13,
+    fish_cave_eel:22,
+    fish_tide_ray:30,
+    fish_moon_jelly:28,
+    fish_ancient_coelafish:90
+  };
+  const common=new Set(['fish_drift_minnow','fish_bubble_guppy','fish_moon_anchovy']);
+  let sold=0,coins=0;
+
+  Object.keys(fishValues).forEach(id=>{
+    if(mode==='common'&&!common.has(id))return;
+    let qty=Math.max(0,Math.floor(Number(profile.inventory[id]||0)));
+    if(qty<=0)return;
+    profile.inventory[id]=0;
+    sold+=qty;
+    coins+=qty*fishValues[id];
+  });
+
+  profile.money=Number(profile.money||0)+coins;
+  profile.fishing.stats.sold=Number(profile.fishing.stats.sold||0)+sold;
+  savePetProfile(username,profile);
+
+  res.json({ok:true,message:sold?('Sold '+sold+' fish for '+coins+' coins.'):'No matching fish to sell.',sold,coins,profile});
 });
 
 

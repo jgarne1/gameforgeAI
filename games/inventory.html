@@ -702,6 +702,31 @@ label{
     justify-items:center;
   }
 }
+
+.fishTools{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+  padding:13px 14px;
+  border:1px solid rgba(56,189,248,.26);
+  border-radius:18px;
+  background:linear-gradient(135deg,rgba(14,165,233,.16),rgba(15,23,42,.72));
+}
+.fishTools b{display:block;color:#fff;font-size:15px}
+.fishTools span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.fishTools button{
+  border:0;
+  border-radius:999px;
+  padding:9px 12px;
+  background:linear-gradient(135deg,#0284c7,#22d3ee);
+  color:#031522;
+  font-weight:1000;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
 </style>
 </head>
 
@@ -744,6 +769,8 @@ label{
       <div class="tabs">
         <button id="top-items" class="tab active" onclick="setTab('items')">Items</button>
         <button id="top-pets" class="tab" onclick="setTab('pets')">Pets</button>
+        <button id="top-adventure" class="tab" onclick="setTab('adventure')">Adventure</button>
+        <button id="top-fishing" class="tab" onclick="setTab('fishing')">Fishing</button>
         <button id="top-collections" class="tab" onclick="setTab('collections')">Collectibles</button>
         <button class="tab" onclick="showToast('Marketplace browsing opens from the main GameForge nav.')">Market</button>
       </div>
@@ -824,6 +851,24 @@ let currentTab='items';
 const INVENTORY_LIMIT=100;
 
 const ITEM_META={
+  tide_pearl:{name:'Tide Pearl',fallback:'◌',type:'Collectible',rarity:'common',desc:'A smooth pearl found along glowing tidewater paths.'},
+  driftwood_rod:{name:'Driftwood Rod',fallback:'🎣',type:'Fishing Rod',rarity:'common',desc:'Starter rod for calm ponds and shoreline pools.'},
+  emberglass_rod:{name:'Emberglass Rod',fallback:'🎣',type:'Fishing Rod',rarity:'uncommon',desc:'Warmer rod that steadies unusual glowing catches.'},
+  tidewoven_pole:{name:'Tidewoven Pole',fallback:'🎣',type:'Fishing Rod',rarity:'rare',desc:'Built for deep tide pools and heavy fish shadows.'},
+  plain_hook:{name:'Plain Hook',fallback:'🪝',type:'Fishing Lure',rarity:'common',desc:'A reliable hook for small shoreline fish.'},
+  glow_lure:{name:'Glow Lure',fallback:'🪝',type:'Fishing Lure',rarity:'uncommon',desc:'Attracts luminous fish in glowing tide pools.'},
+  root_worm:{name:'Root Worm Bait',fallback:'🪱',type:'Fishing Bait',rarity:'uncommon',desc:'Cave fish love this bait.'},
+  fish_drift_minnow:{name:'Drift Minnow',fallback:'🐟',type:'Fish',rarity:'common',desc:'A small silver fish that follows gentle currents.'},
+  fish_bubble_guppy:{name:'Bubble Guppy',fallback:'🐟',type:'Fish',rarity:'common',desc:'A playful fish that leaves tiny bubbles behind.'},
+  fish_moon_anchovy:{name:'Moon Anchovy',fallback:'🐟',type:'Fish',rarity:'common',desc:'A pale fish that shines under dock lanterns.'},
+  fish_glowfin:{name:'Glowfin',fallback:'🐠',type:'Fish',rarity:'uncommon',desc:'A luminous fish found near glowing tide pools.'},
+  fish_lantern_koi:{name:'Lantern Koi',fallback:'🐠',type:'Fish',rarity:'rare',desc:'A rare koi whose scales pulse like lantern light.'},
+  fish_shellback:{name:'Shellback',fallback:'🐡',type:'Fish',rarity:'uncommon',desc:'A stubborn cave fish with a shell-like ridge.'},
+  fish_cave_eel:{name:'Cave Eel',fallback:'🐍',type:'Fish',rarity:'rare',desc:'A quiet eel that lives in dark shell caverns.'},
+  fish_tide_ray:{name:'Tide Ray',fallback:'🐟',type:'Fish',rarity:'rare',desc:'A broad deepwater ray that moves with the tide.'},
+  fish_moon_jelly:{name:'Moon Jelly',fallback:'🪼',type:'Fish',rarity:'rare',desc:'A drifting jellyfish-like catch with moonlit tendrils.'},
+  fish_ancient_coelafish:{name:'Ancient Coelafish',fallback:'🐟',type:'Fish',rarity:'legendary',desc:'An ancient fish rumored to appear in hidden tide pools.'},
+
   berry:{name:'Berry',fallback:'🍓',type:'Food',rarity:'common',desc:'A simple snack used to feed your pet.'},
   soap:{name:'Soap',fallback:'🫧',type:'Care',rarity:'common',desc:'Used to clean your pet.'},
   nap_blanket:{name:'Nap Blanket',fallback:'💤',type:'Rest',rarity:'common',desc:'Helps your pet recover energy.'},
@@ -866,7 +911,9 @@ function meta(id){
     type:local.type||itemType(id,fromShop),
     rarity:local.rarity||itemRarity(id,fromShop),
     desc:fromShop.description||local.desc||'Inventory item.',
-    price:Number(fromShop.price||0),
+    price:Number(fromShop.price||fromShop.basePrice||0),
+    tags:fromShop.tags||local.tags||[],
+    category:fromShop.category||local.category||'',
     image:'/assets/items/'+id+'.png'
   };
 }
@@ -897,7 +944,7 @@ async function loadInventory(){
 }
 
 function setTab(tab){
-  ['items','pets','collections'].forEach(t=>{
+  ['items','pets','adventure','fishing','collections'].forEach(t=>{
     let top=el('top-'+t);
     if(top)top.classList.toggle('active',t===tab);
   });
@@ -905,11 +952,44 @@ function setTab(tab){
   document.querySelectorAll('.left .navBtn').forEach(b=>b.classList.remove('active'));
 
   let navs=document.querySelectorAll('.left .navBtn');
-  let index=tab==='items'?0:tab==='pets'?1:2;
+  let index=tab==='items'?0:tab==='pets'?1:tab==='adventure'?2:tab==='fishing'?3:4;
   if(navs[index])navs[index].classList.add('active');
 
   currentTab=tab;
   draw();
+}
+
+
+function itemGroup(id){
+  let m=meta(id);
+  let type=String(m.type||'').toLowerCase();
+  let tags=(m.tags||[]).map(t=>String(t).toLowerCase());
+  let cat=String(m.category||'').toLowerCase();
+  if(type.includes('fish')||type.includes('fishing')||cat.includes('fish')||cat.includes('fishing')||tags.includes('fish')||tags.includes('fishing')||id.indexOf('fish_')===0||['driftwood_rod','emberglass_rod','tidewoven_pole','plain_hook','glow_lure','root_worm'].includes(id))return 'fishing';
+  if(type.includes('egg')||type.includes('food')||type.includes('care')||type.includes('rest'))return 'items';
+  if(type.includes('key')||type.includes('tool')||type.includes('adventure')||cat.includes('collectible')||['ember_shard','tide_pearl'].includes(id))return 'adventure';
+  if(isCollectionType(type)||type.includes('collectible')||type.includes('relic')||type.includes('badge')||type.includes('trophy'))return 'collections';
+  return 'items';
+}
+
+function fishSellPanel(ids){
+  let fishIds=ids.filter(id=>itemGroup(id)==='fishing'&&(meta(id).type||'').toLowerCase().includes('fish')||id.indexOf('fish_')===0);
+  if(!fishIds.length)return '';
+  let total=fishIds.reduce((sum,id)=>sum+Number((profile.inventory||{})[id]||0),0);
+  return '<div class="fishTools"><div><b>Fishing Satchel</b><span>'+total+' fish carried. Keep rares, sell common catches quickly, and tank storage can grow later.</span></div><button onclick="sellCommonFish()">Sell Common Fish</button></div>';
+}
+
+async function sellCommonFish(){
+  try{
+    let res=await fetch('/api/pet/fish/sell',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,mode:'common'})});
+    let data=await res.json();
+    if(data.error)return showToast(data.error);
+    profile=data.profile;
+    showToast(data.message||'Fish sold.');
+    draw();
+  }catch(err){
+    showToast('Could not sell fish: '+err.message);
+  }
 }
 
 function draw(){
@@ -934,6 +1014,8 @@ function draw(){
 
   if(currentTab==='pets')drawPets();
   else if(currentTab==='collections')drawCollections();
+  else if(currentTab==='fishing')drawFishing();
+  else if(currentTab==='adventure')drawAdventureItems();
   else drawItems();
 }
 
@@ -954,13 +1036,48 @@ function filteredItems(list){
   }).sort((a,b)=>meta(a).name.localeCompare(meta(b).name));
 }
 
+
+function drawFishing(){
+  pageSub.innerText='Rods, lures, bait, and fish catches.';
+  sectionTitle.innerText='Fishing';
+  sectionHint.innerText='Sell common fish quickly; rare catches are best kept for tanks and journals.';
+
+  let inv=profile.inventory||{};
+  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&itemGroup(id)==='fishing');
+  ids=filteredItems(ids);
+
+  if(!ids.length){
+    contentArea.innerHTML='<div class="empty"><h3 style="margin-top:0;color:#fff">No fishing gear or fish yet</h3>Visit Tide Pools, find hidden water, and catch your first fish.</div>';
+    return;
+  }
+
+  contentArea.innerHTML=fishSellPanel(ids)+'<div class="grid">'+ids.map(id=>itemCard(id,Number(inv[id]||0))).join('')+'</div>';
+}
+
+function drawAdventureItems(){
+  pageSub.innerText='Traversal tools, pearls, shards, and region progression items.';
+  sectionTitle.innerText='Adventure';
+  sectionHint.innerText='These items should support exploration, hidden paths, and region identity.';
+
+  let inv=profile.inventory||{};
+  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&itemGroup(id)==='adventure');
+  ids=filteredItems(ids);
+
+  if(!ids.length){
+    contentArea.innerHTML='<div class="empty">No adventure tools or region items yet. Explore Ember Hollow or Tide Pools.</div>';
+    return;
+  }
+
+  contentArea.innerHTML='<div class="grid">'+ids.map(id=>itemCard(id,Number(inv[id]||0))).join('')+'</div>';
+}
+
 function drawItems(){
   pageSub.innerText='Manage items, pets, and collectibles.';
   sectionTitle.innerText='Items';
   sectionHint.innerText='Item images load from /assets/items/<itemId>.png.';
 
   let inv=profile.inventory||{};
-  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&!isCollectionType(meta(id).type));
+  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&itemGroup(id)==='items');
   ids=filteredItems(ids);
 
   if(!ids.length){
@@ -977,7 +1094,7 @@ function drawCollections(){
   sectionHint.innerText='Future collection systems should use server-owned items and transparent PNG art.';
 
   let inv=profile.inventory||{};
-  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&isCollectionType(meta(id).type));
+  let ids=Object.keys(inv).filter(id=>Number(inv[id]||0)>0&&itemGroup(id)==='collections');
   ids=filteredItems(ids);
 
   if(!ids.length){

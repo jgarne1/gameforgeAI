@@ -54,3 +54,23 @@ Do not add random scattered objects that only say text. Every object should do a
 - trigger a story beat
 - introduce a new mechanic
 - create a memorable environmental moment
+
+
+## Tide Pools + Fishing v1
+Tide Pools is the second exploration pillar after Ember Hollow. It should feel calm, atmospheric, and discovery-driven rather than menu-heavy.
+
+Implemented direction:
+- Tide Pools can be launched from the PetWorld Adventure button when the Tide Pools zone is selected.
+- Fishing spots are hidden in-world as water features, not map markers.
+- Fishing uses a quick cast → hook → reel/ease loop.
+- Rods and lures unlock possibilities, not pure stat bonuses.
+- Caught fish are saved through `/api/pet/adventure/complete`.
+- Common fish can be sold quickly through `/api/pet/fish/sell`.
+- Inventory now separates Pets, Adventure, Fishing, and Collectibles.
+
+Fishing design rules:
+- Do not make fishing clunky or menu-heavy.
+- Do not add durability, giant bait trees, or complex stat math.
+- Fishing should create stories: hidden ponds, rare shadows, tide timing, and journal completion.
+- Future tank/aquarium storage should be visual and limited, so rare fish feel meaningful.
+- Future cooking can use fish later, but it should stay lightweight and companion-focused.
