@@ -14,7 +14,7 @@
     player:'/assets/sprites/wanderer_sheet.png'
   };
   var SPRITE={cols:6,rows:16,w:128,h:128,naturalW:768,naturalH:2048,loaded:false};
-  var engine={mounted:false,running:false,root:null,viewport:null,world:null,playerEl:null,shadowEl:null,fx:null,ui:null,transitionEl:null,scale:1,offX:0,offY:0,camera:{mode:'fit',x:0,y:0,tx:0,ty:0,smooth:0.16,ready:false},
+  var engine={mounted:false,running:false,root:null,viewport:null,world:null,playerEl:null,shadowEl:null,fx:null,ui:null,transitionEl:null,scale:1,offX:0,offY:0,
     keys:{}, mouseDown:false, state:null, target:null, mode:'explore', fish:null, activeHotspot:null, raf:0, last:0, onClose:null,debug:false,transitioning:false,ambient:[],bgCache:{},bgPromises:{},sceneConfigCache:{},pendingBackground:'',
     username:'guest',fishStats:{total:0,last:'None',level:1,xp:0,nextXp:100,discovered:0,catalog:[],logbook:{}},sceneId:'shadow_woods_dock',requestedSpawnId:'',sceneRegistry:null,mp:{ws:null,id:'',peers:{},lastSent:0,connected:false,room:'',notice:''}};
 
@@ -110,7 +110,7 @@
         if(engine.mode==='fish')endFishing();
         else { engine.mode='explore'; engine.fish=null; if(engine.ui)engine.ui.classList.add('hidden'); }
         function finishApply(){
-          if(engine.regionConfig.size){MAP_W=Number(engine.regionConfig.size.w||MAP_W);MAP_H=Number(engine.regionConfig.size.h||MAP_H);}engine.camera.ready=false;
+          if(engine.regionConfig.size){MAP_W=Number(engine.regionConfig.size.w||MAP_W);MAP_H=Number(engine.regionConfig.size.h||MAP_H);}
           if(engine.world){
             engine.world.style.width=MAP_W+'px';engine.world.style.height=MAP_H+'px';
             var ps=Number(engine.regionConfig.playerScale||engine.regionConfig.avatarScale||0.70);
@@ -279,43 +279,10 @@
   }
   function stop(){sendWorldLeave();engine.running=false;cancelAnimationFrame(engine.raf);if(engine.root)engine.root.classList.add('hidden');if(engine.onClose)engine.onClose();}
 
-  function sceneUsesScrollingCamera(){
-    var cfg=engine.regionConfig||{};
-    var cam=cfg.camera||{};
-    return cfg.scrolling===true||cfg.scrollWorld===true||cfg.cameraMode==='scroll'||cam.mode==='scroll';
-  }
-  function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
   function layout(){
     if(!engine.viewport)return;
     var w=engine.viewport.clientWidth,h=engine.viewport.clientHeight;
-    if(sceneUsesScrollingCamera()){
-      var cfg=engine.regionConfig||{}, cam=cfg.camera||{};
-      var desired=Number(cam.scale||cfg.cameraScale||0);
-      if(!desired){desired=Math.min(1,Math.max(0.72,Math.min(w/960,h/540)));}
-      engine.scale=desired;
-      engine.camera.mode='scroll';
-      engine.camera.smooth=Number(cam.smooth||0.14);
-      updateCamera(true);
-    }else{
-      engine.scale=Math.min(w/MAP_W,h/MAP_H);engine.offX=(w-MAP_W*engine.scale)/2;engine.offY=(h-MAP_H*engine.scale)/2;
-      engine.camera.mode='fit';engine.camera.ready=true;
-      engine.world.style.transform='translate('+engine.offX+'px,'+engine.offY+'px) scale('+engine.scale+')';
-    }
-  }
-  function updateCamera(snap){
-    if(!engine.viewport||!engine.world)return;
-    if(!sceneUsesScrollingCamera()){return;}
-    var w=engine.viewport.clientWidth,h=engine.viewport.clientHeight;
-    var s=engine.state||{x:MAP_W/2,y:MAP_H/2};
-    var scaledW=MAP_W*engine.scale,scaledH=MAP_H*engine.scale;
-    var tx=(w*0.5)-(s.x*engine.scale);
-    var ty=(h*0.54)-(s.y*engine.scale);
-    if(scaledW<=w)tx=(w-scaledW)/2;else tx=clamp(tx,w-scaledW,0);
-    if(scaledH<=h)ty=(h-scaledH)/2;else ty=clamp(ty,h-scaledH,0);
-    engine.camera.tx=tx;engine.camera.ty=ty;
-    if(snap||!engine.camera.ready){engine.camera.x=tx;engine.camera.y=ty;engine.camera.ready=true;}
-    else{var follow=Math.min(1,Math.max(0.03,engine.camera.smooth||0.14));engine.camera.x+=(tx-engine.camera.x)*follow;engine.camera.y+=(ty-engine.camera.y)*follow;}
-    engine.offX=engine.camera.x;engine.offY=engine.camera.y;
+    engine.scale=Math.min(w/MAP_W,h/MAP_H);engine.offX=(w-MAP_W*engine.scale)/2;engine.offY=(h-MAP_H*engine.scale)/2;
     engine.world.style.transform='translate('+engine.offX+'px,'+engine.offY+'px) scale('+engine.scale+')';
   }
   function screenToWorld(ev){var r=engine.viewport.getBoundingClientRect();return {x:(ev.clientX-r.left-engine.offX)/engine.scale,y:(ev.clientY-r.top-engine.offY)/engine.scale};}
@@ -500,7 +467,6 @@
     f.preview={x:FISH_TARGET.x,y:FISH_TARGET.y};
   }
   function render(dt){
-    updateCamera(false);
     var s=engine.state;engine.playerEl.style.left=s.x+'px';engine.playerEl.style.top=s.y+'px';engine.shadowEl.style.left=s.x+'px';engine.shadowEl.style.top=(s.y+2)+'px';
     var sprite=engine.playerEl.querySelector('.swSprite');if(!SPRITE.loaded){return;}var anim=getAnim();if(s.animKey!==anim.key){s.animKey=anim.key;s.animTime=0;}s.animTime+=dt*(anim.fps||6);var idx=Math.floor(s.animTime)%anim.frames.length;var fr=anim.frames[idx];
     // IMPORTANT: the sprite element is exactly one 128x128 cell. We move the sheet behind it.
@@ -734,10 +700,10 @@
       }
       var hasSprite=!!e.sprite || cls==='waterfallCascade' || cls==='waterEdgeFoam' || cls==='waterfallMist' || cls==='waterSurfaceShimmer' || cls==='slowRiverCurrent';
       if(hasSprite){
-        var defaults={waterfallCascade:'/assets/effects/waterfall_cascade_sheet.png',waterEdgeFoam:'/assets/effects/waterfall_splash_sheet.png',waterfallMist:'/assets/effects/waterfall_mist_sheet.png',waterSurfaceShimmer:'/assets/effects/living_water_sheet.png',slowRiverCurrent:'/assets/effects/river_current_sheet.png'};
+        var defaults={waterfallCascade:'/assets/effects/waterfall_cascade_v3_sheet.png',waterEdgeFoam:'/assets/effects/waterfall_foam_v3_sheet.png',waterfallMist:'/assets/effects/waterfall_mist_v3_sheet.png',waterSurfaceShimmer:'/assets/effects/living_water_v3_sheet.png',slowRiverCurrent:'/assets/effects/river_current_v3_sheet.png'};
         var sprite=e.sprite||defaults[cls]||'/assets/effects/living_water_sheet.png';
-        var defaultFps=(cls==='waterfallCascade')?7:(cls==='waterEdgeFoam')?5:(cls==='waterfallMist')?4:3;
-        var frames=Math.max(1,Number(e.frames||6));
+        var defaultFps=(cls==='waterfallCascade')?6:(cls==='waterEdgeFoam')?4:(cls==='waterfallMist')?3:2;
+        var frames=Math.max(1,Number(e.frames||8));
         var fps=Math.max(1,Number(e.fps||defaultFps));
         var inner=document.createElement('div');
         inner.className='swAmbientSprite '+cls+'Sprite';
@@ -753,7 +719,7 @@
           d.appendChild(glow);
         }
       }
-      var count=(cls==='leaves')?Math.max(8,Math.round(Number(e.density||0.45)*42)):(cls==='fireflies')?Math.max(8,Math.round(Number(e.density||0.45)*32)):(cls==='dustMotes')?Math.max(10,Math.round(Number(e.density||0.45)*38)):(cls==='waterfallMist')?Math.max(6,Math.round(Number(e.density||0.55)*16)):(cls==='waterfallCascade')?Math.max(5,Math.round(Number(e.density||0.65)*10)):(cls==='waterSurfaceShimmer')?Math.max(4,Math.round(Number(e.density||0.45)*10)):(cls==='slowRiverCurrent')?Math.max(3,Math.round(Number(e.density||0.45)*8)):(cls==='waterEdgeFoam')?Math.max(3,Math.round(Number(e.density||0.45)*7)):(cls==='pondRipple'||cls==='splashRing')?Math.max(2,Math.round(Number(e.density||0.45)*8)):0;
+      var count=(cls==='leaves')?Math.max(8,Math.round(Number(e.density||0.45)*42)):(cls==='fireflies')?Math.max(8,Math.round(Number(e.density||0.45)*32)):(cls==='dustMotes')?Math.max(10,Math.round(Number(e.density||0.45)*38)):(cls==='waterfallMist')?Math.max(1,Math.round(Number(e.density||0.35)*3)):(cls==='waterfallCascade')?0:(cls==='waterSurfaceShimmer')?0:(cls==='slowRiverCurrent')?0:(cls==='waterEdgeFoam')?0:(cls==='pondRipple'||cls==='splashRing')?Math.max(1,Math.round(Number(e.density||0.35)*3)):0;
       for(var i=0;i<count;i++){var part=document.createElement('i');part.style.left=(Math.random()*100)+'%';part.style.top=(Math.random()*100)+'%';part.style.animationDelay=(-Math.random()*8)+'s';part.style.animationDuration=(6+Math.random()*10)/Math.max(.15,Number(e.speed||1))+'s';d.appendChild(part);}
       layer.appendChild(d);
     });
