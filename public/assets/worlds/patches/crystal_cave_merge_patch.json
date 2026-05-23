@@ -1,0 +1,35 @@
+{
+  "sceneEntry": {
+    "id": "shadow_woods_crystal_cave",
+    "name": "Shadow Woods - Crystal Cave",
+    "url": "/assets/worlds/shadow_woods_crystal_cave.json"
+  },
+  "riverBendExit": {
+    "id": "enter_crystal_cave",
+    "type": "exit",
+    "label": "Enter Crystal Cave",
+    "x": 1250,
+    "y": 780,
+    "r": 75,
+    "targetScene": "shadow_woods_crystal_cave",
+    "targetSpawn": "from_river_bend",
+    "face": "right",
+    "transition": "fade"
+  },
+  "riverBendSpawn": {
+    "id": "from_cave",
+    "label": "From Crystal Cave",
+    "x": 1190,
+    "y": 760,
+    "face": "left"
+  },
+  "preloadScenesToEnsure": {
+    "shadow_woods_river_bend": [
+      "shadow_woods_crystal_cave"
+    ],
+    "shadow_woods_crystal_cave": [
+      "shadow_woods_river_bend"
+    ]
+  },
+  "notes": "If your River Bend JSON has newer local edits, merge this patch instead of overwriting shadow_woods_river_bend.json. The included full River Bend file is for direct drop-in based on the previous River Bend scene."
+}
