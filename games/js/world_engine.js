@@ -15,7 +15,7 @@
   };
   var SPRITE={cols:6,rows:16,w:128,h:128,naturalW:768,naturalH:2048,loaded:false};
   var engine={mounted:false,running:false,root:null,viewport:null,world:null,playerEl:null,shadowEl:null,fx:null,ui:null,transitionEl:null,scale:1,offX:0,offY:0,
-    keys:{}, mouseDown:false, state:null, target:null, mode:'explore', fish:null, activeHotspot:null, raf:0, last:0, onClose:null,debug:false,transitioning:false,ambient:[],
+    keys:{}, mouseDown:false, state:null, target:null, mode:'explore', fish:null, activeHotspot:null, raf:0, last:0, onClose:null,debug:false,transitioning:false,ambient:[],bgCache:{},bgPromises:{},sceneConfigCache:{},pendingBackground:'',
     sceneId:'shadow_woods_dock',requestedSpawnId:'',sceneRegistry:null};
 
   var WALK_AREAS=[
@@ -95,20 +95,24 @@
       function applyConfig(cfg){
         engine.regionConfig=cfg||{};
         engine.sceneId=engine.regionConfig.id||engine.sceneId||'shadow_woods_dock';
-        if(engine.regionConfig.background){setSceneBackground(engine.regionConfig.background);}
-        if(engine.regionConfig.size){MAP_W=Number(engine.regionConfig.size.w||MAP_W);MAP_H=Number(engine.regionConfig.size.h||MAP_H);}
-        if(engine.world){engine.world.style.width=MAP_W+'px';engine.world.style.height=MAP_H+'px';}
-        if(Array.isArray(engine.regionConfig.walkable)&&engine.regionConfig.walkable.length){WALK_AREAS=engine.regionConfig.walkable.filter(function(s){return (s.type||'poly')==='poly'&&Array.isArray(s.points);}).map(function(s){return s.points;});}
-        BLOCK_AREAS=[];SOFT_BLOCKS=[];
-        if(Array.isArray(engine.regionConfig.blockers)){engine.regionConfig.blockers.forEach(function(s){if((s.type||'poly')==='poly'&&Array.isArray(s.points))BLOCK_AREAS.push(s.points);else if(s.type==='circle')SOFT_BLOCKS.push({x:Number(s.x),y:Number(s.y),r:Number(s.r||30)});else if(s.type==='rect')BLOCK_AREAS.push([[s.x,s.y],[s.x+s.w,s.y],[s.x+s.w,s.y+s.h],[s.x,s.y+s.h]]);});}
-        HOTSPOTS=[];
-        if(Array.isArray(engine.regionConfig.hotspots)&&engine.regionConfig.hotspots.length){HOTSPOTS=engine.regionConfig.hotspots.map(normalizeHotspot);}
-        if(Array.isArray(engine.regionConfig.interactables)&&engine.regionConfig.interactables.length){HOTSPOTS=HOTSPOTS.concat(engine.regionConfig.interactables.map(normalizeHotspot));}
-        var fish=HOTSPOTS.find(function(h){return isFishingHotspot(h);});
-        if(fish)applyFishingHotspot(fish);
-        renderAmbientEffects();
-        buildDebugLayer();
-        done();
+        function finishApply(){
+          if(engine.regionConfig.size){MAP_W=Number(engine.regionConfig.size.w||MAP_W);MAP_H=Number(engine.regionConfig.size.h||MAP_H);}
+          if(engine.world){engine.world.style.width=MAP_W+'px';engine.world.style.height=MAP_H+'px';}
+          if(Array.isArray(engine.regionConfig.walkable)&&engine.regionConfig.walkable.length){WALK_AREAS=engine.regionConfig.walkable.filter(function(s){return (s.type||'poly')==='poly'&&Array.isArray(s.points);}).map(function(s){return s.points;});}
+          BLOCK_AREAS=[];SOFT_BLOCKS=[];
+          if(Array.isArray(engine.regionConfig.blockers)){engine.regionConfig.blockers.forEach(function(s){if((s.type||'poly')==='poly'&&Array.isArray(s.points))BLOCK_AREAS.push(s.points);else if(s.type==='circle')SOFT_BLOCKS.push({x:Number(s.x),y:Number(s.y),r:Number(s.r||30)});else if(s.type==='rect')BLOCK_AREAS.push([[s.x,s.y],[s.x+s.w,s.y],[s.x+s.w,s.y+s.h],[s.x,s.y+s.h]]);});}
+          HOTSPOTS=[];
+          if(Array.isArray(engine.regionConfig.hotspots)&&engine.regionConfig.hotspots.length){HOTSPOTS=engine.regionConfig.hotspots.map(normalizeHotspot);}
+          if(Array.isArray(engine.regionConfig.interactables)&&engine.regionConfig.interactables.length){HOTSPOTS=HOTSPOTS.concat(engine.regionConfig.interactables.map(normalizeHotspot));}
+          var fish=HOTSPOTS.find(function(h){return isFishingHotspot(h);});
+          if(fish)applyFishingHotspot(fish);
+          renderAmbientEffects();
+          buildDebugLayer();
+          preloadConnectedScenes();
+          done();
+        }
+        if(engine.regionConfig.background){setSceneBackground(engine.regionConfig.background,finishApply);}
+        else finishApply();
       }
       try{
         var draft=localStorage.getItem('gfWorldSceneDraft:'+((meta&&meta.id)||engine.sceneId));
@@ -120,6 +124,55 @@
   function loadSceneRegistry(done){
     if(engine.sceneRegistry){done();return;}
     fetch(SCENE_REGISTRY_URL+'?v='+(Date.now()),{cache:'no-store'}).then(function(r){return r.ok?r.json():{scenes:[]};}).then(function(j){engine.sceneRegistry=j||{scenes:[]};done();}).catch(function(){engine.sceneRegistry={scenes:[{id:'shadow_woods_dock',url:WORLD_JSON,name:'Shadow Woods Dock'}]};done();});
+  }
+  function getSceneUrl(sceneId){
+    var meta=getSceneMeta(sceneId);
+    return meta&&meta.url;
+  }
+  function fetchSceneConfig(sceneId,done){
+    if(!sceneId){done(null);return;}
+    if(engine.sceneConfigCache&&engine.sceneConfigCache[sceneId]){done(engine.sceneConfigCache[sceneId]);return;}
+    var url=getSceneUrl(sceneId);
+    if(!url){done(null);return;}
+    fetch(url,{cache:'force-cache'}).then(function(r){return r.ok?r.json():null;}).then(function(cfg){
+      if(cfg&&engine.sceneConfigCache)engine.sceneConfigCache[sceneId]=cfg;
+      done(cfg||null);
+    }).catch(function(){done(null);});
+  }
+  function preloadBackground(url){
+    if(!url)return Promise.resolve(null);
+    if(engine.bgCache&&engine.bgCache[url]&&engine.bgCache[url].complete)return Promise.resolve(engine.bgCache[url]);
+    if(engine.bgPromises&&engine.bgPromises[url])return engine.bgPromises[url];
+    var img=(engine.bgCache&&engine.bgCache[url])||new Image();
+    if(engine.bgCache)engine.bgCache[url]=img;
+    var promise=new Promise(function(resolve){
+      img.onload=function(){
+        var finish=function(){resolve(img);};
+        if(img.decode){img.decode().then(finish).catch(finish);}
+        else finish();
+      };
+      img.onerror=function(){resolve(null);};
+      if(!img.src)img.src=url;
+      else if(img.complete)resolve(img);
+    });
+    if(engine.bgPromises)engine.bgPromises[url]=promise;
+    return promise;
+  }
+  function preloadSceneBackground(sceneId){
+    return new Promise(function(resolve){
+      fetchSceneConfig(sceneId,function(cfg){
+        if(!cfg||!cfg.background){resolve(null);return;}
+        preloadBackground(cfg.background).then(resolve);
+      });
+    });
+  }
+  function preloadConnectedScenes(){
+    if(!engine.regionConfig)return;
+    var targets={};
+    HOTSPOTS.forEach(function(h){
+      if((h.type==='exit'||h.kind==='exit')&&h.targetScene&&h.targetScene!==engine.sceneId)targets[h.targetScene]=true;
+    });
+    Object.keys(targets).forEach(function(sceneId){preloadSceneBackground(sceneId);});
   }
   function getSceneMeta(id){
     var list=(engine.sceneRegistry&&engine.sceneRegistry.scenes)||[];
@@ -140,6 +193,7 @@
     engine.keys={};engine.mouseDown=false;engine.target=null;
     if(engine.mode==='fish')endFishing();
     showSceneTransition(true,'Entering...');
+    preloadSceneBackground(sceneId);
     setTimeout(function(){
       engine.sceneId=sceneId;
       engine.requestedSpawnId=spawnId||'';
@@ -164,15 +218,19 @@
     var t=document.getElementById('swSceneTransitionText');if(t&&label)t.textContent=label;
     el.classList.toggle('show',!!on);
   }
-  function setSceneBackground(url){
-    if(!url)return;
+  function setSceneBackground(url,done){
+    done=done||function(){};
+    if(!url){done();return;}
     ASSETS.bg=url;
-    var bg=engine.world&&engine.world.querySelector('#swBg');if(!bg)return;
-    if(bg.getAttribute('src')===url)return;
-    var img=new Image();
-    img.onload=function(){bg.src=url;};
-    img.onerror=function(){bg.src=url;toast('Scene background could not preload; showing requested image anyway.');};
-    img.src=url;
+    var bg=engine.world&&engine.world.querySelector('#swBg');if(!bg){done();return;}
+    if(bg.getAttribute('src')===url){done();return;}
+    engine.pendingBackground=url;
+    preloadBackground(url).then(function(img){
+      if(engine.pendingBackground!==url){done();return;}
+      bg.src=url;
+      requestAnimationFrame(function(){requestAnimationFrame(done);});
+      if(!img){toast('Scene background could not preload; showing requested image anyway.');}
+    });
   }
   function normalizeHotspot(h){
     var type=h.kind||h.type||'hotspot';
