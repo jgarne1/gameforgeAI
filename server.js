@@ -345,17 +345,20 @@ function saveSocial(s){writeJSON(socialFile,normalizeSocial(s))}
 
 
 const FISH_CATALOG={
-  fish_drift_minnow:{name:'Drift Minnow',rarity:'common',value:4},
-  fish_bubble_guppy:{name:'Bubble Guppy',rarity:'common',value:5},
-  fish_moon_anchovy:{name:'Moon Anchovy',rarity:'common',value:6},
-  fish_glowfin:{name:'Glowfin',rarity:'uncommon',value:14},
-  fish_lantern_koi:{name:'Lantern Koi',rarity:'rare',value:35},
-  fish_shellback:{name:'Shellback',rarity:'uncommon',value:16},
-  fish_cave_eel:{name:'Cave Eel',rarity:'rare',value:42},
-  fish_tide_ray:{name:'Tide Ray',rarity:'rare',value:45},
-  fish_moon_jelly:{name:'Moon Jelly',rarity:'rare',value:50},
-  fish_ancient_coelafish:{name:'Ancient Coelafish',rarity:'legendary',value:180}
+  fish_drift_minnow:{name:'Drift Minnow',rarity:'common',value:4,xp:4,min:3.5,max:8.5,lore:'A tiny silver fish that gathers near old docks.'},
+  fish_bubble_guppy:{name:'Bubble Guppy',rarity:'common',value:5,xp:4,min:2.5,max:6.5,lore:'It blows pearl-like bubbles when startled.'},
+  fish_moon_anchovy:{name:'Moon Anchovy',rarity:'common',value:6,xp:5,min:4,max:9,lore:'Its scales catch moonlight like wet glass.'},
+  fish_glowfin:{name:'Glowfin',rarity:'uncommon',value:14,xp:9,min:7,max:14,lore:'A soft blue glow pulses from its fins.'},
+  fish_shellback:{name:'Shellback',rarity:'uncommon',value:16,xp:10,min:8,max:16,lore:'A stubborn pond fish with an armor-hard back.'},
+  fish_lantern_koi:{name:'Lantern Koi',rarity:'rare',value:35,xp:18,min:12,max:24,lore:'It appears like a floating lantern beneath dark water.'},
+  fish_cave_eel:{name:'Cave Eel',rarity:'rare',value:42,xp:20,min:16,max:32,lore:'A sharp-turning eel that hates being reeled in.'},
+  fish_tide_ray:{name:'Tide Ray',rarity:'rare',value:45,xp:22,min:18,max:36,lore:'A flat, graceful fish from deeper water.'},
+  fish_moon_jelly:{name:'Moon Jelly',rarity:'epic',value:80,xp:35,min:10,max:22,lore:'Barely a fish, but treasured by collectors.'},
+  fish_ancient_coelafish:{name:'Ancient Coelafish',rarity:'legendary',value:180,xp:90,min:26,max:48,lore:'A living fossil said to remember the first rain.'}
 };
+function fishingLevelFromXp(xp){xp=Number(xp||0);return Math.max(1,Math.floor(Math.sqrt(xp/55))+1);}
+function fishingNextXp(level){level=Math.max(1,Number(level||1));return Math.round(level*level*55);}
+function fishingCatalogArray(){return Object.keys(FISH_CATALOG).map(id=>({id,...FISH_CATALOG[id]}));}
 function fishDef(id){return FISH_CATALOG[id]||FISH_CATALOG.fish_drift_minnow;}
 function isFishItem(id){return String(id||'').indexOf('fish_')===0;}
 
@@ -5006,6 +5009,10 @@ app.post('/api/pet/sell',(req,res)=>{
 
 
 
+app.get('/api/pet/fish/catalog',(req,res)=>{
+  res.json({ok:true,catalog:fishingCatalogArray()});
+});
+
 app.post('/api/pet/fish/catch',(req,res)=>{
   let username=requireUser(req,res);
   if(!username)return;
@@ -5017,12 +5024,32 @@ app.post('/api/pet/fish/catch',(req,res)=>{
   profile.inventory=profile.inventory||{};
   profile.inventory[itemId]=Number(profile.inventory[itemId]||0)+1;
   profile.fishing=profile.fishing||{};
+  let def=fishDef(itemId);
+  let size=Number(req.body.size||0);
+  let quality=String(req.body.quality||'Good');
+  let xpGain=Math.max(1,Number(req.body.xp||def.xp||4));
   profile.fishing.totalCaught=Number(profile.fishing.totalCaught||0)+1;
-  profile.fishing.lastCatch={itemId,name:(fishDef(itemId).name||itemId),rarity:(fishDef(itemId).rarity||'common'),sceneId:String(req.body.sceneId||''),caughtAt:Date.now()};
+  profile.fishing.xp=Number(profile.fishing.xp||0)+xpGain;
+  profile.fishing.level=fishingLevelFromXp(profile.fishing.xp);
+  profile.fishing.nextXp=fishingNextXp(profile.fishing.level);
+  profile.fishing.catalog=fishingCatalogArray();
+  profile.fishing.logbook=profile.fishing.logbook||{};
+  let rec=profile.fishing.logbook[itemId]||{count:0};
+  rec.count=Number(rec.count||0)+1;
+  rec.name=def.name||String(req.body.name||itemId);
+  rec.rarity=def.rarity||String(req.body.rarity||'common');
+  rec.largest=Math.max(Number(rec.largest||0),size||0);
+  rec.lastSize=size||rec.lastSize||0;
+  rec.lastQuality=quality;
+  rec.lore=def.lore||String(req.body.lore||'');
+  rec.lastCaughtAt=Date.now();
+  rec.locations=Array.from(new Set([...(rec.locations||[]),String(req.body.sceneId||'shadow_woods_dock')].filter(Boolean)));
+  profile.fishing.logbook[itemId]=rec;
+  profile.fishing.lastCatch={itemId,name:(def.name||itemId),rarity:(def.rarity||'common'),quality,size,xp:xpGain,sceneId:String(req.body.sceneId||''),caughtAt:Date.now()};
 
   trackQuest(profile,'fishCaught',1);
   savePetProfile(username,profile);
-  res.json({ok:true,message:'Caught '+fishDef(itemId).name+'!',catch:profile.fishing.lastCatch,profile});
+  res.json({ok:true,message:'Caught '+def.name+'!',catch:profile.fishing.lastCatch,profile});
 });
 
 app.post('/api/pet/fish/sell',(req,res)=>{
