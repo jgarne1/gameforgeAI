@@ -39,7 +39,8 @@ function ensurePersistentStorage(){
     'pet_species.json',
     'social.json',
     'announcements.json',
-    'site_settings.json'
+    'site_settings.json',
+    'estate_neighborhoods.json'
   ];
 
   seedFiles.forEach(file=>{
@@ -63,6 +64,7 @@ const marketFile=path.join(DATA,'market.json');
 const socialFile=path.join(DATA,'social.json');
 const announcementFile=path.join(DATA,'announcements.json');
 const siteSettingsFile=path.join(DATA,'site_settings.json');
+const estateNeighborhoodsFile=path.join(DATA,'estate_neighborhoods.json');
 // Static game-design catalogs should come from the deployed repo, not the persistent disk.
 // Player/runtime data stays on DATA; item/shop definitions update when GitHub deploys.
 const itemsFile=path.join(REPO_DATA,'items.json');
@@ -5441,6 +5443,53 @@ function pushPresence(){
 
 
 // -----------------------------
+
+// Estate / neighborhood MVP support.
+// This intentionally stores only plot ownership/state for now. House interiors and furniture
+// placement will be separate data so neighborhood scenes can stay lightweight and scalable.
+function defaultEstateNeighborhoods(){
+  return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',theme:'cozy_forge_meadow',maxResidents:20,plots:Array.from({length:20}).map((_,i)=>({plotId:'plot_'+String(i+1).padStart(2,'0'),ownerId:'',ownerName:'',houseType:'starter_cottage',privacy:'public',status:i<7?'for_sale':'future'}))}]};
+}
+function estateData(){return readJSON(estateNeighborhoodsFile,defaultEstateNeighborhoods());}
+function saveEstateData(data){writeJSON(estateNeighborhoodsFile,data||defaultEstateNeighborhoods());}
+function publicNeighborhood(n){
+  return {
+    id:n.id,
+    name:n.name,
+    theme:n.theme||'cozy_forge_meadow',
+    maxResidents:n.maxResidents||20,
+    plots:(n.plots||[]).map(p=>({plotId:p.plotId,status:p.ownerId?'owned':(p.status||'empty'),ownerId:p.ownerId||'',ownerName:p.ownerName||'',houseType:p.houseType||'starter_cottage',privacy:p.privacy||'public'}))
+  };
+}
+app.get('/api/estate/neighborhoods/:id',(req,res)=>{
+  const data=estateData();
+  const n=(data.neighborhoods||[]).find(x=>String(x.id)===String(req.params.id));
+  if(!n)return res.status(404).json({ok:false,error:'Neighborhood not found.'});
+  res.json(publicNeighborhood(n));
+});
+app.post('/api/estate/neighborhoods/:id/claim',(req,res)=>{
+  const username=String(req.body.username||'').trim().slice(0,32);
+  const plotId=String(req.body.plotId||'').trim();
+  if(!username)return res.status(400).json({ok:false,error:'Username is required.'});
+  if(!plotId)return res.status(400).json({ok:false,error:'Plot id is required.'});
+  const data=estateData();
+  const n=(data.neighborhoods||[]).find(x=>String(x.id)===String(req.params.id));
+  if(!n)return res.status(404).json({ok:false,error:'Neighborhood not found.'});
+  const existing=(n.plots||[]).find(p=>String(p.ownerName||'').toLowerCase()===username.toLowerCase()&&p.ownerId);
+  if(existing&&existing.plotId!==plotId)return res.status(409).json({ok:false,error:'You already own a plot in this neighborhood.'});
+  const p=(n.plots||[]).find(x=>String(x.plotId)===plotId);
+  if(!p)return res.status(404).json({ok:false,error:'Plot not found.'});
+  if(p.ownerId&&String(p.ownerName||'').toLowerCase()!==username.toLowerCase())return res.status(409).json({ok:false,error:'That plot is already owned.'});
+  if(!['for_sale','owned'].includes(p.status||'for_sale')&&!p.ownerId)return res.status(409).json({ok:false,error:'That plot is not available yet.'});
+  p.ownerId=username.toLowerCase().replace(/[^a-z0-9_\-]/g,'_')||username;
+  p.ownerName=username;
+  p.status='owned';
+  p.houseType=p.houseType||'starter_cottage';
+  p.privacy=p.privacy||'public';
+  saveEstateData(data);
+  res.json({ok:true,neighborhood:publicNeighborhood(n)});
+});
+
 // Multiplayer overworld support
 // -----------------------------
 const worldPlayers=new Map(); // socket -> public world state

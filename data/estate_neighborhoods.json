@@ -1,0 +1,32 @@
+{
+  "neighborhoods": [
+    {
+      "id": "whisperwind_01",
+      "name": "Whisperwind Village 01",
+      "theme": "cozy_forge_meadow",
+      "maxResidents": 20,
+      "plots": [
+        { "plotId": "plot_01", "ownerId": "jeremy", "ownerName": "Jeremy", "houseType": "starter_cottage", "privacy": "public", "status": "owned" },
+        { "plotId": "plot_02", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "for_sale" },
+        { "plotId": "plot_03", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "for_sale" },
+        { "plotId": "plot_04", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "empty" },
+        { "plotId": "plot_05", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "for_sale" },
+        { "plotId": "plot_06", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "for_sale" },
+        { "plotId": "plot_07", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "for_sale" },
+        { "plotId": "plot_08", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "empty" },
+        { "plotId": "plot_09", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "empty" },
+        { "plotId": "plot_10", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "empty" },
+        { "plotId": "plot_11", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "empty" },
+        { "plotId": "plot_12", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "empty" },
+        { "plotId": "plot_13", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" },
+        { "plotId": "plot_14", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" },
+        { "plotId": "plot_15", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" },
+        { "plotId": "plot_16", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" },
+        { "plotId": "plot_17", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" },
+        { "plotId": "plot_18", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" },
+        { "plotId": "plot_19", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" },
+        { "plotId": "plot_20", "ownerId": "", "ownerName": "", "houseType": "starter_cottage", "privacy": "public", "status": "future" }
+      ]
+    }
+  ]
+}

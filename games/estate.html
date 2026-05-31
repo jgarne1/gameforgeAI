@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="boot" id="boot"><div><h1>Estate District</h1><p>Opening the neighborhood gate...</p></div></div>
-<script src="/games/js/world_engine.js"></script>
+<script src="/games/js/rpg_scene_engine.js"></script>
 <script>
 var GAME_CONTEXT=null;
 function playerName(){
@@ -25,10 +25,10 @@ function playerName(){
 function startEstate(){
   var boot=document.getElementById('boot');
   if(boot)boot.style.display='none';
-  if(!window.PetWorldWorldEngine){alert('RPG scene engine did not load.');return;}
+  if(!window.GameForgeRpgEngine){alert('RPG scene engine did not load.');return;}
   var params=new URLSearchParams(location.search);
   var scene=params.get('scene')||'whisperwind_village';
-  PetWorldWorldEngine.start({username:playerName(),sceneId:scene,onClose:function(){
+  GameForgeRpgEngine.start({username:playerName(),sceneId:scene,onClose:function(){
     if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'estate'},'*');}
   }});
 }
