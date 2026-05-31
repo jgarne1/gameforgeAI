@@ -161,3 +161,20 @@ Use this tool for RPG town visual tuning:
 Catalog file: `public/assets/worlds/world_asset_catalog.json`.
 
 Large terrain fills are saved as `tilePaints`, which the RPG scene engine renders before water, paths, objects, NPCs, and players.
+
+
+## Asset Brush Catalog Pass
+
+The world editor now uses a curated/cropped asset catalog instead of forcing designers to paint raw sprite-sheet chunks. The source art packs are stored under `public/assets/vendor/`, while editor-ready crops are stored under `public/assets/worldkit/catalog/` and indexed by `public/assets/worlds/world_asset_catalog.json`.
+
+When improving Whisperwind, use the Asset Brush Editor first:
+
+- Open `/games/world_asset_editor.html`.
+- Choose a category such as Curated Starter, Mana Seed Terrain, Pixel Lands Buildings, or Village Props Objects.
+- Use the visible thumbnail preview before painting.
+- Use Fill Rectangle or Fill Whole Map for grass/terrain instead of placing tiles one by one.
+- Use Scatter Brush for trees, flowers, rocks, and clutter.
+- Select placed objects to tune position, size, collision, and depth.
+- Download the scene JSON and replace the matching file under `public/assets/worlds/`.
+
+The asset packs are scaffolding. GameForge-specific landmarks such as Echo Hall, Forge Gate, Starter Cottage, Chronicle Board, and Fountain Plaza should be custom assets over time.
