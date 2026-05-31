@@ -71,3 +71,41 @@ Rows:
 10. fish_cast_right
 11. fish_reel_right
 12. fish_catch_right
+
+## GameForge RPG Scene Engine Direction
+
+GameForge is moving toward a website + RPG-world hybrid. The website shell should remain responsible for login, sidebar navigation, account state, chat, admin tools, and iframe hosting. The shared RPG scene engine in `games/js/world_engine.js` should become the reusable walk-around layer for Shadow Woods, fishing scenes, neighborhoods, homes, shops, guild halls, and future Echo Game social spaces.
+
+Current first-pass RPG scene features:
+
+- Data-driven scene loading from `public/assets/worlds/world_scenes.json`.
+- Walkable polygons, blockers, hotspots, exits, ambient effects, and scene transitions.
+- Lightweight WebSocket multiplayer presence per scene using `worldJoin`, `worldMove`, `worldLeave`, and `worldEvent` messages in `server.js`.
+- Remote players with name tags above their heads.
+- Appearance payload support reserved for upcoming clothing/avatar customization.
+- Estate test scene: `whisperwind_village`, launched by `games/estate.html`.
+
+Design rules for future AI/code work:
+
+1. Do not create separate one-off engines for fishing, housing, towns, shops, or guild halls unless there is a strong reason. Extend the shared RPG scene layer instead.
+2. Neighborhoods should behave like RPG town scenes: plots, doors, signs, shops, and homes are scene data and interactables.
+3. Housing should use real placement rules: floor grid, wall slots, tabletop anchors, and yard zones. Avoid arbitrary free placement that will become hard to validate.
+4. Multiplayer visibility should be considered part of the MVP for shared neighborhood/town scenes.
+5. Testing Mode and Story Mode are stored in `data/site_settings.json` through Admin → Site Settings. Testing Mode keeps features easy to test; Story Mode will later allow unlock/teaser rules without removing the feature from code.
+6. Admin-only tools should stay permission-gated. The main UI should only show Admin navigation when the logged-in user is an admin.
+
+### Estate / Neighborhood MVP Notes
+
+`Whisperwind Village` is the first test neighborhood. It is intentionally small and uses the existing shared scene engine so movement, transitions, player presence, and future housing ownership can be tested early.
+
+Future neighborhood plot states should include:
+
+- `empty`
+- `for_sale`
+- `reserved`
+- `owned`
+- `public`
+- `friends_only`
+- `private`
+
+A plot should visually change based on state, and the door/sign hotspot should determine whether the visiting player can enter, request access, purchase, or simply read that it is unavailable.

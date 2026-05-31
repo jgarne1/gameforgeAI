@@ -24,6 +24,11 @@
       "id": "shadow_woods_crystal_cave",
       "name": "Shadow Woods - Crystal Cave",
       "url": "/assets/worlds/shadow_woods_crystal_cave.json"
+    },
+    {
+      "id": "whisperwind_village",
+      "name": "Whisperwind Village",
+      "url": "/assets/worlds/whisperwind_village.json"
     }
   ]
 }

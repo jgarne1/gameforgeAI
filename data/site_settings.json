@@ -1,5 +1,6 @@
 {
   "mode": "testing",
   "updatedAt": 0,
-  "updatedBy": "system"
+  "updatedBy": "system",
+  "notes": "Testing mode keeps new areas visible while the story unlock layer is being built."
 }

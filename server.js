@@ -167,32 +167,33 @@ function saveAnnouncement(data){
   return normalized;
 }
 
-
 function defaultSiteSettings(){
   return {
     mode:'testing',
     updatedAt:Date.now(),
-    updatedBy:'system'
+    updatedBy:'system',
+    notes:'Testing mode keeps destination links visible while story gating is being built. Story mode is reserved for future unlock rules.'
   };
 }
-
 function normalizeSiteSettings(raw){
   raw=raw&&typeof raw==='object'?raw:{};
   let mode=String(raw.mode||'testing').trim().toLowerCase();
-  if(mode!=='story')mode='testing';
+  if(!['testing','story'].includes(mode))mode='testing';
+  let fallback=defaultSiteSettings();
   return {
     mode,
-    updatedAt:Number(raw.updatedAt||Date.now()),
-    updatedBy:String(raw.updatedBy||'system').trim().slice(0,40)||'system'
+    updatedAt:Number(raw.updatedAt||fallback.updatedAt),
+    updatedBy:String(raw.updatedBy||fallback.updatedBy).trim().slice(0,40)||fallback.updatedBy,
+    notes:String(raw.notes||fallback.notes).trim().slice(0,400)||fallback.notes
   };
 }
-
 function siteSettings(){
   return normalizeSiteSettings(readJSON(siteSettingsFile,defaultSiteSettings()));
 }
-
-function saveSiteSettings(data){
+function saveSiteSettings(data,updatedBy){
   let normalized=normalizeSiteSettings(data);
+  normalized.updatedAt=Date.now();
+  normalized.updatedBy=String(updatedBy||normalized.updatedBy||'system').trim().slice(0,40)||'system';
   writeJSON(siteSettingsFile,normalized);
   return normalized;
 }
@@ -344,7 +345,7 @@ function scanGameFilesForAdmin(){
     let existing=byFile[file]||null;
     let id=existing?existing.id:safeGameId(file);
     let itemId=gameUnlockItemId(id);
-    let internal=CORE_FREE_GAME_IDS.has(id)||['launcher.html','market.html','inventory.html','petworld.html','world.html','petbattle.html','battlehall.html'].includes(file);
+    let internal=CORE_FREE_GAME_IDS.has(id)||['launcher.html','market.html','inventory.html','petworld.html','world.html','estate.html','petbattle.html','battlehall.html'].includes(file);
     let missing=[];
     if(!existing)missing.push('games.json');
     if(existing&&existing.showInLauncher===undefined&&!internal)missing.push('showInLauncher flag');
@@ -514,7 +515,7 @@ function purchasableItemCatalog(){
 }
 
 
-const CORE_FREE_GAME_IDS=new Set(['petbattle','battlehall','petworld','world','market','inventory','launcher']);
+const CORE_FREE_GAME_IDS=new Set(['petbattle','battlehall','petworld','world','estate','market','inventory','launcher']);
 const MASTER_GAME_ITEM_IDS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
 
 function itemUnlocksGame(item,itemId,gameId){
@@ -2775,28 +2776,6 @@ app.get('/api/announcement',(req,res)=>{
   res.json({ok:true,announcement:announcement()});
 });
 
-
-app.get('/api/site-settings',(req,res)=>{
-  res.json({ok:true,settings:siteSettings()});
-});
-
-app.get('/api/admin/site-settings',(req,res)=>{
-  let adminUser=requireAdmin(req,res,'dashboard');
-  if(!adminUser)return;
-  res.json({ok:true,settings:siteSettings()});
-});
-
-app.post('/api/admin/site-settings',(req,res)=>{
-  let adminUser=requireAdmin(req,res,'admin_manage');
-  if(!adminUser)return;
-  let settings=saveSiteSettings({
-    mode:req.body&&req.body.mode,
-    updatedAt:Date.now(),
-    updatedBy:adminUser
-  });
-  res.json({ok:true,message:'Site mode updated.',settings});
-});
-
 app.get('/api/admin/announcement',(req,res)=>{
   let adminUser=requireAdmin(req,res,'dashboard');
   if(!adminUser)return;
@@ -4178,6 +4157,22 @@ function adminAgePet(pet,stage,level){
   return pet;
 }
 
+
+app.get('/api/site-settings',(req,res)=>{
+  res.json({ok:true,settings:siteSettings()});
+});
+
+app.post('/api/admin/site-settings',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'full_admin');
+  if(!adminUser)return;
+  try{
+    let settings=saveSiteSettings(req.body||{},adminUser);
+    res.json({ok:true,settings});
+  }catch(err){
+    res.status(500).json({ok:false,error:err.message||'Could not save site settings'});
+  }
+});
+
 app.get('/api/admin/dashboard',(req,res)=>{
   let adminUser=requireAdmin(req,res);
   if(!adminUser)return;
@@ -4203,7 +4198,8 @@ app.get('/api/admin/dashboard',(req,res)=>{
     rooms:openRooms,
     recentListings:listings.slice(0,20),
     items:adminItemCatalog(),
-    petSpecies:adminPetSpeciesCatalog()
+    petSpecies:adminPetSpeciesCatalog(),
+    siteSettings:siteSettings()
   });
 });
 
@@ -5460,6 +5456,7 @@ function worldPlayerPublic(ws){
     face:st.face||'down',
     moving:!!st.moving,
     mode:st.mode||'explore',
+    appearance:st.appearance||{},
     ts:Date.now()
   };
 }
@@ -5531,7 +5528,7 @@ wss.on('connection',ws=>{
       ws.location='World';
       ws.worldId=ws.worldId||('wp_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4));
       ws.worldRoom=worldRoomName(sceneId);
-      worldPlayers.set(ws,{username,sceneId,x:Number(m.x||0),y:Number(m.y||0),face:m.face||'down',moving:!!m.moving,mode:m.mode||'explore',updatedAt:Date.now()});
+      worldPlayers.set(ws,{username,sceneId,x:Number(m.x||0),y:Number(m.y||0),face:m.face||'down',moving:!!m.moving,mode:m.mode||'explore',appearance:m.appearance||{},updatedAt:Date.now()});
       ws.send(JSON.stringify({type:'worldWelcome',id:ws.worldId,sceneId,peers:worldPeersFor(sceneId,ws)}));
       broadcastWorld(sceneId,{type:'worldJoin',player:worldPlayerPublic(ws)},ws);
       pushPresence();
@@ -5541,7 +5538,7 @@ wss.on('connection',ws=>{
     if(m.type==='worldMove'){
       const st=worldPlayers.get(ws);
       if(!st)return;
-      st.x=Number(m.x||st.x||0);st.y=Number(m.y||st.y||0);st.face=String(m.face||st.face||'down');st.moving=!!m.moving;st.mode=String(m.mode||st.mode||'explore');st.updatedAt=Date.now();
+      st.x=Number(m.x||st.x||0);st.y=Number(m.y||st.y||0);st.face=String(m.face||st.face||'down');st.moving=!!m.moving;st.mode=String(m.mode||st.mode||'explore');st.appearance=m.appearance||st.appearance||{};st.updatedAt=Date.now();
       broadcastWorld(st.sceneId,{type:'worldMove',player:worldPlayerPublic(ws)},ws);
       return;
     }

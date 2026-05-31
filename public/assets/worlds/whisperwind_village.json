@@ -1,0 +1,51 @@
+{
+  "id": "whisperwind_village",
+  "name": "Whisperwind Village",
+  "description": "A first shared neighborhood test scene for GameForge Estates.",
+  "background": "/assets/backgrounds/sunny_meadows_map.png",
+  "size": { "w": 1600, "h": 1600 },
+  "playerScale": 0.52,
+  "timeOfDay": "day",
+  "tintOpacity": 0.25,
+  "spawn": { "x": 760, "y": 1005, "face": "up" },
+  "spawnPoints": [
+    { "id": "gate", "x": 760, "y": 1005, "face": "up" },
+    { "id": "from_house", "x": 655, "y": 760, "face": "down" }
+  ],
+  "walkable": [
+    { "type": "poly", "points": [[530,150],[760,130],[1025,165],[1240,285],[1320,520],[1250,770],[1080,980],[980,1230],[780,1510],[560,1450],[495,1180],[360,980],[250,780],[310,525],[430,330]] },
+    { "type": "poly", "points": [[395,700],[560,595],[780,540],[1030,610],[1160,760],[1035,890],[790,925],[565,875]] },
+    { "type": "poly", "points": [[580,900],[760,880],[900,970],[875,1160],[735,1290],[610,1195]] }
+  ],
+  "blockers": [
+    { "type": "circle", "x": 560, "y": 425, "r": 150 },
+    { "type": "circle", "x": 1240, "y": 395, "r": 120 },
+    { "type": "circle", "x": 375, "y": 1165, "r": 135 },
+    { "type": "circle", "x": 1110, "y": 1135, "r": 165 }
+  ],
+  "sceneObjects": [
+    { "id": "plot_01_home", "type": "building", "status": "owned", "x": 520, "y": 590, "w": 190, "h": 150, "label": "Starter Cottage" },
+    { "id": "plot_02_sale", "type": "building", "status": "for_sale", "x": 875, "y": 570, "w": 190, "h": 150, "label": "For Sale" },
+    { "id": "plot_03_empty", "type": "building", "status": "empty", "x": 1070, "y": 760, "w": 160, "h": 120, "label": "Empty Plot" },
+    { "id": "plot_04_empty", "type": "building", "status": "empty", "x": 435, "y": 810, "w": 160, "h": 120, "label": "Empty Plot" },
+    { "id": "village_lamp_1", "type": "lamp", "x": 805, "y": 815 },
+    { "id": "village_lamp_2", "type": "lamp", "x": 665, "y": 760 },
+    { "id": "garden_planter_1", "type": "planter", "x": 705, "y": 690 },
+    { "id": "garden_planter_2", "type": "planter", "x": 895, "y": 735 },
+    { "id": "welcome_sign", "type": "sign", "x": 760, "y": 920, "r": 70, "label": "Village Notice Board", "text": "Whisperwind Village is the first Estate district. Homes, plots, visitors, and furniture placement will grow from this shared RPG scene." }
+  ],
+  "hotspots": [
+    { "id": "starter_cottage_door", "type": "exit", "x": 615, "y": 720, "r": 65, "label": "Enter Starter Cottage", "targetScene": "riverbend_cottage_interior", "targetSpawn": "door_south" },
+    { "id": "sale_plot", "type": "textBox", "x": 965, "y": 715, "r": 75, "label": "For Sale Plot", "text": "This lot will become purchasable once the housing ownership system is added." },
+    { "id": "village_gate", "type": "exit", "x": 760, "y": 1015, "r": 90, "label": "Return to Shadow Woods", "targetScene": "shadow_woods_dock", "targetSpawn": "from_estate" },
+    { "id": "notice_board", "type": "textBox", "x": 760, "y": 920, "r": 70, "label": "Village Notice Board", "text": "Multiplayer presence is enabled here. Have another user enter Whisperwind Village to see them walking nearby." }
+  ],
+  "ambientEffects": [
+    { "id": "meadow_motes", "type": "fireflies", "x": 350, "y": 260, "w": 870, "h": 620, "density": 0.25, "opacity": 0.5 },
+    { "id": "pond_shimmer", "type": "waterSurfaceShimmer", "x": 835, "y": 520, "w": 350, "h": 240, "density": 0.3, "opacity": 0.3 }
+  ],
+  "terrainAreas": [
+    { "id": "main_path", "type": "terrain", "terrain": "dirt", "points": [[690,940],[830,940],[855,1210],[735,1345],[620,1185]] },
+    { "id": "town_square", "type": "terrain", "terrain": "grass", "points": [[520,675],[760,600],[1040,690],[970,875],[720,915],[520,835]] }
+  ]
+}

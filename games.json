@@ -8,6 +8,22 @@
     "seats": 1
   },
   {
+    "id": "estate",
+    "name": "Whisperwind Village",
+    "file": "estate.html?scene=whisperwind_village",
+    "minPlayers": 1,
+    "maxPlayers": 50,
+    "seats": 1
+  },
+  {
+    "id": "estate_house",
+    "name": "Starter Cottage",
+    "file": "estate.html?scene=riverbend_cottage_interior",
+    "minPlayers": 1,
+    "maxPlayers": 20,
+    "seats": 1
+  },
+  {
     "id": "battleship",
     "name": "Battleship",
     "file": "battleship.html",
