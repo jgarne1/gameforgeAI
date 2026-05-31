@@ -144,8 +144,20 @@ Visual target: cozy Final Fantasy VI/SNES town readability with modern painted/p
 
 Whisperwind now uses organized vendor asset packs as atlas sources rather than a single painted background. See `public/assets/vendor/ASSET_USAGE_MANIFEST.md`.
 
-## Whisperwind 2.0 Visual Rebuild Notes
+## Whisperwind Asset Brush Editor
 
-Whisperwind now uses a district-first JRPG town approach: fountain plaza, Echo Hall, market/store, cottages, and docks. Empty cottages are claimable test homes; the goal is to sell/claim homes rather than abstract vacant plots.
+A new editor-first workflow is available at `/games/world_asset_editor.html` and from Admin → World Scene Tools → Open Asset Brush Editor.
 
-Important custom assets live in `public/assets/worldkit/whisperwind/`. Future AI work should avoid rendering raw vendor atlas chunks as major landmarks.
+Use this tool for RPG town visual tuning:
+
+- curated asset catalog from uploaded packs
+- selected-object thumbnail preview
+- object paint brush
+- scatter brush
+- rectangle fill for grass/terrain
+- select/drag/tune objects
+- export scene JSON for GitHub
+
+Catalog file: `public/assets/worlds/world_asset_catalog.json`.
+
+Large terrain fills are saved as `tilePaints`, which the RPG scene engine renders before water, paths, objects, NPCs, and players.

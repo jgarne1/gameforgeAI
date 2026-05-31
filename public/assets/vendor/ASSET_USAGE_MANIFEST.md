@@ -96,3 +96,17 @@ These are scaffolding assets, not the final GameForge identity. Custom assets sh
 5. Fountain Plaza
 
 Supporting assets like rocks, flowers, barrels, and fences can remain vendor-based longer.
+
+## Editor Catalog Usage
+
+The curated paint/edit list for usable world assets lives at:
+
+`public/assets/worlds/world_asset_catalog.json`
+
+The catalog does not duplicate image files. It maps named GameForge editor objects to source rectangles inside the vendor sheets, such as:
+
+- Mana Seed seasonal forest: grass, flowers, cliffs, water, nature patches
+- Pixel Lands Village: buildings, trees, signs, town props
+- Village Props: dock/platform pieces and extra props
+
+The in-browser tool `/games/world_asset_editor.html` reads this catalog and provides brush placement, scatter placement, terrain fill, live selected-asset preview, object dragging, and JSON export.

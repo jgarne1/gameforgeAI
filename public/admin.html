@@ -789,10 +789,10 @@ textarea.adminTextArea{
             <h3>World Scene Tools</h3>
             <p class="muted">Edit fishing/world scenes, walkable areas, hotspots, exits, and future neighborhood scenes.</p>
           </div>
-          <button class="primary" onclick="openWorldSceneEditor()">Open World Scene Editor</button>
+          <div class="row"><button class="primary" onclick="openWorldSceneEditor()">Open World Scene Editor</button><button class="ghost" onclick="openWorldAssetEditor()">Open Asset Brush Editor</button></div>
         </div>
         <div class="list">
-          <div class="empty">The shared RPG layer uses <code>/games/world_editor.html</code>. Neighborhoods and homes should reuse this direction instead of becoming separate one-off engines.</div>
+          <div class="empty">Use <code>/games/world_asset_editor.html</code> for object painting, previews, terrain fill, and pack-based visual tuning. Use <code>/games/world_editor.html</code> for fishing hotspots, exits, walkable areas, and legacy scene geometry.</div>
         </div>
       </div>
     </div>
@@ -1035,6 +1035,9 @@ function openMainApp(){window.open('/','_blank')}
 
 function openWorldSceneEditor(){
   window.open('/games/world_editor.html','_blank','noopener');
+}
+function openWorldAssetEditor(){
+  window.open('/games/world_asset_editor.html','_blank','noopener');
 }
 function applySiteSettings(settings){
   settings=settings||{};

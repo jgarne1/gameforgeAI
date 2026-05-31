@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "notes": "Curated editor catalog for Whisperwind/World scenes. Assets are referenced from uploaded vendor packs and are intended as editable scaffolding. Landmarks can be replaced with GameForge originals later without changing scene structure.",
+  "categories": [
+    {
+      "id": "terrain",
+      "name": "Terrain Paint",
+      "paintMode": "tile",
+      "assets": [
+        {"id":"mana_grass_01","name":"Mana Grass 01","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[0,0,16,16],"tileSize":64},
+        {"id":"mana_grass_02","name":"Mana Grass 02","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[16,0,16,16],"tileSize":64},
+        {"id":"mana_flowery_grass","name":"Flowery Grass","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[0,112,16,16],"tileSize":64},
+        {"id":"pixel_ground_01","name":"Pixel Lands Grass","sheet":"/assets/vendor/pixel_lands_village/ground_demo.png","src":[0,0,16,16],"tileSize":64},
+        {"id":"pixel_dirt_01","name":"Pixel Lands Dirt","sheet":"/assets/vendor/pixel_lands_village/ground_demo.png","src":[64,0,16,16],"tileSize":64},
+        {"id":"village_path_01","name":"Village Path Tile","sheet":"/assets/vendor/village_props/tx_tileset_ground.png","src":[0,0,32,32],"tileSize":96}
+      ]
+    },
+    {
+      "id": "buildings",
+      "name": "Buildings",
+      "paintMode": "object",
+      "assets": [
+        {"id":"pl_cottage_small","name":"Small Cottage","sheet":"/assets/vendor/pixel_lands_village/premade_buildings_demo.png","src":[16,32,112,122],"w":300,"h":300,"solid":{"x":-112,"y":-205,"w":224,"h":205},"depthOffset":0},
+        {"id":"pl_shop_tall","name":"Tall Shop / Home","sheet":"/assets/vendor/pixel_lands_village/premade_buildings_demo.png","src":[128,32,205,127],"w":470,"h":300,"solid":{"x":-180,"y":-218,"w":360,"h":210},"depthOffset":0},
+        {"id":"pl_hall_wide","name":"Wide Hall Building","sheet":"/assets/vendor/pixel_lands_village/premade_buildings_demo.png","src":[16,192,292,128],"w":620,"h":300,"solid":{"x":-250,"y":-220,"w":500,"h":210},"depthOffset":0}
+      ]
+    },
+    {
+      "id": "nature",
+      "name": "Nature",
+      "paintMode": "object",
+      "assets": [
+        {"id":"pl_tree_round","name":"Round Village Tree","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[256,0,88,96],"w":190,"h":220,"solid":{"x":-25,"y":-45,"w":50,"h":40},"depthOffset":10},
+        {"id":"pl_tree_small","name":"Small Village Tree","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[352,0,48,56],"w":120,"h":140,"solid":{"x":-18,"y":-35,"w":36,"h":34},"depthOffset":10},
+        {"id":"mana_pink_tree","name":"Mana Pink Tree","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[160,0,80,88],"w":190,"h":210,"solid":{"x":-22,"y":-42,"w":44,"h":36},"depthOffset":20},
+        {"id":"mana_cliff_patch","name":"Mana Cliff Patch","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[80,16,80,64],"w":240,"h":192,"solid":{"x":-110,"y":-135,"w":220,"h":120},"depthOffset":5},
+        {"id":"mana_flowers_mix","name":"Mana Flower Cluster","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[0,128,48,32],"w":100,"h":70,"solid":null,"depthOffset":-20}
+      ]
+    },
+    {
+      "id": "town_props",
+      "name": "Town Props",
+      "paintMode": "object",
+      "assets": [
+        {"id":"pl_town_board","name":"Town Board","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[288,32,88,83],"w":210,"h":195,"solid":{"x":-85,"y":-92,"w":170,"h":80},"interact":{"kind":"board","label":"Read Board","radius":145,"message":"Town board placeholder."}},
+        {"id":"pl_bench","name":"Bench","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[64,32,64,32],"w":145,"h":75,"solid":{"x":-70,"y":-48,"w":140,"h":35}},
+        {"id":"pl_fence_short","name":"Fence Short","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[160,0,64,64],"w":150,"h":150,"solid":{"x":-72,"y":-92,"w":144,"h":54}},
+        {"id":"pl_sign_arrow","name":"Arrow Sign","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[0,0,32,24],"w":90,"h":70,"solid":{"x":-28,"y":-42,"w":56,"h":30}},
+        {"id":"pl_flowers_box","name":"Flower Box","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[96,64,80,32],"w":160,"h":70,"solid":null},
+        {"id":"pl_lamp_dark","name":"Lamp Post","sheet":"/assets/vendor/pixel_lands_village/objects_demo.png","src":[32,16,32,64],"w":80,"h":150,"solid":{"x":-16,"y":-34,"w":32,"h":30}}
+      ]
+    },
+    {
+      "id": "docks_water",
+      "name": "Docks & Water",
+      "paintMode": "object",
+      "assets": [
+        {"id":"vp_dock_straight","name":"Dock Straight","sheet":"/assets/vendor/village_props/tx_village_props.png","src":[0,704,256,128],"w":512,"h":256,"solid":{"x":-235,"y":-122,"w":470,"h":110}},
+        {"id":"mana_water_patch","name":"Mana Water Patch","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[96,176,64,64],"w":256,"h":256,"solid":null},
+        {"id":"mana_water_edge","name":"Mana Water Edge","sheet":"/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png","src":[64,160,64,32],"w":256,"h":128,"solid":null}
+      ]
+    }
+  ]
+}
