@@ -11,12 +11,12 @@
   var SCENE_REGISTRY_URL='/assets/worlds/world_scenes.json';
   var ASSETS={
     bg:'/assets/backgrounds/shadow_woods_fishing_scene.png',
-    player:'/assets/sprites/wanderer_sheet.png'
+    player:'/assets/sprites/forger_base_sheet.png'
   };
   var SPRITE={cols:6,rows:16,w:128,h:128,naturalW:768,naturalH:2048,loaded:false};
   var engine={mounted:false,running:false,root:null,viewport:null,world:null,playerEl:null,shadowEl:null,fx:null,ui:null,transitionEl:null,scale:1,offX:0,offY:0,
     keys:{}, mouseDown:false, state:null, target:null, mode:'explore', fish:null, activeHotspot:null, raf:0, last:0, onClose:null,debug:false,transitioning:false,ambient:[],bgCache:{},bgPromises:{},sceneConfigCache:{},pendingBackground:'',
-    username:'guest',fishStats:{total:0,last:'None',level:1,xp:0,nextXp:100,discovered:0,catalog:[],logbook:{}},sceneId:'shadow_woods_dock',requestedSpawnId:'',sceneRegistry:null,mp:{ws:null,id:'',peers:{},lastSent:0,connected:false,room:'',notice:''}};
+    username:'guest',fishStats:{total:0,last:'None',level:1,xp:0,nextXp:100,discovered:0,catalog:[],logbook:{}},sceneId:'shadow_woods_dock',requestedSpawnId:'',sceneRegistry:null,mp:{ws:null,id:'',peers:{},lastSent:0,connected:false,room:'',notice:''},camera:{mode:'fit',x:0,y:0,scale:1}};
 
   var WALK_AREAS=[
     [[0,760],[90,700],[170,620],[235,520],[310,420],[410,315],[530,215],[625,245],[535,370],[455,485],[400,620],[320,760],[245,930],[200,1080],[0,1080]],
@@ -96,7 +96,7 @@
     if(!canStand(engine.state.x,engine.state.y)){
       var safe=findNearestSafe(engine.state.x,engine.state.y);engine.state.x=safe.x;engine.state.y=safe.y;
     }
-    layout();connectWorldSocket();toast('Walk to the dock. Press E or Space near the dock to begin fishing. Press B for boundaries, R to reset.');engine.last=performance.now();engine.raf=requestAnimationFrame(loop);
+    layout();connectWorldSocket();toast(sceneStartHint());engine.last=performance.now();engine.raf=requestAnimationFrame(loop);
   }
   function loadWorldConfig(done){
     loadSceneRegistry(function(){
@@ -112,6 +112,7 @@
         function finishApply(){
           if(engine.regionConfig.size){MAP_W=Number(engine.regionConfig.size.w||MAP_W);MAP_H=Number(engine.regionConfig.size.h||MAP_H);}
           var titleEl=document.querySelector('.swTitle');if(titleEl&&engine.regionConfig.name)titleEl.innerHTML=engine.regionConfig.name+' <span>•</span> shared scene';
+          if(engine.regionConfig.playerSprite){ASSETS.player=engine.regionConfig.playerSprite;preloadSpriteSheet();}
           if(engine.world){
             engine.world.style.width=MAP_W+'px';engine.world.style.height=MAP_H+'px';
             var ps=Number(engine.regionConfig.playerScale||engine.regionConfig.avatarScale||0.70);
@@ -278,12 +279,43 @@
     for(var r=0;r<360;r+=24){for(var a=0;a<Math.PI*2;a+=Math.PI/8){var px=x+Math.cos(a)*r,py=y+Math.sin(a)*r;if(canStand(px,py))return {x:px,y:py};}}
     return {x:560,y:705};
   }
+  function sceneStartHint(){var cfg=engine.regionConfig||{};return cfg.startHint||'Walk with WASD / arrows. Press E near glowing prompts. B toggles boundaries.';}
   function stop(){sendWorldLeave();engine.running=false;cancelAnimationFrame(engine.raf);if(engine.root)engine.root.classList.add('hidden');if(engine.onClose)engine.onClose();}
 
   function layout(){
     if(!engine.viewport)return;
     var w=engine.viewport.clientWidth,h=engine.viewport.clientHeight;
-    engine.scale=Math.min(w/MAP_W,h/MAP_H);engine.offX=(w-MAP_W*engine.scale)/2;engine.offY=(h-MAP_H*engine.scale)/2;
+    var cfg=engine.regionConfig||{};
+    var follow=(cfg.cameraMode==='follow'||(cfg.camera&&cfg.camera.mode==='follow'));
+    if(follow){
+      var minViewW=Number((cfg.camera&&cfg.camera.minViewW)||960), minViewH=Number((cfg.camera&&cfg.camera.minViewH)||600);
+      var minScale=Number((cfg.camera&&cfg.camera.minScale)||0.70), maxScale=Number((cfg.camera&&cfg.camera.maxScale)||1.18);
+      var sc=Math.min(w/minViewW,h/minViewH);
+      engine.scale=Math.max(minScale,Math.min(maxScale,sc));
+      updateCamera(true);
+    }else{
+      engine.scale=Math.min(w/MAP_W,h/MAP_H);engine.offX=(w-MAP_W*engine.scale)/2;engine.offY=(h-MAP_H*engine.scale)/2;
+      engine.world.style.transform='translate('+engine.offX+'px,'+engine.offY+'px) scale('+engine.scale+')';
+    }
+  }
+  function updateCamera(force){
+    if(!engine.viewport||!engine.world)return;
+    var cfg=engine.regionConfig||{};
+    var follow=(cfg.cameraMode==='follow'||(cfg.camera&&cfg.camera.mode==='follow'));
+    if(!follow)return;
+    var w=engine.viewport.clientWidth,h=engine.viewport.clientHeight;
+    var focus=engine.state||{x:MAP_W/2,y:MAP_H/2};
+    var desiredX=w/2-focus.x*engine.scale;
+    var desiredY=h/2-focus.y*engine.scale;
+    var minX=Math.min(0,w-MAP_W*engine.scale), minY=Math.min(0,h-MAP_H*engine.scale);
+    var maxX=0,maxY=0;
+    if(MAP_W*engine.scale<w){minX=maxX=(w-MAP_W*engine.scale)/2;}
+    if(MAP_H*engine.scale<h){minY=maxY=(h-MAP_H*engine.scale)/2;}
+    desiredX=Math.max(minX,Math.min(maxX,desiredX));
+    desiredY=Math.max(minY,Math.min(maxY,desiredY));
+    var ease=force?1:0.14;
+    engine.offX=(engine.offX==null?desiredX:engine.offX+(desiredX-engine.offX)*ease);
+    engine.offY=(engine.offY==null?desiredY:engine.offY+(desiredY-engine.offY)*ease);
     engine.world.style.transform='translate('+engine.offX+'px,'+engine.offY+'px) scale('+engine.scale+')';
   }
   function screenToWorld(ev){var r=engine.viewport.getBoundingClientRect();return {x:(ev.clientX-r.left-engine.offX)/engine.scale,y:(ev.clientY-r.top-engine.offY)/engine.scale};}
@@ -532,7 +564,9 @@
     if(h.type==='npc'||h.type==='dialogue'||h.type==='textBox'||h.kind==='npc'||h.kind==='dialogue'){showDialogueBubble(h);toast((h.title?h.title+': ':'')+(h.text||h.dialogue||'They have nothing to say yet.'));return true;}
     if(h.type==='chest'||h.kind==='chest'){toast((h.title?h.title+': ':'')+(h.text||'You found something interesting.'));return true;}
     if(h.type==='exit'||h.kind==='exit'){transitionToScene(h.targetScene,h.targetSpawn);return true;}
-    if(h.text){toast((h.title?h.title+': ':'')+h.text);return true;}
+    if(h.type==='plot'||h.kind==='plot'){showDialogueBubble(h);toast((h.title||h.label||'Plot')+': '+(h.text||'This plot is not available yet.'));return true;}
+    if(h.type==='shop'||h.kind==='shop'){showDialogueBubble(h);toast((h.title||h.label||'Shop')+': '+(h.text||'Shop interior coming soon.'));return true;}
+    if(h.text){showDialogueBubble(h);toast((h.title?h.title+': ':'')+h.text);return true;}
     return false;
   }
   function updateActionHint(){
@@ -818,28 +852,39 @@ function avatarAppearance(){try{return JSON.parse(localStorage.getItem('gf_avata
   }
   function renderObjectLayer(){
     var layer=document.getElementById('swObjectLayer');if(!layer)return;layer.innerHTML='';
-    sceneObjects().forEach(function(o){
+    var objects=sceneObjects().filter(function(o){return !o.editorOnly;}).slice().sort(function(a,b){
+      return Number(a.z||a.depthY||a.y||0)-Number(b.z||b.depthY||b.y||0);
+    });
+    objects.forEach(function(o){
       var type=o.type||o.kind||'';
+      if(type==='terrain'||type==='trigger'||type==='cameraZone'||type==='light'||type==='lantern'||type==='campfire'||type==='animatedOverlay'||type==='spriteOverlay'||type==='effectSprite')return;
       if(type==='textBox'||type==='sign'||type==='readable'){
-        var d=document.createElement('div');d.className='swSceneMarker text';d.style.left=(Number(o.x||0)-16)+'px';d.style.top=(Number(o.y||0)-22)+'px';d.textContent='📜';d.title=o.label||o.title||'Read';layer.appendChild(d);
+        var d=document.createElement('div');d.className='swSceneMarker text';d.style.left=(Number(o.x||0)-16)+'px';d.style.top=(Number(o.y||0)-22)+'px';d.style.zIndex=String(Math.round(Number(o.z||o.y||0))+220);d.textContent=o.icon||'📜';d.title=o.label||o.title||'Read';layer.appendChild(d);return;
       }
-      if(type==='cameraZone'){
-        var c=document.createElement('div');c.className='swCameraMood';c.style.left=Number(o.x||0)+'px';c.style.top=Number(o.y||0)+'px';c.style.width=Number(o.w||220)+'px';c.style.height=Number(o.h||160)+'px';c.style.opacity=0;layer.appendChild(c);
+      if(type==='npc'){
+        var n=document.createElement('div');n.className='swNpc '+(o.role||'villager');
+        n.style.left=Number(o.x||0)+'px';n.style.top=Number(o.y||0)+'px';n.style.zIndex=String(Math.round(Number(o.z||o.y||0))+260);
+        n.innerHTML='<div class="swNpcName">'+escapeHtml(o.name||o.label||'Villager')+'</div><div class="swNpcBody"><span>'+escapeHtml(o.icon||'🧑')+'</span></div>';
+        layer.appendChild(n);return;
       }
       if(type==='plot'||type==='building'||type==='home'||type==='shop'){
         var b=document.createElement('div');
-        b.className='swSceneBuilding '+type+' '+(o.status||'');
+        b.className='swSceneBuilding '+type+' '+(o.status||'')+' '+(o.buildingStyle||'cottage');
         b.style.left=Number(o.x||0)+'px';b.style.top=Number(o.y||0)+'px';
         b.style.width=Number(o.w||160)+'px';b.style.height=Number(o.h||120)+'px';
-        b.style.zIndex=String(Math.round(Number(o.z||o.y||0))+180);
-        b.innerHTML='<div class="swSceneBuildingRoof"></div><div class="swSceneBuildingBody"></div><div class="swSceneBuildingDoor"></div><div class="swSceneBuildingLabel">'+escapeHtml(o.label||o.name||'Home')+'</div>';
-        layer.appendChild(b);
+        b.style.zIndex=String(Math.round(Number(o.depthY||o.z||Number(o.y||0)+Number(o.h||120)))+180);
+        var label=o.label||o.name||'Home';
+        var owner=o.ownerName?'<div class="swSceneOwner">'+escapeHtml(o.ownerName)+'</div>':'';
+        var sign=(o.status==='for_sale')?'For Sale':(o.status==='empty'?'Empty Plot':(o.privacy==='private'?'Private':'Visit'));
+        b.innerHTML='<div class="swSceneBuildingShadow"></div><div class="swSceneBuildingRoof"></div><div class="swSceneBuildingBody"></div><div class="swSceneBuildingDoor"></div><div class="swSceneBuildingSign">'+escapeHtml(sign)+'</div>'+owner+'<div class="swSceneBuildingLabel">'+escapeHtml(label)+'</div>';
+        layer.appendChild(b);return;
       }
-      if(type==='tree'||type==='lamp'||type==='fence'||type==='planter'){
-        var d=document.createElement('div');d.className='swSceneProp '+type;d.style.left=Number(o.x||0)+'px';d.style.top=Number(o.y||0)+'px';d.style.zIndex=String(Math.round(Number(o.y||0))+150);d.textContent=o.icon||(type==='tree'?'🌳':type==='lamp'?'🏮':type==='planter'?'🌷':'▰');layer.appendChild(d);
+      if(type==='tree'||type==='lamp'||type==='fence'||type==='planter'||type==='crate'||type==='bench'||type==='well'||type==='pond'){
+        var d=document.createElement('div');d.className='swSceneProp '+type;d.style.left=Number(o.x||0)+'px';d.style.top=Number(o.y||0)+'px';d.style.zIndex=String(Math.round(Number(o.depthY||o.z||o.y||0))+150);d.textContent=o.icon||(type==='tree'?'🌳':type==='lamp'?'🏮':type==='planter'?'🌷':type==='well'?'⛲':type==='bench'?'▱':type==='pond'?'💧':'▰');layer.appendChild(d);return;
       }
     });
   }
+
 
   function renderAnimatedOverlays(){
     var layer=document.getElementById('swObjectLayer');if(!layer)return;
@@ -914,11 +959,16 @@ function avatarAppearance(){try{return JSON.parse(localStorage.getItem('gf_avata
   }
   function showDialogueBubble(h){
     var layer=document.getElementById('swInteractionIcons');if(!layer)return;
-    var b=document.createElement('div');b.className='swDialogueBubble';b.style.left=(h.x-80)+'px';b.style.top=(h.y-(h.r||60)-72)+'px';b.textContent=h.text||h.dialogue||h.title||'...';layer.appendChild(b);setTimeout(function(){b.remove();},2600);
+    layer.querySelectorAll('.swDialogueBubble').forEach(function(x){x.remove();});
+    var b=document.createElement('div');b.className='swDialogueBubble';b.style.left=(h.x-105)+'px';b.style.top=(h.y-(h.r||60)-92)+'px';
+    b.innerHTML='<button class="swBubbleClose" title="Close">×</button><b>'+escapeHtml(h.title||h.label||h.name||'')+'</b><span>'+escapeHtml(h.text||h.dialogue||'...')+'</span>';
+    var close=b.querySelector('.swBubbleClose');if(close)close.onclick=function(ev){ev.preventDefault();ev.stopPropagation();b.remove();};
+    layer.appendChild(b);
   }
 
   function injectStyles(){if(document.getElementById('gfWorldEngineStyles'))return;var s=document.createElement('style');s.id='gfWorldEngineStyles';s.textContent=`
 .swRoot{position:fixed;inset:0;z-index:100000;background:#02060b;color:#f7e7bf;font-family:Georgia,'Times New Roman',serif}.swRoot.hidden{display:none}.swViewport{position:absolute;inset:0;overflow:hidden;background:#02060b}.swWorld{position:absolute;left:0;top:0;width:${MAP_W}px;height:${MAP_H}px;transform-origin:0 0}.swBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;pointer-events:none}.swWaterGlow{position:absolute;left:640px;top:340px;width:760px;height:520px;border-radius:45%;background:radial-gradient(circle,rgba(36,170,255,.20),transparent 65%);mix-blend-mode:screen;animation:swWater 3.4s ease-in-out infinite;pointer-events:none}.swMist{position:absolute;left:840px;top:100px;width:420px;height:210px;background:radial-gradient(ellipse,rgba(95,180,255,.22),transparent 65%);filter:blur(12px);animation:swMist 5s ease-in-out infinite}.swCanopy{position:absolute;inset:0;background:radial-gradient(ellipse at 8% 93%,rgba(0,0,0,.72),transparent 20%),radial-gradient(ellipse at 92% 95%,rgba(0,0,0,.58),transparent 24%),radial-gradient(ellipse at 40% 4%,rgba(0,0,0,.55),transparent 20%);pointer-events:none;mix-blend-mode:multiply}.swRemoteLayer{position:absolute;inset:0;z-index:420;pointer-events:none}.swRemotePlayer{position:absolute;width:128px;height:128px;margin-left:-64px;margin-top:-112px;transform:scale(var(--player-scale,.70));transform-origin:50% 92%;opacity:.92;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}.swRemoteSprite{position:absolute;left:0;top:0;width:128px;height:128px;background-repeat:no-repeat;background-size:768px 2048px}.swRemoteShadow{position:absolute;left:49px;top:101px;width:30px;height:7px;border-radius:50%;background:rgba(0,0,0,.14);filter:blur(1.5px)}.swRemoteName{position:absolute;left:50%;top:8px;transform:translateX(-50%);padding:3px 8px;border-radius:999px;background:rgba(2,6,12,.62);border:1px solid rgba(125,211,252,.55);color:#e0f7ff;font:800 12px Arial,sans-serif;white-space:nowrap;text-shadow:0 1px 3px #000;z-index:2}.swMultiplayerStatus{position:absolute;left:24px;top:96px;padding:7px 12px;border-radius:999px;background:rgba(5,12,20,.62);border:1px solid rgba(125,211,252,.45);color:#d8f5ff;font:800 13px Arial,sans-serif;box-shadow:0 10px 24px rgba(0,0,0,.35)}.swPlayer{position:absolute;width:128px;height:128px;margin-left:-64px;margin-top:-112px;transition:filter .12s linear;transform:scale(var(--player-scale,.70));transform-origin:50% 92%;will-change:left,top}.swSprite{width:128px;height:128px;background-repeat:no-repeat;background-size:768px 2048px;image-rendering:auto;overflow:hidden;background-color:transparent;backface-visibility:hidden;will-change:background-position}.swShadow{position:absolute;width:30px;height:7px;margin-left:-15px;margin-top:-3px;border-radius:50%;background:rgba(0,0,0,.16);filter:blur(1.5px);pointer-events:none;transform-origin:50% 50%}.swHotspot{position:absolute;border-radius:50%;pointer-events:none}.swHotspot.dock{left:630px;top:575px;width:145px;height:110px;background:radial-gradient(ellipse,rgba(61,184,255,.24),rgba(61,184,255,.05) 45%,transparent 70%);animation:swPulse 2s ease-in-out infinite}.swHotspot.path{left:135px;top:215px;width:100px;height:120px;background:radial-gradient(ellipse,rgba(255,207,102,.15),transparent 65%)}.swBobber{position:absolute;width:20px;height:20px;margin-left:-10px;margin-top:-10px;border-radius:50%;background:#f04d66;box-shadow:0 0 14px #9df,0 0 0 10px rgba(63,190,255,.15);z-index:800}.swBobber.hidden,.swLine.hidden{display:none}.swBobber:after{content:'';position:absolute;left:-26px;top:-26px;width:72px;height:72px;border:2px solid rgba(140,220,255,.58);border-radius:50%;animation:swRipple 1.4s linear infinite}.swBobber.bite{animation:swBite .22s linear 5}.swLine{position:absolute;height:2px;background:linear-gradient(90deg,rgba(255,241,199,.92),rgba(160,220,255,.45));transform-origin:0 50%;z-index:790;pointer-events:none}.swCastAim{position:absolute;width:54px;height:54px;margin-left:-27px;margin-top:-27px;border-radius:50%;border:3px solid rgba(255,100,100,.85);background:radial-gradient(circle,rgba(255,100,100,.20),transparent 65%);z-index:760;pointer-events:none;box-shadow:0 0 14px rgba(255,70,70,.7)}.swCastAim.valid{border-color:rgba(134,239,172,.95);background:radial-gradient(circle,rgba(134,239,172,.22),transparent 65%);box-shadow:0 0 18px rgba(134,239,172,.7)}.swCastAim.invalid{border-color:rgba(255,115,115,.95);background:radial-gradient(circle,rgba(255,80,80,.20),transparent 65%);box-shadow:0 0 18px rgba(255,80,80,.55)}.swCastAim.hidden{display:none}.swBobber.bad{background:#555;box-shadow:0 0 10px rgba(255,80,80,.65)}.swAmbientLayer{position:absolute;inset:0;pointer-events:none;z-index:120}.swAmbientEffect{position:absolute;pointer-events:none;overflow:hidden}.swAmbientEffect.ripple:before{content:'';position:absolute;inset:12%;border-radius:50%;border:3px solid rgba(135,218,255,.42);box-shadow:0 0 18px rgba(135,218,255,.22);animation:swAmbientRipple 2.2s linear infinite}.swAmbientEffect.ripple:after{content:'';position:absolute;inset:28%;border-radius:50%;border:2px solid rgba(224,246,255,.35);animation:swAmbientRipple 2.2s linear infinite .7s}.swAmbientEffect.shimmer{background:linear-gradient(110deg,transparent,rgba(150,230,255,.18),transparent);mix-blend-mode:screen;animation:swShimmer 2.8s ease-in-out infinite}.swAmbientEffect.waterfall{background:repeating-linear-gradient(90deg,rgba(180,240,255,.0) 0 8px,rgba(180,240,255,.20) 9px 13px,rgba(255,255,255,.12) 14px 18px);filter:blur(.5px);mix-blend-mode:screen;animation:swFalls .7s linear infinite}.swAmbientEffect.foam{background:radial-gradient(ellipse,rgba(230,250,255,.48),transparent 62%);filter:blur(3px);mix-blend-mode:screen;animation:swFoam 1.8s ease-in-out infinite}.swAmbientEffect.mist{background:radial-gradient(ellipse,rgba(200,235,255,.30),transparent 70%);filter:blur(8px);animation:swMist 4s ease-in-out infinite}.swAmbientEffect.leaves i{position:absolute;width:9px;height:5px;border-radius:70% 20%;background:rgba(205,143,55,.78);box-shadow:0 0 4px rgba(0,0,0,.25);animation:swLeafDrift 7s linear infinite}.swAmbientEffect.fireflies i{position:absolute;width:5px;height:5px;border-radius:50%;background:#fbff9d;box-shadow:0 0 12px #eaff77;animation:swFly 6s ease-in-out infinite}.swFireflies i{position:absolute;width:6px;height:6px;border-radius:50%;background:#fbff9d;box-shadow:0 0 14px #eaff77,0 0 24px rgba(114,213,255,.35);animation:swFly 7s ease-in-out infinite;pointer-events:none}.swMotes i{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(114,196,255,.65);box-shadow:0 0 8px rgba(114,196,255,.7);animation:swMote 12s linear infinite;pointer-events:none}.swHud{position:absolute;inset:0;pointer-events:none}.swHud button{pointer-events:auto}.swSmartHud{transition:opacity .18s ease,filter .18s ease,background-color .18s ease}.swSmartHud.swUiNear{opacity:.58;filter:saturate(.9)}.swSmartHud.swUiBehind{opacity:.18;filter:saturate(.75) blur(.15px)}.swSmartHud.swUiBehind *{pointer-events:none}.swSmartHud.swUiBehind button{pointer-events:auto}.swStatus{position:absolute;left:24px;top:20px;display:flex;gap:12px;align-items:center;padding:8px 14px;border:1px solid rgba(218,169,83,.65);border-radius:18px;background:linear-gradient(180deg,rgba(8,12,18,.72),rgba(8,12,18,.34));box-shadow:0 12px 30px rgba(0,0,0,.45)}.portrait{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle,#704323,#1b1110);border:2px solid #d7a857}.bar{width:150px;height:14px;border-radius:999px;background:#160d0b;border:1px solid #d7a857;margin:5px 0;overflow:hidden}.bar span{display:block;height:100%;width:100%}.bar.hp span{background:linear-gradient(90deg,#a82931,#e66b5e)}.bar.sp span{width:72%;background:linear-gradient(90deg,#2465b8,#66c5f0)}.swTitle{position:absolute;left:50%;top:24px;transform:translateX(-50%);font-size:30px;font-weight:800;text-shadow:0 3px 10px #000}.swTitle span{color:#d8b56b;margin:0 8px}.swClose{position:absolute;right:22px;top:20px;background:rgba(0,0,0,.45);color:#f5d99a;border:1px solid #d7a857;border-radius:999px;padding:8px 14px;font-weight:bold}.swQuest{position:absolute;right:32px;top:178px;width:300px;padding:0;border:1px solid rgba(218,169,83,.8);border-radius:10px;background:rgba(7,8,12,.72);box-shadow:0 14px 40px rgba(0,0,0,.55);overflow:hidden;transition:opacity .18s ease,filter .18s ease,transform .18s ease,max-height .18s ease}.swQuestHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;cursor:pointer}.swQuest b{color:#ffe28a}.swQuest p{margin:0;padding:0 18px 16px;color:#f6e5c3;line-height:1.35}.swQuestActions{display:flex;gap:6px}.swQuestActions button{width:24px;height:24px;border-radius:8px;border:1px solid rgba(218,169,83,.55);background:rgba(0,0,0,.28);color:#ffe8ad;font:900 14px Arial;line-height:1;cursor:pointer}.swQuestCollapsed p{display:none}.swQuestCollapsed #swQuestToggle{transform:rotate(-90deg)}.swQuestHidden{opacity:.18;max-height:36px;width:58px}.swQuestHidden .swQuestHead b,.swQuestHidden p,.swQuestHidden #swQuestClose{display:none}.swQuestHidden .swQuestHead{padding:8px;justify-content:center}.swQuestHidden #swQuestToggle{transform:rotate(90deg)}.swToast{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:rgba(3,6,10,.65);border:1px solid rgba(218,169,83,.55);opacity:.0;transition:.25s;box-shadow:0 12px 30px rgba(0,0,0,.45)}.swToast.show{opacity:1}.swActionHint{position:absolute;left:50%;bottom:172px;transform:translateX(-50%);padding:9px 14px;border-radius:999px;background:rgba(28,46,32,.82);border:1px solid rgba(134,239,172,.55);color:#eaffcf;font:800 14px Arial,sans-serif;box-shadow:0 10px 26px rgba(0,0,0,.45);letter-spacing:.02em}.swActionHint.hidden{display:none}.swHotbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:6px;padding:8px;border:1px solid rgba(218,169,83,.7);border-radius:14px;background:rgba(6,7,10,.68)}.swHotbar button{width:58px;height:58px;background:rgba(24,20,16,.85);color:#ffe9bd;border:1px solid rgba(218,169,83,.75);border-radius:8px;font-weight:bold}.swHotbar span{font-size:24px}.swFishing{position:absolute;right:32px;bottom:100px;width:360px;padding:18px 20px;border:1px solid rgba(218,169,83,.9);border-radius:14px;background:rgba(7,8,12,.76);box-shadow:0 16px 45px rgba(0,0,0,.62)}.swFishing.hidden{display:none}.swFishing h3{text-align:center;margin:0 0 10px;font-size:25px}.swFishing p{margin:0 0 12px;text-align:center}.swFishing small{display:block;text-align:center;margin-top:8px;color:#ffefbf}.swCastBar{position:relative;height:20px;border-radius:999px;background:linear-gradient(90deg,#65b846,#f6d452,#bd3d2e);border:2px solid #d7a857;overflow:hidden}.swCastBar i{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.25)}.swCastBar em{position:absolute;top:-5px;width:5px;height:30px;background:#fff;border-radius:3px;box-shadow:0 0 9px #fff}.swNearDock .swHotspot.dock{box-shadow:0 0 22px rgba(111,213,255,.75)}.swDebugLayer{position:absolute;inset:0;display:none;pointer-events:none;z-index:2000}.showDebug .swDebugLayer{display:block}.swDebugPoly{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.swDebugPoly polygon{fill:rgba(71,255,124,.16);stroke:rgba(71,255,124,.85);stroke-width:3}.swDebugBlock{position:absolute;border-radius:50%;background:rgba(255,70,70,.18);border:3px solid rgba(255,70,70,.85)}.swDebugHotspot{position:absolute;border-radius:50%;background:rgba(75,180,255,.18);border:3px solid rgba(75,180,255,.9);display:grid;place-items:center;color:white;font:700 18px Arial;text-shadow:0 2px 6px #000}.swSceneTransition{position:absolute;inset:0;z-index:50000;display:grid;place-items:center;background:#02060b;opacity:0;pointer-events:none;transition:opacity .24s ease}.swSceneTransition.show{opacity:1;pointer-events:auto}.swSceneTransition:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(42,77,91,.18),rgba(0,0,0,.74) 62%,#000 100%);transform:scale(1.08);animation:swTransitionDrift 1.2s ease-in-out infinite alternate}.swSceneTransitionText{position:relative;font:800 24px Georgia,'Times New Roman',serif;color:#ffe4a3;text-shadow:0 3px 14px #000;letter-spacing:.04em;opacity:.9}.swSceneBuilding{position:absolute;pointer-events:none;filter:drop-shadow(0 12px 18px rgba(0,0,0,.34))}.swSceneBuildingRoof{position:absolute;left:6%;right:6%;top:0;height:45%;background:linear-gradient(180deg,#7c2d12,#431407);clip-path:polygon(50% 0,100% 68%,88% 100%,12% 100%,0 68%);border-radius:8px 8px 3px 3px}.swSceneBuildingBody{position:absolute;left:14%;right:14%;bottom:8%;height:62%;background:linear-gradient(180deg,#f1d3a4,#9a6a3a);border:3px solid rgba(70,39,18,.55);border-radius:10px}.swSceneBuildingDoor{position:absolute;left:43%;bottom:8%;width:18%;height:32%;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#4b2b16,#1c1008);box-shadow:inset 0 0 0 2px rgba(255,215,150,.18)}.swSceneBuildingLabel{position:absolute;left:50%;bottom:-22px;transform:translateX(-50%);white-space:nowrap;font:800 12px Arial,sans-serif;color:#fff4c8;background:rgba(1,7,12,.62);border:1px solid rgba(250,204,21,.35);border-radius:999px;padding:3px 8px;text-shadow:0 1px 3px #000}.swSceneBuilding.for_sale .swSceneBuildingBody{background:linear-gradient(180deg,#dbeafe,#7dd3fc)}.swSceneBuilding.empty .swSceneBuildingRoof{opacity:.18}.swSceneBuilding.empty .swSceneBuildingBody{background:rgba(72,93,54,.35);border-style:dashed}.swSceneProp{position:absolute;transform:translate(-50%,-90%);font-size:34px;text-shadow:0 8px 12px rgba(0,0,0,.45);pointer-events:none}.swSceneProp.lamp{font-size:26px}.swSceneProp.fence{font-size:24px;color:#8b5a2b}
+.swSceneBuildingShadow{position:absolute;left:10%;right:10%;bottom:0;height:20%;border-radius:50%;background:rgba(0,0,0,.20);filter:blur(7px)}.swSceneBuildingSign{position:absolute;right:8%;bottom:12%;padding:2px 6px;border-radius:7px;background:rgba(46,28,11,.82);border:1px solid rgba(255,222,156,.45);color:#fff1c0;font:900 10px Arial,sans-serif}.swSceneOwner{position:absolute;left:50%;top:-22px;transform:translateX(-50%);white-space:nowrap;padding:3px 8px;border-radius:999px;background:rgba(3,10,18,.66);border:1px solid rgba(125,211,252,.40);color:#dff7ff;font:900 11px Arial,sans-serif}.swSceneBuilding.shop .swSceneBuildingRoof{background:linear-gradient(180deg,#1d4ed8,#172554)}.swSceneBuilding.guild .swSceneBuildingRoof{background:linear-gradient(180deg,#7c3aed,#312e81)}.swNpc{position:absolute;width:72px;height:88px;margin-left:-36px;margin-top:-76px;pointer-events:none;filter:drop-shadow(0 8px 12px rgba(0,0,0,.32))}.swNpcBody{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:46px;height:58px;border-radius:18px 18px 16px 16px;background:linear-gradient(180deg,#facc15,#92400e);border:2px solid rgba(73,42,14,.45);display:grid;place-items:center;font:28px Arial}.swNpcName{position:absolute;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;padding:2px 7px;border-radius:999px;background:rgba(2,6,23,.58);border:1px solid rgba(255,226,138,.38);color:#fff2bd;font:900 10px Arial,sans-serif}.swNpc.mayor .swNpcBody{background:linear-gradient(180deg,#67e8f9,#0369a1)}.swNpc.builder .swNpcBody{background:linear-gradient(180deg,#fdba74,#9a3412)}.swNpc.fishing .swNpcBody{background:linear-gradient(180deg,#93c5fd,#1e40af)}.swNpc.shopkeeper .swNpcBody{background:linear-gradient(180deg,#f0abfc,#86198f)}.swDialogueBubble{pointer-events:auto;min-width:220px}.swDialogueBubble b{display:block;margin-right:24px;color:#fff7cf;font:900 13px Arial,sans-serif}.swDialogueBubble span{display:block;margin-top:4px}.swBubbleClose{position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:8px;border:1px solid rgba(255,226,138,.45);background:rgba(0,0,0,.32);color:#fff7cf;font:900 14px Arial;cursor:pointer}.swSceneProp.bench{font-size:30px;color:#8b5a2b}.swSceneProp.well{font-size:36px}.swSceneProp.pond{font-size:38px}
 @keyframes swTransitionDrift{from{transform:scale(1.04)}to{transform:scale(1.12)}}@keyframes swWater{50%{opacity:.62;transform:scale(1.03)}}@keyframes swMist{50%{opacity:.5;transform:translateY(8px)}}@keyframes swPulse{50%{opacity:.35;transform:scale(1.04)}}@keyframes swRipple{to{transform:scale(1.9);opacity:0}}@keyframes swBite{50%{transform:translateY(-12px) scale(1.15)}}@keyframes swFly{50%{transform:translate(28px,-22px);opacity:.45}}@keyframes swMote{to{transform:translateY(-120px);opacity:0}}@keyframes swAmbientRipple{0%{transform:scale(.5);opacity:.75}100%{transform:scale(1.65);opacity:0}}@keyframes swShimmer{50%{opacity:.35;transform:translateX(16px)}}@keyframes swFalls{to{background-position:0 28px}}@keyframes swFoam{50%{opacity:.45;transform:scale(1.04)}}@keyframes swLeafDrift{0%{transform:translateY(-30px) translateX(0) rotate(0);opacity:0}12%{opacity:.85}100%{transform:translateY(230px) translateX(70px) rotate(250deg);opacity:0}}
 /* Area-based SNES-style water FX overlays */
 .swAmbientEffect.waterSurfaceShimmer{background:radial-gradient(ellipse at 18% 28%,rgba(190,245,255,.13),transparent 20%),radial-gradient(ellipse at 48% 60%,rgba(155,230,255,.09),transparent 23%),radial-gradient(ellipse at 76% 38%,rgba(235,255,255,.11),transparent 19%),radial-gradient(ellipse at 35% 84%,rgba(110,205,255,.07),transparent 24%);mix-blend-mode:screen;filter:blur(1.1px);animation:swWaterSurfaceShimmer 3.8s ease-in-out infinite;opacity:.42}

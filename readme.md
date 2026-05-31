@@ -192,3 +192,26 @@ Admin owns a Site Mode setting:
 Estate currently has a visual placeholder at `/games/estate.html` for Neighborhood and My House. This is only the first flow test. The real goal is a shared RPG scene engine that can power Shadow Woods, fishing zones, neighborhoods, house interiors, shops, guild halls, and future towns.
 
 Housing placement must be rule-based from day one: floor grid, wall slots, tabletop anchors, yard zones, collision footprints, and item placement types. Do not build housing as arbitrary coordinates without validation.
+
+
+## RPG Scene Engine / Whisperwind Village Notes
+
+The shared RPG scene engine now supports the first editable multiplayer neighborhood vertical slice. `games/estate.html` loads `whisperwind_village`, which uses the same `/games/js/world_engine.js` scene layer as Shadow Woods. This is intentional: fishing zones, neighborhoods, house interiors, shops, NPC areas, Echo Hall, and future guild halls should all grow from one shared scene format instead of separate one-off engines.
+
+Important scene-authoring rules:
+
+- Scene data lives in `public/assets/worlds/*.json`; add scenes to `public/assets/worlds/world_scenes.json`.
+- Use `cameraMode: "follow"` for large RPG/town maps so the player walks through the map instead of seeing the entire image scaled down.
+- Use `sceneObjects` for visible objects such as homes, plots, shops, NPCs, lamps, trees, signs, planters, benches, and future furniture.
+- Use `blockers` for collision and `walkable` polygons for legal walking space. Players should move between objects, not on top of the whole background.
+- Use `hotspots` for interactions: NPC dialogue, doors/portals, plot signs, shops, fishing spots, and readable objects.
+- Dialogue bubbles and panels must be closable. Avoid unclosable tutorial popups. Use small toasts for temporary hints only.
+- Multiplayer presence is scene-based through WebSocket `worldJoin` / `worldMove` messages; players in the same scene see each other with lightweight name tags.
+- `public/assets/sprites/forger_base_sheet.png` is the current standardized 128x128-grid player sheet. Future clothing should layer over this format rather than requiring dozens of full character sheets.
+
+Neighborhood direction:
+
+- A neighborhood should feel like an SNES-era RPG town, not a pre-rendered menu.
+- Whisperwind Village is the first vertical slice: NPC anchors, 12 resident plot positions, public buildings, multiplayer presence, and a starter cottage door.
+- Future plot states should be data-driven: `empty`, `for_sale`, `reserved`, `owned`, `public`, `friends_only`, and `private`.
+- Housing placement should later use validated zones/slots: floor grid, wall slots, tabletop anchors, yard zones, and door/portal rules.

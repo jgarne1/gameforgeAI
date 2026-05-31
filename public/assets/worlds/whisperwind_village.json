@@ -1,51 +1,843 @@
 {
   "id": "whisperwind_village",
   "name": "Whisperwind Village",
-  "description": "A first shared neighborhood test scene for GameForge Estates.",
+  "description": "Editable multiplayer neighborhood vertical slice: FF6-inspired town roaming, NPCs, plots, depth-sorted objects, and scene portals.",
   "background": "/assets/backgrounds/sunny_meadows_map.png",
-  "size": { "w": 1600, "h": 1600 },
-  "playerScale": 0.52,
+  "playerSprite": "/assets/sprites/forger_base_sheet.png",
+  "size": {
+    "w": 2200,
+    "h": 1800
+  },
+  "playerScale": 0.62,
+  "cameraMode": "follow",
+  "camera": {
+    "mode": "follow",
+    "minViewW": 980,
+    "minViewH": 620,
+    "minScale": 0.62,
+    "maxScale": 1.05
+  },
   "timeOfDay": "day",
-  "tintOpacity": 0.25,
-  "spawn": { "x": 760, "y": 1005, "face": "up" },
+  "tintOpacity": 0.18,
+  "startHint": "Whisperwind is multiplayer. Walk with WASD/arrows, press E at NPCs, doors, signs, and plot markers.",
+  "spawn": {
+    "x": 1090,
+    "y": 1490,
+    "face": "up"
+  },
   "spawnPoints": [
-    { "id": "gate", "x": 760, "y": 1005, "face": "up" },
-    { "id": "from_house", "x": 655, "y": 760, "face": "down" }
+    {
+      "id": "gate",
+      "x": 1090,
+      "y": 1490,
+      "face": "up"
+    },
+    {
+      "id": "from_house",
+      "x": 770,
+      "y": 930,
+      "face": "down"
+    },
+    {
+      "id": "town_square",
+      "x": 1100,
+      "y": 980,
+      "face": "down"
+    }
   ],
   "walkable": [
-    { "type": "poly", "points": [[530,150],[760,130],[1025,165],[1240,285],[1320,520],[1250,770],[1080,980],[980,1230],[780,1510],[560,1450],[495,1180],[360,980],[250,780],[310,525],[430,330]] },
-    { "type": "poly", "points": [[395,700],[560,595],[780,540],[1030,610],[1160,760],[1035,890],[790,925],[565,875]] },
-    { "type": "poly", "points": [[580,900],[760,880],[900,970],[875,1160],[735,1290],[610,1195]] }
+    {
+      "type": "poly",
+      "points": [
+        [
+          210,
+          1240
+        ],
+        [
+          330,
+          945
+        ],
+        [
+          480,
+          695
+        ],
+        [
+          735,
+          510
+        ],
+        [
+          1090,
+          430
+        ],
+        [
+          1460,
+          510
+        ],
+        [
+          1785,
+          720
+        ],
+        [
+          1980,
+          1010
+        ],
+        [
+          1930,
+          1335
+        ],
+        [
+          1680,
+          1575
+        ],
+        [
+          1310,
+          1715
+        ],
+        [
+          910,
+          1690
+        ],
+        [
+          530,
+          1535
+        ]
+      ]
+    },
+    {
+      "type": "poly",
+      "points": [
+        [
+          685,
+          885
+        ],
+        [
+          900,
+          770
+        ],
+        [
+          1180,
+          750
+        ],
+        [
+          1450,
+          840
+        ],
+        [
+          1555,
+          1020
+        ],
+        [
+          1435,
+          1190
+        ],
+        [
+          1135,
+          1245
+        ],
+        [
+          835,
+          1190
+        ],
+        [
+          650,
+          1045
+        ]
+      ]
+    },
+    {
+      "type": "poly",
+      "points": [
+        [
+          1000,
+          1180
+        ],
+        [
+          1195,
+          1185
+        ],
+        [
+          1190,
+          1540
+        ],
+        [
+          1070,
+          1605
+        ],
+        [
+          980,
+          1515
+        ]
+      ]
+    },
+    {
+      "type": "poly",
+      "points": [
+        [
+          455,
+          925
+        ],
+        [
+          730,
+          870
+        ],
+        [
+          760,
+          1115
+        ],
+        [
+          530,
+          1220
+        ],
+        [
+          385,
+          1110
+        ]
+      ]
+    },
+    {
+      "type": "poly",
+      "points": [
+        [
+          1480,
+          930
+        ],
+        [
+          1745,
+          990
+        ],
+        [
+          1790,
+          1185
+        ],
+        [
+          1590,
+          1295
+        ],
+        [
+          1400,
+          1180
+        ]
+      ]
+    }
   ],
   "blockers": [
-    { "type": "circle", "x": 560, "y": 425, "r": 150 },
-    { "type": "circle", "x": 1240, "y": 395, "r": 120 },
-    { "type": "circle", "x": 375, "y": 1165, "r": 135 },
-    { "type": "circle", "x": 1110, "y": 1135, "r": 165 }
+    {
+      "type": "rect",
+      "x": 620,
+      "y": 545,
+      "w": 245,
+      "h": 185
+    },
+    {
+      "type": "rect",
+      "x": 955,
+      "y": 500,
+      "w": 250,
+      "h": 190
+    },
+    {
+      "type": "rect",
+      "x": 1325,
+      "y": 570,
+      "w": 250,
+      "h": 190
+    },
+    {
+      "type": "rect",
+      "x": 390,
+      "y": 850,
+      "w": 220,
+      "h": 160
+    },
+    {
+      "type": "rect",
+      "x": 1600,
+      "y": 865,
+      "w": 220,
+      "h": 160
+    },
+    {
+      "type": "circle",
+      "x": 420,
+      "y": 540,
+      "r": 120
+    },
+    {
+      "type": "circle",
+      "x": 1820,
+      "y": 610,
+      "r": 120
+    },
+    {
+      "type": "circle",
+      "x": 330,
+      "y": 1360,
+      "r": 130
+    },
+    {
+      "type": "circle",
+      "x": 1840,
+      "y": 1400,
+      "r": 135
+    }
   ],
   "sceneObjects": [
-    { "id": "plot_01_home", "type": "building", "status": "owned", "x": 520, "y": 590, "w": 190, "h": 150, "label": "Starter Cottage" },
-    { "id": "plot_02_sale", "type": "building", "status": "for_sale", "x": 875, "y": 570, "w": 190, "h": 150, "label": "For Sale" },
-    { "id": "plot_03_empty", "type": "building", "status": "empty", "x": 1070, "y": 760, "w": 160, "h": 120, "label": "Empty Plot" },
-    { "id": "plot_04_empty", "type": "building", "status": "empty", "x": 435, "y": 810, "w": 160, "h": 120, "label": "Empty Plot" },
-    { "id": "village_lamp_1", "type": "lamp", "x": 805, "y": 815 },
-    { "id": "village_lamp_2", "type": "lamp", "x": 665, "y": 760 },
-    { "id": "garden_planter_1", "type": "planter", "x": 705, "y": 690 },
-    { "id": "garden_planter_2", "type": "planter", "x": 895, "y": 735 },
-    { "id": "welcome_sign", "type": "sign", "x": 760, "y": 920, "r": 70, "label": "Village Notice Board", "text": "Whisperwind Village is the first Estate district. Homes, plots, visitors, and furniture placement will grow from this shared RPG scene." }
+    {
+      "id": "echo_hall",
+      "type": "shop",
+      "buildingStyle": "guild",
+      "status": "public",
+      "x": 970,
+      "y": 460,
+      "w": 285,
+      "h": 220,
+      "label": "Echo Hall",
+      "depthY": 680
+    },
+    {
+      "id": "market_shop",
+      "type": "shop",
+      "buildingStyle": "shop",
+      "status": "public",
+      "x": 1325,
+      "y": 570,
+      "w": 250,
+      "h": 190,
+      "label": "Nessa's Goods",
+      "depthY": 745
+    },
+    {
+      "id": "starter_home",
+      "type": "home",
+      "status": "owned",
+      "ownerName": "Starter Home",
+      "privacy": "public",
+      "x": 620,
+      "y": 545,
+      "w": 245,
+      "h": 185,
+      "label": "Riverbend Cottage",
+      "depthY": 725
+    },
+    {
+      "id": "plot_02",
+      "type": "plot",
+      "status": "for_sale",
+      "x": 400,
+      "y": 850,
+      "w": 190,
+      "h": 135,
+      "label": "Plot 02",
+      "depthY": 980
+    },
+    {
+      "id": "plot_03",
+      "type": "plot",
+      "status": "empty",
+      "x": 1600,
+      "y": 865,
+      "w": 190,
+      "h": 135,
+      "label": "Plot 03",
+      "depthY": 995
+    },
+    {
+      "id": "plot_04",
+      "type": "plot",
+      "status": "empty",
+      "x": 530,
+      "y": 1180,
+      "w": 170,
+      "h": 120,
+      "label": "Plot 04",
+      "depthY": 1300
+    },
+    {
+      "id": "plot_05",
+      "type": "plot",
+      "status": "empty",
+      "x": 790,
+      "y": 1290,
+      "w": 170,
+      "h": 120,
+      "label": "Plot 05",
+      "depthY": 1410
+    },
+    {
+      "id": "plot_06",
+      "type": "plot",
+      "status": "empty",
+      "x": 1240,
+      "y": 1300,
+      "w": 170,
+      "h": 120,
+      "label": "Plot 06",
+      "depthY": 1420
+    },
+    {
+      "id": "plot_07",
+      "type": "plot",
+      "status": "empty",
+      "x": 1510,
+      "y": 1180,
+      "w": 170,
+      "h": 120,
+      "label": "Plot 07",
+      "depthY": 1300
+    },
+    {
+      "id": "plot_08",
+      "type": "plot",
+      "status": "reserved",
+      "x": 660,
+      "y": 330,
+      "w": 170,
+      "h": 120,
+      "label": "Hill Plot 08",
+      "depthY": 450
+    },
+    {
+      "id": "plot_09",
+      "type": "plot",
+      "status": "reserved",
+      "x": 1420,
+      "y": 350,
+      "w": 170,
+      "h": 120,
+      "label": "Hill Plot 09",
+      "depthY": 470
+    },
+    {
+      "id": "plot_10",
+      "type": "plot",
+      "status": "empty",
+      "x": 260,
+      "y": 1040,
+      "w": 160,
+      "h": 110,
+      "label": "Garden Plot 10",
+      "depthY": 1150
+    },
+    {
+      "id": "plot_11",
+      "type": "plot",
+      "status": "empty",
+      "x": 1780,
+      "y": 1070,
+      "w": 160,
+      "h": 110,
+      "label": "Garden Plot 11",
+      "depthY": 1180
+    },
+    {
+      "id": "plot_12",
+      "type": "plot",
+      "status": "empty",
+      "x": 1040,
+      "y": 260,
+      "w": 175,
+      "h": 115,
+      "label": "Overlook Plot 12",
+      "depthY": 375
+    },
+    {
+      "id": "arlo",
+      "type": "npc",
+      "role": "mayor",
+      "name": "Arlo",
+      "icon": "\ud83e\udded",
+      "x": 1025,
+      "y": 990,
+      "label": "Arlo"
+    },
+    {
+      "id": "brindle",
+      "type": "npc",
+      "role": "builder",
+      "name": "Brindle",
+      "icon": "\ud83d\udd28",
+      "x": 1265,
+      "y": 1040,
+      "label": "Brindle Brass"
+    },
+    {
+      "id": "marina",
+      "type": "npc",
+      "role": "fishing",
+      "name": "Marina",
+      "icon": "\ud83c\udfa3",
+      "x": 1505,
+      "y": 835,
+      "label": "Marina"
+    },
+    {
+      "id": "nessa",
+      "type": "npc",
+      "role": "shopkeeper",
+      "name": "Nessa",
+      "icon": "\ud83e\uddfa",
+      "x": 1455,
+      "y": 820,
+      "label": "Shopkeeper Nessa"
+    },
+    {
+      "id": "town_board_prop",
+      "type": "sign",
+      "x": 1100,
+      "y": 1105,
+      "label": "Village Board",
+      "icon": "\ud83d\udcdc",
+      "text": "Whisperwind supports NPCs, owned plots, public buildings, and multiplayer players in one scene."
+    },
+    {
+      "id": "well",
+      "type": "well",
+      "x": 1120,
+      "y": 900
+    },
+    {
+      "id": "bench_1",
+      "type": "bench",
+      "x": 945,
+      "y": 910,
+      "icon": "\u25b1"
+    },
+    {
+      "id": "bench_2",
+      "type": "bench",
+      "x": 1280,
+      "y": 915,
+      "icon": "\u25b1"
+    },
+    {
+      "id": "lamp_1",
+      "type": "lamp",
+      "x": 835,
+      "y": 870
+    },
+    {
+      "id": "lamp_2",
+      "type": "lamp",
+      "x": 1375,
+      "y": 910
+    },
+    {
+      "id": "lamp_3",
+      "type": "lamp",
+      "x": 1085,
+      "y": 1260
+    },
+    {
+      "id": "lamp_4",
+      "type": "lamp",
+      "x": 725,
+      "y": 980
+    },
+    {
+      "id": "planter_1",
+      "type": "planter",
+      "x": 915,
+      "y": 1055
+    },
+    {
+      "id": "planter_2",
+      "type": "planter",
+      "x": 1325,
+      "y": 1080
+    },
+    {
+      "id": "tree_a",
+      "type": "tree",
+      "x": 420,
+      "y": 540,
+      "depthY": 650
+    },
+    {
+      "id": "tree_b",
+      "type": "tree",
+      "x": 1820,
+      "y": 610,
+      "depthY": 720
+    },
+    {
+      "id": "tree_c",
+      "type": "tree",
+      "x": 330,
+      "y": 1360,
+      "depthY": 1480
+    },
+    {
+      "id": "tree_d",
+      "type": "tree",
+      "x": 1840,
+      "y": 1400,
+      "depthY": 1520
+    }
   ],
   "hotspots": [
-    { "id": "starter_cottage_door", "type": "exit", "x": 615, "y": 720, "r": 65, "label": "Enter Starter Cottage", "targetScene": "riverbend_cottage_interior", "targetSpawn": "door_south" },
-    { "id": "sale_plot", "type": "textBox", "x": 965, "y": 715, "r": 75, "label": "For Sale Plot", "text": "This lot will become purchasable once the housing ownership system is added." },
-    { "id": "village_gate", "type": "exit", "x": 760, "y": 1015, "r": 90, "label": "Return to Shadow Woods", "targetScene": "shadow_woods_dock", "targetSpawn": "from_estate" },
-    { "id": "notice_board", "type": "textBox", "x": 760, "y": 920, "r": 70, "label": "Village Notice Board", "text": "Multiplayer presence is enabled here. Have another user enter Whisperwind Village to see them walking nearby." }
+    {
+      "id": "starter_cottage_door",
+      "type": "exit",
+      "x": 750,
+      "y": 745,
+      "r": 72,
+      "label": "Enter Riverbend Cottage",
+      "targetScene": "riverbend_cottage_interior",
+      "targetSpawn": "door_south"
+    },
+    {
+      "id": "echo_hall_door",
+      "type": "shop",
+      "x": 1115,
+      "y": 690,
+      "r": 80,
+      "label": "Echo Hall",
+      "title": "Echo Hall",
+      "text": "Soon this will be the walk-in arcade and table-game building where friends meet before playing."
+    },
+    {
+      "id": "goods_shop_door",
+      "type": "shop",
+      "x": 1450,
+      "y": 760,
+      "r": 75,
+      "label": "Nessa's Goods",
+      "title": "Nessa's Goods",
+      "text": "Furniture, clothing, and home items will be sold here once the housing economy is active."
+    },
+    {
+      "id": "village_gate",
+      "type": "exit",
+      "x": 1090,
+      "y": 1505,
+      "r": 95,
+      "label": "Return to Shadow Woods",
+      "targetScene": "shadow_woods_dock",
+      "targetSpawn": "from_estate"
+    },
+    {
+      "id": "arlo_talk",
+      "type": "npc",
+      "x": 1025,
+      "y": 990,
+      "r": 70,
+      "label": "Talk to Arlo",
+      "title": "Arlo",
+      "text": "Welcome to Whisperwind. This is not just a menu \u2014 it is the first neighborhood that can grow into a real town."
+    },
+    {
+      "id": "brindle_talk",
+      "type": "npc",
+      "x": 1265,
+      "y": 1040,
+      "r": 70,
+      "label": "Talk to Brindle",
+      "title": "Brindle Brass",
+      "text": "Plots are data-driven. Empty lots, owned homes, privacy, doors, and future construction all come from this scene file."
+    },
+    {
+      "id": "marina_talk",
+      "type": "npc",
+      "x": 1505,
+      "y": 835,
+      "r": 70,
+      "label": "Talk to Marina",
+      "title": "Marina",
+      "text": "Even a neighborhood needs water. Later, this dock can become a small public fishing spot."
+    },
+    {
+      "id": "nessa_talk",
+      "type": "npc",
+      "x": 1455,
+      "y": 820,
+      "r": 70,
+      "label": "Talk to Nessa",
+      "title": "Nessa",
+      "text": "I am saving shelf space for furniture, wall art, planters, arcade machines, and clothing."
+    },
+    {
+      "id": "town_board",
+      "type": "textBox",
+      "x": 1100,
+      "y": 1105,
+      "r": 70,
+      "label": "Read Village Board",
+      "title": "Village Board",
+      "text": "MVP goals: 12 resident plots, visitors, NPC missions, public buildings, and player homes with real placement rules."
+    },
+    {
+      "id": "plot_02_marker",
+      "type": "plot",
+      "x": 495,
+      "y": 1005,
+      "r": 70,
+      "label": "Inspect Plot 02",
+      "title": "Plot 02",
+      "text": "For sale. In testing mode this will become claimable from an admin/test action."
+    },
+    {
+      "id": "plot_03_marker",
+      "type": "plot",
+      "x": 1695,
+      "y": 1020,
+      "r": 70,
+      "label": "Inspect Plot 03",
+      "title": "Plot 03",
+      "text": "Empty plot. Future neighborhoods can support 12\u201320 residents each using the same data structure."
+    }
   ],
   "ambientEffects": [
-    { "id": "meadow_motes", "type": "fireflies", "x": 350, "y": 260, "w": 870, "h": 620, "density": 0.25, "opacity": 0.5 },
-    { "id": "pond_shimmer", "type": "waterSurfaceShimmer", "x": 835, "y": 520, "w": 350, "h": 240, "density": 0.3, "opacity": 0.3 }
+    {
+      "id": "meadow_motes",
+      "type": "fireflies",
+      "x": 350,
+      "y": 330,
+      "w": 1500,
+      "h": 1000,
+      "density": 0.18,
+      "opacity": 0.45
+    },
+    {
+      "id": "pond_shimmer",
+      "type": "waterSurfaceShimmer",
+      "x": 1450,
+      "y": 670,
+      "w": 350,
+      "h": 240,
+      "density": 0.3,
+      "opacity": 0.3
+    }
   ],
   "terrainAreas": [
-    { "id": "main_path", "type": "terrain", "terrain": "dirt", "points": [[690,940],[830,940],[855,1210],[735,1345],[620,1185]] },
-    { "id": "town_square", "type": "terrain", "terrain": "grass", "points": [[520,675],[760,600],[1040,690],[970,875],[720,915],[520,835]] }
+    {
+      "id": "main_path",
+      "type": "terrain",
+      "terrain": "dirt",
+      "points": [
+        [
+          1010,
+          760
+        ],
+        [
+          1190,
+          760
+        ],
+        [
+          1210,
+          1530
+        ],
+        [
+          1090,
+          1630
+        ],
+        [
+          980,
+          1530
+        ]
+      ]
+    },
+    {
+      "id": "town_square",
+      "type": "terrain",
+      "terrain": "stone",
+      "points": [
+        [
+          760,
+          800
+        ],
+        [
+          1100,
+          710
+        ],
+        [
+          1490,
+          820
+        ],
+        [
+          1445,
+          1115
+        ],
+        [
+          1120,
+          1250
+        ],
+        [
+          780,
+          1125
+        ]
+      ]
+    },
+    {
+      "id": "west_lane",
+      "type": "terrain",
+      "terrain": "dirt",
+      "points": [
+        [
+          455,
+          925
+        ],
+        [
+          760,
+          880
+        ],
+        [
+          770,
+          1105
+        ],
+        [
+          515,
+          1215
+        ],
+        [
+          390,
+          1110
+        ]
+      ]
+    },
+    {
+      "id": "east_lane",
+      "type": "terrain",
+      "terrain": "dirt",
+      "points": [
+        [
+          1450,
+          920
+        ],
+        [
+          1760,
+          990
+        ],
+        [
+          1770,
+          1160
+        ],
+        [
+          1585,
+          1285
+        ],
+        [
+          1400,
+          1170
+        ]
+      ]
+    }
+  ],
+  "foreground": [
+    {
+      "id": "tree_crown_west",
+      "type": "occlusion",
+      "x": 280,
+      "y": 1280,
+      "w": 130,
+      "h": 115
+    },
+    {
+      "id": "tree_crown_east",
+      "type": "occlusion",
+      "x": 1780,
+      "y": 1325,
+      "w": 130,
+      "h": 115
+    }
   ]
 }
