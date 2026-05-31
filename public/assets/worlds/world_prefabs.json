@@ -1,0 +1,1083 @@
+{
+  "version": 1,
+  "notes": "Hand-authored foundation prefabs for GameForge RPG towns. Prefabs are groups, not final maps. Stamp them in the Asset Brush Editor, then polish individual objects.",
+  "prefabs": [
+    {
+      "id": "south_gate_arrival",
+      "name": "South Gate Arrival",
+      "category": "foundation",
+      "description": "Spawn approach: road, trees, flowers, welcome sign. Use this as the first screen of a town.",
+      "bounds": {
+        "w": 960,
+        "h": 720
+      },
+      "anchor": {
+        "x": 480,
+        "y": 640
+      },
+      "preview": "/assets/worldkit/prefabs/previews/south_gate_arrival.png",
+      "tilePaints": [
+        {
+          "assetId": "pixel_ground_006",
+          "x": 0,
+          "y": 0,
+          "w": 960,
+          "h": 720,
+          "tileSize": 64
+        }
+      ],
+      "paths": [
+        {
+          "points": [
+            [
+              480,
+              720
+            ],
+            [
+              480,
+              420
+            ],
+            [
+              480,
+              260
+            ],
+            [
+              480,
+              80
+            ]
+          ],
+          "width": 110
+        }
+      ],
+      "decorations": [
+        {
+          "assetId": "pl_object_005",
+          "x": 160,
+          "y": 310,
+          "w": 220,
+          "h": 260,
+          "layer": "decorations",
+          "solid": {
+            "x": -62,
+            "y": -49,
+            "w": 123,
+            "h": 40
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_005",
+          "x": 800,
+          "y": 300,
+          "w": 220,
+          "h": 260,
+          "layer": "decorations",
+          "solid": {
+            "x": -62,
+            "y": -49,
+            "w": 123,
+            "h": 40
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_005",
+          "x": 230,
+          "y": 525,
+          "w": 180,
+          "h": 220,
+          "layer": "decorations",
+          "solid": {
+            "x": -62,
+            "y": -49,
+            "w": 123,
+            "h": 40
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_005",
+          "x": 735,
+          "y": 520,
+          "w": 180,
+          "h": 220,
+          "layer": "decorations",
+          "solid": {
+            "x": -62,
+            "y": -49,
+            "w": 123,
+            "h": 40
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "gf_south_gate_sign_01",
+          "x": 480,
+          "y": 230,
+          "w": 300,
+          "h": 200,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 0
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 330,
+          "y": 405,
+          "w": 110,
+          "h": 65,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 620,
+          "y": 400,
+          "w": 110,
+          "h": 65,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 375,
+          "y": 300,
+          "w": 70,
+          "h": 170,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 585,
+          "y": 300,
+          "w": 70,
+          "h": 170,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        }
+      ]
+    },
+    {
+      "id": "road_segment_garden",
+      "name": "Garden Road Segment",
+      "category": "foundation",
+      "description": "A reusable road segment with grass edging and flowers. Use to connect districts.",
+      "bounds": {
+        "w": 960,
+        "h": 360
+      },
+      "anchor": {
+        "x": 480,
+        "y": 180
+      },
+      "preview": "/assets/worldkit/prefabs/previews/road_segment_garden.png",
+      "tilePaints": [
+        {
+          "assetId": "pixel_ground_006",
+          "x": 0,
+          "y": 0,
+          "w": 960,
+          "h": 360,
+          "tileSize": 64
+        }
+      ],
+      "paths": [
+        {
+          "points": [
+            [
+              0,
+              180
+            ],
+            [
+              960,
+              180
+            ]
+          ],
+          "width": 95
+        }
+      ],
+      "decorations": [
+        {
+          "assetId": "pl_object_020",
+          "x": 210,
+          "y": 125,
+          "w": 90,
+          "h": 55,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 520,
+          "y": 245,
+          "w": 90,
+          "h": 55,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 775,
+          "y": 115,
+          "w": 90,
+          "h": 55,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 350,
+          "y": 135,
+          "w": 55,
+          "h": 140,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 650,
+          "y": 225,
+          "w": 55,
+          "h": 140,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        }
+      ]
+    },
+    {
+      "id": "flower_cluster_meadow",
+      "name": "Flower Cluster Meadow",
+      "category": "detail",
+      "description": "Small natural beautification cluster for edges of roads and plazas.",
+      "bounds": {
+        "w": 360,
+        "h": 260
+      },
+      "anchor": {
+        "x": 180,
+        "y": 150
+      },
+      "preview": "/assets/worldkit/prefabs/previews/flower_cluster_meadow.png",
+      "decorations": [
+        {
+          "assetId": "pl_object_020",
+          "x": 85,
+          "y": 125,
+          "w": 95,
+          "h": 55,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 185,
+          "y": 95,
+          "w": 120,
+          "h": 70,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 260,
+          "y": 150,
+          "w": 90,
+          "h": 55,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 165,
+          "y": 185,
+          "w": 80,
+          "h": 48,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        }
+      ]
+    },
+    {
+      "id": "fountain_plaza_core",
+      "name": "Fountain Plaza Core",
+      "category": "landmark",
+      "description": "Town center: fountain, board, benches, lamps, flowers. First real gathering space.",
+      "bounds": {
+        "w": 1100,
+        "h": 900
+      },
+      "anchor": {
+        "x": 550,
+        "y": 690
+      },
+      "preview": "/assets/worldkit/prefabs/previews/fountain_plaza_core.png",
+      "tilePaints": [
+        {
+          "assetId": "pixel_ground_006",
+          "x": 0,
+          "y": 0,
+          "w": 1100,
+          "h": 900,
+          "tileSize": 64
+        },
+        {
+          "assetId": "pixel_ground_019",
+          "x": 250,
+          "y": 180,
+          "w": 600,
+          "h": 520,
+          "tileSize": 64
+        }
+      ],
+      "paths": [
+        {
+          "points": [
+            [
+              550,
+              900
+            ],
+            [
+              550,
+              670
+            ],
+            [
+              550,
+              450
+            ],
+            [
+              550,
+              0
+            ]
+          ],
+          "width": 115
+        },
+        {
+          "points": [
+            [
+              0,
+              450
+            ],
+            [
+              260,
+              450
+            ],
+            [
+              550,
+              450
+            ],
+            [
+              840,
+              450
+            ],
+            [
+              1100,
+              450
+            ]
+          ],
+          "width": 105
+        }
+      ],
+      "objects": [
+        {
+          "assetId": "gf_fountain_01",
+          "x": 550,
+          "y": 475,
+          "w": 260,
+          "h": 260,
+          "layer": "objects",
+          "solid": {
+            "x": -85,
+            "y": -45,
+            "w": 170,
+            "h": 65
+          },
+          "depthOffset": 0
+        }
+      ],
+      "decorations": [
+        {
+          "assetId": "gf_chronicle_board_01",
+          "x": 835,
+          "y": 285,
+          "w": 260,
+          "h": 185,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 0
+        },
+        {
+          "assetId": "pl_object_013",
+          "x": 345,
+          "y": 565,
+          "w": 150,
+          "h": 70,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_013",
+          "x": 755,
+          "y": 565,
+          "w": 150,
+          "h": 70,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 350,
+          "y": 335,
+          "w": 70,
+          "h": 170,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 750,
+          "y": 335,
+          "w": 70,
+          "h": 170,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 315,
+          "y": 255,
+          "w": 120,
+          "h": 70,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 780,
+          "y": 255,
+          "w": 120,
+          "h": 70,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 370,
+          "y": 675,
+          "w": 120,
+          "h": 70,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 720,
+          "y": 675,
+          "w": 120,
+          "h": 70,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        }
+      ]
+    },
+    {
+      "id": "echo_hall_exterior",
+      "name": "Echo Hall Exterior",
+      "category": "landmark",
+      "description": "First pass at the central GameForge social landmark using Pixel Lands building pieces and GameForge landscaping.",
+      "bounds": {
+        "w": 1200,
+        "h": 960
+      },
+      "anchor": {
+        "x": 600,
+        "y": 850
+      },
+      "preview": "/assets/worldkit/prefabs/previews/echo_hall_exterior.png",
+      "tilePaints": [
+        {
+          "assetId": "pixel_ground_006",
+          "x": 0,
+          "y": 0,
+          "w": 1200,
+          "h": 960,
+          "tileSize": 64
+        },
+        {
+          "assetId": "pixel_ground_019",
+          "x": 240,
+          "y": 570,
+          "w": 720,
+          "h": 250,
+          "tileSize": 64
+        }
+      ],
+      "paths": [
+        {
+          "points": [
+            [
+              600,
+              960
+            ],
+            [
+              600,
+              760
+            ],
+            [
+              600,
+              610
+            ],
+            [
+              600,
+              460
+            ]
+          ],
+          "width": 130
+        }
+      ],
+      "objects": [
+        {
+          "assetId": "pl_building_003",
+          "x": 600,
+          "y": 490,
+          "w": 680,
+          "h": 445,
+          "layer": "objects",
+          "solid": {
+            "x": -255,
+            "y": -115,
+            "w": 510,
+            "h": 90
+          },
+          "depthOffset": 0
+        }
+      ],
+      "decorations": [
+        {
+          "assetId": "pl_object_010",
+          "x": 340,
+          "y": 650,
+          "w": 75,
+          "h": 180,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 860,
+          "y": 650,
+          "w": 75,
+          "h": 180,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 285,
+          "y": 545,
+          "w": 130,
+          "h": 80,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 885,
+          "y": 545,
+          "w": 130,
+          "h": 80,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_013",
+          "x": 420,
+          "y": 775,
+          "w": 160,
+          "h": 70,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_013",
+          "x": 780,
+          "y": 775,
+          "w": 160,
+          "h": 70,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_005",
+          "x": 150,
+          "y": 520,
+          "w": 220,
+          "h": 260,
+          "layer": "decorations",
+          "solid": {
+            "x": -62,
+            "y": -49,
+            "w": 123,
+            "h": 40
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_005",
+          "x": 1050,
+          "y": 520,
+          "w": 220,
+          "h": 260,
+          "layer": "decorations",
+          "solid": {
+            "x": -62,
+            "y": -49,
+            "w": 123,
+            "h": 40
+          },
+          "depthOffset": 10
+        }
+      ]
+    },
+    {
+      "id": "cottage_lot_basic",
+      "name": "Cottage Lot Basic",
+      "category": "housing",
+      "description": "A ready-made empty house lot: cottage, mailbox/sign, fence, flowers.",
+      "bounds": {
+        "w": 800,
+        "h": 620
+      },
+      "anchor": {
+        "x": 400,
+        "y": 560
+      },
+      "preview": "/assets/worldkit/prefabs/previews/cottage_lot_basic.png",
+      "tilePaints": [
+        {
+          "assetId": "pixel_ground_006",
+          "x": 0,
+          "y": 0,
+          "w": 800,
+          "h": 620,
+          "tileSize": 64
+        }
+      ],
+      "paths": [
+        {
+          "points": [
+            [
+              400,
+              620
+            ],
+            [
+              400,
+              430
+            ],
+            [
+              400,
+              340
+            ]
+          ],
+          "width": 85
+        }
+      ],
+      "objects": [
+        {
+          "assetId": "pl_building_002",
+          "x": 400,
+          "y": 320,
+          "w": 360,
+          "h": 420,
+          "layer": "objects",
+          "solid": {
+            "x": -130,
+            "y": -95,
+            "w": 260,
+            "h": 80
+          },
+          "depthOffset": 0
+        }
+      ],
+      "decorations": [
+        {
+          "assetId": "pl_object_001",
+          "x": 250,
+          "y": 465,
+          "w": 95,
+          "h": 145,
+          "layer": "decorations",
+          "solid": {
+            "x": -31,
+            "y": -30,
+            "w": 63,
+            "h": 25
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 560,
+          "y": 430,
+          "w": 120,
+          "h": 70,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_002",
+          "x": 210,
+          "y": 250,
+          "w": 160,
+          "h": 140,
+          "layer": "decorations",
+          "solid": {
+            "x": -42,
+            "y": -31,
+            "w": 84,
+            "h": 25
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_002",
+          "x": 590,
+          "y": 250,
+          "w": 160,
+          "h": 140,
+          "layer": "decorations",
+          "solid": {
+            "x": -42,
+            "y": -31,
+            "w": 84,
+            "h": 25
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_005",
+          "x": 110,
+          "y": 490,
+          "w": 190,
+          "h": 230,
+          "layer": "decorations",
+          "solid": {
+            "x": -62,
+            "y": -49,
+            "w": 123,
+            "h": 40
+          },
+          "depthOffset": 10
+        }
+      ]
+    },
+    {
+      "id": "market_corner_basic",
+      "name": "Market Corner Basic",
+      "category": "district",
+      "description": "Small shop cluster with props and lamps. Use as the start of Market Row.",
+      "bounds": {
+        "w": 900,
+        "h": 660
+      },
+      "anchor": {
+        "x": 450,
+        "y": 600
+      },
+      "preview": "/assets/worldkit/prefabs/previews/market_corner_basic.png",
+      "tilePaints": [
+        {
+          "assetId": "pixel_ground_006",
+          "x": 0,
+          "y": 0,
+          "w": 900,
+          "h": 660,
+          "tileSize": 64
+        }
+      ],
+      "paths": [
+        {
+          "points": [
+            [
+              450,
+              660
+            ],
+            [
+              450,
+              470
+            ],
+            [
+              450,
+              350
+            ]
+          ],
+          "width": 95
+        },
+        {
+          "points": [
+            [
+              150,
+              470
+            ],
+            [
+              450,
+              470
+            ],
+            [
+              760,
+              470
+            ]
+          ],
+          "width": 85
+        }
+      ],
+      "objects": [
+        {
+          "assetId": "pl_building_001",
+          "x": 430,
+          "y": 340,
+          "w": 520,
+          "h": 430,
+          "layer": "objects",
+          "solid": {
+            "x": -195,
+            "y": -105,
+            "w": 390,
+            "h": 90
+          },
+          "depthOffset": 0
+        }
+      ],
+      "decorations": [
+        {
+          "assetId": "pl_object_010",
+          "x": 180,
+          "y": 455,
+          "w": 70,
+          "h": 170,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_010",
+          "x": 720,
+          "y": 455,
+          "w": 70,
+          "h": 170,
+          "layer": "decorations",
+          "solid": {
+            "x": -17,
+            "y": -32,
+            "w": 34,
+            "h": 26
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "gf_chronicle_board_01",
+          "x": 720,
+          "y": 330,
+          "w": 220,
+          "h": 155,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 0
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 190,
+          "y": 310,
+          "w": 130,
+          "h": 75,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_020",
+          "x": 650,
+          "y": 310,
+          "w": 130,
+          "h": 75,
+          "layer": "decorations",
+          "solid": {
+            "x": -35,
+            "y": -13,
+            "w": 71,
+            "h": 11
+          },
+          "depthOffset": 10
+        },
+        {
+          "assetId": "pl_object_013",
+          "x": 300,
+          "y": 535,
+          "w": 145,
+          "h": 65,
+          "layer": "decorations",
+          "solid": null,
+          "depthOffset": 10
+        }
+      ]
+    }
+  ]
+}
