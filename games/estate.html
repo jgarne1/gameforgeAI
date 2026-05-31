@@ -1,43 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GameForge Estate</title>
 <style>
-  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03110b;font-family:Arial,Helvetica,sans-serif;color:#eafff4}
-  .boot{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(34,197,94,.20),rgba(3,7,18,.96));z-index:1;text-align:center;padding:24px}
-  .boot h1{margin:0 0 8px;font-size:28px}.boot p{margin:0;color:#b7f7cf;font-weight:800}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06130d;color:#f3fff7;font-family:Inter,Arial,Helvetica,sans-serif}
+  .gfRpgRoot{position:fixed;inset:0;overflow:hidden;background:#06130d}
+  #gfRpgCanvas{width:100%;height:100%;display:block;image-rendering:auto;background:#244b2f}
+  .gfAreaTitle{position:fixed;left:14px;top:14px;z-index:5;padding:12px 16px;border:1px solid rgba(255,231,158,.35);border-radius:14px;background:rgba(18,24,16,.78);box-shadow:0 8px 30px rgba(0,0,0,.28);backdrop-filter:blur(8px)}
+  .gfAreaTitle b{font-size:20px;display:block;color:#fff5c7}.gfAreaTitle span{display:block;margin-top:2px;color:#bfe8c8;font-size:13px;font-weight:800}
+  .gfLeave{position:fixed;right:16px;top:16px;z-index:6;border:0;border-radius:14px;background:rgba(18,24,16,.86);color:#fff5c7;padding:13px 18px;font-weight:900;box-shadow:0 8px 22px rgba(0,0,0,.35);cursor:pointer}
+  .gfPrompt{position:fixed;left:50%;bottom:102px;transform:translateX(-50%);z-index:6;padding:10px 16px;border-radius:14px;background:rgba(20,25,18,.85);border:1px solid rgba(255,231,158,.35);box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:17px;font-weight:950;color:#fff6d1;letter-spacing:.01em}.hidden{display:none!important}
+  .gfQuest{position:fixed;left:14px;top:92px;z-index:5;width:min(320px,calc(100vw - 32px));padding:14px 42px 14px 14px;border:1px solid rgba(255,231,158,.28);border-radius:14px;background:rgba(17,21,16,.76);box-shadow:0 12px 30px rgba(0,0,0,.28);backdrop-filter:blur(8px)}
+  .gfQuest b{color:#fff2ae}.gfQuest p{margin:8px 0 0;color:#e6ffe9;line-height:1.42;font-size:14px}.gfQuest button,.gfDialog button{position:absolute;right:10px;top:8px;border:0;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font-size:18px;width:28px;height:28px;cursor:pointer;font-weight:900}
+  .gfDialog{position:fixed;left:50%;bottom:165px;transform:translateX(-50%);z-index:10;width:min(680px,calc(100vw - 40px));min-height:90px;padding:22px 52px 22px 24px;border:2px solid rgba(255,231,158,.4);border-radius:18px;background:rgba(18,20,18,.92);box-shadow:0 18px 50px rgba(0,0,0,.45);white-space:pre-wrap;line-height:1.5;font-size:17px;color:#fff7d6}
+  .gfChat{position:fixed;left:14px;bottom:16px;z-index:5;width:min(360px,calc(100vw - 32px));padding:12px 16px;border-radius:13px;background:rgba(10,12,12,.72);color:#d9e8df;font-weight:800}.gfChat span{opacity:.9}
+  .gfHotbar{position:fixed;right:16px;bottom:16px;z-index:5;display:flex;gap:10px}.gfHotbar button{border:1px solid rgba(255,231,158,.32);border-radius:12px;background:rgba(22,19,14,.82);color:#fff4c1;font-weight:950;padding:12px 16px;box-shadow:0 8px 22px rgba(0,0,0,.28)}
+  .boot{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(34,197,94,.20),rgba(3,7,18,.96));z-index:20;text-align:center;padding:24px}.boot h1{margin:0 0 8px;font-size:28px}.boot p{margin:0;color:#b7f7cf;font-weight:800}
+  @media(max-width:700px){.gfQuest{display:none}.gfAreaTitle span{display:none}.gfAreaTitle b{font-size:16px}.gfHotbar button{padding:10px 12px}.gfDialog{font-size:15px;bottom:115px}.gfPrompt{bottom:82px}}
 </style>
 </head>
 <body>
-<div class="boot" id="boot"><div><h1>Estate District</h1><p>Opening the neighborhood gate...</p></div></div>
+<div class="boot" id="boot"><div><h1>Opening Whisperwind...</h1><p>Loading object-built town scene.</p></div></div>
 <script src="/games/js/rpg_scene_engine.js"></script>
 <script>
-var GAME_CONTEXT=null;
-function playerName(){
-  try{
-    if(GAME_CONTEXT&&GAME_CONTEXT.username)return GAME_CONTEXT.username;
-    if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length)return window.GAME_PLAYERS[0].name||'guest';
-    return localStorage.getItem('gf_user')||'guest';
-  }catch(e){return 'guest';}
-}
-function startEstate(){
-  var boot=document.getElementById('boot');
-  if(boot)boot.style.display='none';
-  if(!window.GameForgeRpgEngine){alert('RPG scene engine did not load.');return;}
-  var params=new URLSearchParams(location.search);
-  var scene=params.get('scene')||'whisperwind_village';
-  GameForgeRpgEngine.start({username:playerName(),sceneId:scene,onClose:function(){
-    if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'estate'},'*');}
-  }});
-}
-window.addEventListener('message',function(ev){
-  var m=ev.data||{};
-  if(m.type==='GAME_CONTEXT'){GAME_CONTEXT=m.data||GAME_CONTEXT;try{localStorage.setItem('gf_user',GAME_CONTEXT.username||'guest');}catch(e){} }
-  if(m.type==='gameSetup'&&m.username){GAME_CONTEXT=GAME_CONTEXT||{};GAME_CONTEXT.username=m.username;try{localStorage.setItem('gf_user',m.username||'guest');}catch(e){} }
-});
-setTimeout(startEstate,80);
+let GAME_CONTEXT=null;
+function playerName(){try{return (GAME_CONTEXT&&GAME_CONTEXT.username)||localStorage.getItem('gf_user')||'Wanderer';}catch(e){return 'Wanderer';}}
+function start(){const boot=document.getElementById('boot');if(boot)boot.style.display='none';if(!window.RPGSceneEngine){alert('RPG engine did not load.');return;}window.RPGSceneEngine.start({username:playerName(),onClose:function(){if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'estate'},'*');}}});}
+window.addEventListener('message',function(ev){const m=ev.data||{};if(m.type==='GAME_CONTEXT'){GAME_CONTEXT=m.data||GAME_CONTEXT;try{localStorage.setItem('gf_user',GAME_CONTEXT.username||'Wanderer');}catch(e){}}if(m.type==='gameSetup'&&m.username){GAME_CONTEXT=GAME_CONTEXT||{};GAME_CONTEXT.username=m.username;try{localStorage.setItem('gf_user',m.username);}catch(e){}}});
+setTimeout(start,100);
 </script>
 </body>
 </html>

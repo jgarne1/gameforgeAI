@@ -5442,54 +5442,48 @@ function pushPresence(){
 
 
 
-// -----------------------------
 
-// Estate / neighborhood MVP support.
-// This intentionally stores only plot ownership/state for now. House interiors and furniture
-// placement will be separate data so neighborhood scenes can stay lightweight and scalable.
+
+// -----------------------------
+// Estate neighborhood state
+// -----------------------------
 function defaultEstateNeighborhoods(){
-  return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',theme:'cozy_forge_meadow',maxResidents:20,plots:Array.from({length:20}).map((_,i)=>({plotId:'plot_'+String(i+1).padStart(2,'0'),ownerId:'',ownerName:'',houseType:'starter_cottage',privacy:'public',status:i<7?'for_sale':'future'}))}]};
+  return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',sceneId:'whisperwind_village',theme:'forest_village',plots:[1,2,3,4,5,6].map(n=>({id:'plot_'+String(n).padStart(2,'0'),name:'Plot '+n,status:'for_sale',owner:null,privacy:'public',houseType:null}))}]};
 }
-function estateData(){return readJSON(estateNeighborhoodsFile,defaultEstateNeighborhoods());}
-function saveEstateData(data){writeJSON(estateNeighborhoodsFile,data||defaultEstateNeighborhoods());}
-function publicNeighborhood(n){
-  return {
-    id:n.id,
-    name:n.name,
-    theme:n.theme||'cozy_forge_meadow',
-    maxResidents:n.maxResidents||20,
-    plots:(n.plots||[]).map(p=>({plotId:p.plotId,status:p.ownerId?'owned':(p.status||'empty'),ownerId:p.ownerId||'',ownerName:p.ownerName||'',houseType:p.houseType||'starter_cottage',privacy:p.privacy||'public'}))
-  };
+function loadEstateNeighborhoods(){
+  const data=readJSON(estateNeighborhoodsFile,null)||defaultEstateNeighborhoods();
+  if(!data.neighborhoods)data.neighborhoods=[];
+  return data;
 }
+function saveEstateNeighborhoods(data){writeJSON(estateNeighborhoodsFile,data);}
 app.get('/api/estate/neighborhoods/:id',(req,res)=>{
-  const data=estateData();
-  const n=(data.neighborhoods||[]).find(x=>String(x.id)===String(req.params.id));
-  if(!n)return res.status(404).json({ok:false,error:'Neighborhood not found.'});
-  res.json(publicNeighborhood(n));
+  const id=String(req.params.id||'whisperwind_01');
+  const data=loadEstateNeighborhoods();
+  const neighborhood=(data.neighborhoods||[]).find(n=>n.id===id);
+  if(!neighborhood)return res.status(404).json({ok:false,error:'Neighborhood not found'});
+  res.json({ok:true,neighborhood});
 });
 app.post('/api/estate/neighborhoods/:id/claim',(req,res)=>{
-  const username=String(req.body.username||'').trim().slice(0,32);
-  const plotId=String(req.body.plotId||'').trim();
-  if(!username)return res.status(400).json({ok:false,error:'Username is required.'});
-  if(!plotId)return res.status(400).json({ok:false,error:'Plot id is required.'});
-  const data=estateData();
-  const n=(data.neighborhoods||[]).find(x=>String(x.id)===String(req.params.id));
-  if(!n)return res.status(404).json({ok:false,error:'Neighborhood not found.'});
-  const existing=(n.plots||[]).find(p=>String(p.ownerName||'').toLowerCase()===username.toLowerCase()&&p.ownerId);
-  if(existing&&existing.plotId!==plotId)return res.status(409).json({ok:false,error:'You already own a plot in this neighborhood.'});
-  const p=(n.plots||[]).find(x=>String(x.plotId)===plotId);
-  if(!p)return res.status(404).json({ok:false,error:'Plot not found.'});
-  if(p.ownerId&&String(p.ownerName||'').toLowerCase()!==username.toLowerCase())return res.status(409).json({ok:false,error:'That plot is already owned.'});
-  if(!['for_sale','owned'].includes(p.status||'for_sale')&&!p.ownerId)return res.status(409).json({ok:false,error:'That plot is not available yet.'});
-  p.ownerId=username.toLowerCase().replace(/[^a-z0-9_\-]/g,'_')||username;
-  p.ownerName=username;
-  p.status='owned';
-  p.houseType=p.houseType||'starter_cottage';
-  p.privacy=p.privacy||'public';
-  saveEstateData(data);
-  res.json({ok:true,neighborhood:publicNeighborhood(n)});
+  const id=String(req.params.id||'whisperwind_01');
+  const username=String((req.body&&req.body.username)||'').trim();
+  const plotId=String((req.body&&req.body.plotId)||'').trim();
+  if(!username)return res.status(400).json({ok:false,error:'Missing username'});
+  if(!plotId)return res.status(400).json({ok:false,error:'Missing plot'});
+  const data=loadEstateNeighborhoods();
+  const neighborhood=(data.neighborhoods||[]).find(n=>n.id===id);
+  if(!neighborhood)return res.status(404).json({ok:false,error:'Neighborhood not found'});
+  const plot=(neighborhood.plots||[]).find(p=>p.id===plotId);
+  if(!plot)return res.status(404).json({ok:false,error:'Plot not found'});
+  const already=(neighborhood.plots||[]).find(p=>String(p.owner||'').toLowerCase()===username.toLowerCase());
+  if(already&&already.id!==plotId)return res.status(409).json({ok:false,error:'You already own a plot in this neighborhood.'});
+  if(plot.owner&&String(plot.owner).toLowerCase()!==username.toLowerCase())return res.status(409).json({ok:false,error:'That plot already belongs to '+plot.owner+'.'});
+  if(plot.status==='empty')return res.status(409).json({ok:false,error:'That plot is not for sale yet.'});
+  plot.owner=username;plot.status='owned';plot.privacy=plot.privacy||'public';plot.houseType=plot.houseType||'starter_cottage';plot.claimedAt=Date.now();
+  saveEstateNeighborhoods(data);
+  res.json({ok:true,plot,neighborhood});
 });
 
+// -----------------------------
 // Multiplayer overworld support
 // -----------------------------
 const worldPlayers=new Map(); // socket -> public world state
