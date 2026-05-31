@@ -132,3 +132,10 @@ Design rules:
 - Use the WebSocket `worldJoin/worldMove/worldLeave` messages for multiplayer presence.
 - Keep the scene editor-friendly: when adding a house, NPC, sign, portal, tree, or plot, define it in scene JSON first.
 - The current art kit is a functional first pass. Future art should replace individual assets in `public/assets/worldkit/` without changing the engine.
+
+
+## Whisperwind Visual Object Kit Pass
+
+Whisperwind is now intended to be a large scrollable object-built town, not a single painted background. The scene should be edited through `public/assets/worlds/whisperwind_village.json` until the visual editor is expanded. Keep future villages built from reusable objects: buildings, paths, trees, fences, lamps, plots, docks, boards, NPCs, portals, and interactable hotspots. Avoid baking critical gameplay objects into one background image.
+
+Visual target: cozy Final Fantasy VI/SNES town readability with modern painted/pixel clarity. The map should feel like a real place players can walk through, with depth sorting, collision, and subtle prompts only when near interactables.
