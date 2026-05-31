@@ -1,0 +1,302 @@
+{
+  "version": 1,
+  "name": "GameForge World Forger Palette",
+  "notes": "Small curated palette for fast loading. Keep this list tiny; the full asset catalog can stay available for later asset-library work.",
+  "gridSize": 64,
+  "terrain": [
+    {
+      "id": "grass",
+      "name": "Grass",
+      "color": "#3f7d3a",
+      "texture": "/assets/worldkit/terrain/mana_spring/mana_spring_006.png",
+      "thumbnail": "/assets/worldkit/terrain/mana_spring/mana_spring_006.png"
+    },
+    {
+      "id": "grass_dark",
+      "name": "Dark Grass",
+      "color": "#2e6333",
+      "texture": "/assets/worldkit/terrain/mana_spring/mana_spring_014.png",
+      "thumbnail": "/assets/worldkit/terrain/mana_spring/mana_spring_014.png"
+    },
+    {
+      "id": "path",
+      "name": "Stone Path",
+      "color": "#b9995f",
+      "texture": "/assets/worldkit/terrain/pixel_lands/pixel_ground_006.png",
+      "thumbnail": "/assets/worldkit/terrain/pixel_lands/pixel_ground_006.png",
+      "autotile": true
+    },
+    {
+      "id": "dirt",
+      "name": "Dirt Path",
+      "color": "#8b6541",
+      "texture": "/assets/worldkit/terrain/pixel_lands/pixel_ground_014.png",
+      "thumbnail": "/assets/worldkit/terrain/pixel_lands/pixel_ground_014.png",
+      "autotile": true
+    },
+    {
+      "id": "water",
+      "name": "Water",
+      "color": "#1b7da0",
+      "texture": "/assets/vendor/mana_seed/seasonal_forest/spring_water_sparkles.png",
+      "thumbnail": "/assets/vendor/mana_seed/seasonal_forest/spring_water_sparkles.png",
+      "autotile": true,
+      "blocked": true
+    },
+    {
+      "id": "flowers",
+      "name": "Flower Ground",
+      "color": "#4f913f",
+      "texture": "/assets/worldkit/terrain/mana_spring/mana_spring_031.png",
+      "thumbnail": "/assets/worldkit/terrain/mana_spring/mana_spring_031.png"
+    }
+  ],
+  "objects": [
+    {
+      "id": "echo_hall",
+      "name": "Echo Hall",
+      "category": "Structures",
+      "asset": "/assets/worldkit/echo_hall.png",
+      "w": 500,
+      "h": 390,
+      "solid": {
+        "x": -210,
+        "y": -150,
+        "w": 420,
+        "h": 120
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "cottage_blue",
+      "name": "Blue Cottage",
+      "category": "Structures",
+      "asset": "/assets/worldkit/cottage_blue.png",
+      "w": 330,
+      "h": 300,
+      "solid": {
+        "x": -135,
+        "y": -105,
+        "w": 270,
+        "h": 92
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "cottage_red",
+      "name": "Red Cottage",
+      "category": "Structures",
+      "asset": "/assets/worldkit/cottage_red.png",
+      "w": 330,
+      "h": 300,
+      "solid": {
+        "x": -135,
+        "y": -105,
+        "w": 270,
+        "h": 92
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "shop_general",
+      "name": "General Store",
+      "category": "Structures",
+      "asset": "/assets/worldkit/shop_general.png",
+      "w": 380,
+      "h": 310,
+      "solid": {
+        "x": -155,
+        "y": -115,
+        "w": 310,
+        "h": 100
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "dock",
+      "name": "Dock",
+      "category": "Structures",
+      "asset": "/assets/worldkit/dock.png",
+      "w": 420,
+      "h": 190,
+      "solid": {
+        "x": -190,
+        "y": -75,
+        "w": 380,
+        "h": 55
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "fountain",
+      "name": "Fountain",
+      "category": "Town",
+      "asset": "/assets/worldkit/fountain.png",
+      "w": 220,
+      "h": 190,
+      "solid": {
+        "x": -70,
+        "y": -70,
+        "w": 140,
+        "h": 80
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "chronicle_board",
+      "name": "Chronicle Board",
+      "category": "Town",
+      "asset": "/assets/worldkit/prefabs/assets/gf_chronicle_board_01.png",
+      "w": 210,
+      "h": 145,
+      "solid": {
+        "x": -78,
+        "y": -50,
+        "w": 156,
+        "h": 45
+      },
+      "depthOffset": 0,
+      "interact": {
+        "kind": "inspect",
+        "label": "Read Board",
+        "message": "The Chronicle Board will show projects, town news, and achievements."
+      }
+    },
+    {
+      "id": "lamp",
+      "name": "Lamp",
+      "category": "Town",
+      "asset": "/assets/worldkit/lamp.png",
+      "w": 82,
+      "h": 150,
+      "solid": {
+        "x": -16,
+        "y": -36,
+        "w": 32,
+        "h": 32
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "bench",
+      "name": "Low Bench / Rail",
+      "category": "Town",
+      "asset": "/assets/worldkit/fence_segment.png",
+      "w": 120,
+      "h": 55,
+      "solid": {
+        "x": -55,
+        "y": -22,
+        "w": 110,
+        "h": 20
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "sign_blank",
+      "name": "Blank Sign",
+      "category": "Town",
+      "asset": "/assets/worldkit/sign_blank.png",
+      "w": 108,
+      "h": 92,
+      "solid": {
+        "x": -34,
+        "y": -30,
+        "w": 68,
+        "h": 28
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "mailbox",
+      "name": "Mailbox",
+      "category": "Town",
+      "asset": "/assets/worldkit/mailbox.png",
+      "w": 80,
+      "h": 78,
+      "solid": {
+        "x": -23,
+        "y": -24,
+        "w": 46,
+        "h": 24
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "fence",
+      "name": "Fence Segment",
+      "category": "Town",
+      "asset": "/assets/worldkit/fence_segment.png",
+      "w": 150,
+      "h": 76,
+      "solid": {
+        "x": -72,
+        "y": -28,
+        "w": 144,
+        "h": 24
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "flower_patch",
+      "name": "Flower Patch",
+      "category": "Nature",
+      "asset": "/assets/worldkit/flower_patch.png",
+      "w": 120,
+      "h": 76,
+      "depthOffset": -4
+    },
+    {
+      "id": "rocks",
+      "name": "Rocks",
+      "category": "Nature",
+      "asset": "/assets/worldkit/rocks.png",
+      "w": 110,
+      "h": 80,
+      "solid": {
+        "x": -35,
+        "y": -25,
+        "w": 70,
+        "h": 25
+      },
+      "depthOffset": 0
+    },
+    {
+      "id": "tree_cluster",
+      "name": "Tree Cluster",
+      "category": "Nature",
+      "asset": "/assets/worldkit/terrain/mana_spring/mana_spring_066.png",
+      "w": 180,
+      "h": 180,
+      "solid": {
+        "x": -40,
+        "y": -45,
+        "w": 80,
+        "h": 42
+      },
+      "depthOffset": 0
+    }
+  ],
+  "events": [
+    {
+      "id": "npc",
+      "name": "NPC",
+      "kind": "npc"
+    },
+    {
+      "id": "door",
+      "name": "Door / Portal",
+      "kind": "portal"
+    },
+    {
+      "id": "inspect",
+      "name": "Inspect Spot",
+      "kind": "inspect"
+    },
+    {
+      "id": "fishing",
+      "name": "Fishing Spot",
+      "kind": "fishing"
+    }
+  ]
+}

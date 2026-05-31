@@ -789,10 +789,10 @@ textarea.adminTextArea{
             <h3>World Scene Tools</h3>
             <p class="muted">Edit fishing/world scenes, walkable areas, hotspots, exits, and future neighborhood scenes.</p>
           </div>
-          <div class="row"><button class="primary" onclick="openWorldSceneEditor()">Open World Scene Editor</button><button class="ghost" onclick="openWorldAssetEditor()">Open Asset Brush Editor</button></div>
+          <div class="row"><button class="primary" onclick="openWorldForger()">Open World Forger</button><button class="ghost" onclick="openWorldSceneEditor()">Legacy Scene Editor</button></div>
         </div>
         <div class="list">
-          <div class="empty">Use <code>/games/world_asset_editor.html</code> for object painting, previews, terrain fill, and pack-based visual tuning. Use <code>/games/world_editor.html</code> for fishing hotspots, exits, walkable areas, and legacy scene geometry.</div>
+          <div class="empty">Use <code>/games/world_forger.html</code> for RPG-style terrain painting, object placement, events, and collision. Use <code>/games/world_editor.html</code> only for legacy fishing hotspots/effects until those are migrated.</div>
         </div>
       </div>
     </div>
@@ -1036,8 +1036,11 @@ function openMainApp(){window.open('/','_blank')}
 function openWorldSceneEditor(){
   window.open('/games/world_editor.html','_blank','noopener');
 }
+function openWorldForger(){
+  window.open('/games/world_forger.html','_blank','noopener');
+}
 function openWorldAssetEditor(){
-  window.open('/games/world_asset_editor.html','_blank','noopener');
+  window.open('/games/world_forger.html','_blank','noopener');
 }
 function applySiteSettings(settings){
   settings=settings||{};

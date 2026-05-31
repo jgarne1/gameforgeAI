@@ -17,6 +17,7 @@ function allSceneAssets(scene){
   function add(a){ if(a) urls.add(assetUrl(a)); }
   [...(scene.objects||[]),...(scene.decorations||[])].forEach(o=>add(o.asset));
   (scene.tilePaints||[]).forEach(t=>add(t.sheet||t.asset));
+  if(scene.terrainPalette){Object.values(scene.terrainPalette).forEach(t=>add(t.texture||t.asset));}
   (scene.npcs||[]).forEach(n=>add(n.asset||n.sheet));
   (scene.tileLayers||[]).forEach(l=>add(l.sheet));
   (scene.ground&&scene.ground.sheet)&&add(scene.ground.sheet);
@@ -76,9 +77,17 @@ function update(dt){
 function canStand(x,y){
   if(x<30||y<30||x>state.scene.size.w-30||y>state.scene.size.h-30)return false;
   for(const w of state.scene.waterAreas||state.scene.water||[]){if(pointInPoly([x,y],w.points))return false;}
+  if(isTerrainBlocked(x,y))return false;
   const all=[...(state.scene.objects||[]),...(state.scene.decorations||[])];
   for(const o of all){if(!o.solid)continue;const s=o.solid;if(x>o.x+s.x&&x<o.x+s.x+s.w&&y>o.y+s.y&&y<o.y+s.y+s.h)return false;}
   return true;
+}
+function isTerrainBlocked(x,y){
+  const tm=state.scene.terrainMap;if(!tm||!tm.tiles)return false;
+  const g=tm.grid||64,cx=Math.floor(x/g),cy=Math.floor(y/g),id=tm.tiles[cx+','+cy];
+  if(id==='water')return true;
+  const mc=state.scene.manualCollision||{}; if(mc[cx+','+cy]==='blocked')return true; if(mc[cx+','+cy]==='walkable')return false;
+  return false;
 }
 function pointInPoly(p,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];const inter=((yi>p[1])!=(yj>p[1]))&&(p[0]<(xj-xi)*(p[1]-yi)/(yj-yi)+xi);if(inter)inside=!inside;}return inside;}
 function findNear(){
@@ -101,6 +110,7 @@ function draw(now){
 }
 function drawGround(ctx){
   const sc=state.scene;ctx.fillStyle='#3d6d34';ctx.fillRect(0,0,sc.size.w,sc.size.h);
+  if(sc.terrainMap&&sc.terrainMap.tiles){drawTerrainMap(ctx,sc);drawTilePaints(ctx);return;}
   const tile=state.scene.groundTile||{sheet:'/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png',src:[0,0,16,16],size:64};
   const img=state.assets[assetUrl(tile.sheet)];if(!img)return drawFallbackGrass(ctx,sc);
   const size=tile.size||64,src=tile.src||[0,0,16,16];
@@ -109,6 +119,29 @@ function drawGround(ctx){
   ctx.save();ctx.globalAlpha=.55;for(let i=0;i<900;i++){const x=(i*181)%sc.size.w,y=(i*313)%sc.size.h;const r=(i*37)%100;ctx.fillStyle=r>88?'#f4d36b':(r>76?'#f3a4c8':(r>64?'#b8dfff':'#79b65b'));ctx.fillRect(x,y,2+(i%2),2+(i%3));}ctx.restore();
   drawTilePaints(ctx);
 }
+
+function drawTerrainMap(ctx,sc){
+  const tm=sc.terrainMap||{},grid=tm.grid||64,tiles=tm.tiles||{},pal=sc.terrainPalette||{};
+  const cols=Math.ceil(sc.size.w/grid),rows=Math.ceil(sc.size.h/grid);
+  function def(id){return pal[id]||{color:id==='water'?'#1b7da0':id==='path'?'#b9995f':id==='dirt'?'#8b6541':id==='flowers'?'#4f913f':'#3f7d3a'};}
+  function same(x,y,id){return (tiles[x+','+y]||'grass')===id;}
+  for(let y=0;y<rows;y++){for(let x=0;x<cols;x++){
+    const id=tiles[x+','+y]||'grass',d=def(id),px=x*grid,py=y*grid,img=state.assets[assetUrl(d.texture||d.asset)];
+    ctx.fillStyle=d.color||'#3f7d3a';ctx.fillRect(px,py,grid,grid);
+    if(img)ctx.drawImage(img,px,py,grid,grid);
+    if(id==='path'||id==='dirt')drawTerrainEdge(ctx,x,y,id,grid,(id==='path')?'rgba(55,39,24,.36)':'rgba(37,27,18,.42)',same);
+    if(id==='water')drawTerrainEdge(ctx,x,y,id,grid,'rgba(213,250,255,.62)',same);
+  }}
+}
+function drawTerrainEdge(ctx,x,y,id,grid,color,same){
+  const px=x*grid,py=y*grid;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=id==='water'?5:4;
+  if(!same(x,y-1,id)){ctx.beginPath();ctx.moveTo(px,py+3);ctx.lineTo(px+grid,py+3);ctx.stroke();}
+  if(!same(x,y+1,id)){ctx.beginPath();ctx.moveTo(px,py+grid-3);ctx.lineTo(px+grid,py+grid-3);ctx.stroke();}
+  if(!same(x-1,y,id)){ctx.beginPath();ctx.moveTo(px+3,py);ctx.lineTo(px+3,py+grid);ctx.stroke();}
+  if(!same(x+1,y,id)){ctx.beginPath();ctx.moveTo(px+grid-3,py);ctx.lineTo(px+grid-3,py+grid);ctx.stroke();}
+  ctx.restore();
+}
+
 function drawTilePaints(ctx){
   const paints=state.scene.tilePaints||[];
   for(const p of paints){

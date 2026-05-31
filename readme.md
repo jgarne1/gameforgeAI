@@ -178,3 +178,20 @@ When improving Whisperwind, use the Asset Brush Editor first:
 - Download the scene JSON and replace the matching file under `public/assets/worlds/`.
 
 The asset packs are scaffolding. GameForge-specific landmarks such as Echo Hall, Forge Gate, Starter Cottage, Chronicle Board, and Fountain Plaza should be custom assets over time.
+
+## World Forger Editor Direction
+
+The old asset-brush workflow has been replaced by **World Forger** at `/games/world_forger.html`.
+
+World Forger is intentionally closer to an RPG mapping workflow than a raw asset browser:
+
+- **Terrain mode** paints a grid-based terrain layer such as grass, path, water, dirt, and flowers.
+- **Path/water edge treatment** is handled by the renderer so the user paints areas instead of manually choosing every edge/corner tile.
+- **Object mode** places complete objects such as cottages, Echo Hall, shop, lamps, and signs.
+- **Event mode** places interaction markers such as NPCs, portals, inspect spots, and fishing spots.
+- **Collision mode** is only for manual corrections and should not be the primary way to build a scene.
+- The palette is deliberately small and curated in `/assets/worlds/world_forger_palette.json` so the editor does not load hundreds of thumbnails at once.
+
+The full uploaded asset packs remain stored under `/assets/vendor/`. Do not expose every raw asset at once in the editor; curate small palettes and add better finished objects as GameForge art direction matures.
+
+World Forger can save scenes through `/api/admin/world-forger/save` for full admins, or export JSON for manual commit.
