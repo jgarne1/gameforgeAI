@@ -1,112 +1,109 @@
-# GameForge Asset Usage Manifest — Whisperwind Production Scaffold
+# GameForge Asset Usage Manifest
 
-This drop-in organizes the uploaded free/sample packs into stable GitHub paths so the RPG scene engine can use them as object atlases instead of one painted background.
+This folder contains third-party/free sample packs uploaded for GameForge visual prototyping. These assets are used as **scaffolding** for the editable RPG scene engine. Custom GameForge landmarks should gradually replace the most important pieces while the generic environmental pieces can remain until final art is created.
 
-## Vendor asset roots
+## Source Packs Stored
 
-### Mana Seed seasonal forest sample
-Stored in:
+### Mana Seed Seasonal Forest Samples
+Stored under:
+
 `public/assets/vendor/mana_seed/seasonal_forest/`
 
-Used for:
-- grass tile base
-- large trees
-- flower clusters
-- water supporting visuals
+Included normalized files:
+- `spring_tiles.png`, `summer_tiles.png`, `autumn_tiles.png`, `winter_tiles.png`
+- seasonal water sparkles and waterfall sheets
 
-Files included:
-- `spring_tiles.png`
-- `spring_water_sparkles.png`
-- `spring_waterfall.png`
-- `README.txt`
+Primary use:
+- grass/terrain variants
+- natural edges
+- water/waterfall references
+- seasonal terrain planning
 
 ### Pixel Lands Village Demo
-Stored in:
+Stored under:
+
 `public/assets/vendor/pixel_lands_village/`
 
-Used for:
-- premade building atlas
-- town board/sign props
-- lamps/props
-- future modular building assembly
-
-Files included:
+Included files:
 - `ground_demo.png`
 - `objects_demo.png`
 - `premade_buildings_demo.png`
 - `walls_roofs_doors_demo.png`
-- `INFO.txt`
 
-### Pixel Art Platformer — Village Props
-Stored in:
+Primary use:
+- temporary buildings
+- town props
+- modular wall/roof/door references
+- early Whisperwind layout scaffolding
+
+### Pixel Art Platformer - Village Props
+Stored under:
+
 `public/assets/vendor/village_props/`
 
-Used for:
-- dock scaffold
-- barrels/crates/props
-- future ground props
-
-Files included:
-- `tx_village_props.png`
+Included files:
 - `tx_tileset_ground.png`
-- `tx_fx_torch_flame.png`
-- `CHANGELOG.txt`
+- `tx_village_props.png`
+- flame/chest/effect sheets
+
+Primary use:
+- town clutter
+- barrels, crates, signs, lamps, fences, props
+- extra ground/path tile options
 
 ### Mana Seed Farmer Sprite Free Sample
-Stored in:
-`public/assets/vendor/mana_seed_farmer/`
+Stored under:
 
-Used for:
-- layered avatar prototype
-- body/shoes/pants/shirt/hair layers
+`public/assets/vendor/mana_seed_farmer/layers/`
 
-Files included under `layers/`:
-- `body_human.png`
-- `shoes.png`
-- `longpants.png`
-- `shortshirt.png`
-- `hair_dapper.png`
-- `hair_bob.png`
-- `cowboy_hat.png`
+Primary use:
+- layered avatar reference system
+- body, hair, shirt, pants, shoes, hat, etc.
 
-## Engine convention
+## Generated GameForge Catalog
 
-Objects in `public/assets/worlds/whisperwind_village.json` can reference either full image files or atlas source rectangles:
+The actual editor-friendly crops live under:
 
-```json
-{
-  "asset": "/assets/vendor/pixel_lands_village/premade_buildings_demo.png",
-  "src": [16, 192, 292, 128],
-  "x": 3300,
-  "y": 1320,
-  "w": 760,
-  "h": 335
-}
-```
+`public/assets/worldkit/catalog/`
 
-This keeps the map editable and lets us replace individual landmarks later without redrawing the entire town.
-
-## Art direction note
-
-These are scaffolding assets, not the final GameForge identity. Custom assets should replace the highest-identity pieces first:
-1. Echo Hall
-2. Forge Gate
-3. Starter Cottage
-4. Chronicle/Town Board
-5. Fountain Plaza
-
-Supporting assets like rocks, flowers, barrels, and fences can remain vendor-based longer.
-
-## Editor Catalog Usage
-
-The curated paint/edit list for usable world assets lives at:
+The brush editor reads:
 
 `public/assets/worlds/world_asset_catalog.json`
 
-The catalog does not duplicate image files. It maps named GameForge editor objects to source rectangles inside the vendor sheets, such as:
+That catalog contains named/cropped entries grouped by category. This prevents the editor from exposing raw sprite sheets directly and allows the user to paint with clear names and previews.
 
-- Mana Seed seasonal forest: grass, flowers, cliffs, water, nature patches
-- Pixel Lands Village: buildings, trees, signs, town props
-- Village Props: dock/platform pieces and extra props
+## Current Catalog Categories
 
-The in-browser tool `/games/world_asset_editor.html` reads this catalog and provides brush placement, scatter placement, terrain fill, live selected-asset preview, object dragging, and JSON export.
+- `curated_starter` — hand-picked starter set for quick painting
+- `terrain_mana_spring`
+- `terrain_mana_summer`
+- `terrain_mana_autumn`
+- `terrain_mana_winter`
+- `terrain_pixel_lands`
+- `terrain_village_props`
+- `buildings_pixel_lands`
+- `objects_pixel_lands`
+- `modular_pixel_lands`
+- `objects_village_props`
+- `effects_references`
+- `avatar_layers_reference`
+
+## Design Guidance
+
+Use asset packs for:
+- grass
+- water
+- trees
+- flowers
+- generic props
+- temporary houses
+
+Replace with GameForge originals first:
+- Echo Hall
+- Forge Gate
+- Chronicle/Town Board
+- Starter Cottage
+- Fountain Plaza
+- Order/Guild landmarks
+
+Do not go back to simple generated placeholder graphics for production scenes unless it is clearly marked as a debug object.
