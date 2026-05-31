@@ -5448,7 +5448,7 @@ function pushPresence(){
 // Estate neighborhood state
 // -----------------------------
 function defaultEstateNeighborhoods(){
-  return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',sceneId:'whisperwind_village',theme:'forest_village',plots:[1,2,3,4,5,6].map(n=>({id:'plot_'+String(n).padStart(2,'0'),name:'Plot '+n,status:'for_sale',owner:null,privacy:'public',houseType:null}))}]};
+  return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',sceneId:'whisperwind_village',theme:'forest_village',plots:[1,2,3,4,5,6].map(n=>({id:'plot_'+String(n).padStart(2,'0'),name:'Cottage '+n,status:'available_house',owner:null,privacy:'public',houseType:'starter_cottage'}))}]};
 }
 function loadEstateNeighborhoods(){
   const data=readJSON(estateNeighborhoodsFile,null)||defaultEstateNeighborhoods();
@@ -5477,7 +5477,7 @@ app.post('/api/estate/neighborhoods/:id/claim',(req,res)=>{
   const already=(neighborhood.plots||[]).find(p=>String(p.owner||'').toLowerCase()===username.toLowerCase());
   if(already&&already.id!==plotId)return res.status(409).json({ok:false,error:'You already own a plot in this neighborhood.'});
   if(plot.owner&&String(plot.owner).toLowerCase()!==username.toLowerCase())return res.status(409).json({ok:false,error:'That plot already belongs to '+plot.owner+'.'});
-  if(plot.status==='empty')return res.status(409).json({ok:false,error:'That plot is not for sale yet.'});
+  if(plot.status==='empty')return res.status(409).json({ok:false,error:'That cottage is not available yet.'});
   plot.owner=username;plot.status='owned';plot.privacy=plot.privacy||'public';plot.houseType=plot.houseType||'starter_cottage';plot.claimedAt=Date.now();
   saveEstateNeighborhoods(data);
   res.json({ok:true,plot,neighborhood});

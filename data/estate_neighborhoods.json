@@ -8,99 +8,51 @@
       "plots": [
         {
           "id": "plot_01",
-          "name": "Plot 1",
-          "status": "for_sale",
+          "name": "Cottage 1",
+          "status": "available_house",
           "owner": null,
           "privacy": "public",
-          "houseType": null
+          "houseType": "starter_cottage"
         },
         {
           "id": "plot_02",
-          "name": "Plot 2",
-          "status": "for_sale",
+          "name": "Cottage 2",
+          "status": "available_house",
           "owner": null,
           "privacy": "public",
-          "houseType": null
+          "houseType": "starter_cottage"
         },
         {
           "id": "plot_03",
-          "name": "Plot 3",
-          "status": "for_sale",
+          "name": "Cottage 3",
+          "status": "available_house",
           "owner": null,
           "privacy": "public",
-          "houseType": null
+          "houseType": "starter_cottage"
         },
         {
           "id": "plot_04",
-          "name": "Plot 4",
-          "status": "for_sale",
+          "name": "Cottage 4",
+          "status": "available_house",
           "owner": null,
           "privacy": "public",
-          "houseType": null
+          "houseType": "starter_cottage"
         },
         {
           "id": "plot_05",
-          "name": "Plot 5",
-          "status": "for_sale",
+          "name": "Cottage 5",
+          "status": "available_house",
           "owner": null,
           "privacy": "public",
-          "houseType": null
+          "houseType": "starter_cottage"
         },
         {
           "id": "plot_06",
-          "name": "Plot 6",
-          "status": "for_sale",
+          "name": "Cottage 6",
+          "status": "available_house",
           "owner": null,
           "privacy": "public",
-          "houseType": null
-        },
-        {
-          "id": "plot_07",
-          "name": "Future Plot 7",
-          "status": "empty",
-          "owner": null,
-          "privacy": "public",
-          "houseType": null
-        },
-        {
-          "id": "plot_08",
-          "name": "Future Plot 8",
-          "status": "empty",
-          "owner": null,
-          "privacy": "public",
-          "houseType": null
-        },
-        {
-          "id": "plot_09",
-          "name": "Future Plot 9",
-          "status": "empty",
-          "owner": null,
-          "privacy": "public",
-          "houseType": null
-        },
-        {
-          "id": "plot_10",
-          "name": "Future Plot 10",
-          "status": "empty",
-          "owner": null,
-          "privacy": "public",
-          "houseType": null
-        },
-        {
-          "id": "plot_11",
-          "name": "Future Plot 11",
-          "status": "empty",
-          "owner": null,
-          "privacy": "public",
-          "houseType": null
-        },
-        {
-          "id": "plot_12",
-          "name": "Future Plot 12",
-          "status": "empty",
-          "owner": null,
-          "privacy": "public",
-          "houseType": null
+          "houseType": "starter_cottage"
         }
       ]
     }

@@ -1,12 +1,12 @@
 {
   "id": "whisperwind_village",
   "name": "Whisperwind Village",
-  "description": "Whisperwind 1.0 production scaffold. This map uses third-party asset packs as organized, placeable object sheets, not one painted background. Custom GameForge landmarks should replace the largest buildings over time.",
-  "engine": "rpg_scene_engine_v3_object_atlas",
-  "size": { "w": 6800, "h": 5600 },
-  "spawn": { "x": 3300, "y": 3150, "face": "up" },
-  "camera": { "smoothing": 0.13 },
-  "player": { "scale": 1.9, "speed": 235 },
+  "description": "Whisperwind 2.0: a purpose-built JRPG town layout with GameForge landmark objects, readable districts, live water, NPCs, empty houses for purchase, and an editable object scene structure.",
+  "engine": "rpg_scene_engine_v4_town_districts",
+  "size": { "w": 5200, "h": 4200 },
+  "spawn": { "x": 2600, "y": 2380, "face": "up" },
+  "camera": { "smoothing": 0.14 },
+  "player": { "scale": 1.45, "speed": 220 },
   "avatar": {
     "frameW": 64,
     "frameH": 64,
@@ -20,79 +20,61 @@
       { "id": "hair", "asset": "/assets/vendor/mana_seed_farmer/layers/hair_dapper.png" }
     ]
   },
-  "groundTile": { "sheet": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [0,0,16,16], "size": 64 },
-  "plotHouse": { "asset": "/assets/vendor/pixel_lands_village/premade_buildings_demo.png", "src": [16,32,112,122], "w": 330, "h": 330 },
   "paths": [
-    { "id": "main_ns", "width": 170, "points": [[3300,720],[3300,1320],[3260,2050],[3300,3100],[3290,4050],[3280,5050]] },
-    { "id": "market_cross", "width": 160, "points": [[900,2860],[1600,2800],[2400,2880],[3300,3100],[4200,2950],[5200,3000],[6040,3090]] },
-    { "id": "north_residential", "width": 135, "points": [[1400,1760],[2050,1520],[2700,1500],[3300,1580],[3980,1480],[4700,1650],[5280,2050]] },
-    { "id": "west_lane", "width": 120, "points": [[1680,2800],[1450,3450],[1320,4300]] },
-    { "id": "east_lane", "width": 120, "points": [[5000,3000],[5150,2380],[5360,1760]] },
-    { "id": "dock_road", "width": 125, "points": [[4380,2940],[4860,3400],[5450,3950],[6120,4250]] },
-    { "id": "south_home_row", "width": 125, "points": [[2050,4140],[2650,4230],[3300,4140],[3920,4200],[4540,4100]] }
+    { "id": "main_north_south", "width": 135, "points": [[2600,520],[2600,1120],[2600,1660],[2600,2320],[2600,3150],[2600,3860]] },
+    { "id": "plaza_loop_a", "width": 118, "points": [[1980,2240],[2240,1960],[2600,1860],[2960,1960],[3220,2240],[3140,2620],[2800,2840],[2400,2840],[2060,2620],[1980,2240]] },
+    { "id": "market_row", "width": 112, "points": [[1120,2500],[1600,2420],[2060,2380],[2600,2320],[3180,2350],[3680,2460],[4120,2600]] },
+    { "id": "west_residential", "width": 96, "points": [[1650,2380],[1320,2020],[1120,1600],[1080,1120]] },
+    { "id": "east_residential", "width": 96, "points": [[3550,2400],[3900,2050],[4080,1660],[4080,1120]] },
+    { "id": "dock_lane", "width": 104, "points": [[3180,2830],[3600,3180],[4080,3470],[4620,3580]] },
+    { "id": "north_woods_path", "width": 95, "points": [[2600,520],[2180,380],[1760,420],[1360,620]] }
   ],
   "waterAreas": [
-    { "id": "east_river", "points": [[5600,0],[6800,0],[6800,5600],[5200,5600],[5520,4850],[5450,4200],[5780,3500],[5660,2750],[5900,1900],[5600,1100]] },
-    { "id": "north_stream", "points": [[0,0],[1120,0],[1200,320],[1020,730],[520,1010],[0,920]] }
+    { "id": "east_river", "points": [[4420,0],[5200,0],[5200,4200],[4140,4200],[4340,3740],[4250,3320],[4470,2940],[4380,2440],[4580,1860],[4420,1280]] },
+    { "id": "north_creek", "points": [[0,0],[1020,0],[980,330],[700,560],[260,680],[0,640]] }
   ],
   "objects": [
-    { "id": "echo_hall", "type": "building", "asset": "/assets/vendor/pixel_lands_village/premade_buildings_demo.png", "src": [16,192,292,128], "x": 3300, "y": 1320, "w": 760, "h": 335, "solid": { "x": -305, "y": -210, "w": 610, "h": 225 }, "interact": { "kind": "enter", "label": "Enter Echo Hall", "radius": 180, "message": "Echo Hall is the future walk-in social hub for board games, arcade machines, tournaments, and friends." } },
-    { "id": "general_store", "type": "building", "asset": "/assets/vendor/pixel_lands_village/premade_buildings_demo.png", "src": [128,32,205,127], "x": 1720, "y": 2390, "w": 620, "h": 380, "solid": { "x": -238, "y": -250, "w": 476, "h": 270 }, "interact": { "kind": "shop", "label": "Shop", "radius": 165, "message": "General Store will sell furniture, bait, clothing, tools, and village supplies." } },
-    { "id": "starter_cottage_showcase", "type": "building", "asset": "/assets/vendor/pixel_lands_village/premade_buildings_demo.png", "src": [16,32,112,122], "x": 4300, "y": 3780, "w": 350, "h": 335, "solid": { "x": -132, "y": -225, "w": 264, "h": 240 }, "interact": { "kind": "enter", "label": "Visit Cottage", "radius": 145, "message": "This cottage is the visual target for first player homes. Later each owned plot loads an interior scene." } },
-    { "id": "town_board", "type": "board", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [288,32,88,83], "x": 4180, "y": 2140, "w": 290, "h": 275, "solid": { "x": -115, "y": -120, "w": 230, "h": 118 }, "interact": { "kind": "board", "label": "Read Town Board", "radius": 160, "message": "Welcome to Whisperwind Village.\n\nCurrent goals:\n• Talk to Arlo\n• Claim a test plot\n• Visit the dock\n\nThis board will become the Chronicle, project board, and neighborhood news feed." } },
-    { "id": "dock", "type": "dock", "asset": "/assets/vendor/village_props/tx_village_props.png", "src": [0,704,256,128], "x": 6100, "y": 4340, "w": 680, "h": 340, "solid": { "x": -280, "y": -140, "w": 560, "h": 150 }, "interact": { "kind": "fish", "label": "Fish", "radius": 180, "message": "The dock is wired as a walk-up fishing spot. Fishing can move here when the town is ready." } },
-    { "id": "fountain_marker", "type": "fountain", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [6,4,83,82], "x": 3300, "y": 2850, "w": 245, "h": 245, "solid": { "x": -92, "y": -86, "w": 184, "h": 108 }, "interact": { "kind": "inspect", "label": "Inspect Fountain", "radius": 135, "message": "This fountain anchors the town square. It will become a custom GameForge landmark later." } },
-    { "id": "plot_01_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 1120, "y": 2250, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_01", "label": "Claim Plot 1", "radius": 130 } },
-    { "id": "plot_02_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 2120, "y": 1820, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_02", "label": "Claim Plot 2", "radius": 130 } },
-    { "id": "plot_03_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 4620, "y": 1980, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_03", "label": "Claim Plot 3", "radius": 130 } },
-    { "id": "plot_04_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 5200, "y": 2620, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_04", "label": "Claim Plot 4", "radius": 130 } },
-    { "id": "plot_05_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 1350, "y": 3730, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_05", "label": "Claim Plot 5", "radius": 130 } },
-    { "id": "plot_06_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 2780, "y": 4470, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_06", "label": "Claim Plot 6", "radius": 130 } },
-    { "id": "plot_07_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 3920, "y": 4500, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_07", "label": "Claim Plot 7", "radius": 130 } },
-    { "id": "plot_08_sign", "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [384,32,45,43], "x": 5120, "y": 3720, "w": 110, "h": 110, "interact": { "kind": "plot", "plotId": "plot_08", "label": "Claim Plot 8", "radius": 130 } }
+    { "id": "echo_hall", "type": "landmark", "asset": "/assets/worldkit/whisperwind/echo_hall_gameforge.png", "x": 2600, "y": 930, "w": 860, "h": 560, "solid": { "x": -330, "y": -260, "w": 660, "h": 270 }, "interact": { "kind": "enter", "label": "Enter Echo Hall", "radius": 175, "message": "Echo Hall is the future walk-in social hub for board games, arcade tables, tournaments, and friends." } },
+    { "id": "general_store", "type": "shop", "asset": "/assets/worldkit/whisperwind/general_store_gameforge.png", "x": 1510, "y": 2190, "w": 520, "h": 390, "solid": { "x": -195, "y": -250, "w": 390, "h": 250 }, "interact": { "kind": "shop", "label": "Shop", "radius": 150, "message": "The General Store will sell bait, furniture, clothing, tools, and village supplies." } },
+    { "id": "town_board", "type": "board", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 3440, "y": 2100, "w": 250, "h": 240, "solid": { "x": -75, "y": -110, "w": 150, "h": 100 }, "interact": { "kind": "read", "label": "Read Town Board", "radius": 140, "message": "Whisperwind Board\n\n• Echo Hall is open for testing.\n• Empty cottages can be claimed for testing.\n• Docks and interiors are coming next.\n• This town is now object-built, not a single background." } },
+    { "id": "fountain", "type": "landmark", "asset": "/assets/worldkit/whisperwind/fountain_gameforge.png", "x": 2600, "y": 2380, "w": 310, "h": 260, "solid": { "x": -115, "y": -105, "w": 230, "h": 120 }, "interact": { "kind": "inspect", "label": "Inspect Fountain", "radius": 150, "message": "The fountain hums softly. It feels like the center of Whisperwind is awake." } },
+    { "id": "dock", "type": "dock", "asset": "/assets/worldkit/whisperwind/dock_gameforge.png", "x": 4530, "y": 3570, "w": 500, "h": 260, "solid": { "x": -225, "y": -115, "w": 450, "h": 175 }, "interact": { "kind": "fish", "label": "Fish from Dock", "radius": 170, "message": "The water is calmer here. This dock will connect the town to fishing systems." } },
+    { "id": "north_gate_marker", "type": "sign", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 1420, "y": 630, "w": 160, "h": 154, "solid": { "x": -50, "y": -72, "w": 100, "h": 70 }, "interact": { "kind": "travel", "label": "Read Sign", "radius": 120, "message": "North Road — Shadow Woods and future wild regions." } }
   ],
   "plots": [
-    { "id": "plot_01", "name": "West Plot 1", "x": 880, "y": 1940, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_02", "name": "Northwest Plot 2", "x": 1880, "y": 1540, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_03", "name": "East Plot 3", "x": 4380, "y": 1680, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_04", "name": "East Plot 4", "x": 4950, "y": 2320, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_05", "name": "Southwest Plot 5", "x": 1100, "y": 3420, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_06", "name": "South Plot 6", "x": 2540, "y": 4160, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_07", "name": "South Plot 7", "x": 3680, "y": 4190, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_08", "name": "Southeast Plot 8", "x": 4880, "y": 3420, "w": 560, "h": 410, "status": "for_sale" },
-    { "id": "plot_09", "name": "Future Plot 9", "x": 760, "y": 2820, "w": 520, "h": 390, "status": "empty" },
-    { "id": "plot_10", "name": "Future Plot 10", "x": 5300, "y": 1280, "w": 520, "h": 390, "status": "empty" },
-    { "id": "plot_11", "name": "Future Plot 11", "x": 1900, "y": 4720, "w": 520, "h": 390, "status": "empty" },
-    { "id": "plot_12", "name": "Future Plot 12", "x": 4560, "y": 4680, "w": 520, "h": 390, "status": "empty" }
-  ],
-  "npcs": [
-    { "id": "arlo", "name": "Arlo", "x": 3880, "y": 3490, "dialogue": ["This is the new production scaffold for Whisperwind.", "The buildings, trees, dock, and signs are now atlas objects. We can replace them with GameForge originals one at a time without changing the map system."], "interact": { "label": "Talk to Arlo", "radius": 115 } },
-    { "id": "brindle", "name": "Brindle", "x": 2100, "y": 2850, "dialogue": ["These plots are real data points. Claim one and the scene renders a cottage from the plot state.", "That is how we get housing without painting a new background every time someone builds."], "interact": { "label": "Talk to Brindle", "radius": 115 } },
-    { "id": "marina", "name": "Marina", "x": 4980, "y": 3160, "dialogue": ["The river should feel alive now. It still needs custom GameForge water, but the engine supports moving water layers and shore lines."], "interact": { "label": "Talk to Marina", "radius": 115 } },
-    { "id": "cog", "name": "Cog", "x": 2500, "y": 1760, "dialogue": ["The important change is atlas rendering: every object can come from a spritesheet source rectangle.", "That means asset packs can be organized cleanly while we replace landmarks with custom art."], "interact": { "label": "Talk to Cog", "radius": 115 } }
+    { "id": "plot_01", "x": 780, "y": 1080, "w": 430, "h": 380, "houseX": 995, "houseY": 1370 },
+    { "id": "plot_02", "x": 1360, "y": 1180, "w": 430, "h": 380, "houseX": 1575, "houseY": 1470 },
+    { "id": "plot_03", "x": 760, "y": 1660, "w": 430, "h": 380, "houseX": 975, "houseY": 1950 },
+    { "id": "plot_04", "x": 3720, "y": 1080, "w": 430, "h": 380, "houseX": 3935, "houseY": 1370 },
+    { "id": "plot_05", "x": 4320, "y": 1220, "w": 430, "h": 380, "houseX": 4535, "houseY": 1510 },
+    { "id": "plot_06", "x": 3760, "y": 1680, "w": 430, "h": 380, "houseX": 3975, "houseY": 1970 }
   ],
   "decorations": [
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [192,32,48,96], "x": 680, "y": 1370, "w": 260, "h": 520, "solid": { "x": -42, "y": -70, "w": 84, "h": 70 }, "depthOffset": 80 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [192,32,48,96], "x": 790, "y": 2350, "w": 260, "h": 520, "solid": { "x": -42, "y": -70, "w": 84, "h": 70 }, "depthOffset": 80 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [192,32,48,96], "x": 1280, "y": 980, "w": 260, "h": 520, "solid": { "x": -42, "y": -70, "w": 84, "h": 70 }, "depthOffset": 80 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [192,32,48,96], "x": 5550, "y": 1200, "w": 260, "h": 520, "solid": { "x": -42, "y": -70, "w": 84, "h": 70 }, "depthOffset": 80 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [192,32,48,96], "x": 5850, "y": 2100, "w": 260, "h": 520, "solid": { "x": -42, "y": -70, "w": 84, "h": 70 }, "depthOffset": 80 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [96,96,32,32], "x": 2900, "y": 2940, "w": 140, "h": 140 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [128,96,32,32], "x": 3720, "y": 2700, "w": 140, "h": 140 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [96,128,32,32], "x": 1500, "y": 2660, "w": 140, "h": 140 },
-    { "asset": "/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png", "src": [128,128,32,32], "x": 4400, "y": 3320, "w": 140, "h": 140 },
-    { "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [192,96,47,51], "x": 2920, "y": 2760, "w": 92, "h": 102 },
-    { "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [192,96,47,51], "x": 3720, "y": 2920, "w": 92, "h": 102 },
-    { "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [96,0,32,64], "x": 2860, "y": 3160, "w": 74, "h": 148, "solid": { "x": -12, "y": -18, "w": 24, "h": 24 } },
-    { "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [96,0,32,64], "x": 3980, "y": 3050, "w": 74, "h": 148, "solid": { "x": -12, "y": -18, "w": 24, "h": 24 } },
-    { "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [128,0,28,39], "x": 1880, "y": 2530, "w": 72, "h": 100 },
-    { "asset": "/assets/vendor/pixel_lands_village/objects_demo.png", "src": [160,0,28,39], "x": 5300, "y": 3890, "w": 72, "h": 100 },
-    { "asset": "/assets/vendor/village_props/tx_village_props.png", "src": [384,96,96,64], "x": 2050, "y": 2380, "w": 160, "h": 105 },
-    { "asset": "/assets/vendor/village_props/tx_village_props.png", "src": [480,96,96,64], "x": 4500, "y": 2980, "w": 160, "h": 105 },
-    { "asset": "/assets/vendor/village_props/tx_village_props.png", "src": [320,480,96,96], "x": 5650, "y": 4240, "w": 150, "h": 150 }
+    { "id": "tree_01", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 690, "y": 830, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "tree_02", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 1710, "y": 690, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "tree_03", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 3440, "y": 700, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "tree_04", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 4760, "y": 940, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "tree_05", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 820, "y": 3010, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "tree_06", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 4550, "y": 2860, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "tree_07", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 1240, "y": 3680, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "tree_08", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 3920, "y": 3750, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
+    { "id": "bench_01", "asset": "/assets/worldkit/whisperwind/bench_gameforge.png", "x": 2240, "y": 2630, "w": 220, "h": 130 },
+    { "id": "bench_02", "asset": "/assets/worldkit/whisperwind/bench_gameforge.png", "x": 2960, "y": 2630, "w": 220, "h": 130 },
+    { "id": "lamp_01", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 2150, "y": 2100, "w": 120, "h": 220 },
+    { "id": "lamp_02", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 3050, "y": 2100, "w": 120, "h": 220 },
+    { "id": "lamp_03", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 2110, "y": 2890, "w": 120, "h": 220 },
+    { "id": "lamp_04", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 3090, "y": 2890, "w": 120, "h": 220 },
+    { "id": "flowers_01", "asset": "/assets/worldkit/whisperwind/flowers_blue.png", "x": 2160, "y": 2260, "w": 180, "h": 112 },
+    { "id": "flowers_02", "asset": "/assets/worldkit/whisperwind/flowers_gold.png", "x": 3040, "y": 2260, "w": 180, "h": 112 },
+    { "id": "flowers_03", "asset": "/assets/worldkit/whisperwind/flowers_pink.png", "x": 2160, "y": 2500, "w": 180, "h": 112 },
+    { "id": "flowers_04", "asset": "/assets/worldkit/whisperwind/flowers_blue.png", "x": 3040, "y": 2500, "w": 180, "h": 112 },
+    { "id": "flowers_05", "asset": "/assets/worldkit/whisperwind/flowers_gold.png", "x": 1500, "y": 2500, "w": 180, "h": 112 },
+    { "id": "flowers_06", "asset": "/assets/worldkit/whisperwind/flowers_pink.png", "x": 3700, "y": 2600, "w": 180, "h": 112 }
   ],
-  "portals": [
-    { "id": "dock_exit", "x": 6100, "y": 4380, "label": "To Fishing Dock", "message": "This will transition into the dedicated fishing scene once the fishing system is merged into the RPG engine." },
-    { "id": "north_gate", "x": 3300, "y": 760, "label": "North Road", "message": "This will lead to future districts and the wider world." }
+  "npcs": [
+    { "id": "arlo", "name": "Arlo", "x": 2360, "y": 2260, "face": "down", "interact": { "label": "Talk to Arlo", "radius": 110 }, "dialogue": ["Welcome to Whisperwind. This is where the Forge starts feeling like a place instead of a menu.", "The plaza leads north to Echo Hall, west to the store, east to the board, and down toward the docks."] },
+    { "id": "brindle", "name": "Brindle", "x": 930, "y": 1580, "face": "right", "interact": { "label": "Talk to Brindle", "radius": 110 }, "dialogue": ["We are not selling dirt plots anymore. Empty cottages are easier to understand.", "Claim one for testing, then we will build interiors and furniture placement next."] },
+    { "id": "marina", "name": "Marina", "x": 4280, "y": 3370, "face": "right", "interact": { "label": "Talk to Marina", "radius": 110 }, "dialogue": ["The river is the first thing that should feel alive. Watch the shimmer near the dock.", "When fishing comes back here, it should feel like part of town instead of a separate screen."] },
+    { "id": "cog", "name": "Professor Cog", "x": 2890, "y": 1250, "face": "down", "interact": { "label": "Talk to Cog", "radius": 110 }, "dialogue": ["Echo Hall is not merely a building. It is where games become places.", "One day you will walk inside and choose a table instead of clicking a menu."] }
   ]
 }
