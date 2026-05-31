@@ -156,3 +156,9 @@ Important behavior:
 - The minimap is generated from scene data and should remain optional/lightweight.
 
 Future work should keep art assets object-based. Do not turn Whisperwind into one large baked background; use the scene JSON to place houses, trees, fences, town boards, docks, lamps, plot signs, and future home exteriors.
+
+## RPG Avatar Layering Update
+
+The RPG scene engine now uses a layered/procedural avatar renderer instead of relying on a single baked sprite sheet for the default player. This avoids the chopped-sheet issue and prepares the game for clothing/customization.
+
+Default avatar layers currently include body/skin, hair, outfit, cloak, backpack, and accessory. The client sends an `appearance` payload through the existing world WebSocket presence messages so nearby players can render different clothing/hair later.

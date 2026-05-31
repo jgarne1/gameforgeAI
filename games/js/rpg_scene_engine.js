@@ -10,7 +10,7 @@ const STATE_API='/api/estate/neighborhoods/whisperwind_01';
 const state={
   canvas:null,ctx:null,dpr:1,root:null,scene:null,assets:{},running:false,last:0,time:0,
   cam:{x:0,y:0},keys:{},username:'Wanderer',near:null,dialog:null,toast:null,
-  player:{x:0,y:0,face:'down',moving:false,vx:0,vy:0,animTime:0,stepFrame:0},
+  player:{x:0,y:0,face:'down',moving:false,vx:0,vy:0,animTime:0,stepFrame:0,appearance:null},
   remote:new Map(),ws:null,worldId:null,plots:{},
   interactionCooldown:0
 };
@@ -37,6 +37,8 @@ async function preload(scene){
   [...(scene.objects||[]),...(scene.decorations||[]),...(scene.foreground||[])].forEach(o=>{if(o.asset)names.add(assetUrl(o.asset));});
   (scene.npcs||[]).forEach(n=>{if(n.asset)names.add(spriteUrl(n.asset));});
   const pAsset=(scene.player&&scene.player.asset)||'/assets/sprites/forger_avatar.png';
+  // Layered avatars are drawn procedurally for now so clothing can change without a baked sheet.
+  // Keep preloading a fallback image for legacy scenes/NPC sheets.
   names.add(spriteUrl(pAsset));
   await Promise.all([...names].map(async u=>{state.assets[u]=await loadImage(u);}));
 }
@@ -76,7 +78,7 @@ async function start(opts){
   const scene=await fetch(SCENE_URL+'?v='+Date.now(),{cache:'no-store'}).then(r=>r.json());state.scene=scene;
   if(document.getElementById('gfAreaTitle')){document.querySelector('#gfAreaTitle b').textContent=scene.name||'Whisperwind Village';document.querySelector('#gfAreaTitle span').textContent=scene.descriptionShort||'Scrollable RPG town scene';}
   await preload(scene);await fetchEstateState();
-  state.player={x:scene.spawn.x,y:scene.spawn.y,face:scene.spawn.face||'down',moving:false,vx:0,vy:0,animTime:0,stepFrame:0};
+  state.player={x:scene.spawn.x,y:scene.spawn.y,face:scene.spawn.face||'down',moving:false,vx:0,vy:0,animTime:0,stepFrame:0,appearance:getLocalAppearance()};
   state.cam.x=state.player.x-window.innerWidth/2;state.cam.y=state.player.y-window.innerHeight/2;
   connectWS();state.running=true;state.last=performance.now();requestAnimationFrame(loop);
 }
@@ -169,8 +171,8 @@ function draw(now){
   for(const e of ents){
     if(e.type==='obj')drawAssetObj(ctx,e.o);
     else if(e.type==='npc')drawNpc(ctx,e.o);
-    else if(e.type==='remote')drawAvatar(ctx,e.o.x,e.o.y,e.o.username||'Player',e.o.face||'down',!!e.o.moving,.46,true,e.o.animTime||state.time);
-    else drawAvatar(ctx,state.player.x,state.player.y,state.username,state.player.face,state.player.moving,(state.scene.player&&state.scene.player.scale)||0.45,false,state.player.animTime);
+    else if(e.type==='remote')drawAvatar(ctx,e.o.x,e.o.y,e.o.username||'Player',e.o.face||'down',!!e.o.moving,.46,true,e.o.animTime||state.time,null,e.o.appearance);
+    else drawAvatar(ctx,state.player.x,state.player.y,state.username,state.player.face,state.player.moving,(state.scene.player&&state.scene.player.scale)||0.45,false,state.player.animTime,null,state.player.appearance);
   }
   drawForeground(ctx);
   ctx.restore();
@@ -262,7 +264,7 @@ function drawForeground(ctx){
   // Reserved for roof/tree canopies that should always cover players. Scene supports foreground[] later.
   for(const o of state.scene.foreground||[])drawAssetObj(ctx,o);
 }
-function drawNpc(ctx,n){drawAvatar(ctx,n.x,n.y,n.name||'NPC',n.face||'down',false,.43,true,state.time,n.asset);}
+function drawNpc(ctx,n){drawAvatar(ctx,n.x,n.y,n.name||'NPC',n.face||'down',false,.43,true,state.time,n.asset,n.appearance||{hair:'black',outfit:'forest',cloak:'blue',pack:'none'});}
 
 function animationKey(face,moving){return (moving?'walk_':'idle_')+(face||'down');}
 function getFrame(img,key,animTime){
@@ -271,24 +273,106 @@ function getFrame(img,key,animTime){
   const frame=Math.floor(animTime*fps)%count;
   return {sx:frame*fw, sy:row*fh, sw:fw, sh:fh};
 }
-function drawAvatar(ctx,x,y,name,face,moving,scale,muted,animTime,assetName){
+
+const DEFAULT_APPEARANCE={
+  body:'warm', hair:'brown_messy', outfit:'forger_tunic', cloak:'travel_cloak', pack:'small_pack', accessory:'forge_charm', skin:'#d99a63'
+};
+const PALETTES={
+  skin:{warm:'#d99a63', light:'#f0bd82', tan:'#b77a4e', deep:'#7a4a34'},
+  hair:{brown_messy:'#51321d', auburn:'#8a4d2c', black:'#24202a', blond:'#d8aa54'},
+  outfit:{forger_tunic:'#2f6f78', forest:'#3f7145', champion:'#81313d', tide:'#2e6fa8'},
+  cloak:{travel_cloak:'#7a5130', blue:'#245977', green:'#415d38', none:'transparent'},
+  pack:{small_pack:'#6c4a2c', satchel:'#8a6036', none:'transparent'}
+};
+function getLocalAppearance(){
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem('gf_avatar_appearance')||'null');}catch(e){}
+  return Object.assign({},DEFAULT_APPEARANCE,saved||{});
+}
+function appearancePayload(){
+  const a=state.player&&state.player.appearance?state.player.appearance:getLocalAppearance();
+  return Object.assign({},DEFAULT_APPEARANCE,a||{});
+}
+function pal(group,key){const g=PALETTES[group]||{};return g[key]||key||Object.values(g)[0]||'#fff';}
+function animPhase(moving,animTime){return moving?Math.sin((animTime||0)*Math.PI*8):Math.sin((animTime||0)*Math.PI*1.8)*.22;}
+function drawAvatar(ctx,x,y,name,face,moving,scale,muted,animTime,assetName,appearance){
+  // The old renderer sliced one baked sheet. That made clothing impossible and broke when generated sheets were imperfect.
+  // This layered renderer draws a stable avatar from body/hair/outfit/cloak/pack parts. Later each layer can become a real sheet.
   const scenePlayer=state.scene.player||{};
-  const asset=assetName?spriteUrl(assetName):spriteUrl(scenePlayer.asset||'/assets/sprites/forger_avatar.png');
-  const img=state.assets[asset]||state.assets[spriteUrl('/assets/sprites/forger_avatar.png')]||state.assets['/assets/sprites/forger_avatar.png'];
+  const a=Object.assign({},DEFAULT_APPEARANCE,appearance||{});
   scale=scale||scenePlayer.scale||0.43;
-  ctx.save();ctx.globalAlpha=muted?.95:1;
-  const fw=scenePlayer.frameW||128, fh=scenePlayer.frameH||128;
-  const dw=fw*scale, dh=fh*scale;
-  // Anchor at feet. This is what makes scale predictable and fixes the prior full-sheet rendering bug.
-  ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(x,y-6,dw*.23,7,0,0,Math.PI*2);ctx.fill();
-  if(img){
-    const key=animationKey(face,moving); const f=getFrame(img,key,animTime||0);
-    // Guard against malformed images; if not a sheet, draw the full image as a single sprite.
-    if(img.width>=768 && img.height>=1536)ctx.drawImage(img,f.sx,f.sy,f.sw,f.sh,x-dw/2,y-dh,dw,dh);
-    else ctx.drawImage(img,x-dw/2,y-dh,dw,dh);
-  }else{ctx.fillStyle='#4b2d1c';ctx.fillRect(x-dw/4,y-dh,dw/2,dh);}
-  drawLabel(ctx,x,y-dh-8,name,muted?'#eafff4':'#ffec75');
+  const unit=(scenePlayer.avatarUnit||92)*scale;
+  const facing=face||'down';
+  const side=facing==='left'||facing==='right';
+  const up=facing==='up';
+  const phase=animPhase(moving,animTime);
+  const bob=moving?Math.abs(phase)*3*scale:Math.sin((animTime||0)*2)*.7*scale;
+  const legSwing=moving?phase*7*scale:0;
+  const armSwing=moving?-phase*6*scale:0;
+  const flip=facing==='left'?-1:1;
+  ctx.save();
+  ctx.globalAlpha=muted?.95:1;
+  ctx.translate(x,y);
+  ctx.scale(flip,1);
+  ctx.fillStyle='rgba(0,0,0,.23)';ctx.beginPath();ctx.ellipse(0,-4,unit*.30,7*scale,0,0,Math.PI*2);ctx.fill();
+  ctx.translate(0,-bob);
+  drawLayeredForger(ctx,a,{scale,unit,side,up,legSwing,armSwing,facing});
   ctx.restore();
+  drawLabel(ctx,x,y-unit-14*scale,name,muted?'#eafff4':'#ffec75');
+}
+function drawLayeredForger(ctx,a,opt){
+  const s=opt.scale,u=opt.unit,side=opt.side,up=opt.up;
+  const skin=pal('skin',a.skin||a.body), hair=pal('hair',a.hair), outfit=pal('outfit',a.outfit), cloak=pal('cloak',a.cloak), pack=pal('pack',a.pack);
+  const outline='rgba(35,24,19,.92)';
+  ctx.lineJoin='round';ctx.lineCap='round';
+  // Feet/legs
+  const lx=side?-5*s:-11*s, rx=side?6*s:11*s;
+  drawRound(ctx,lx+opt.legSwing*.25,-18*s,9*s,26*s,5*s,'#3a2b21',outline);
+  drawRound(ctx,rx-opt.legSwing*.25,-18*s,9*s,26*s,5*s,'#3a2b21',outline);
+  drawRound(ctx,lx+opt.legSwing*.35,2*s,13*s,7*s,4*s,'#2b211b',outline);
+  drawRound(ctx,rx-opt.legSwing*.35,2*s,13*s,7*s,4*s,'#2b211b',outline);
+  // Cloak behind body / backpack. Hide pack when facing front? show sides and back.
+  if(cloak!=='transparent'){
+    ctx.fillStyle=cloak;ctx.strokeStyle=outline;ctx.lineWidth=3*s;ctx.beginPath();
+    if(up){ctx.moveTo(-23*s,-68*s);ctx.quadraticCurveTo(0,-76*s,23*s,-68*s);ctx.lineTo(27*s,-18*s);ctx.quadraticCurveTo(0,-4*s,-27*s,-18*s);}
+    else if(side){ctx.moveTo(-13*s,-66*s);ctx.quadraticCurveTo(7*s,-68*s,19*s,-54*s);ctx.lineTo(18*s,-12*s);ctx.quadraticCurveTo(-2*s,-7*s,-18*s,-14*s);}
+    else{ctx.moveTo(-24*s,-64*s);ctx.quadraticCurveTo(0,-72*s,24*s,-64*s);ctx.lineTo(21*s,-17*s);ctx.quadraticCurveTo(0,-4*s,-21*s,-17*s);}
+    ctx.closePath();ctx.fill();ctx.stroke();
+  }
+  if(pack!=='transparent'&&(up||side))drawRound(ctx,side?12*s:0,-50*s,22*s,28*s,7*s,pack,outline);
+  // Body tunic
+  drawRound(ctx,0,-43*s,34*s,38*s,10*s,outfit,outline);
+  ctx.fillStyle='rgba(255,255,255,.16)';ctx.fillRect(-10*s,-55*s,20*s,4*s);
+  // Arms
+  drawRound(ctx,-25*s+(side?8*s:0),-40*s+opt.armSwing*.15,10*s,30*s,6*s,outfit,outline);
+  drawRound(ctx,25*s-(side?8*s:0),-40*s-opt.armSwing*.15,10*s,30*s,6*s,outfit,outline);
+  drawRound(ctx,-25*s+(side?8*s:0),-13*s+opt.armSwing*.2,8*s,8*s,5*s,skin,outline);
+  drawRound(ctx,25*s-(side?8*s:0),-13*s-opt.armSwing*.2,8*s,8*s,5*s,skin,outline);
+  // Neck and head
+  drawRound(ctx,0,-69*s,12*s,14*s,5*s,skin,outline);
+  drawHead(ctx,skin,hair,outline,s,side,up);
+  // Outfit details
+  ctx.strokeStyle='#d1ad67';ctx.lineWidth=2*s;ctx.beginPath();ctx.moveTo(-9*s,-56*s);ctx.lineTo(5*s,-36*s);ctx.lineTo(-4*s,-15*s);ctx.stroke();
+  if(a.accessory==='forge_charm'){
+    ctx.fillStyle='#6ce7ff';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=1.5*s;ctx.beginPath();ctx.arc(side?10*s:0,-39*s,3.4*s,0,Math.PI*2);ctx.fill();ctx.stroke();
+  }
+}
+function drawHead(ctx,skin,hair,outline,s,side,up){
+  drawRound(ctx,0,-84*s,32*s,30*s,12*s,skin,outline);
+  ctx.fillStyle=hair;ctx.strokeStyle=outline;ctx.lineWidth=2.4*s;ctx.beginPath();
+  if(up){ctx.ellipse(0,-91*s,19*s,13*s,0,0,Math.PI*2);}
+  else if(side){ctx.moveTo(-16*s,-91*s);ctx.quadraticCurveTo(-2*s,-104*s,17*s,-91*s);ctx.quadraticCurveTo(13*s,-82*s,4*s,-78*s);ctx.quadraticCurveTo(-4*s,-84*s,-16*s,-82*s);}
+  else{ctx.moveTo(-17*s,-90*s);ctx.quadraticCurveTo(-8*s,-105*s,8*s,-99*s);ctx.quadraticCurveTo(18*s,-97*s,16*s,-82*s);ctx.quadraticCurveTo(5*s,-86*s,-2*s,-80*s);ctx.quadraticCurveTo(-9*s,-86*s,-17*s,-82*s);}
+  ctx.closePath();ctx.fill();ctx.stroke();
+  if(!up){
+    ctx.fillStyle='#1c1715';
+    if(side){ctx.beginPath();ctx.arc(7*s,-83*s,2*s,0,Math.PI*2);ctx.fill();}
+    else{ctx.beginPath();ctx.arc(-6*s,-83*s,1.8*s,0,Math.PI*2);ctx.arc(6*s,-83*s,1.8*s,0,Math.PI*2);ctx.fill();}
+  }
+}
+function drawRound(ctx,cx,cy,w,h,r,fill,stroke){
+  ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=Math.max(1.2,2.5*(state.scene&&state.scene.player?state.scene.player.scale||.43:.43));
+  roundRect(ctx,cx-w/2,cy-h,w,h,r,true,true);
 }
 function drawLabel(ctx,x,y,text,color){ctx.font='800 14px Arial';ctx.textAlign='center';ctx.lineWidth=4;ctx.strokeStyle='rgba(0,0,0,.76)';ctx.strokeText(text,x,y);ctx.fillStyle=color||'#fff';ctx.fillText(text,x,y);}
 function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke();}
@@ -305,11 +389,11 @@ function drawMiniMap(){
 }
 
 function connectWS(){
-  try{const proto=location.protocol==='https:'?'wss':'ws';const ws=new WebSocket(proto+'://'+location.host);state.ws=ws;ws.onopen=()=>{ws.send(JSON.stringify({type:'worldJoin',username:state.username,sceneId:state.scene.id,x:state.player.x,y:state.player.y,face:state.player.face,moving:false,appearance:{base:'forger_v1'}}));};
+  try{const proto=location.protocol==='https:'?'wss':'ws';const ws=new WebSocket(proto+'://'+location.host);state.ws=ws;ws.onopen=()=>{ws.send(JSON.stringify({type:'worldJoin',username:state.username,sceneId:state.scene.id,x:state.player.x,y:state.player.y,face:state.player.face,moving:false,appearance:appearancePayload()}));};
   ws.onmessage=(ev)=>{let m;try{m=JSON.parse(ev.data);}catch(e){return;} if(m.type==='worldWelcome'){state.worldId=m.id;(m.peers||[]).forEach(p=>state.remote.set(p.id,p));} if(m.type==='worldJoin'||m.type==='worldMove'){const p=m.player;if(p&&p.id!==state.worldId){p.animTime=state.time;state.remote.set(p.id,p);}} if(m.type==='worldLeave')state.remote.delete(m.id);};
   ws.onclose=()=>setTimeout(()=>{if(state.running)connectWS();},2000);}catch(e){}
 }
-let lastMove=0;function sendMove(){const now=performance.now();if(!state.ws||state.ws.readyState!==1||now-lastMove<80)return;lastMove=now;state.ws.send(JSON.stringify({type:'worldMove',x:Math.round(state.player.x),y:Math.round(state.player.y),face:state.player.face,moving:state.player.moving,appearance:{base:'forger_v1'}}));}
+let lastMove=0;function sendMove(){const now=performance.now();if(!state.ws||state.ws.readyState!==1||now-lastMove<80)return;lastMove=now;state.ws.send(JSON.stringify({type:'worldMove',x:Math.round(state.player.x),y:Math.round(state.player.y),face:state.player.face,moving:state.player.moving,appearance:appearancePayload()}));}
 
 window.RPGSceneEngine={start,stop};
 })();
