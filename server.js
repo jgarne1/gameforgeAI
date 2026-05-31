@@ -38,7 +38,8 @@ function ensurePersistentStorage(){
     'pet_moves.json',
     'pet_species.json',
     'social.json',
-    'announcements.json'
+    'announcements.json',
+    'site_settings.json'
   ];
 
   seedFiles.forEach(file=>{
@@ -61,6 +62,7 @@ const movesFile=path.join(DATA,'pet_moves.json');
 const marketFile=path.join(DATA,'market.json');
 const socialFile=path.join(DATA,'social.json');
 const announcementFile=path.join(DATA,'announcements.json');
+const siteSettingsFile=path.join(DATA,'site_settings.json');
 // Static game-design catalogs should come from the deployed repo, not the persistent disk.
 // Player/runtime data stays on DATA; item/shop definitions update when GitHub deploys.
 const itemsFile=path.join(REPO_DATA,'items.json');
@@ -162,6 +164,36 @@ function announcement(){
 function saveAnnouncement(data){
   let normalized=normalizeAnnouncement(data);
   writeJSON(announcementFile,normalized);
+  return normalized;
+}
+
+
+function defaultSiteSettings(){
+  return {
+    mode:'testing',
+    updatedAt:Date.now(),
+    updatedBy:'system'
+  };
+}
+
+function normalizeSiteSettings(raw){
+  raw=raw&&typeof raw==='object'?raw:{};
+  let mode=String(raw.mode||'testing').trim().toLowerCase();
+  if(mode!=='story')mode='testing';
+  return {
+    mode,
+    updatedAt:Number(raw.updatedAt||Date.now()),
+    updatedBy:String(raw.updatedBy||'system').trim().slice(0,40)||'system'
+  };
+}
+
+function siteSettings(){
+  return normalizeSiteSettings(readJSON(siteSettingsFile,defaultSiteSettings()));
+}
+
+function saveSiteSettings(data){
+  let normalized=normalizeSiteSettings(data);
+  writeJSON(siteSettingsFile,normalized);
   return normalized;
 }
 
@@ -2741,6 +2773,28 @@ app.get('/api/games',(req,res)=>res.json(games()));
 
 app.get('/api/announcement',(req,res)=>{
   res.json({ok:true,announcement:announcement()});
+});
+
+
+app.get('/api/site-settings',(req,res)=>{
+  res.json({ok:true,settings:siteSettings()});
+});
+
+app.get('/api/admin/site-settings',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'dashboard');
+  if(!adminUser)return;
+  res.json({ok:true,settings:siteSettings()});
+});
+
+app.post('/api/admin/site-settings',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'admin_manage');
+  if(!adminUser)return;
+  let settings=saveSiteSettings({
+    mode:req.body&&req.body.mode,
+    updatedAt:Date.now(),
+    updatedBy:adminUser
+  });
+  res.json({ok:true,message:'Site mode updated.',settings});
 });
 
 app.get('/api/admin/announcement',(req,res)=>{

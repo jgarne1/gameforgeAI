@@ -178,3 +178,17 @@ Future assistants should push back when a request would:
 - preserve old README rules only because they existed.
 
 The README is a living architecture document. Edit or delete old sections when the game direction improves.
+
+---
+
+## 2026 Navigation / Estate / Scene Engine Direction
+
+Main navigation is now organized around world places instead of developer systems: Forge Gate, The Wilds, Companions, Echo Games, Estate, Market, Community, and admin-only Admin.
+
+Admin owns a Site Mode setting:
+- Testing Mode exposes work-in-progress areas for cleanup.
+- Story Mode is reserved for future unlock/teaser logic.
+
+Estate currently has a visual placeholder at `/games/estate.html` for Neighborhood and My House. This is only the first flow test. The real goal is a shared RPG scene engine that can power Shadow Woods, fishing zones, neighborhoods, house interiors, shops, guild halls, and future towns.
+
+Housing placement must be rule-based from day one: floor grid, wall slots, tabletop anchors, yard zones, collision footprints, and item placement types. Do not build housing as arbitrary coordinates without validation.

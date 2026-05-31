@@ -147,6 +147,12 @@ button,input,select{
   display:none;
 }
 
+.navButtonText{display:flex;flex-direction:column;gap:1px;min-width:0}
+.navButtonText b{font-size:13px;line-height:1.05;color:inherit}
+.navButtonText small{font-size:10px;line-height:1.1;color:#94a3b8;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav button.active .navButtonText small{color:#dbeafe}
+.siteModePill{margin:10px 4px 0;padding:7px 9px;border-radius:999px;border:1px solid rgba(56,189,248,.22);background:rgba(56,189,248,.08);color:#bae6fd;font-size:10px;font-weight:1000;text-align:center;text-transform:uppercase;letter-spacing:.5px}
+
 .navIcon{
   width:27px;
   height:27px;
@@ -2251,25 +2257,42 @@ body.gameMode #gameFrame{
     <div class="navUser" id="navUserBox">
       <div class="navGuestHint">Log in to load your profile, pet, coins, and friends.</div>
     </div>
-    <div class="navGroupLabel">Core</div>
-    <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
-    <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play</button>
-    <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet</button>
-    <button onclick="openWorldDirect()" id="navWorld"><span class="navIcon">🎣</span>World</button>
+    <div id="siteModePill" class="siteModePill">Testing Mode</div>
+
+    <div class="navGroupLabel">Forge Gate</div>
+    <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">✦</span><span class="navButtonText"><b>Home</b><small>Profile, news, next steps</small></span></button>
 
     <div class="navDivider"></div>
-    <div class="navGroupLabel">Battle</div>
-    <button onclick="openBattleHallDirect()" id="navBattleHall" class="battleBtn"><span class="navIcon">🏟️</span>Battle Hall</button>
-    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Private Battle</button>
+    <div class="navGroupLabel">The Wilds</div>
+    <button onclick="openWorldDirect()" id="navWorld"><span class="navIcon">🌲</span><span class="navButtonText"><b>Shadow Woods</b><small>Explore, fish, discover</small></span></button>
 
     <div class="navDivider"></div>
-    <div class="navGroupLabel">Economy</div>
-    <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
-    <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
+    <div class="navGroupLabel">Companions</div>
+    <button onclick="openPetWorldDirect()" id="navPet"><span class="navIcon">🐾</span><span class="navButtonText"><b>Pet Sanctuary</b><small>Care, hatch, raise</small></span></button>
+    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span><span class="navButtonText"><b>Pet Battles</b><small>Private tables</small></span></button>
 
     <div class="navDivider"></div>
-    <div class="navGroupLabel">Social</div>
-    <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span>Social <span id="socialNavBadge" class="socialNavBadge">0</span></button>
+    <div class="navGroupLabel">Echo Games</div>
+    <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span><span class="navButtonText"><b>Game Tables</b><small>Rooms and arcade games</small></span></button>
+    <button onclick="openBattleHallDirect()" id="navBattleHall" class="battleBtn"><span class="navIcon">🏟️</span><span class="navButtonText"><b>Battle Hall</b><small>Meet and challenge</small></span></button>
+
+    <div class="navDivider"></div>
+    <div class="navGroupLabel">Estate</div>
+    <button onclick="openNeighborhood()" id="navNeighborhood"><span class="navIcon">🏘️</span><span class="navButtonText"><b>Neighborhood</b><small>Homes, plots, visitors</small></span></button>
+    <button onclick="openMyHouse()" id="navHouse"><span class="navIcon">🏡</span><span class="navButtonText"><b>My House</b><small>Decorate and display</small></span></button>
+    <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span><span class="navButtonText"><b>Inventory</b><small>Items and collectibles</small></span></button>
+
+    <div class="navDivider"></div>
+    <div class="navGroupLabel">Market</div>
+    <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span><span class="navButtonText"><b>Marketplace</b><small>Trade and shops</small></span></button>
+
+    <div class="navDivider"></div>
+    <div class="navGroupLabel">Community</div>
+    <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span><span class="navButtonText"><b>Social</b><small>Friends and mail</small></span> <span id="socialNavBadge" class="socialNavBadge">0</span></button>
+
+    <div class="navDivider adminOnlyNav hidden"></div>
+    <div class="navGroupLabel adminOnlyNav hidden">Admin</div>
+    <button onclick="openAdmin()" id="navAdmin" class="purple adminOnlyNav hidden"><span class="navIcon">🛡️</span><span class="navButtonText"><b>Admin</b><small>Game master tools</small></span></button>
   </div>
 
   <div class="main">
@@ -2610,7 +2633,36 @@ let battleChallengeModalOpen=false;
 let battleChallengeTimerHandle=null;
 let battleJoinInProgress='';
 let accountProfile=null;
+let siteSettings={mode:'testing'};
 
+
+
+function updateAdminNavVisibility(){
+  document.querySelectorAll('.adminOnlyNav').forEach(el=>el.classList.toggle('hidden',!admin));
+  let navAdminBtn=document.getElementById('navAdmin');
+  if(navAdminBtn)navAdminBtn.classList.toggle('hidden',!admin);
+}
+
+async function loadSiteSettings(){
+  try{
+    let r=await fetch('/api/site-settings?v='+Date.now());
+    let data=await r.json();
+    if(data&&data.settings)siteSettings=data.settings;
+  }catch(e){
+    siteSettings={mode:'testing'};
+  }
+  drawSiteModePill();
+}
+
+function drawSiteModePill(){
+  let pill=document.getElementById('siteModePill');
+  if(!pill)return;
+  let mode=String((siteSettings&&siteSettings.mode)||'testing').toLowerCase()==='story'?'story':'testing';
+  pill.innerText=mode==='story'?'Story Mode':'Testing Mode';
+  pill.title=mode==='story'
+    ? 'Story Mode is enabled. Future unlock logic can tease or hide unfinished fragments.'
+    : 'Testing Mode is enabled. Admins can expose work-in-progress areas for development.';
+}
 
 function showToast(text,kind){
   let root=document.getElementById('toastRoot');
@@ -2667,6 +2719,8 @@ function updateTopStatus(){
   drawBattleReadyAlert();
   drawTopFriendsDropdown();
   drawHomeActivity();
+  updateAdminNavVisibility();
+  drawSiteModePill();
 }
 
 
@@ -3098,7 +3152,9 @@ function showSection(id){
       play:'navPlay',
       pet:'navPet',
       inventory:'navInventory',
-      social:'navSocial'
+      social:'navSocial',
+      neighborhood:'navNeighborhood',
+      house:'navHouse'
     };
 
     if(map[id]&&document.getElementById(map[id])){
@@ -3270,9 +3326,7 @@ function drawAuth(){
 
     drawNavPlayerCard();
 
-    // Admin remains available from the compact top header only; it is intentionally removed from the left nav.
-    let navAdminBtn=document.getElementById('navAdmin');
-    if(navAdminBtn)navAdminBtn.classList.toggle('hidden',!admin);
+    updateAdminNavVisibility();
   }else{
     loginControls.classList.remove('hidden');
     loggedInControls.classList.add('hidden');
@@ -3282,8 +3336,7 @@ function drawAuth(){
     accountStatePill.style.color='#cbd5e1';
 
     drawNavPlayerCard();
-    let navAdminBtn=document.getElementById('navAdmin');
-    if(navAdminBtn)navAdminBtn.classList.add('hidden');
+    updateAdminNavVisibility();
   }
   updateTopStatus();
   drawTopFriendsDropdown();
@@ -4050,6 +4103,47 @@ function openWorldDirect(){
   launchSoloGame(g);
 }
 
+
+
+function clearDirectNavActive(activeId){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  let btn=document.getElementById(activeId);
+  if(btn)btn.classList.add('active');
+}
+
+function openEstatePlaceholder(kind){
+  if(!me){
+    alert('Log in first.');
+    showSection('home');
+    return;
+  }
+
+  document.body.classList.remove('gameMode');
+  showSection('play');
+  document.body.classList.add('directGameMode');
+  clearDirectNavActive(kind==='house'?'navHouse':'navNeighborhood');
+
+  let title=kind==='house'?'My House':'Neighborhood';
+  let sub=kind==='house'
+    ? 'Your starter cottage will become a walkable, customizable RPG scene.'
+    : 'Neighborhoods will become walkable towns with owned homes, empty plots, visitors, and portals.';
+
+  setFrameLoading(true,'Loading '+title,'Opening the Estate Fragment test screen.');
+  gameFrame.onload=function(){setFrameLoading(false);};
+  gameFrame.removeAttribute('srcdoc');
+  gameFrame.src='/games/estate.html?view='+encodeURIComponent(kind)+'&v='+Date.now();
+
+  gameArea.classList.remove('hidden');
+  gameAreaTitle.innerText=title;
+  gameHint.innerText=sub;
+  roomChatPanel.classList.add('hidden');
+  directGameKey='estate|'+kind+'|'+me;
+  updateGameExitButton();
+  window.scrollTo(0,0);
+}
+
+function openNeighborhood(){openEstatePlaceholder('neighborhood');}
+function openMyHouse(){openEstatePlaceholder('house');}
 
 function openBattleHallDirect(){
   if(!me){
@@ -5514,6 +5608,7 @@ async function initApp(){
     verified=await verifyStoredLogin();
   }
 
+  await loadSiteSettings();
   drawAuth();
 
   if(me&&verified){

@@ -384,6 +384,7 @@ textarea.adminTextArea{
     </div>
     <button id="navOverview" class="active" onclick="showSection('overview')"><span class="navIcon">📊</span>Overview</button>
     <button id="navAnnouncement" onclick="showSection('announcement')"><span class="navIcon">📣</span>Announcement</button>
+    <button id="navSettings" onclick="showSection('settings')"><span class="navIcon">⚙️</span>Site Settings</button>
     <button id="navPlayers" onclick="showSection('players')"><span class="navIcon">👤</span>Players</button>
     <button id="navAdmins" onclick="showSection('admins')"><span class="navIcon">🛡️</span>Admins</button>
     <button id="navRooms" onclick="showSection('rooms')"><span class="navIcon">🎮</span>Rooms</button>
@@ -392,6 +393,7 @@ textarea.adminTextArea{
     <button id="navPets" onclick="showSection('pets')"><span class="navIcon">🐾</span>Pet Editor</button>
     <button id="navAssets" onclick="showSection('assets')"><span class="navIcon">🖼️</span>Media Uploads</button>
     <button id="navGames" onclick="showSection('games')"><span class="navIcon">🕹️</span>Game Editor</button>
+    <button id="navWorldtools" onclick="showSection('worldtools')"><span class="navIcon">🗺️</span>World Tools</button>
     <button onclick="location.href='/'"><span class="navIcon">🏠</span>Back to GameForge</button>
     <div class="navUser" id="navUserBox"></div>
   </div>
@@ -417,6 +419,31 @@ textarea.adminTextArea{
           <div class="cardHeader"><h3>Recent Listings</h3><button class="ghost" onclick="showSection('market')">Moderate</button></div>
           <div id="recentListings" class="list"></div>
         </div>
+      </div>
+    </div>
+
+    <div id="settings" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>Site Mode</h3>
+            <p class="muted">Testing Mode keeps work-in-progress areas visible for cleanup. Story Mode is the future player-facing unlock path.</p>
+          </div>
+          <span class="pill" id="siteModeStatus">Loading...</span>
+        </div>
+        <div class="grid2">
+          <div class="item">
+            <div class="itemTitle">Testing Mode</div>
+            <div class="itemMeta">Use while building. Navigation can expose Estate, neighborhoods, editors, and unfinished fragments for test passes.</div>
+            <button class="primary" style="margin-top:10px" onclick="saveSiteMode('testing')">Use Testing Mode</button>
+          </div>
+          <div class="item">
+            <div class="itemTitle">Story Mode</div>
+            <div class="itemMeta">Use later for launch flow. Features can be teased, hidden, or unlocked by Forge Fragment/world-state rules.</div>
+            <button class="gold" style="margin-top:10px" onclick="saveSiteMode('story')">Use Story Mode</button>
+          </div>
+        </div>
+        <div id="siteModeResult" class="item hidden" style="margin-top:12px"></div>
       </div>
     </div>
 
@@ -947,6 +974,26 @@ textarea.adminTextArea{
       </div>
     </div>
 
+    <div id="worldtools" class="section">
+      <div class="card glow">
+        <div class="cardHeader">
+          <div>
+            <h3>World Scene Editor</h3>
+            <p class="muted">Open the existing visual editor used for fishing/world scenes. This is the tool that should eventually support towns, neighborhoods, homes, NPCs, portals, and interactable regions.</p>
+          </div>
+        </div>
+        <div class="row">
+          <button class="primary" onclick="window.open('/games/world_editor.html','_blank')">Open World Scene Editor</button>
+          <button class="ghost" onclick="window.open('/games/world.html','_blank')">Open Shadow Woods</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Future Engine Direction</h3>
+        <p class="muted">Neighborhoods should be data-driven scenes, not one-off pages: scrolling camera, layered tiles/art, collision zones, portals, NPCs, plot states, and private/public house doors.</p>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -976,6 +1023,7 @@ let selectedGameHtml='';
 let selectedGameHtmlName='';
 let ws=null;
 let announcementEditorData=null;
+let currentSiteSettings={mode:'testing'};
 
 const $=id=>document.getElementById(id);
 
@@ -1007,12 +1055,46 @@ function showSection(id){
   let nav=$('nav'+id.charAt(0).toUpperCase()+id.slice(1)); if(nav)nav.classList.add('active');
   if(id==='admins')loadAdminList();
   if(id==='announcement')loadAnnouncementEditor();
+    loadSiteSettings();
+  if(id==='settings')loadSiteSettings();
   if(id==='rooms')loadRooms();
   if(id==='market')loadMarket();
   if(id==='items')drawItemEditor();
   if(id==='pets')drawPetEditor();
   if(id==='assets')loadPendingAssets();
   if(id==='games')loadGameEditor();
+}
+
+
+async function loadSiteSettings(){
+  try{
+    let data=await api('/api/admin/site-settings?user='+encodeURIComponent(adminUser));
+    currentSiteSettings=data.settings||{mode:'testing'};
+    drawSiteSettings();
+  }catch(err){
+    toast('Could not load site settings: '+err.message);
+  }
+}
+
+function drawSiteSettings(){
+  let mode=String((currentSiteSettings&&currentSiteSettings.mode)||'testing').toLowerCase()==='story'?'story':'testing';
+  if($('siteModeStatus'))$('siteModeStatus').innerText=mode==='story'?'Story Mode':'Testing Mode';
+  let result=$('siteModeResult');
+  if(result){
+    result.classList.remove('hidden');
+    result.innerHTML='<b>Current Mode:</b> '+esc(mode==='story'?'Story Mode':'Testing Mode')+'<br><span class="muted">Updated by '+esc((currentSiteSettings&&currentSiteSettings.updatedBy)||'system')+'. This setting is live through <code>/api/site-settings</code>.</span>';
+  }
+}
+
+async function saveSiteMode(mode){
+  try{
+    let data=await api('/api/admin/site-settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:adminUser,mode})});
+    currentSiteSettings=data.settings||{mode};
+    drawSiteSettings();
+    toast(data.message||'Site mode updated.');
+  }catch(err){
+    toast('Could not save site mode: '+err.message);
+  }
 }
 
 async function api(url,opts){
