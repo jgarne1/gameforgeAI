@@ -139,3 +139,20 @@ Design rules:
 Whisperwind is now intended to be a large scrollable object-built town, not a single painted background. The scene should be edited through `public/assets/worlds/whisperwind_village.json` until the visual editor is expanded. Keep future villages built from reusable objects: buildings, paths, trees, fences, lamps, plots, docks, boards, NPCs, portals, and interactable hotspots. Avoid baking critical gameplay objects into one background image.
 
 Visual target: cozy Final Fantasy VI/SNES town readability with modern painted/pixel clarity. The map should feel like a real place players can walk through, with depth sorting, collision, and subtle prompts only when near interactables.
+
+## RPG Scene Engine v3 Notes
+
+The Estate/Whisperwind scene now uses `games/js/rpg_scene_engine.js` as the shared RPG field engine. This pass is engine-focused, not final art-focused.
+
+Important behavior:
+
+- Player sprites are drawn from a 6 x 12, 128 px frame sprite sheet. The renderer now slices one frame instead of drawing the entire sheet.
+- The player is anchored at the feet so scale remains stable while walking behind objects.
+- Movement uses axis-separated collision so sliding around buildings, fences, trees, and town objects feels better.
+- Scene composition is still data-driven through `public/assets/worlds/whisperwind_village.json`.
+- Supported scene data includes paths, water polygons, placed objects, plots, NPCs, decorations, portals, and future foreground layers.
+- Draw order is Y-sorted to create the classic FF-style sense of walking behind or in front of objects.
+- Multiplayer presence still uses lightweight WebSocket scene join/move/leave messages.
+- The minimap is generated from scene data and should remain optional/lightweight.
+
+Future work should keep art assets object-based. Do not turn Whisperwind into one large baked background; use the scene JSON to place houses, trees, fences, town boards, docks, lamps, plot signs, and future home exteriors.

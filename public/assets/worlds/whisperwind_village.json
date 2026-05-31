@@ -1,8 +1,8 @@
 {
   "id": "whisperwind_village",
   "name": "Whisperwind Village",
-  "description": "Large object-built FF-style Estate town. The map is assembled from placed assets so plots, homes, NPCs, shops, docks, and projects can evolve without repainting one giant background.",
-  "engine": "rpg_scene_engine_v2",
+  "description": "Large editable RPG town built from tile/path/object/entity layers. Engine v3 fixes sprite-sheet slicing and adds improved camera, collisions, minimap, prompts, depth sorting, and scene-ready object data.",
+  "engine": "rpg_scene_engine_v3",
   "size": {
     "w": 5600,
     "h": 4400
@@ -13,14 +13,16 @@
     "face": "up"
   },
   "camera": {
-    "smoothing": 0.12
+    "smoothing": 0.1
   },
   "player": {
     "asset": "/assets/sprites/forger_avatar.png",
-    "scale": 0.5,
+    "scale": 0.43,
     "w": 96,
     "h": 128,
-    "speed": 235
+    "speed": 215,
+    "frameW": 128,
+    "frameH": 128
   },
   "ground": {
     "base": "grass",
@@ -1291,5 +1293,6 @@
       "label": "Leave Neighborhood",
       "message": "This will return to the Forge Gate or prior world scene."
     }
-  ]
+  ],
+  "descriptionShort": "Scrollable FF-style town \u2022 tile/object layers \u2022 multiplayer presence"
 }
