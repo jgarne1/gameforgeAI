@@ -1,0 +1,155 @@
+{
+  "approvedDirection": "Whisperwind Kit first; real importable sheets only, no concept/poster art.",
+  "sheets": [
+    {
+      "version": 1,
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "width": 128,
+        "height": 128
+      },
+      "columns": 8,
+      "rows": 8,
+      "assets": [
+        {
+          "id": "T001",
+          "name": "Grass",
+          "index": 0,
+          "category": "terrain"
+        },
+        {
+          "id": "T002",
+          "name": "Flower Grass",
+          "index": 1,
+          "category": "terrain"
+        },
+        {
+          "id": "T003",
+          "name": "Dark Grass",
+          "index": 2,
+          "category": "terrain"
+        },
+        {
+          "id": "T004",
+          "name": "Dirt Ground",
+          "index": 3,
+          "category": "terrain"
+        },
+        {
+          "id": "T005",
+          "name": "Stone Plaza",
+          "index": 4,
+          "category": "terrain"
+        },
+        {
+          "id": "T006",
+          "name": "Road Horizontal",
+          "index": 5,
+          "category": "terrain"
+        },
+        {
+          "id": "T007",
+          "name": "Road Vertical",
+          "index": 6,
+          "category": "terrain"
+        },
+        {
+          "id": "T008",
+          "name": "Road Crossing",
+          "index": 7,
+          "category": "terrain"
+        },
+        {
+          "id": "T009",
+          "name": "Road Corner NE",
+          "index": 8,
+          "category": "terrain"
+        },
+        {
+          "id": "T010",
+          "name": "Water",
+          "index": 9,
+          "category": "terrain"
+        },
+        {
+          "id": "T011",
+          "name": "Shore Top",
+          "index": 10,
+          "category": "terrain"
+        },
+        {
+          "id": "T012",
+          "name": "Shore Bottom",
+          "index": 11,
+          "category": "terrain"
+        },
+        {
+          "id": "T013",
+          "name": "Shore Left",
+          "index": 12,
+          "category": "terrain"
+        },
+        {
+          "id": "T014",
+          "name": "Shore Right",
+          "index": 13,
+          "category": "terrain"
+        },
+        {
+          "id": "T015",
+          "name": "Cliff Top",
+          "index": 14,
+          "category": "terrain"
+        },
+        {
+          "id": "T016",
+          "name": "Cliff Face",
+          "index": 15,
+          "category": "terrain"
+        },
+        {
+          "id": "T017",
+          "name": "Waterfall Top",
+          "index": 16,
+          "category": "terrain"
+        },
+        {
+          "id": "T018",
+          "name": "Waterfall Middle",
+          "index": 17,
+          "category": "terrain"
+        },
+        {
+          "id": "T019",
+          "name": "Waterfall Bottom",
+          "index": 18,
+          "category": "terrain"
+        },
+        {
+          "id": "T020",
+          "name": "Stone Stairs",
+          "index": 19,
+          "category": "terrain"
+        },
+        {
+          "id": "T021",
+          "name": "Stone Bridge",
+          "index": 20,
+          "category": "structure"
+        },
+        {
+          "id": "T022",
+          "name": "Wood Dock",
+          "index": 21,
+          "category": "structure"
+        },
+        {
+          "id": "T023",
+          "name": "Low Stone Wall",
+          "index": 22,
+          "category": "structure"
+        }
+      ]
+    }
+  ]
+}

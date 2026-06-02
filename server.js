@@ -5583,6 +5583,102 @@ app.get('/api/battle/instance/:id',(req,res)=>{
   res.json({ok:true,instance:pub});
 });
 
+
+/* ===== WORLD FORGER ASSET ALIGNMENT LAB API =====
+   Purpose: let admins inspect real assets/sprites, verify frame alignment,
+   tune origins, scale, hitboxes, and save reusable metadata for World Forger.
+   This intentionally scans public/assets only and stores lightweight JSON.
+*/
+const WORLD_ASSET_ALIGNMENT_FILE=path.join(DATA_DIR,'world_asset_alignment.json');
+const WORLD_ASSET_IMAGE_EXTS=new Set(['.png','.jpg','.jpeg','.webp','.gif']);
+function ensureWorldAssetAlignment(){
+  if(!fs.existsSync(WORLD_ASSET_ALIGNMENT_FILE))writeJSON(WORLD_ASSET_ALIGNMENT_FILE,{version:1,assets:{},updatedAt:Date.now()});
+  let data=readJSON(WORLD_ASSET_ALIGNMENT_FILE,{version:1,assets:{},updatedAt:Date.now()});
+  data.version=data.version||1;
+  data.assets=data.assets||{};
+  return data;
+}
+function imageSizeFromBuffer(buffer,ext){
+  try{
+    ext=String(ext||'').toLowerCase();
+    if(ext==='.png'&&buffer.length>=24&&buffer.toString('ascii',1,4)==='PNG'){
+      return {width:buffer.readUInt32BE(16),height:buffer.readUInt32BE(20)};
+    }
+    if(ext==='.gif'&&buffer.length>=10){
+      return {width:buffer.readUInt16LE(6),height:buffer.readUInt16LE(8)};
+    }
+    if(ext==='.webp'&&buffer.length>=30&&buffer.toString('ascii',0,4)==='RIFF'&&buffer.toString('ascii',8,12)==='WEBP'){
+      let chunk=buffer.toString('ascii',12,16);
+      if(chunk==='VP8X'&&buffer.length>=30){
+        return {width:1+buffer.readUIntLE(24,3),height:1+buffer.readUIntLE(27,3)};
+      }
+    }
+  }catch(e){}
+  return {width:null,height:null};
+}
+function worldAssetKindFromPath(publicPath){
+  let p=String(publicPath||'').toLowerCase();
+  if(p.includes('/worlds/')||p.includes('/worldkit/'))return 'world';
+  if(p.includes('/pets/'))return 'pet';
+  if(p.includes('/sprites/'))return 'sprite';
+  if(p.includes('/effects/'))return 'effect';
+  if(p.includes('/items/'))return 'item';
+  if(p.includes('/shops/'))return 'shop';
+  if(p.includes('/backgrounds/'))return 'background';
+  return 'asset';
+}
+function scanPublicAssets(){
+  let root=path.join(__dirname,'public','assets');
+  let out=[];
+  function walk(dir){
+    if(!fs.existsSync(dir))return;
+    let entries=[];
+    try{entries=fs.readdirSync(dir,{withFileTypes:true});}catch(e){return;}
+    entries.forEach(ent=>{
+      let full=path.join(dir,ent.name);
+      if(ent.isDirectory())return walk(full);
+      let ext=path.extname(ent.name).toLowerCase();
+      if(!WORLD_ASSET_IMAGE_EXTS.has(ext))return;
+      let stat=fs.statSync(full);
+      let rel=path.relative(path.join(__dirname,'public'),full).replace(/\\/g,'/');
+      let publicPath='/' + rel;
+      let size={width:null,height:null};
+      try{size=imageSizeFromBuffer(fs.readFileSync(full),ext);}catch(e){}
+      out.push({path:publicPath,name:path.basename(ent.name),folder:path.dirname(publicPath),kind:worldAssetKindFromPath(publicPath),width:size.width,height:size.height,bytes:stat.size,updatedAt:stat.mtimeMs});
+    });
+  }
+  walk(root);
+  out.sort((a,b)=>String(a.path).localeCompare(String(b.path)));
+  return out;
+}
+app.get('/api/admin/world-assets/scan',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'item_manage');
+  if(!adminUser)return;
+  let alignment=ensureWorldAssetAlignment();
+  let assets=scanPublicAssets().map(a=>Object.assign({},a,{alignment:alignment.assets[a.path]||null}));
+  res.json({ok:true,assets,alignmentUpdatedAt:alignment.updatedAt||0});
+});
+app.get('/api/admin/world-assets/alignment',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'item_manage');
+  if(!adminUser)return;
+  res.json({ok:true,alignment:ensureWorldAssetAlignment()});
+});
+app.post('/api/admin/world-assets/alignment',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'item_manage');
+  if(!adminUser)return;
+  let publicPath=String(req.body.path||'').trim();
+  if(!publicPath.startsWith('/assets/'))return res.status(400).json({error:'Asset path must start with /assets/'});
+  let localPath=path.join(__dirname,'public',publicPath.replace(/^\//,''));
+  if(!fs.existsSync(localPath))return res.status(404).json({error:'Asset not found on server'});
+  let entry=req.body.entry||{};
+  let clean={path:publicPath,assetId:String(entry.assetId||'').trim().slice(0,80),category:String(entry.category||worldAssetKindFromPath(publicPath)).trim().slice(0,40),role:String(entry.role||'').trim().slice(0,80),frame:{width:Math.max(1,Math.min(2048,Number(entry.frame&&entry.frame.width)||128)),height:Math.max(1,Math.min(2048,Number(entry.frame&&entry.frame.height)||128)),count:Math.max(1,Math.min(256,Number(entry.frame&&entry.frame.count)||1)),fps:Math.max(1,Math.min(60,Number(entry.frame&&entry.frame.fps)||8))},origin:{x:Math.max(0,Math.min(1,Number(entry.origin&&entry.origin.x)||0.5)),y:Math.max(0,Math.min(1,Number(entry.origin&&entry.origin.y)||0.9))},offset:{x:Math.max(-1024,Math.min(1024,Number(entry.offset&&entry.offset.x)||0)),y:Math.max(-1024,Math.min(1024,Number(entry.offset&&entry.offset.y)||0))},scale:Math.max(0.05,Math.min(8,Number(entry.scale)||1)),hitbox:{x:Math.max(-1024,Math.min(1024,Number(entry.hitbox&&entry.hitbox.x)||-16)),y:Math.max(-1024,Math.min(1024,Number(entry.hitbox&&entry.hitbox.y)||-12)),w:Math.max(1,Math.min(2048,Number(entry.hitbox&&entry.hitbox.w)||32)),h:Math.max(1,Math.min(2048,Number(entry.hitbox&&entry.hitbox.h)||24))},notes:String(entry.notes||'').trim().slice(0,1000),updatedAt:Date.now(),updatedBy:adminUser};
+  let data=ensureWorldAssetAlignment();
+  data.assets[publicPath]=clean;
+  data.updatedAt=Date.now();
+  writeJSON(WORLD_ASSET_ALIGNMENT_FILE,data);
+  res.json({ok:true,message:'World asset alignment saved.',entry:clean});
+});
+
 wss.on('connection',ws=>{
   clients.add(ws);
   ws.location='Home';

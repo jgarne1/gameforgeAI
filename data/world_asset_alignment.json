@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "updatedAt": 0,
+  "assets": {
+    "/assets/worldkit/whisperwind/terrain_foundation_01.png": {
+      "path": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "assetId": "WF_TERRAIN_01",
+      "category": "terrain",
+      "role": "terrain_foundation_sheet",
+      "frame": { "width": 128, "height": 128, "count": 64, "fps": 1 },
+      "origin": { "x": 0.5, "y": 0.5 },
+      "offset": { "x": 0, "y": 0 },
+      "scale": 1,
+      "hitbox": { "x": -64, "y": -64, "w": 128, "h": 128 },
+      "notes": "Real importable 8x8 terrain foundation sheet. No labels, no poster frame, no UI. Use as a technical starter sheet and style-alignment test.",
+      "updatedAt": 0,
+      "updatedBy": "system"
+    }
+  }
+}

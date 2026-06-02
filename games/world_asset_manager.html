@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>World Forger Asset Manager</title>
+<style>
+:root{--bg:#06101e;--panel:#0d1728;--panel2:#111f35;--line:rgba(180,205,255,.18);--text:#e7eefc;--muted:#93a7c4;--gold:#f8d36b;--blue:#3ab8ff;--green:#35d07f;--red:#ff5f6d;--purple:#9b6bff;--shadow:0 20px 60px rgba(0,0,0,.36)}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(58,184,255,.14),transparent 32%),linear-gradient(135deg,#030712,#081426 55%,#101827);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif;overflow:hidden}button,input,select,textarea{font:inherit}button,input,select,textarea{border-radius:12px;border:1px solid var(--line);background:#071020;color:var(--text);padding:9px 10px}button{cursor:pointer;font-weight:900;background:linear-gradient(180deg,#1a2b46,#0d1728)}button:hover{border-color:rgba(58,184,255,.55);transform:translateY(-1px)}button.primary{background:linear-gradient(135deg,#2563eb,#0ea5e9);border-color:#60a5fa}button.good{background:linear-gradient(135deg,#15803d,#22c55e);border-color:#86efac;color:#031407}button.gold{background:linear-gradient(135deg,#f8d36b,#f59e0b);border-color:#fde68a;color:#171104}.app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr)}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(3,7,18,.78);backdrop-filter:blur(12px)}.brand h1{margin:0;font-size:20px;letter-spacing:-.4px}.brand div{font-size:12px;color:var(--muted);margin-top:3px}.main{display:grid;grid-template-columns:330px minmax(0,1fr) 340px;height:100%;min-height:0}.side,.inspector{min-height:0;overflow:auto;background:rgba(7,16,32,.72);border-right:1px solid var(--line);padding:12px}.inspector{border-right:0;border-left:1px solid var(--line)}.workspace{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) 170px}.stageWrap{position:relative;min-height:0;background:radial-gradient(circle at center,rgba(58,184,255,.08),transparent 45%)}canvas{display:block}.stage{width:100%;height:100%}.strip{border-top:1px solid var(--line);background:rgba(3,7,18,.82);padding:10px;overflow:auto}.card{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(17,31,53,.92),rgba(7,16,32,.92));box-shadow:var(--shadow);padding:12px;margin-bottom:10px}.card h3{margin:0 0 8px;font-size:15px}.muted{color:var(--muted);font-size:12px;line-height:1.4}.row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.row>*{min-width:0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}label{display:grid;gap:4px;color:#c9d7ee;font-size:12px;font-weight:800}label input,label select{width:100%}.assetList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.asset{border:1px solid rgba(180,205,255,.14);border-radius:14px;background:rgba(3,7,18,.42);overflow:hidden;cursor:pointer}.asset.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(248,211,107,.45)}.asset img{width:100%;height:94px;object-fit:contain;background:linear-gradient(45deg,#142238 25%,#0c1728 25%,#0c1728 50%,#142238 50%,#142238 75%,#0c1728 75%);background-size:20px 20px}.asset b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:7px 7px 1px}.asset span{display:block;color:var(--muted);font-size:10px;padding:0 7px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.thumbStrip{display:flex;gap:7px;align-items:center}.frameThumb{height:120px;min-width:120px;border:1px solid rgba(180,205,255,.18);border-radius:12px;background:#071020;display:grid;place-items:center;position:relative;overflow:hidden}.frameThumb canvas{max-width:100%;max-height:100%}.frameThumb.active{border-color:var(--gold)}.pill{display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(180,205,255,.16);border-radius:999px;padding:5px 8px;color:#c9d7ee;background:rgba(255,255,255,.04);font-size:11px;font-weight:900}.status{position:absolute;left:12px;bottom:12px;display:flex;gap:8px;flex-wrap:wrap}.overlayTools{position:absolute;right:12px;top:12px;display:flex;gap:8px;flex-wrap:wrap}.warn{color:#fcd34d}.bad{color:#fecaca}.ok{color:#86efac}.mini{font-size:11px;color:var(--muted)}textarea{width:100%;min-height:76px;resize:vertical}.kbd{font-family:ui-monospace,Consolas,monospace;background:#020617;border:1px solid var(--line);border-radius:7px;padding:2px 5px;color:#dbeafe}.sep{height:1px;background:var(--line);margin:9px 0}.hidden{display:none!important}@media(max-width:1100px){.main{grid-template-columns:280px minmax(0,1fr)}.inspector{display:none}.workspace{grid-column:2}}@media(max-width:760px){body{overflow:auto}.app{height:auto}.main{display:block}.side,.inspector{display:block;max-height:none}.workspace{height:680px}.assetList{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><h1>🧭 World Forger Asset Manager</h1><div>Sprite alignment lab • asset catalog • movement preview • origin/hitbox tuning</div></div>
+    <div class="row">
+      <button onclick="location.href='/admin.html'">Admin</button>
+      <button onclick="location.href='/games/world_forger.html'">World Forger</button>
+      <button class="primary" onclick="refreshAssets()">Refresh Assets</button>
+    </div>
+  </header>
+  <main class="main">
+    <aside class="side">
+      <div class="card">
+        <h3>Asset Library</h3>
+        <div class="grid2">
+          <label>Kind<select id="kindFilter" onchange="renderAssetList()"><option value="">All</option></select></label>
+          <label>Search<input id="search" placeholder="house, sprite, water..." oninput="renderAssetList()"></label>
+        </div>
+        <div class="row" style="margin-top:8px"><input id="localFile" type="file" accept="image/*" onchange="loadLocalFile()"><span class="mini">Local files are for testing only.</span></div>
+      </div>
+      <div id="assetList" class="assetList"></div>
+    </aside>
+
+    <section class="workspace">
+      <div class="stageWrap">
+        <canvas id="stage" class="stage"></canvas>
+        <div class="overlayTools">
+          <button onclick="state.play=!state.play;draw()" id="playBtn">Pause</button>
+          <button onclick="state.showGrid=!state.showGrid;draw()">Grid</button>
+          <button onclick="state.showGhost=!state.showGhost;draw()">Ghost</button>
+          <button onclick="state.movePreview=!state.movePreview;draw()">Move Test</button>
+          <button onclick="fitStage()">Fit</button>
+        </div>
+        <div class="status">
+          <span class="pill" id="assetStatus">No asset selected</span>
+          <span class="pill">Drag on canvas = offset</span>
+          <span class="pill">Wheel = scale</span>
+        </div>
+      </div>
+      <div class="strip"><div id="frames" class="thumbStrip"></div></div>
+    </section>
+
+    <aside class="inspector">
+      <div class="card">
+        <h3>Selected Asset</h3>
+        <div class="muted" id="selectedMeta">Choose an asset from the library or load a local file.</div>
+      </div>
+      <div class="card">
+        <h3>Identity</h3>
+        <div class="grid2">
+          <label>Asset ID<input id="assetId" placeholder="T001, B003, H004..."></label>
+          <label>Category<select id="category"><option>terrain</option><option>structure</option><option>building</option><option>housing</option><option>prop</option><option>sprite</option><option>effect</option><option>background</option></select></label>
+        </div>
+        <label style="margin-top:8px">Role<input id="role" placeholder="walk_down, tavern, cliff_face, plaza_stone"></label>
+      </div>
+      <div class="card">
+        <h3>Sprite / Sheet Frames</h3>
+        <div class="grid2">
+          <label>Frame W<input id="fw" type="number" value="128" min="1" max="2048" onchange="syncFromInputs()"></label>
+          <label>Frame H<input id="fh" type="number" value="128" min="1" max="2048" onchange="syncFromInputs()"></label>
+          <label>Frame Count<input id="fc" type="number" value="1" min="1" max="256" onchange="syncFromInputs()"></label>
+          <label>FPS<input id="fps" type="number" value="8" min="1" max="60" onchange="syncFromInputs()"></label>
+        </div>
+        <div class="row" style="margin-top:8px"><button onclick="autoDetectFrames(128,128)">128 Grid</button><button onclick="autoDetectFrames(64,64)">64 Grid</button><button onclick="autoDetectSingle()">Single</button></div>
+      </div>
+      <div class="card">
+        <h3>Alignment</h3>
+        <div class="grid2">
+          <label>Scale<input id="scale" type="number" value="1" step="0.05" onchange="syncFromInputs()"></label>
+          <label>Offset X<input id="ox" type="number" value="0" step="1" onchange="syncFromInputs()"></label>
+          <label>Offset Y<input id="oy" type="number" value="0" step="1" onchange="syncFromInputs()"></label>
+          <label>Origin X<input id="orgx" type="number" value="0.5" min="0" max="1" step="0.01" onchange="syncFromInputs()"></label>
+          <label>Origin Y<input id="orgy" type="number" value="0.9" min="0" max="1" step="0.01" onchange="syncFromInputs()"></label>
+        </div>
+        <div class="sep"></div>
+        <div class="grid2">
+          <label>Hitbox X<input id="hx" type="number" value="-16" onchange="syncFromInputs()"></label>
+          <label>Hitbox Y<input id="hy" type="number" value="-12" onchange="syncFromInputs()"></label>
+          <label>Hitbox W<input id="hw" type="number" value="32" onchange="syncFromInputs()"></label>
+          <label>Hitbox H<input id="hh" type="number" value="24" onchange="syncFromInputs()"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Notes / Save</h3>
+        <textarea id="notes" placeholder="Example: feet stay on baseline; frame 3 leans 2px left; use scale .82 for world characters."></textarea>
+        <div class="row" style="margin-top:8px"><button class="good" onclick="saveAlignment()">Save Alignment</button><button class="gold" onclick="copyJSON()">Copy JSON</button></div>
+        <div class="muted" id="saveStatus" style="margin-top:8px">Saved metadata goes to <span class="kbd">data/world_asset_alignment.json</span>.</div>
+      </div>
+    </aside>
+  </main>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const canvas=$('stage'),ctx=canvas.getContext('2d');
+let assets=[], selected=null, img=null, localObjectUrl=null, lastT=0, dragging=false, dragStart=null;
+const state={play:true,showGrid:true,showGhost:true,movePreview:true,t:0,frame:0,viewScale:1,centerX:0,centerY:0};
+const cfg={assetId:'',category:'sprite',role:'',frame:{width:128,height:128,count:1,fps:8},origin:{x:.5,y:.9},offset:{x:0,y:0},scale:1,hitbox:{x:-16,y:-12,w:32,h:24},notes:''};
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function resize(){const r=canvas.getBoundingClientRect();canvas.width=Math.max(320,Math.floor(r.width*devicePixelRatio));canvas.height=Math.max(240,Math.floor(r.height*devicePixelRatio));draw();}
+addEventListener('resize',resize);
+async function refreshAssets(){
+  $('assetStatus').textContent='Scanning /public/assets...';
+  try{const r=await fetch('/api/admin/world-assets/scan');const d=await r.json();if(!d.ok)throw new Error(d.error||'scan failed');assets=d.assets||[];buildKindFilter();renderAssetList();$('assetStatus').textContent='Loaded '+assets.length+' assets';}
+  catch(e){$('assetStatus').innerHTML='<span class="bad">Asset scan failed: '+esc(e.message)+'</span>';}
+}
+function buildKindFilter(){const kinds=[...new Set(assets.map(a=>a.kind).filter(Boolean))].sort();$('kindFilter').innerHTML='<option value="">All</option>'+kinds.map(k=>'<option>'+esc(k)+'</option>').join('');}
+function renderAssetList(){const q=$('search').value.toLowerCase().trim(), k=$('kindFilter').value;let list=assets.filter(a=>(!k||a.kind===k)&&(!q||a.path.toLowerCase().includes(q)||String(a.name).toLowerCase().includes(q))).slice(0,300);$('assetList').innerHTML=list.map(a=>'<div class="asset '+(selected&&selected.path===a.path?'active':'')+'" onclick="selectAsset(\''+a.path.replace(/'/g,"\\'")+'\')"><img loading="lazy" src="'+esc(a.path)+'"><b>'+esc(a.name)+'</b><span>'+esc(a.kind)+' • '+(a.width||'?')+'×'+(a.height||'?')+'</span></div>').join('')||'<div class="muted">No assets found.</div>';}
+function selectAsset(path){selected=assets.find(a=>a.path===path)||{path,name:path.split('/').pop(),kind:'local'};loadImage(selected.path);applyAlignment(selected.alignment||null);renderAssetList();}
+function loadLocalFile(){const f=$('localFile').files&&$('localFile').files[0];if(!f)return;if(localObjectUrl)URL.revokeObjectURL(localObjectUrl);localObjectUrl=URL.createObjectURL(f);selected={path:localObjectUrl,name:f.name,kind:'local',width:null,height:null,alignment:null};loadImage(localObjectUrl);applyAlignment(null);renderAssetList();}
+function loadImage(src){img=new Image();img.onload=()=>{selected.width=img.naturalWidth;selected.height=img.naturalHeight;if(!selected.alignment)autoDetectReasonable();updateMeta();renderFrames();fitStage();};img.onerror=()=>{$('assetStatus').innerHTML='<span class="bad">Image failed to load</span>';};img.src=src;}
+function applyAlignment(a){if(a){Object.assign(cfg,JSON.parse(JSON.stringify(a)));}else{cfg.assetId='';cfg.category=selected.kind==='world'?'terrain':selected.kind;cfg.role='';cfg.frame={width:128,height:128,count:1,fps:8};cfg.origin={x:.5,y:.9};cfg.offset={x:0,y:0};cfg.scale=1;cfg.hitbox={x:-16,y:-12,w:32,h:24};cfg.notes='';}pushInputs();}
+function autoDetectReasonable(){if(!img)return;let w=img.naturalWidth,h=img.naturalHeight;if(w%128===0&&h%128===0&&w>128){cfg.frame.width=128;cfg.frame.height=128;cfg.frame.count=Math.min(256,(w/128)*(h/128));}else if(w%64===0&&h%64===0&&w>64){cfg.frame.width=64;cfg.frame.height=64;cfg.frame.count=Math.min(256,(w/64)*(h/64));}else{cfg.frame.width=w;cfg.frame.height=h;cfg.frame.count=1;}cfg.category=selected.kind==='world'?'terrain':selected.kind;pushInputs();}
+function autoDetectFrames(w,h){if(!img)return;cfg.frame.width=w;cfg.frame.height=h;cfg.frame.count=Math.max(1,Math.floor(img.naturalWidth/w)*Math.floor(img.naturalHeight/h));pushInputs();renderFrames();draw();}
+function autoDetectSingle(){if(!img)return;cfg.frame.width=img.naturalWidth;cfg.frame.height=img.naturalHeight;cfg.frame.count=1;pushInputs();renderFrames();draw();}
+function pushInputs(){['assetId','category','role','notes'].forEach(id=>{$(id).value=cfg[id]||''});$('fw').value=cfg.frame.width;$('fh').value=cfg.frame.height;$('fc').value=cfg.frame.count;$('fps').value=cfg.frame.fps;$('scale').value=cfg.scale;$('ox').value=cfg.offset.x;$('oy').value=cfg.offset.y;$('orgx').value=cfg.origin.x;$('orgy').value=cfg.origin.y;$('hx').value=cfg.hitbox.x;$('hy').value=cfg.hitbox.y;$('hw').value=cfg.hitbox.w;$('hh').value=cfg.hitbox.h;}
+function syncFromInputs(){cfg.assetId=$('assetId').value;cfg.category=$('category').value;cfg.role=$('role').value;cfg.notes=$('notes').value;cfg.frame.width=+$('fw').value||128;cfg.frame.height=+$('fh').value||128;cfg.frame.count=+$('fc').value||1;cfg.frame.fps=+$('fps').value||8;cfg.scale=+$('scale').value||1;cfg.offset.x=+$('ox').value||0;cfg.offset.y=+$('oy').value||0;cfg.origin.x=+$('orgx').value||.5;cfg.origin.y=+$('orgy').value||.9;cfg.hitbox.x=+$('hx').value||0;cfg.hitbox.y=+$('hy').value||0;cfg.hitbox.w=+$('hw').value||1;cfg.hitbox.h=+$('hh').value||1;renderFrames();draw();}
+['assetId','category','role','notes'].forEach(id=>setTimeout(()=>$(id).addEventListener('input',syncFromInputs),0));
+function updateMeta(){if(!selected)return;$('selectedMeta').innerHTML='<b>'+esc(selected.name)+'</b><br>'+esc(selected.path)+'<br><span class="mini">'+(selected.width||'?')+' × '+(selected.height||'?')+' • '+esc(selected.kind||'asset')+'</span>';$('assetStatus').textContent=selected.name+' • '+(selected.width||'?')+'×'+(selected.height||'?');}
+function frameRect(i){let cols=Math.max(1,Math.floor(img.naturalWidth/cfg.frame.width));let x=(i%cols)*cfg.frame.width;let y=Math.floor(i/cols)*cfg.frame.height;return{x,y,w:cfg.frame.width,h:cfg.frame.height};}
+function renderFrames(){const wrap=$('frames');if(!img){wrap.innerHTML='';return;}let count=Math.min(cfg.frame.count,48);wrap.innerHTML='';for(let i=0;i<count;i++){let d=document.createElement('div');d.className='frameThumb '+(i===state.frame?'active':'');let c=document.createElement('canvas');c.width=120;c.height=120;let cx=c.getContext('2d');cx.fillStyle='#071020';cx.fillRect(0,0,120,120);cx.strokeStyle='rgba(255,255,255,.12)';for(let g=0;g<120;g+=20){cx.beginPath();cx.moveTo(g,0);cx.lineTo(g,120);cx.moveTo(0,g);cx.lineTo(120,g);cx.stroke();}let r=frameRect(i);let sc=Math.min(110/r.w,110/r.h);cx.drawImage(img,r.x,r.y,r.w,r.h,60-r.w*sc/2,60-r.h*sc/2,r.w*sc,r.h*sc);d.appendChild(c);d.onclick=()=>{state.frame=i;state.play=false;draw();renderFrames();};wrap.appendChild(d);} }
+function fitStage(){state.viewScale=1;draw();}
+function draw(now=performance.now()){if(!canvas.width)resize();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.scale(devicePixelRatio,devicePixelRatio);let W=canvas.width/devicePixelRatio,H=canvas.height/devicePixelRatio;drawChecker(W,H);let cx=W/2,cy=H/2;if(state.movePreview){cx=W*.25+(Math.sin(state.t*.001)*.5+.5)*W*.5;cy=H*.55+Math.sin(state.t*.002)*18;}drawGroundGuides(W,H,cx,cy);if(img){let dt=now-lastT;lastT=now;if(state.play&&dt<100){let f=Math.floor((state.t/1000)*cfg.frame.fps)%Math.max(1,cfg.frame.count);state.frame=f;}drawAsset(cx,cy);}$('playBtn').textContent=state.play?'Pause':'Play';ctx.restore();}
+function drawChecker(W,H){ctx.fillStyle='#071020';ctx.fillRect(0,0,W,H);let s=32;for(let y=0;y<H;y+=s){for(let x=0;x<W;x+=s){ctx.fillStyle=((x/s+y/s)&1)?'#0d1a2c':'#102036';ctx.fillRect(x,y,s,s);}}}
+function drawGroundGuides(W,H,cx,cy){if(!state.showGrid)return;ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=1;for(let x=0;x<W;x+=64){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=64){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}ctx.strokeStyle='rgba(248,211,107,.8)';ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();ctx.fillStyle='rgba(248,211,107,.95)';ctx.fillText('baseline / feet line',12,cy-8);}
+function drawAsset(cx,cy){let r=frameRect(Math.min(state.frame,cfg.frame.count-1));let sw=r.w,sh=r.h,sc=cfg.scale;let ox=sw*cfg.origin.x,oy=sh*cfg.origin.y;let dx=cx+cfg.offset.x-ox*sc,dy=cy+cfg.offset.y-oy*sc,dw=sw*sc,dh=sh*sc;if(state.showGhost&&cfg.frame.count>1){ctx.globalAlpha=.22;for(let i=0;i<Math.min(cfg.frame.count,8);i++){let gr=frameRect(i);ctx.drawImage(img,gr.x,gr.y,gr.w,gr.h,dx,dy,dw,dh);}ctx.globalAlpha=1;}ctx.drawImage(img,r.x,r.y,sw,sh,dx,dy,dw,dh);ctx.strokeStyle='rgba(58,184,255,.95)';ctx.lineWidth=2;ctx.strokeRect(dx,dy,dw,dh);ctx.strokeStyle='rgba(53,208,127,.95)';ctx.strokeRect(cx+cfg.offset.x+cfg.hitbox.x,cy+cfg.offset.y+cfg.hitbox.y,cfg.hitbox.w,cfg.hitbox.h);ctx.fillStyle='rgba(255,95,109,.95)';ctx.beginPath();ctx.arc(cx+cfg.offset.x,cy+cfg.offset.y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e7eefc';ctx.fillText('origin',cx+cfg.offset.x+8,cy+cfg.offset.y-8);}
+function tick(t){state.t=t;draw(t);requestAnimationFrame(tick)}
+canvas.addEventListener('mousedown',e=>{dragging=true;dragStart={x:e.clientX,y:e.clientY,ox:cfg.offset.x,oy:cfg.offset.y};});
+addEventListener('mouseup',()=>dragging=false);addEventListener('mousemove',e=>{if(!dragging)return;cfg.offset.x=dragStart.ox+(e.clientX-dragStart.x);cfg.offset.y=dragStart.oy+(e.clientY-dragStart.y);pushInputs();draw();});
+canvas.addEventListener('wheel',e=>{e.preventDefault();cfg.scale=Math.max(.05,Math.min(8,cfg.scale+(e.deltaY<0?.05:-.05)));pushInputs();draw();},{passive:false});
+function payload(){syncFromInputs();return{assetId:cfg.assetId,category:cfg.category,role:cfg.role,frame:cfg.frame,origin:cfg.origin,offset:cfg.offset,scale:cfg.scale,hitbox:cfg.hitbox,notes:cfg.notes};}
+async function saveAlignment(){if(!selected||!selected.path||selected.kind==='local'||selected.path.startsWith('blob:')){$('saveStatus').innerHTML='<span class="warn">Local test assets cannot be saved. Put the file under public/assets first.</span>';return;}try{let r=await fetch('/api/admin/world-assets/alignment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:selected.path,entry:payload()})});let d=await r.json();if(!d.ok)throw new Error(d.error||'save failed');selected.alignment=d.entry;$('saveStatus').innerHTML='<span class="ok">Saved '+new Date().toLocaleTimeString()+'</span>';}
+catch(e){$('saveStatus').innerHTML='<span class="bad">Save failed: '+esc(e.message)+'</span>';}}
+async function copyJSON(){let text=JSON.stringify(Object.assign({path:selected&&selected.path},payload()),null,2);await navigator.clipboard.writeText(text);$('saveStatus').innerHTML='<span class="ok">Copied JSON.</span>';}
+resize();refreshAssets();requestAnimationFrame(tick);
+</script>
+</body>
+</html>
