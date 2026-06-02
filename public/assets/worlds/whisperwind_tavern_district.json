@@ -1,0 +1,325 @@
+{
+  "id": "whisperwind_tavern_district",
+  "name": "Whisperwind - Driftwood Tavern District",
+  "background": "/assets/worlds/whisperwind_tavern_district.png",
+  "size": {
+    "w": 1600,
+    "h": 1080
+  },
+  "mood": "evening",
+  "timeOfDay": "evening",
+  "tintOpacity": 0.55,
+  "playerScale": 0.58,
+  "spawn": {
+    "x": 760,
+    "y": 720,
+    "face": "up"
+  },
+  "spawnPoints": [
+    {
+      "id": "main",
+      "x": 760,
+      "y": 720,
+      "face": "up"
+    },
+    {
+      "id": "dock",
+      "x": 245,
+      "y": 815,
+      "face": "right"
+    }
+  ],
+  "walkable": [
+    {
+      "id": "main_walk",
+      "type": "poly",
+      "points": [
+        [
+          120,
+          690
+        ],
+        [
+          300,
+          560
+        ],
+        [
+          560,
+          470
+        ],
+        [
+          720,
+          380
+        ],
+        [
+          980,
+          410
+        ],
+        [
+          1325,
+          360
+        ],
+        [
+          1420,
+          520
+        ],
+        [
+          1180,
+          660
+        ],
+        [
+          900,
+          720
+        ],
+        [
+          820,
+          1040
+        ],
+        [
+          600,
+          1040
+        ],
+        [
+          640,
+          730
+        ],
+        [
+          380,
+          760
+        ],
+        [
+          220,
+          860
+        ],
+        [
+          70,
+          900
+        ],
+        [
+          30,
+          790
+        ]
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "tavern_block",
+      "type": "rect",
+      "x": 560,
+      "y": 270,
+      "w": 420,
+      "h": 210
+    },
+    {
+      "id": "cottage_w_block",
+      "type": "rect",
+      "x": 350,
+      "y": 345,
+      "w": 205,
+      "h": 135
+    },
+    {
+      "id": "market_house_block",
+      "type": "rect",
+      "x": 1060,
+      "y": 150,
+      "w": 260,
+      "h": 180
+    },
+    {
+      "id": "harbor_cottage_block",
+      "type": "rect",
+      "x": 940,
+      "y": 370,
+      "w": 190,
+      "h": 130
+    },
+    {
+      "id": "river_house_block",
+      "type": "rect",
+      "x": 1175,
+      "y": 500,
+      "w": 250,
+      "h": 150
+    }
+  ],
+  "waterAreas": [
+    {
+      "id": "harbor_water",
+      "type": "poly",
+      "points": [
+        [
+          0,
+          720
+        ],
+        [
+          145,
+          695
+        ],
+        [
+          270,
+          735
+        ],
+        [
+          420,
+          790
+        ],
+        [
+          520,
+          900
+        ],
+        [
+          480,
+          1080
+        ],
+        [
+          0,
+          1080
+        ]
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "driftwood_tavern",
+      "type": "dialogue",
+      "x": 735,
+      "y": 505,
+      "r": 80,
+      "label": "Enter The Driftwood Tavern",
+      "message": "The Driftwood Tavern is open. Interior coming next: rumors, food, jobs, and player meetups."
+    },
+    {
+      "id": "town_board",
+      "type": "textBox",
+      "x": 720,
+      "y": 700,
+      "r": 70,
+      "label": "Town Board",
+      "message": "Whisperwind projects: repair the lower dock, sponsor market lamps, and open the inn upstairs."
+    },
+    {
+      "id": "harbor_dock",
+      "type": "fish",
+      "x": 255,
+      "y": 820,
+      "r": 130,
+      "label": "Fish from the Harbor Dock",
+      "castArea": {
+        "x": 215,
+        "y": 910,
+        "r": 170
+      }
+    },
+    {
+      "id": "market_table",
+      "type": "dialogue",
+      "x": 1120,
+      "y": 585,
+      "r": 70,
+      "label": "Market Stall",
+      "message": "A trader is setting up the first Whisperwind market stall."
+    }
+  ],
+  "interactables": [
+    {
+      "id": "mira",
+      "type": "npc",
+      "name": "Mira",
+      "icon": "\ud83e\udded",
+      "x": 840,
+      "y": 610,
+      "r": 65,
+      "label": "Mira",
+      "message": "Mira: This tavern corner is the first real piece of Whisperwind. Next we add interiors, housing lots, and the market."
+    },
+    {
+      "id": "bram",
+      "type": "npc",
+      "name": "Bram",
+      "icon": "\ud83d\udee0\ufe0f",
+      "x": 1090,
+      "y": 645,
+      "r": 65,
+      "label": "Bram",
+      "message": "Bram: We should build with the existing asset packs first, then only make missing hero pieces."
+    }
+  ],
+  "lights": [
+    {
+      "id": "tavern_glow",
+      "type": "light",
+      "x": 720,
+      "y": 500,
+      "r": 220,
+      "opacity": 0.36
+    },
+    {
+      "id": "market_glow",
+      "type": "light",
+      "x": 1115,
+      "y": 560,
+      "r": 160,
+      "opacity": 0.3
+    },
+    {
+      "id": "dock_glow",
+      "type": "light",
+      "x": 285,
+      "y": 790,
+      "r": 140,
+      "opacity": 0.2
+    }
+  ],
+  "ambientEffects": [
+    {
+      "id": "harbor_shimmer",
+      "type": "ambientEffect",
+      "effect": "waterSurfaceShimmer",
+      "points": [
+        [
+          0,
+          720
+        ],
+        [
+          145,
+          695
+        ],
+        [
+          270,
+          735
+        ],
+        [
+          420,
+          790
+        ],
+        [
+          520,
+          900
+        ],
+        [
+          480,
+          1080
+        ],
+        [
+          0,
+          1080
+        ]
+      ],
+      "opacity": 0.28,
+      "speed": 0.6
+    },
+    {
+      "id": "plaza_motes",
+      "type": "ambientEffect",
+      "effect": "fireflies",
+      "x": 500,
+      "y": 320,
+      "w": 560,
+      "h": 360,
+      "opacity": 0.35,
+      "density": 0.35
+    }
+  ],
+  "notes": "Vertical slice assembled from existing audited vendor assets. Do not judge as final Whisperwind; use this as the first real playable district and build outward."
+}

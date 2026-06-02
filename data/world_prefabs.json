@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "prefabs": [
+    {
+      "id": "WF_STAMP_TAVERN_FRONT",
+      "name": "Tavern Front Corner",
+      "description": "Tavern + lamps + benches + notice board. Use this as the first Whisperwind stamp.",
+      "assets": [
+        "B007",
+        "P004",
+        "P008",
+        "P012"
+      ]
+    },
+    {
+      "id": "WF_STAMP_HARBOR_DOCK",
+      "name": "Harbor Dock Segment",
+      "description": "Dock boards + water/fishing hotspot. First fishing-facing Whisperwind stamp.",
+      "assets": [
+        "S001",
+        "S004"
+      ]
+    },
+    {
+      "id": "WF_STAMP_MARKET_NOOK",
+      "name": "Market Nook",
+      "description": "Market house + cart + work table + fence.",
+      "assets": [
+        "B002",
+        "P011",
+        "P013",
+        "P003"
+      ]
+    }
+  ]
+}

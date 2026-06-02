@@ -1,6 +1,11 @@
 {
   "scenes": [
     {
+      "id": "whisperwind_tavern_district",
+      "name": "Whisperwind - Driftwood Tavern District",
+      "url": "/assets/worlds/whisperwind_tavern_district.json"
+    },
+    {
       "id": "shadow_woods_dock",
       "name": "Shadow Woods - Fishing Dock",
       "url": "/assets/worlds/shadow_woods_dock.json"
