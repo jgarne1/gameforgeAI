@@ -6,70 +6,16 @@
       "sceneId": "whisperwind_village",
       "theme": "forest_village",
       "plots": [
-        {
-          "id": "plot_01",
-          "name": "Cedar Nook",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        },
-        {
-          "id": "plot_02",
-          "name": "Hilltop Blue",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        },
-        {
-          "id": "plot_03",
-          "name": "Market Bend",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        },
-        {
-          "id": "plot_04",
-          "name": "Boardwalk Cottage",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        },
-        {
-          "id": "plot_05",
-          "name": "Riverlight Home",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        },
-        {
-          "id": "plot_06",
-          "name": "Garden Rise",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        },
-        {
-          "id": "plot_07",
-          "name": "South Lantern",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        },
-        {
-          "id": "plot_08",
-          "name": "Dockview Cottage",
-          "status": "available_house",
-          "owner": null,
-          "privacy": "public",
-          "houseType": "starter_cottage"
-        }
+        { "id": "plot_01", "name": "Riverblue Cottage", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 125 },
+        { "id": "plot_02", "name": "Mossbell Cottage", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 125 },
+        { "id": "plot_03", "name": "Lantern Row Home", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 150 },
+        { "id": "plot_04", "name": "Market View Cottage", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 150 },
+        { "id": "plot_05", "name": "Sunstep Cottage", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 160 },
+        { "id": "plot_06", "name": "Old Wall House", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 160 },
+        { "id": "plot_07", "name": "Dockside Cottage", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 175 },
+        { "id": "plot_08", "name": "Highgarden Home", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 225 },
+        { "id": "plot_09", "name": "Lakewatch Cottage", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 225 },
+        { "id": "plot_10", "name": "Pinecrest Cottage", "status": "available_house", "owner": null, "privacy": "public", "houseType": "starter_cottage", "saleValue": 150 }
       ]
     }
   ]

@@ -1,56 +1,626 @@
 {
   "id": "whisperwind_village",
   "name": "Whisperwind Village",
-  "description": "A multi-level living town hub for GameForge AI: upper social hall, central plaza, market, tavern, player housing, and river docks.",
-  "engine": "gameforge_town_engine_v1",
-  "size": { "w": 5200, "h": 4200 },
-  "spawn": { "x": 2600, "y": 2760, "face": "down" },
+  "description": "Playable World Forger town: multi-level JRPG village with ownable houses, shops, tavern, dock, guild hall, NPCs, minimap, and server-backed housing.",
+  "engine": "world_forger_town_engine_v2_1",
+  "size": {
+    "w": 4200,
+    "h": 3200
+  },
+  "spawn": {
+    "x": 2100,
+    "y": 2140,
+    "face": "down"
+  },
+  "paths": [
+    {
+      "id": "main_spine",
+      "width": 150,
+      "points": [
+        [
+          2100,
+          430
+        ],
+        [
+          2100,
+          1100
+        ],
+        [
+          2100,
+          1650
+        ],
+        [
+          2100,
+          2600
+        ],
+        [
+          2100,
+          3050
+        ]
+      ]
+    },
+    {
+      "id": "market_cross",
+      "width": 130,
+      "points": [
+        [
+          700,
+          2200
+        ],
+        [
+          1300,
+          2050
+        ],
+        [
+          2100,
+          2060
+        ],
+        [
+          2850,
+          2130
+        ],
+        [
+          3650,
+          2300
+        ]
+      ]
+    },
+    {
+      "id": "upper_lake",
+      "width": 110,
+      "points": [
+        [
+          2100,
+          1320
+        ],
+        [
+          2460,
+          1150
+        ],
+        [
+          2920,
+          1010
+        ],
+        [
+          3220,
+          880
+        ]
+      ]
+    },
+    {
+      "id": "west_homes",
+      "width": 105,
+      "points": [
+        [
+          1600,
+          2000
+        ],
+        [
+          1240,
+          1580
+        ],
+        [
+          1180,
+          1110
+        ]
+      ]
+    },
+    {
+      "id": "east_homes",
+      "width": 105,
+      "points": [
+        [
+          2520,
+          2140
+        ],
+        [
+          2760,
+          1800
+        ],
+        [
+          3060,
+          1510
+        ]
+      ]
+    },
+    {
+      "id": "dock_path",
+      "width": 115,
+      "points": [
+        [
+          1340,
+          2240
+        ],
+        [
+          1020,
+          2380
+        ],
+        [
+          720,
+          2510
+        ]
+      ]
+    }
+  ],
   "objects": [
-    { "id": "echo_hall", "name": "Echo Hall", "type": "landmark", "asset": "/assets/worldkit/whisperwind/echo_hall_gameforge.png", "x": 2600, "y": 1080, "w": 900, "h": 590, "solid": { "x": -360, "y": -285, "w": 720, "h": 300 }, "interact": { "kind": "enter", "label": "Enter Echo Hall", "radius": 190, "message": "Echo Hall is the future walk-in social hub for board games, arcade tables, tournaments, and friends." } },
-    { "id": "general_store", "name": "General Store", "type": "shop", "asset": "/assets/worldkit/whisperwind/general_store_gameforge.png", "x": 1480, "y": 2230, "w": 540, "h": 405, "solid": { "x": -210, "y": -260, "w": 420, "h": 255 }, "interact": { "kind": "shop", "label": "Browse General Store", "radius": 160, "message": "The General Store will sell bait, furniture, clothing, tools, and village supplies." } },
-    { "id": "blue_lantern", "name": "Blue Lantern Tavern", "type": "tavern", "asset": "/assets/worldkit/whisperwind/echo_hall_gameforge.png", "x": 1110, "y": 2710, "w": 570, "h": 390, "solid": { "x": -225, "y": -245, "w": 450, "h": 240 }, "interact": { "kind": "tavern", "label": "Enter Blue Lantern Tavern", "radius": 170, "message": "Warm light, clinking mugs, rumor boards, party finding, and future quest tables." } },
-    { "id": "town_board", "name": "Town Board", "type": "board", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 3460, "y": 2140, "w": 260, "h": 250, "solid": { "x": -70, "y": -120, "w": 140, "h": 95 }, "interact": { "kind": "read", "label": "Read Town Board", "radius": 145, "message": "Whisperwind Board\n\n• Empty cottages can be claimed.\n• The tavern is open as a social placeholder.\n• Echo Hall will become a walk-in game lobby.\n• The docks connect town life to fishing." } },
-    { "id": "fountain", "name": "Aether Fountain", "type": "landmark", "asset": "/assets/worldkit/whisperwind/fountain_gameforge.png", "x": 2600, "y": 2380, "w": 330, "h": 275, "solid": { "x": -125, "y": -110, "w": 250, "h": 130 }, "interact": { "kind": "inspect", "label": "Inspect Fountain", "radius": 160, "message": "The fountain hums softly. It feels like the center of Whisperwind is awake." } },
-    { "id": "river_dock", "name": "River Dock", "type": "dock", "asset": "/assets/worldkit/whisperwind/dock_gameforge.png", "x": 4560, "y": 3580, "w": 520, "h": 270, "solid": { "x": -230, "y": -115, "w": 460, "h": 178 }, "interact": { "kind": "fish", "label": "Fish from Dock", "radius": 180, "message": "The water is calmer here. This dock will connect the town to fishing systems." } },
-    { "id": "north_sign", "name": "North Road Sign", "type": "sign", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 1400, "y": 630, "w": 160, "h": 154, "solid": { "x": -50, "y": -72, "w": 100, "h": 70 }, "interact": { "kind": "travel", "label": "Read Sign", "radius": 120, "message": "North Road — Shadow Woods and future wild regions." } }
+    {
+      "id": "tavern",
+      "kind": "tavern",
+      "x": 1660,
+      "y": 1720,
+      "w": 460,
+      "h": 360,
+      "footprint": {
+        "x": 1700,
+        "y": 1940,
+        "w": 380,
+        "h": 170
+      }
+    },
+    {
+      "id": "market_hall",
+      "kind": "shop",
+      "x": 2320,
+      "y": 1720,
+      "w": 460,
+      "h": 360,
+      "footprint": {
+        "x": 2360,
+        "y": 1940,
+        "w": 380,
+        "h": 170
+      }
+    },
+    {
+      "id": "echo_hall",
+      "kind": "guild",
+      "x": 1850,
+      "y": 720,
+      "w": 500,
+      "h": 370,
+      "footprint": {
+        "x": 1880,
+        "y": 945,
+        "w": 440,
+        "h": 155
+      }
+    },
+    {
+      "id": "town_board",
+      "kind": "board",
+      "x": 1940,
+      "y": 2280,
+      "w": 320,
+      "h": 150,
+      "footprint": {
+        "x": 1940,
+        "y": 2390,
+        "w": 320,
+        "h": 65
+      }
+    },
+    {
+      "id": "fountain",
+      "kind": "fountain",
+      "x": 2100,
+      "y": 1450
+    },
+    {
+      "id": "bridge",
+      "kind": "bridge",
+      "x": 2755,
+      "y": 1430,
+      "rot": -0.68
+    },
+    {
+      "id": "oak_01",
+      "kind": "tree",
+      "x": 540,
+      "y": 650,
+      "size": 1.35,
+      "footprint": {
+        "x": 485,
+        "y": 625,
+        "w": 110,
+        "h": 95
+      }
+    },
+    {
+      "id": "oak_02",
+      "kind": "tree",
+      "x": 790,
+      "y": 820,
+      "size": 1.1,
+      "footprint": {
+        "x": 745,
+        "y": 800,
+        "w": 95,
+        "h": 80
+      }
+    },
+    {
+      "id": "oak_03",
+      "kind": "tree",
+      "x": 3570,
+      "y": 1750,
+      "size": 1.25,
+      "footprint": {
+        "x": 3515,
+        "y": 1730,
+        "w": 110,
+        "h": 90
+      }
+    },
+    {
+      "id": "oak_04",
+      "kind": "tree",
+      "x": 3850,
+      "y": 1850,
+      "size": 1.05,
+      "footprint": {
+        "x": 3808,
+        "y": 1832,
+        "w": 92,
+        "h": 82
+      }
+    },
+    {
+      "id": "lamp_01",
+      "kind": "lamp",
+      "x": 1800,
+      "y": 2180
+    },
+    {
+      "id": "lamp_02",
+      "kind": "lamp",
+      "x": 2440,
+      "y": 2180
+    },
+    {
+      "id": "lamp_03",
+      "kind": "lamp",
+      "x": 2020,
+      "y": 1180
+    },
+    {
+      "id": "lamp_04",
+      "kind": "lamp",
+      "x": 3180,
+      "y": 1030
+    }
   ],
-  "houses": [
-    { "id": "plot_01", "name": "Cedar Nook", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 760, "y": 980, "w": 430, "h": 380, "houseX": 980, "houseY": 1330, "description": "A quiet upper-left cottage tucked below the north creek." },
-    { "id": "plot_02", "name": "Hilltop Blue", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 1360, "y": 1080, "w": 430, "h": 380, "houseX": 1580, "houseY": 1435, "description": "A bright cottage with a short walk to Echo Hall." },
-    { "id": "plot_03", "name": "Market Bend", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 720, "y": 1580, "w": 430, "h": 380, "houseX": 950, "houseY": 1935, "description": "Close to the market lane and tavern noise." },
-    { "id": "plot_04", "name": "Boardwalk Cottage", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 3710, "y": 1030, "w": 430, "h": 380, "houseX": 3940, "houseY": 1380, "description": "An east-side cottage near the town board." },
-    { "id": "plot_05", "name": "Riverlight Home", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 4300, "y": 1180, "w": 430, "h": 380, "houseX": 4535, "houseY": 1535, "description": "A cottage with a view toward the eastern river." },
-    { "id": "plot_06", "name": "Garden Rise", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 3760, "y": 1650, "w": 430, "h": 380, "houseX": 3980, "houseY": 2005, "description": "A residential-rise home with garden space." },
-    { "id": "plot_07", "name": "South Lantern", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 1690, "y": 3050, "w": 430, "h": 380, "houseX": 1910, "houseY": 3400, "description": "A warmer cottage near the road to the docks." },
-    { "id": "plot_08", "name": "Dockview Cottage", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 3450, "y": 3030, "w": 430, "h": 380, "houseX": 3675, "houseY": 3380, "description": "A lower-town cottage with a direct walk to the river dock." }
+  "plots": [
+    {
+      "id": "plot_01",
+      "name": "Riverblue Cottage",
+      "x": 900,
+      "y": 1180,
+      "w": 240,
+      "h": 215,
+      "price": 250,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#2e87b9",
+      "footprint": {
+        "x": 928,
+        "y": 1360,
+        "w": 186,
+        "h": 88
+      }
+    },
+    {
+      "id": "plot_02",
+      "name": "Mossbell Cottage",
+      "x": 1220,
+      "y": 1450,
+      "w": 240,
+      "h": 215,
+      "price": 250,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#5b8f5a",
+      "footprint": {
+        "x": 1248,
+        "y": 1630,
+        "w": 186,
+        "h": 88
+      }
+    },
+    {
+      "id": "plot_03",
+      "name": "Lantern Row Home",
+      "x": 780,
+      "y": 2020,
+      "w": 240,
+      "h": 215,
+      "price": 300,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#9d3e4a",
+      "footprint": {
+        "x": 808,
+        "y": 2200,
+        "w": 186,
+        "h": 88
+      }
+    },
+    {
+      "id": "plot_04",
+      "name": "Market View Cottage",
+      "x": 1310,
+      "y": 2280,
+      "w": 240,
+      "h": 215,
+      "price": 300,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#8d4a9d",
+      "footprint": {
+        "x": 1338,
+        "y": 2460,
+        "w": 186,
+        "h": 88
+      }
+    },
+    {
+      "id": "plot_05",
+      "name": "Sunstep Cottage",
+      "x": 2900,
+      "y": 1430,
+      "w": 240,
+      "h": 215,
+      "price": 325,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#d17d3f",
+      "footprint": {
+        "x": 2928,
+        "y": 1610,
+        "w": 186,
+        "h": 88
+      }
+    },
+    {
+      "id": "plot_06",
+      "name": "Old Wall House",
+      "x": 3180,
+      "y": 1680,
+      "w": 240,
+      "h": 215,
+      "price": 325,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#7b6aad",
+      "footprint": {
+        "x": 3208,
+        "y": 1860,
+        "w": 186,
+        "h": 88
+      }
+    },
+    {
+      "id": "plot_07",
+      "name": "Dockside Cottage",
+      "x": 1080,
+      "y": 2600,
+      "w": 240,
+      "h": 215,
+      "price": 350,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#367f8f",
+      "footprint": {
+        "x": 1108,
+        "y": 2780,
+        "w": 186,
+        "h": 88
+      }
+    },
+    {
+      "id": "plot_08",
+      "name": "Highgarden Home",
+      "x": 2470,
+      "y": 740,
+      "w": 250,
+      "h": 225,
+      "price": 450,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#b35a5a",
+      "footprint": {
+        "x": 2500,
+        "y": 930,
+        "w": 190,
+        "h": 90
+      }
+    },
+    {
+      "id": "plot_09",
+      "name": "Lakewatch Cottage",
+      "x": 3050,
+      "y": 760,
+      "w": 250,
+      "h": 225,
+      "price": 450,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#315d9c",
+      "footprint": {
+        "x": 3080,
+        "y": 950,
+        "w": 190,
+        "h": 90
+      }
+    },
+    {
+      "id": "plot_10",
+      "name": "Pinecrest Cottage",
+      "x": 3480,
+      "y": 2180,
+      "w": 240,
+      "h": 215,
+      "price": 300,
+      "status": "available_house",
+      "houseType": "starter_cottage",
+      "roof": "#5f7f45",
+      "footprint": {
+        "x": 3508,
+        "y": 2360,
+        "w": 186,
+        "h": 88
+      }
+    }
   ],
-  "decorations": [
-    { "id": "tree_01", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 690, "y": 830, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "tree_02", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 1710, "y": 690, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "tree_03", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 3440, "y": 700, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "tree_04", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 4760, "y": 940, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "tree_05", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 820, "y": 3010, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "tree_06", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 4550, "y": 2860, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "tree_07", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 1240, "y": 3680, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "tree_08", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 3920, "y": 3750, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
-    { "id": "bench_01", "asset": "/assets/worldkit/whisperwind/bench_gameforge.png", "x": 2240, "y": 2630, "w": 220, "h": 130 },
-    { "id": "bench_02", "asset": "/assets/worldkit/whisperwind/bench_gameforge.png", "x": 2960, "y": 2630, "w": 220, "h": 130 },
-    { "id": "lamp_01", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 2150, "y": 2100, "w": 120, "h": 220 },
-    { "id": "lamp_02", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 3050, "y": 2100, "w": 120, "h": 220 },
-    { "id": "lamp_03", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 2110, "y": 2890, "w": 120, "h": 220 },
-    { "id": "lamp_04", "asset": "/assets/worldkit/whisperwind/lamp_gameforge.png", "x": 3090, "y": 2890, "w": 120, "h": 220 },
-    { "id": "flowers_01", "asset": "/assets/worldkit/whisperwind/flowers_blue.png", "x": 2160, "y": 2260, "w": 180, "h": 112 },
-    { "id": "flowers_02", "asset": "/assets/worldkit/whisperwind/flowers_gold.png", "x": 3040, "y": 2260, "w": 180, "h": 112 },
-    { "id": "flowers_03", "asset": "/assets/worldkit/whisperwind/flowers_pink.png", "x": 2160, "y": 2500, "w": 180, "h": 112 },
-    { "id": "flowers_04", "asset": "/assets/worldkit/whisperwind/flowers_blue.png", "x": 3040, "y": 2500, "w": 180, "h": 112 },
-    { "id": "flowers_05", "asset": "/assets/worldkit/whisperwind/flowers_gold.png", "x": 1500, "y": 2500, "w": 180, "h": 112 },
-    { "id": "flowers_06", "asset": "/assets/worldkit/whisperwind/flowers_pink.png", "x": 3700, "y": 2600, "w": 180, "h": 112 }
+  "interactions": [
+    {
+      "id": "tavern_door",
+      "type": "tavern",
+      "x": 1890,
+      "y": 2090,
+      "r": 145,
+      "label": "Enter Tavern"
+    },
+    {
+      "id": "market_door",
+      "type": "shop",
+      "x": 2550,
+      "y": 2090,
+      "r": 145,
+      "label": "Enter Shop"
+    },
+    {
+      "id": "guild_door",
+      "type": "guild",
+      "x": 2100,
+      "y": 1080,
+      "r": 150,
+      "label": "Enter Echo Hall"
+    },
+    {
+      "id": "board_read",
+      "type": "board",
+      "x": 2100,
+      "y": 2470,
+      "r": 135,
+      "label": "Read Town Board"
+    },
+    {
+      "id": "dock",
+      "type": "dock",
+      "x": 1020,
+      "y": 2380,
+      "r": 170,
+      "label": "Use Dock"
+    }
   ],
   "npcs": [
-    { "id": "arlo", "name": "Arlo", "x": 2360, "y": 2260, "face": "down", "color": "#f0bf7d", "outfit": "#368fc9", "dialogue": ["Welcome to Whisperwind. This is where the Forge starts feeling like a place instead of a menu.", "The plaza leads north to Echo Hall, west to the store and tavern, east to the board and homes, and south toward the docks."] },
-    { "id": "brindle", "name": "Brindle", "x": 930, "y": 1580, "face": "right", "color": "#ddb079", "outfit": "#8b5cf6", "dialogue": ["Empty cottages can be claimed right now.", "Later, we should add price, resale value, furniture score, and permissions for friends or guilds."] },
-    { "id": "marina", "name": "Marina", "x": 4280, "y": 3370, "face": "right", "color": "#f3c38a", "outfit": "#0ea5a3", "dialogue": ["The river is the first thing that should feel alive. Watch the shimmer near the dock.", "When fishing comes back here, it should feel like part of town instead of a separate screen."] },
-    { "id": "cog", "name": "Professor Cog", "x": 2890, "y": 1250, "face": "down", "color": "#e8b98b", "outfit": "#d97706", "dialogue": ["Echo Hall is not merely a building. It is where games become places.", "One day you will walk inside and choose a table instead of clicking a menu."] },
-    { "id": "luma", "name": "Luma", "x": 1110, "y": 2880, "face": "up", "color": "#f2c4a0", "outfit": "#be185d", "dialogue": ["The Blue Lantern is open. Sort of.", "For now it is a placeholder, but it should become the place to find groups, rumors, and player-made parties."] }
+    {
+      "id": "npc_mira",
+      "name": "Mira",
+      "x": 1760,
+      "y": 2170,
+      "color": "#ffd166",
+      "speed": 8,
+      "route": [
+        [
+          1760,
+          2170
+        ],
+        [
+          1980,
+          2320
+        ],
+        [
+          2250,
+          2180
+        ],
+        [
+          2050,
+          2040
+        ]
+      ],
+      "text": "The tavern gets louder when more forgers come home. Soon this place should host rumors, cards, and player meetups."
+    },
+    {
+      "id": "npc_bram",
+      "name": "Bram",
+      "x": 2520,
+      "y": 2220,
+      "color": "#77d6ff",
+      "speed": 10,
+      "route": [
+        [
+          2520,
+          2220
+        ],
+        [
+          2850,
+          2140
+        ],
+        [
+          3120,
+          2240
+        ],
+        [
+          2660,
+          2360
+        ]
+      ],
+      "text": "Market Hall can sell furniture, bait, tools, and house upgrades. The hook is ready; the inventory can be wired next."
+    },
+    {
+      "id": "npc_orin",
+      "name": "Orin",
+      "x": 2120,
+      "y": 1250,
+      "color": "#b9a8ff",
+      "speed": 12,
+      "route": [
+        [
+          2120,
+          1250
+        ],
+        [
+          2280,
+          1160
+        ],
+        [
+          2050,
+          1120
+        ],
+        [
+          1960,
+          1280
+        ]
+      ],
+      "text": "Echo Hall tracks town projects. When players contribute resources, the village should physically change."
+    },
+    {
+      "id": "npc_pip",
+      "name": "Pip",
+      "x": 1120,
+      "y": 2440,
+      "color": "#8ee8a0",
+      "speed": 9,
+      "route": [
+        [
+          1120,
+          2440
+        ],
+        [
+          920,
+          2500
+        ],
+        [
+          760,
+          2580
+        ],
+        [
+          1040,
+          2360
+        ]
+      ],
+      "text": "The dock path is safe today. Later, this should branch into fishing, sailing, and secret shore events."
+    }
   ]
 }
