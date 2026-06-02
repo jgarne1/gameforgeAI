@@ -1,154 +1,529 @@
 {
-  "approvedDirection": "Whisperwind Kit first; real importable sheets only, no concept/poster art.",
+  "version": 1,
+  "artDirection": "World Forger / Whisperwind Kit. Exact 128x128 transparent grid. Fixed 2.5D RPG art angle.",
   "sheets": [
     {
-      "version": 1,
-      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
-      "cell": {
-        "width": 128,
-        "height": 128
-      },
+      "id": "terrain_foundation_01",
+      "name": "Whisperwind Terrain Foundation 01",
+      "path": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cellWidth": 128,
+      "cellHeight": 128,
       "columns": 8,
       "rows": 8,
-      "assets": [
-        {
-          "id": "T001",
-          "name": "Grass",
-          "index": 0,
-          "category": "terrain"
-        },
-        {
-          "id": "T002",
-          "name": "Flower Grass",
-          "index": 1,
-          "category": "terrain"
-        },
-        {
-          "id": "T003",
-          "name": "Dark Grass",
-          "index": 2,
-          "category": "terrain"
-        },
-        {
-          "id": "T004",
-          "name": "Dirt Ground",
-          "index": 3,
-          "category": "terrain"
-        },
-        {
-          "id": "T005",
-          "name": "Stone Plaza",
-          "index": 4,
-          "category": "terrain"
-        },
-        {
-          "id": "T006",
-          "name": "Road Horizontal",
-          "index": 5,
-          "category": "terrain"
-        },
-        {
-          "id": "T007",
-          "name": "Road Vertical",
-          "index": 6,
-          "category": "terrain"
-        },
-        {
-          "id": "T008",
-          "name": "Road Crossing",
-          "index": 7,
-          "category": "terrain"
-        },
-        {
-          "id": "T009",
-          "name": "Road Corner NE",
-          "index": 8,
-          "category": "terrain"
-        },
-        {
-          "id": "T010",
-          "name": "Water",
-          "index": 9,
-          "category": "terrain"
-        },
-        {
-          "id": "T011",
-          "name": "Shore Top",
-          "index": 10,
-          "category": "terrain"
-        },
-        {
-          "id": "T012",
-          "name": "Shore Bottom",
-          "index": 11,
-          "category": "terrain"
-        },
-        {
-          "id": "T013",
-          "name": "Shore Left",
-          "index": 12,
-          "category": "terrain"
-        },
-        {
-          "id": "T014",
-          "name": "Shore Right",
-          "index": 13,
-          "category": "terrain"
-        },
-        {
-          "id": "T015",
-          "name": "Cliff Top",
-          "index": 14,
-          "category": "terrain"
-        },
-        {
-          "id": "T016",
-          "name": "Cliff Face",
-          "index": 15,
-          "category": "terrain"
-        },
-        {
-          "id": "T017",
-          "name": "Waterfall Top",
-          "index": 16,
-          "category": "terrain"
-        },
-        {
-          "id": "T018",
-          "name": "Waterfall Middle",
-          "index": 17,
-          "category": "terrain"
-        },
-        {
-          "id": "T019",
-          "name": "Waterfall Bottom",
-          "index": 18,
-          "category": "terrain"
-        },
-        {
-          "id": "T020",
-          "name": "Stone Stairs",
-          "index": 19,
-          "category": "terrain"
-        },
-        {
-          "id": "T021",
-          "name": "Stone Bridge",
-          "index": 20,
-          "category": "structure"
-        },
-        {
-          "id": "T022",
-          "name": "Wood Dock",
-          "index": 21,
-          "category": "structure"
-        },
-        {
-          "id": "T023",
-          "name": "Low Stone Wall",
-          "index": 22,
-          "category": "structure"
-        }
+      "category": "terrain"
+    }
+  ],
+  "assets": [
+    {
+      "id": "T001",
+      "name": "Grass Plain",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T002",
+      "name": "Grass Dark",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 1,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T003",
+      "name": "Grass Flower",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 2,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T004",
+      "name": "Dirt Path",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 3,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T005",
+      "name": "Grass Dirt Edge",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 4,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T006",
+      "name": "Stone Plaza Irregular",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 5,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T007",
+      "name": "Stone Plaza Blocks",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 6,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T008",
+      "name": "Stone Wall Floor",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 7,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T009",
+      "name": "Shore Top",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 0,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T010",
+      "name": "Shore Bottom",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 1,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T011",
+      "name": "Water Plain",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 2,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T012",
+      "name": "Shore Left",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 3,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T013",
+      "name": "Shore Right",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 4,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T014",
+      "name": "Stone Path",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 5,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T015",
+      "name": "Cliff Ramp",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 6,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T016",
+      "name": "Waterfall Middle",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 7,
+        "y": 1,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T017",
+      "name": "Cliff Face Grass",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 0,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T018",
+      "name": "Waterfall Bottom",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 1,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T019",
+      "name": "Cliff Top Corner",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 2,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T020",
+      "name": "Cliff Top Edge",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 3,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T021",
+      "name": "Cliff Face Plain",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 4,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T022",
+      "name": "Stairs Stone",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 5,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T023",
+      "name": "Dock Short",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 6,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T024",
+      "name": "Dock Long",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 7,
+        "y": 2,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T025",
+      "name": "Bridge Stone",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 0,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T026",
+      "name": "Waterfall Top",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 1,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T027",
+      "name": "Rock Outcrop",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 2,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T028",
+      "name": "Garden Border",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 3,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T029",
+      "name": "Plaza Edge Grass",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 4,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T030",
+      "name": "Market Paving",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 5,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T031",
+      "name": "Blank",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 6,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
+      ]
+    },
+    {
+      "id": "T032",
+      "name": "Blank",
+      "type": "terrain",
+      "sheet": "/assets/worldkit/whisperwind/terrain_foundation_01.png",
+      "cell": {
+        "x": 7,
+        "y": 3,
+        "w": 128,
+        "h": 128
+      },
+      "tags": [
+        "whisperwind",
+        "terrain"
       ]
     }
   ]
