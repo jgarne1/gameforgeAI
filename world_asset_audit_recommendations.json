@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "purpose": "Whisperwind asset audit recommendations. This is NOT a complete game catalog yet; it tells future chats what to use first.",
+  "verdict": "Stop generating new assets until existing vendor assets are cataloged into the editor. Use existing packs first.",
+  "recommended_sources": [
+    {
+      "id": "mana_seed_seasonal_forest",
+      "priority": "primary terrain",
+      "paths": [
+        "public/assets/vendor/mana_seed/seasonal_forest/spring_tiles.png",
+        "public/assets/vendor/mana_seed/seasonal_forest/spring_waterfall.png",
+        "public/assets/vendor/mana_seed/seasonal_forest/spring_water_sparkles.png",
+        "public/assets/worldkit/terrain/mana_spring/*.png"
+      ],
+      "use_for": [
+        "grass",
+        "cliffs",
+        "water edges",
+        "waterfalls",
+        "forest edges",
+        "seasonal variants"
+      ],
+      "note": "These are the best existing terrain candidates. The 16x16 cutouts are tiny, so the editor needs better sheet/tile preview and stamping rather than showing each tiny cutout as a major object."
+    },
+    {
+      "id": "pixel_lands_village",
+      "priority": "primary village buildings",
+      "paths": [
+        "public/assets/vendor/pixel_lands_village/premade_buildings_demo.png",
+        "public/assets/vendor/pixel_lands_village/walls_roofs_doors_demo.png",
+        "public/assets/vendor/pixel_lands_village/objects_demo.png",
+        "public/assets/vendor/pixel_lands_village/ground_demo.png"
+      ],
+      "use_for": [
+        "cottages",
+        "walls",
+        "roofs",
+        "doors",
+        "village object kit"
+      ],
+      "note": "This is more promising for houses/buildings than the generated Worldkit placeholders. It needs slicing/cataloging."
+    },
+    {
+      "id": "village_props",
+      "priority": "props and animated effects",
+      "paths": [
+        "public/assets/vendor/village_props/tx_village_props.png",
+        "public/assets/vendor/village_props/tx_tileset_ground.png",
+        "public/assets/vendor/village_props/tx_fx_flame.png",
+        "public/assets/vendor/village_props/tx_chest_animation.png"
+      ],
+      "use_for": [
+        "chests",
+        "flames",
+        "props",
+        "ground pieces"
+      ],
+      "note": "Use for tavern/shop/interior props and world decoration after slicing."
+    },
+    {
+      "id": "gameforge_backgrounds_effects",
+      "priority": "existing polished scenes/effects",
+      "paths": [
+        "public/assets/backgrounds/shadow_woods_fishing_scene.png",
+        "public/assets/backgrounds/shadow_woods_river_bend.png",
+        "public/assets/effects/waterfall_*",
+        "public/assets/effects/river_current_*",
+        "public/assets/effects/living_water_*"
+      ],
+      "use_for": [
+        "quality target",
+        "water animation",
+        "waterfalls",
+        "scene inspiration"
+      ],
+      "note": "These are closer to the quality target than the generated terrain placeholder sheet."
+    }
+  ],
+  "reject_or_deprioritize": [
+    {
+      "id": "current_generated_worldkit_placeholders",
+      "paths": [
+        "public/assets/worldkit/cottage_blue.png",
+        "public/assets/worldkit/cottage_red.png",
+        "public/assets/worldkit/whisperwind/*.png"
+      ],
+      "reason": "Technically usable but visually too simple/flat for the approved Whisperwind direction. Keep only as prototype markers, not final town art."
+    },
+    {
+      "id": "ai_generated_procedural_terrain_starter",
+      "paths": [
+        "public/assets/worldkit/whisperwind/terrain_foundation_01.png"
+      ],
+      "reason": "Pipeline test only. It proves slicing/cataloging, but not good enough to build a town."
+    }
+  ],
+  "first_whisperwind_vertical_slice": {
+    "area": "Tavern Street Prototype",
+    "size": "roughly 1024x1024 gameplay area",
+    "needed_assets": [
+      "village building/tavern candidate from Pixel Lands",
+      "1-2 cottages from Pixel Lands",
+      "stone path/grass/cliff/water from Mana Seed",
+      "lamp/fence/crates/barrels/signs from Village Props",
+      "water/current/flame effects from existing effects"
+    ],
+    "goal": "Use existing assets to make one beautiful street before trying to build full Whisperwind."
+  }
+}
