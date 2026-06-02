@@ -1,53 +1,28 @@
 {
   "id": "whisperwind_village",
   "name": "Whisperwind Village",
-  "description": "Whisperwind 2.0: a purpose-built JRPG town layout with GameForge landmark objects, readable districts, live water, NPCs, empty houses for purchase, and an editable object scene structure.",
-  "engine": "rpg_scene_engine_v4_town_districts",
+  "description": "A multi-level living town hub for GameForge AI: upper social hall, central plaza, market, tavern, player housing, and river docks.",
+  "engine": "gameforge_town_engine_v1",
   "size": { "w": 5200, "h": 4200 },
-  "spawn": { "x": 2600, "y": 2380, "face": "up" },
-  "camera": { "smoothing": 0.14 },
-  "player": { "scale": 1.45, "speed": 220 },
-  "avatar": {
-    "frameW": 64,
-    "frameH": 64,
-    "walkFrames": 4,
-    "rows": { "down": 0, "left": 1, "right": 2, "up": 3 },
-    "layers": [
-      { "id": "body", "asset": "/assets/vendor/mana_seed_farmer/layers/body_human.png" },
-      { "id": "shoes", "asset": "/assets/vendor/mana_seed_farmer/layers/shoes.png" },
-      { "id": "pants", "asset": "/assets/vendor/mana_seed_farmer/layers/longpants.png" },
-      { "id": "shirt", "asset": "/assets/vendor/mana_seed_farmer/layers/shortshirt.png" },
-      { "id": "hair", "asset": "/assets/vendor/mana_seed_farmer/layers/hair_dapper.png" }
-    ]
-  },
-  "paths": [
-    { "id": "main_north_south", "width": 135, "points": [[2600,520],[2600,1120],[2600,1660],[2600,2320],[2600,3150],[2600,3860]] },
-    { "id": "plaza_loop_a", "width": 118, "points": [[1980,2240],[2240,1960],[2600,1860],[2960,1960],[3220,2240],[3140,2620],[2800,2840],[2400,2840],[2060,2620],[1980,2240]] },
-    { "id": "market_row", "width": 112, "points": [[1120,2500],[1600,2420],[2060,2380],[2600,2320],[3180,2350],[3680,2460],[4120,2600]] },
-    { "id": "west_residential", "width": 96, "points": [[1650,2380],[1320,2020],[1120,1600],[1080,1120]] },
-    { "id": "east_residential", "width": 96, "points": [[3550,2400],[3900,2050],[4080,1660],[4080,1120]] },
-    { "id": "dock_lane", "width": 104, "points": [[3180,2830],[3600,3180],[4080,3470],[4620,3580]] },
-    { "id": "north_woods_path", "width": 95, "points": [[2600,520],[2180,380],[1760,420],[1360,620]] }
-  ],
-  "waterAreas": [
-    { "id": "east_river", "points": [[4420,0],[5200,0],[5200,4200],[4140,4200],[4340,3740],[4250,3320],[4470,2940],[4380,2440],[4580,1860],[4420,1280]] },
-    { "id": "north_creek", "points": [[0,0],[1020,0],[980,330],[700,560],[260,680],[0,640]] }
-  ],
+  "spawn": { "x": 2600, "y": 2760, "face": "down" },
   "objects": [
-    { "id": "echo_hall", "type": "landmark", "asset": "/assets/worldkit/whisperwind/echo_hall_gameforge.png", "x": 2600, "y": 930, "w": 860, "h": 560, "solid": { "x": -330, "y": -260, "w": 660, "h": 270 }, "interact": { "kind": "enter", "label": "Enter Echo Hall", "radius": 175, "message": "Echo Hall is the future walk-in social hub for board games, arcade tables, tournaments, and friends." } },
-    { "id": "general_store", "type": "shop", "asset": "/assets/worldkit/whisperwind/general_store_gameforge.png", "x": 1510, "y": 2190, "w": 520, "h": 390, "solid": { "x": -195, "y": -250, "w": 390, "h": 250 }, "interact": { "kind": "shop", "label": "Shop", "radius": 150, "message": "The General Store will sell bait, furniture, clothing, tools, and village supplies." } },
-    { "id": "town_board", "type": "board", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 3440, "y": 2100, "w": 250, "h": 240, "solid": { "x": -75, "y": -110, "w": 150, "h": 100 }, "interact": { "kind": "read", "label": "Read Town Board", "radius": 140, "message": "Whisperwind Board\n\n• Echo Hall is open for testing.\n• Empty cottages can be claimed for testing.\n• Docks and interiors are coming next.\n• This town is now object-built, not a single background." } },
-    { "id": "fountain", "type": "landmark", "asset": "/assets/worldkit/whisperwind/fountain_gameforge.png", "x": 2600, "y": 2380, "w": 310, "h": 260, "solid": { "x": -115, "y": -105, "w": 230, "h": 120 }, "interact": { "kind": "inspect", "label": "Inspect Fountain", "radius": 150, "message": "The fountain hums softly. It feels like the center of Whisperwind is awake." } },
-    { "id": "dock", "type": "dock", "asset": "/assets/worldkit/whisperwind/dock_gameforge.png", "x": 4530, "y": 3570, "w": 500, "h": 260, "solid": { "x": -225, "y": -115, "w": 450, "h": 175 }, "interact": { "kind": "fish", "label": "Fish from Dock", "radius": 170, "message": "The water is calmer here. This dock will connect the town to fishing systems." } },
-    { "id": "north_gate_marker", "type": "sign", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 1420, "y": 630, "w": 160, "h": 154, "solid": { "x": -50, "y": -72, "w": 100, "h": 70 }, "interact": { "kind": "travel", "label": "Read Sign", "radius": 120, "message": "North Road — Shadow Woods and future wild regions." } }
+    { "id": "echo_hall", "name": "Echo Hall", "type": "landmark", "asset": "/assets/worldkit/whisperwind/echo_hall_gameforge.png", "x": 2600, "y": 1080, "w": 900, "h": 590, "solid": { "x": -360, "y": -285, "w": 720, "h": 300 }, "interact": { "kind": "enter", "label": "Enter Echo Hall", "radius": 190, "message": "Echo Hall is the future walk-in social hub for board games, arcade tables, tournaments, and friends." } },
+    { "id": "general_store", "name": "General Store", "type": "shop", "asset": "/assets/worldkit/whisperwind/general_store_gameforge.png", "x": 1480, "y": 2230, "w": 540, "h": 405, "solid": { "x": -210, "y": -260, "w": 420, "h": 255 }, "interact": { "kind": "shop", "label": "Browse General Store", "radius": 160, "message": "The General Store will sell bait, furniture, clothing, tools, and village supplies." } },
+    { "id": "blue_lantern", "name": "Blue Lantern Tavern", "type": "tavern", "asset": "/assets/worldkit/whisperwind/echo_hall_gameforge.png", "x": 1110, "y": 2710, "w": 570, "h": 390, "solid": { "x": -225, "y": -245, "w": 450, "h": 240 }, "interact": { "kind": "tavern", "label": "Enter Blue Lantern Tavern", "radius": 170, "message": "Warm light, clinking mugs, rumor boards, party finding, and future quest tables." } },
+    { "id": "town_board", "name": "Town Board", "type": "board", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 3460, "y": 2140, "w": 260, "h": 250, "solid": { "x": -70, "y": -120, "w": 140, "h": 95 }, "interact": { "kind": "read", "label": "Read Town Board", "radius": 145, "message": "Whisperwind Board\n\n• Empty cottages can be claimed.\n• The tavern is open as a social placeholder.\n• Echo Hall will become a walk-in game lobby.\n• The docks connect town life to fishing." } },
+    { "id": "fountain", "name": "Aether Fountain", "type": "landmark", "asset": "/assets/worldkit/whisperwind/fountain_gameforge.png", "x": 2600, "y": 2380, "w": 330, "h": 275, "solid": { "x": -125, "y": -110, "w": 250, "h": 130 }, "interact": { "kind": "inspect", "label": "Inspect Fountain", "radius": 160, "message": "The fountain hums softly. It feels like the center of Whisperwind is awake." } },
+    { "id": "river_dock", "name": "River Dock", "type": "dock", "asset": "/assets/worldkit/whisperwind/dock_gameforge.png", "x": 4560, "y": 3580, "w": 520, "h": 270, "solid": { "x": -230, "y": -115, "w": 460, "h": 178 }, "interact": { "kind": "fish", "label": "Fish from Dock", "radius": 180, "message": "The water is calmer here. This dock will connect the town to fishing systems." } },
+    { "id": "north_sign", "name": "North Road Sign", "type": "sign", "asset": "/assets/worldkit/whisperwind/town_board_gameforge.png", "x": 1400, "y": 630, "w": 160, "h": 154, "solid": { "x": -50, "y": -72, "w": 100, "h": 70 }, "interact": { "kind": "travel", "label": "Read Sign", "radius": 120, "message": "North Road — Shadow Woods and future wild regions." } }
   ],
-  "plots": [
-    { "id": "plot_01", "x": 780, "y": 1080, "w": 430, "h": 380, "houseX": 995, "houseY": 1370 },
-    { "id": "plot_02", "x": 1360, "y": 1180, "w": 430, "h": 380, "houseX": 1575, "houseY": 1470 },
-    { "id": "plot_03", "x": 760, "y": 1660, "w": 430, "h": 380, "houseX": 975, "houseY": 1950 },
-    { "id": "plot_04", "x": 3720, "y": 1080, "w": 430, "h": 380, "houseX": 3935, "houseY": 1370 },
-    { "id": "plot_05", "x": 4320, "y": 1220, "w": 430, "h": 380, "houseX": 4535, "houseY": 1510 },
-    { "id": "plot_06", "x": 3760, "y": 1680, "w": 430, "h": 380, "houseX": 3975, "houseY": 1970 }
+  "houses": [
+    { "id": "plot_01", "name": "Cedar Nook", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 760, "y": 980, "w": 430, "h": 380, "houseX": 980, "houseY": 1330, "description": "A quiet upper-left cottage tucked below the north creek." },
+    { "id": "plot_02", "name": "Hilltop Blue", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 1360, "y": 1080, "w": 430, "h": 380, "houseX": 1580, "houseY": 1435, "description": "A bright cottage with a short walk to Echo Hall." },
+    { "id": "plot_03", "name": "Market Bend", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 720, "y": 1580, "w": 430, "h": 380, "houseX": 950, "houseY": 1935, "description": "Close to the market lane and tavern noise." },
+    { "id": "plot_04", "name": "Boardwalk Cottage", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 3710, "y": 1030, "w": 430, "h": 380, "houseX": 3940, "houseY": 1380, "description": "An east-side cottage near the town board." },
+    { "id": "plot_05", "name": "Riverlight Home", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 4300, "y": 1180, "w": 430, "h": 380, "houseX": 4535, "houseY": 1535, "description": "A cottage with a view toward the eastern river." },
+    { "id": "plot_06", "name": "Garden Rise", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 3760, "y": 1650, "w": 430, "h": 380, "houseX": 3980, "houseY": 2005, "description": "A residential-rise home with garden space." },
+    { "id": "plot_07", "name": "South Lantern", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 1690, "y": 3050, "w": 430, "h": 380, "houseX": 1910, "houseY": 3400, "description": "A warmer cottage near the road to the docks." },
+    { "id": "plot_08", "name": "Dockview Cottage", "asset": "/assets/worldkit/whisperwind/starter_cottage_gameforge.png", "x": 3450, "y": 3030, "w": 430, "h": 380, "houseX": 3675, "houseY": 3380, "description": "A lower-town cottage with a direct walk to the river dock." }
   ],
   "decorations": [
     { "id": "tree_01", "asset": "/assets/worldkit/whisperwind/tree_oak_gameforge.png", "x": 690, "y": 830, "w": 300, "h": 360, "solid": { "x": -35, "y": -70, "w": 70, "h": 80 } },
@@ -72,9 +47,10 @@
     { "id": "flowers_06", "asset": "/assets/worldkit/whisperwind/flowers_pink.png", "x": 3700, "y": 2600, "w": 180, "h": 112 }
   ],
   "npcs": [
-    { "id": "arlo", "name": "Arlo", "x": 2360, "y": 2260, "face": "down", "interact": { "label": "Talk to Arlo", "radius": 110 }, "dialogue": ["Welcome to Whisperwind. This is where the Forge starts feeling like a place instead of a menu.", "The plaza leads north to Echo Hall, west to the store, east to the board, and down toward the docks."] },
-    { "id": "brindle", "name": "Brindle", "x": 930, "y": 1580, "face": "right", "interact": { "label": "Talk to Brindle", "radius": 110 }, "dialogue": ["We are not selling dirt plots anymore. Empty cottages are easier to understand.", "Claim one for testing, then we will build interiors and furniture placement next."] },
-    { "id": "marina", "name": "Marina", "x": 4280, "y": 3370, "face": "right", "interact": { "label": "Talk to Marina", "radius": 110 }, "dialogue": ["The river is the first thing that should feel alive. Watch the shimmer near the dock.", "When fishing comes back here, it should feel like part of town instead of a separate screen."] },
-    { "id": "cog", "name": "Professor Cog", "x": 2890, "y": 1250, "face": "down", "interact": { "label": "Talk to Cog", "radius": 110 }, "dialogue": ["Echo Hall is not merely a building. It is where games become places.", "One day you will walk inside and choose a table instead of clicking a menu."] }
+    { "id": "arlo", "name": "Arlo", "x": 2360, "y": 2260, "face": "down", "color": "#f0bf7d", "outfit": "#368fc9", "dialogue": ["Welcome to Whisperwind. This is where the Forge starts feeling like a place instead of a menu.", "The plaza leads north to Echo Hall, west to the store and tavern, east to the board and homes, and south toward the docks."] },
+    { "id": "brindle", "name": "Brindle", "x": 930, "y": 1580, "face": "right", "color": "#ddb079", "outfit": "#8b5cf6", "dialogue": ["Empty cottages can be claimed right now.", "Later, we should add price, resale value, furniture score, and permissions for friends or guilds."] },
+    { "id": "marina", "name": "Marina", "x": 4280, "y": 3370, "face": "right", "color": "#f3c38a", "outfit": "#0ea5a3", "dialogue": ["The river is the first thing that should feel alive. Watch the shimmer near the dock.", "When fishing comes back here, it should feel like part of town instead of a separate screen."] },
+    { "id": "cog", "name": "Professor Cog", "x": 2890, "y": 1250, "face": "down", "color": "#e8b98b", "outfit": "#d97706", "dialogue": ["Echo Hall is not merely a building. It is where games become places.", "One day you will walk inside and choose a table instead of clicking a menu."] },
+    { "id": "luma", "name": "Luma", "x": 1110, "y": 2880, "face": "up", "color": "#f2c4a0", "outfit": "#be185d", "dialogue": ["The Blue Lantern is open. Sort of.", "For now it is a placeholder, but it should become the place to find groups, rumors, and player-made parties."] }
   ]
 }

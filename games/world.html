@@ -1,43 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadow Woods</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Whisperwind Village</title>
 <style>
-  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030712;font-family:Arial,Helvetica,sans-serif;color:#e5f3ff}
-  .boot{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(14,165,233,.18),rgba(3,7,18,.96));z-index:1;text-align:center;padding:24px}
-  .boot h1{margin:0 0 8px;font-size:28px}.boot p{margin:0;color:#9cc7dc;font-weight:700}
-</style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06111b;color:#eaf7ff;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}.boot{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 36%,rgba(71,211,255,.22),rgba(6,17,27,.98) 58%,#02060a);z-index:5;text-align:center}.boot h1{margin:0 0 10px;font-size:30px;letter-spacing:.02em}.boot p{margin:0;color:#a9c9db;font-weight:800}.boot small{display:block;margin-top:12px;color:#6f91a7}</style>
 </head>
 <body>
-<div class="boot" id="boot"><div><h1>Shadow Woods</h1><p>Loading the fishing dock...</p></div></div>
-<script src="/games/js/world_engine.js"></script>
+<div class="boot" id="boot"><div><h1>Whisperwind Village</h1><p>Opening the living town...</p><small>WASD / arrows to move · E to interact</small></div></div>
+<script src="/games/js/world_engine.js?v=town-engine-20260602"></script>
 <script>
 var GAME_CONTEXT=null;
-function playerName(){
-  try{
-    if(GAME_CONTEXT&&GAME_CONTEXT.username)return GAME_CONTEXT.username;
-    if(window.GAME_PLAYERS&&window.GAME_PLAYERS.length){return window.GAME_PLAYERS[0].name||'guest';}
-    return localStorage.getItem('gf_user')||'guest';
-  }catch(e){return 'guest';}
-}
-function startWorld(){
-  var boot=document.getElementById('boot');
-  if(boot)boot.style.display='none';
-  if(!window.PetWorldWorldEngine){alert('World engine did not load.');return;}
-  var params=new URLSearchParams(location.search);
-  var scene=params.get('scene')||'shadow_woods_dock';
-  PetWorldWorldEngine.start({username:playerName(),sceneId:scene,onClose:function(){
-    if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'world'},'*');}
-  }});
-}
-window.addEventListener('message',function(ev){
-  var m=ev.data||{};
-  if(m.type==='GAME_CONTEXT'){GAME_CONTEXT=m.data||GAME_CONTEXT;try{localStorage.setItem('gf_user',GAME_CONTEXT.username||'guest');}catch(e){} }
-  if(m.type==='gameSetup'&&m.username){GAME_CONTEXT=GAME_CONTEXT||{};GAME_CONTEXT.username=m.username;try{localStorage.setItem('gf_user',m.username||'guest');}catch(e){} }
-});
-setTimeout(startWorld,80);
+function playerName(){try{return (GAME_CONTEXT&&GAME_CONTEXT.username)||localStorage.getItem('gf_user')||localStorage.getItem('gameforge_username')||'guest';}catch(e){return 'guest';}}
+function startWorld(){var boot=document.getElementById('boot');if(boot)boot.style.display='none';if(!window.GameForgeTownEngine){alert('Town engine did not load.');return;}var params=new URLSearchParams(location.search);window.GameForgeTownEngine.start({username:playerName(),sceneId:params.get('scene')||'whisperwind_village',onClose:function(){if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'world'},'*');}}});}
+window.addEventListener('message',function(ev){var m=ev.data||{};if(m.type==='GAME_CONTEXT'){GAME_CONTEXT=m.data||GAME_CONTEXT;try{localStorage.setItem('gf_user',GAME_CONTEXT.username||'guest');}catch(e){}}if(m.type==='gameSetup'&&m.username){GAME_CONTEXT=GAME_CONTEXT||{};GAME_CONTEXT.username=m.username;try{localStorage.setItem('gf_user',m.username||'guest');}catch(e){}}});
+setTimeout(startWorld,120);
 </script>
 </body>
 </html>

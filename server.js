@@ -5466,7 +5466,8 @@ function pushPresence(){
 // Estate neighborhood state
 // -----------------------------
 function defaultEstateNeighborhoods(){
-  return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',sceneId:'whisperwind_village',theme:'forest_village',plots:[1,2,3,4,5,6].map(n=>({id:'plot_'+String(n).padStart(2,'0'),name:'Cottage '+n,status:'available_house',owner:null,privacy:'public',houseType:'starter_cottage'}))}]};
+  const names=['Cedar Nook','Hilltop Blue','Market Bend','Boardwalk Cottage','Riverlight Home','Garden Rise','South Lantern','Dockview Cottage'];
+  return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',sceneId:'whisperwind_village',theme:'forest_village',plots:names.map((name,i)=>({id:'plot_'+String(i+1).padStart(2,'0'),name,status:'available_house',owner:null,privacy:'public',houseType:'starter_cottage'}))}]};
 }
 function loadEstateNeighborhoods(){
   const data=readJSON(estateNeighborhoodsFile,null)||defaultEstateNeighborhoods();
@@ -5497,6 +5498,29 @@ app.post('/api/estate/neighborhoods/:id/claim',(req,res)=>{
   if(plot.owner&&String(plot.owner).toLowerCase()!==username.toLowerCase())return res.status(409).json({ok:false,error:'That plot already belongs to '+plot.owner+'.'});
   if(plot.status==='empty')return res.status(409).json({ok:false,error:'That cottage is not available yet.'});
   plot.owner=username;plot.status='owned';plot.privacy=plot.privacy||'public';plot.houseType=plot.houseType||'starter_cottage';plot.claimedAt=Date.now();
+  saveEstateNeighborhoods(data);
+  res.json({ok:true,plot,neighborhood});
+});
+
+app.post('/api/estate/neighborhoods/:id/sell',(req,res)=>{
+  const id=String(req.params.id||'whisperwind_01');
+  const username=String((req.body&&req.body.username)||'').trim();
+  const plotId=String((req.body&&req.body.plotId)||'').trim();
+  if(!username)return res.status(400).json({ok:false,error:'Missing username'});
+  if(!plotId)return res.status(400).json({ok:false,error:'Missing plot'});
+  const data=loadEstateNeighborhoods();
+  const neighborhood=(data.neighborhoods||[]).find(n=>n.id===id);
+  if(!neighborhood)return res.status(404).json({ok:false,error:'Neighborhood not found'});
+  const plot=(neighborhood.plots||[]).find(p=>p.id===plotId);
+  if(!plot)return res.status(404).json({ok:false,error:'Plot not found'});
+  if(!plot.owner)return res.status(409).json({ok:false,error:'That plot is already available.'});
+  if(String(plot.owner||'').toLowerCase()!==username.toLowerCase()&&!getAdminRole(username))return res.status(403).json({ok:false,error:'Only the owner can sell or release this house.'});
+  plot.owner=null;
+  plot.status='available_house';
+  plot.privacy='public';
+  plot.houseType=plot.houseType||'starter_cottage';
+  plot.soldAt=Date.now();
+  delete plot.claimedAt;
   saveEstateNeighborhoods(data);
   res.json({ok:true,plot,neighborhood});
 });

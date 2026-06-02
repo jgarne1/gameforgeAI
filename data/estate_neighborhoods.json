@@ -8,7 +8,7 @@
       "plots": [
         {
           "id": "plot_01",
-          "name": "Cottage 1",
+          "name": "Cedar Nook",
           "status": "available_house",
           "owner": null,
           "privacy": "public",
@@ -16,7 +16,7 @@
         },
         {
           "id": "plot_02",
-          "name": "Cottage 2",
+          "name": "Hilltop Blue",
           "status": "available_house",
           "owner": null,
           "privacy": "public",
@@ -24,7 +24,7 @@
         },
         {
           "id": "plot_03",
-          "name": "Cottage 3",
+          "name": "Market Bend",
           "status": "available_house",
           "owner": null,
           "privacy": "public",
@@ -32,7 +32,7 @@
         },
         {
           "id": "plot_04",
-          "name": "Cottage 4",
+          "name": "Boardwalk Cottage",
           "status": "available_house",
           "owner": null,
           "privacy": "public",
@@ -40,7 +40,7 @@
         },
         {
           "id": "plot_05",
-          "name": "Cottage 5",
+          "name": "Riverlight Home",
           "status": "available_house",
           "owner": null,
           "privacy": "public",
@@ -48,7 +48,23 @@
         },
         {
           "id": "plot_06",
-          "name": "Cottage 6",
+          "name": "Garden Rise",
+          "status": "available_house",
+          "owner": null,
+          "privacy": "public",
+          "houseType": "starter_cottage"
+        },
+        {
+          "id": "plot_07",
+          "name": "South Lantern",
+          "status": "available_house",
+          "owner": null,
+          "privacy": "public",
+          "houseType": "starter_cottage"
+        },
+        {
+          "id": "plot_08",
+          "name": "Dockview Cottage",
           "status": "available_house",
           "owner": null,
           "privacy": "public",
