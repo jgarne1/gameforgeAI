@@ -84,3 +84,25 @@ This package adds:
 - starter real asset sheet: `/assets/worldkit/whisperwind/terrain_foundation_01.png`
 
 The Asset Manager is used to inspect real assets and sprites, test animation frame alignment, drag offsets, tune scale/origin/hitbox, preview movement, and save metadata.
+
+
+## 2026-06-02 Fix: Asset Manager Storage Rules
+
+The Asset Alignment Lab stores files in these exact locations:
+
+- Approved asset catalog: `data/world_asset_catalog.json`
+- Alignment/tuning metadata: `data/world_asset_alignment.json`
+- Real imported world assets: `public/assets/worldkit/whisperwind/`
+
+Do not store generated concept/poster images in the approved catalog. Only add importable sheets that are grid-aligned, game-readable, and intentionally mapped by asset ID.
+
+Server storage note: this project uses `DATA`, not `DATA_DIR`. Any World Forger JSON runtime file should be joined from `DATA` so Render persistent disk behavior matches the rest of GameForge AI.
+
+Current approved starter sheet:
+
+- `WF_TERRAIN_01`
+- File: `public/assets/worldkit/whisperwind/terrain_foundation_01.png`
+- Catalog: `data/world_asset_catalog.json`
+- Alignment metadata: `data/world_asset_alignment.json`
+
+Rejected/candidate art rule: a generated sheet with a visible background, non-exact cell layout, labels, poster framing, or inconsistent tile sizes is not production-ready. Keep it as reference only.

@@ -5589,7 +5589,7 @@ app.get('/api/battle/instance/:id',(req,res)=>{
    tune origins, scale, hitboxes, and save reusable metadata for World Forger.
    This intentionally scans public/assets only and stores lightweight JSON.
 */
-const WORLD_ASSET_ALIGNMENT_FILE=path.join(DATA_DIR,'world_asset_alignment.json');
+const WORLD_ASSET_ALIGNMENT_FILE=path.join(DATA,'world_asset_alignment.json');
 const WORLD_ASSET_IMAGE_EXTS=new Set(['.png','.jpg','.jpeg','.webp','.gif']);
 function ensureWorldAssetAlignment(){
   if(!fs.existsSync(WORLD_ASSET_ALIGNMENT_FILE))writeJSON(WORLD_ASSET_ALIGNMENT_FILE,{version:1,assets:{},updatedAt:Date.now()});
