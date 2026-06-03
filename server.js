@@ -830,6 +830,100 @@ function publicBattleHallInventory(username){
   }).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
 }
 
+
+/* ===== WORLD FORGER PLAYER CONTEXT =====
+   World Forger must feel like the same player, not a disconnected mini-game.
+   These helpers expose a safe, read-focused snapshot of the same account/pet/item
+   state used by PetWorld, Battle Hall, Market, and housing. World interactions that
+   grant rewards write back to the same pet profile inventory/money fields.
+*/
+function publicWorldPetCard(pet){
+  if(!pet)return null;
+  let stats=pet.stats||{};
+  return {
+    id:pet.id,
+    name:pet.name||pet.species||'Pet',
+    emoji:pet.emoji||'',
+    species:pet.species||'',
+    stage:pet.stage||'baby',
+    level:Number(stats.level||pet.level||1),
+    hp:Number(stats.hp||stats.maxHp||0),
+    maxHp:Number(stats.maxHp||stats.hp||0),
+    attack:Number(stats.attack||0),
+    defense:Number(stats.defense||0),
+    speed:Number(stats.speed||0),
+    image:pet.image||pet.sprite||''
+  };
+}
+function ownedWorldHomes(username){
+  const out=[];
+  const data=loadEstateNeighborhoods();
+  (data.neighborhoods||[]).forEach(n=>{
+    (n.plots||[]).forEach(p=>{
+      if(String(p.owner||'').toLowerCase()===String(username||'').toLowerCase()){
+        out.push({
+          neighborhoodId:n.id,
+          neighborhoodName:n.name||n.id,
+          plotId:p.id,
+          name:p.name||p.label||p.id,
+          houseType:p.houseType||'starter_cottage',
+          privacy:p.privacy||'public',
+          status:p.status||'owned'
+        });
+      }
+    });
+  });
+  return out;
+}
+function publicWorldContext(username){
+  const allUsers=normalizeAllUsers();
+  const user=allUsers[username];
+  const profile=getPetProfile(username);
+  const active=activePet(profile);
+  const petList=Object.values(profile.pets||{}).map(publicWorldPetCard).filter(Boolean)
+    .sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const inventory=publicBattleHallInventory(username);
+  profile.world=profile.world&&typeof profile.world==='object'?profile.world:{};
+  profile.world.flags=profile.world.flags&&typeof profile.world.flags==='object'?profile.world.flags:{};
+  profile.world.chests=profile.world.chests&&typeof profile.world.chests==='object'?profile.world.chests:{};
+  return {
+    ok:true,
+    username,
+    user:safeUser(user),
+    displayName:(user&&user.displayName)||username,
+    coins:Number(profile.money||0),
+    inventory,
+    inventoryCount:inventory.reduce((sum,it)=>sum+Number(it.quantity||0),0),
+    activePet:publicWorldPetCard(active),
+    activePetId:profile.activePetId||null,
+    pets:petList,
+    homes:ownedWorldHomes(username),
+    world:{
+      flags:profile.world.flags,
+      chests:profile.world.chests
+    },
+    generatedAt:Date.now()
+  };
+}
+function worldSceneData(sceneId){
+  const clean=String(sceneId||'').replace(/[^a-zA-Z0-9_\-]/g,'');
+  if(!clean)return null;
+  const f=path.join(__dirname,'public','assets','worlds',clean+'.json');
+  if(!fs.existsSync(f))return null;
+  return readJSON(f,null);
+}
+function findWorldThing(sceneId,thingId){
+  const scene=worldSceneData(sceneId);
+  if(!scene)return null;
+  const id=String(thingId||'').trim();
+  const buckets=[scene.hotspots||[],scene.objects||[],scene.npcs||[]];
+  for(const list of buckets){
+    const found=(list||[]).find(x=>String(x.id||'')===id);
+    if(found)return found;
+  }
+  return null;
+}
+
 function publicPetCardForUser(username,petId){
   username=String(username||'').trim();
   let profile=getPetProfile(username);
@@ -5468,6 +5562,62 @@ function pushPresence(){
 function defaultEstateNeighborhoods(){
   return {neighborhoods:[{id:'whisperwind_01',name:'Whisperwind Village 01',sceneId:'whisperwind_village',theme:'forest_village',plots:[1,2,3,4,5,6].map(n=>({id:'plot_'+String(n).padStart(2,'0'),name:'Cottage '+n,status:'available_house',owner:null,privacy:'public',houseType:'starter_cottage'}))}]};
 }
+
+
+app.get('/api/world/context',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+  try{
+    res.json(publicWorldContext(username));
+  }catch(err){
+    console.error('[world/context]',err);
+    res.status(500).json({ok:false,error:err.message||'Could not load world context'});
+  }
+});
+
+app.post('/api/world/open-chest',(req,res)=>{
+  let username=requireUser(req,res);
+  if(!username)return;
+  try{
+    const sceneId=String((req.body&&req.body.sceneId)||'').trim();
+    const objectId=String((req.body&&req.body.objectId)||'').trim();
+    if(!sceneId||!objectId)return res.status(400).json({ok:false,error:'Missing sceneId or objectId'});
+    const thing=findWorldThing(sceneId,objectId);
+    if(!thing)return res.status(404).json({ok:false,error:'World object not found'});
+    const type=String(thing.type||thing.interactionType||'').toLowerCase();
+    if(type!=='chest'&&type!=='pot')return res.status(400).json({ok:false,error:'That object is not lootable'});
+
+    const profile=getPetProfile(username);
+    profile.world=profile.world&&typeof profile.world==='object'?profile.world:{};
+    profile.world.chests=profile.world.chests&&typeof profile.world.chests==='object'?profile.world.chests:{};
+    const key=sceneId+':'+objectId;
+    if(profile.world.chests[key]){
+      return res.json({ok:false,alreadyOpened:true,error:'Already opened',context:publicWorldContext(username)});
+    }
+
+    const itemId=String(thing.itemId||thing.item||'').trim();
+    const quantity=Math.max(0,Math.min(99,Number(thing.quantity||thing.qty||1)));
+    const coins=Math.max(0,Math.min(999999,Number(thing.coins||0)));
+    const rewards=[];
+
+    profile.inventory=profile.inventory||{};
+    if(itemId&&quantity>0){
+      profile.inventory[itemId]=Number(profile.inventory[itemId]||0)+quantity;
+      rewards.push({type:'item',itemId,quantity,name:getItemName(itemId)});
+    }
+    if(coins>0){
+      profile.money=Number(profile.money||0)+coins;
+      rewards.push({type:'coins',quantity:coins,name:'coins'});
+    }
+    profile.world.chests[key]={openedAt:Date.now(),sceneId,objectId,rewards};
+    savePetProfile(username,profile);
+    res.json({ok:true,rewards,context:publicWorldContext(username)});
+  }catch(err){
+    console.error('[world/open-chest]',err);
+    res.status(500).json({ok:false,error:err.message||'Could not open world chest'});
+  }
+});
+
 function loadEstateNeighborhoods(){
   const data=readJSON(estateNeighborhoodsFile,null)||defaultEstateNeighborhoods();
   if(!data.neighborhoods)data.neighborhoods=[];
@@ -5532,6 +5682,7 @@ function worldPlayerPublic(ws){
   return {
     id:ws.worldId||'',
     username:ws.username||st.username||'Wanderer',
+    displayName:(st.appearance&&st.appearance.displayName)||ws.displayName||ws.username||st.username||'Wanderer',
     sceneId:st.sceneId||'shadow_woods_dock',
     x:Number(st.x||0),
     y:Number(st.y||0),
@@ -5697,6 +5848,7 @@ wss.on('connection',ws=>{
 
     if(m.type==='worldJoin'){
       const username=String(m.username||ws.username||'').trim()||'Wanderer';
+      ws.displayName=String(m.displayName||(m.appearance&&m.appearance.displayName)||username).trim().slice(0,40)||username;
       const sceneId=String(m.sceneId||'shadow_woods_dock').trim()||'shadow_woods_dock';
       const previous=worldPlayers.get(ws);
       if(previous&&previous.sceneId!==sceneId){
