@@ -790,10 +790,10 @@ textarea.adminTextArea{
             <h3>World Scene Tools</h3>
             <p class="muted">Edit fishing/world scenes, walkable areas, hotspots, exits, and future neighborhood scenes.</p>
           </div>
-          <div class="row"><button class="primary" onclick="openWorldForger()">Open World Forger</button><button class="ghost" onclick="openWorldSceneEditor()">Legacy Scene Editor</button></div>
+          <div class="row"><button class="primary" onclick="openWorldForger()">Open World Composer</button><button class="ghost" onclick="openWorldAssetManager()">Asset Manager</button><button class="ghost" onclick="openWorldSceneEditor()">Legacy Redirect</button></div>
         </div>
         <div class="list">
-          <div class="empty">Use <code>/games/world_forger.html</code> for RPG-style terrain painting, object placement, events, and collision. Use <code>/games/world_editor.html</code> only for legacy fishing hotspots/effects until those are migrated.</div>
+          <div class="empty">Use <code>/games/world_composer.html</code> as the current source tool. It is stamp/object/path based and avoids giant filled road polygons. Legacy editor links now redirect to the Composer.</div>
         </div>
       </div>
     </div>
@@ -1038,10 +1038,13 @@ function openWorldSceneEditor(){
   window.open('/games/world_editor.html','_blank','noopener');
 }
 function openWorldForger(){
-  window.open('/games/world_forger.html','_blank','noopener');
+  window.open('/games/world_composer.html','_blank','noopener');
+}
+function openWorldAssetManager(){
+  window.open('/games/world_asset_manager.html','_blank','noopener');
 }
 function openWorldAssetEditor(){
-  window.open('/games/world_forger.html','_blank','noopener');
+  window.open('/games/world_asset_manager.html','_blank','noopener');
 }
 function applySiteSettings(settings){
   settings=settings||{};

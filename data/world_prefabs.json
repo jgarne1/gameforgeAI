@@ -1,35 +1,152 @@
 {
-  "version": 1,
+  "version": 2,
+  "notes": "World Composer v2 prefabs. These are layout stamps, not just single assets.",
   "prefabs": [
     {
-      "id": "WF_STAMP_TAVERN_FRONT",
-      "name": "Tavern Front Corner",
-      "description": "Tavern + lamps + benches + notice board. Use this as the first Whisperwind stamp.",
-      "assets": [
-        "B007",
-        "P004",
-        "P008",
-        "P012"
+      "id": "PREFAB_TAVERN_FRONT",
+      "name": "Tavern Front",
+      "description": "Tavern anchor with benches, lights, notice board and flowers.",
+      "objects": [
+        {
+          "asset": "B007",
+          "x": 0,
+          "y": -170,
+          "scale": 2.05,
+          "layer": "buildings"
+        },
+        {
+          "asset": "P004",
+          "x": -95,
+          "y": 80,
+          "scale": 1.2,
+          "layer": "props"
+        },
+        {
+          "asset": "P004",
+          "x": -5,
+          "y": 80,
+          "scale": 1.2,
+          "layer": "props"
+        },
+        {
+          "asset": "P012",
+          "x": 90,
+          "y": 125,
+          "scale": 0.72,
+          "layer": "props"
+        },
+        {
+          "asset": "P008",
+          "x": -190,
+          "y": 55,
+          "scale": 1,
+          "layer": "props"
+        },
+        {
+          "asset": "P008",
+          "x": 190,
+          "y": 55,
+          "scale": 1,
+          "layer": "props"
+        }
       ]
     },
     {
-      "id": "WF_STAMP_HARBOR_DOCK",
-      "name": "Harbor Dock Segment",
-      "description": "Dock boards + water/fishing hotspot. First fishing-facing Whisperwind stamp.",
-      "assets": [
-        "S001",
-        "S004"
-      ]
-    },
-    {
-      "id": "WF_STAMP_MARKET_NOOK",
+      "id": "PREFAB_MARKET_NOOK",
       "name": "Market Nook",
-      "description": "Market house + cart + work table + fence.",
-      "assets": [
-        "B002",
-        "P011",
-        "P013",
-        "P003"
+      "description": "Small sell/craft corner.",
+      "objects": [
+        {
+          "asset": "B002",
+          "x": 0,
+          "y": -150,
+          "scale": 1.6,
+          "layer": "buildings"
+        },
+        {
+          "asset": "P011",
+          "x": 60,
+          "y": 70,
+          "scale": 1.1,
+          "layer": "props"
+        },
+        {
+          "asset": "P013",
+          "x": -40,
+          "y": 70,
+          "scale": 1.1,
+          "layer": "props"
+        },
+        {
+          "asset": "P006",
+          "x": -160,
+          "y": 50,
+          "scale": 1.3,
+          "layer": "props"
+        }
+      ]
+    },
+    {
+      "id": "PREFAB_COTTAGE_LOT",
+      "name": "Cottage Lot",
+      "description": "Claimable house starter lot with tree and flowers.",
+      "objects": [
+        {
+          "asset": "B001",
+          "x": 0,
+          "y": -110,
+          "scale": 1.55,
+          "layer": "buildings"
+        },
+        {
+          "asset": "P001",
+          "x": -160,
+          "y": -5,
+          "scale": 1.4,
+          "layer": "canopy"
+        },
+        {
+          "asset": "P006",
+          "x": 120,
+          "y": 40,
+          "scale": 1.2,
+          "layer": "props"
+        },
+        {
+          "asset": "P005",
+          "x": -70,
+          "y": 45,
+          "scale": 1,
+          "layer": "props"
+        }
+      ]
+    },
+    {
+      "id": "PREFAB_HARBOR_DOCK",
+      "name": "Harbor Dock",
+      "description": "Small fishing dock stamp.",
+      "objects": [
+        {
+          "asset": "S001",
+          "x": 0,
+          "y": 0,
+          "scale": 2.4,
+          "layer": "structures"
+        },
+        {
+          "asset": "S004",
+          "x": 95,
+          "y": 40,
+          "scale": 3.3,
+          "layer": "structures"
+        },
+        {
+          "asset": "S003",
+          "x": -90,
+          "y": -30,
+          "scale": 1.2,
+          "layer": "props"
+        }
       ]
     }
   ]

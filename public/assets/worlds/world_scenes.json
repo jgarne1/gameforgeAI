@@ -1,6 +1,11 @@
 {
   "scenes": [
     {
+      "id": "whisperwind_composer_recovery",
+      "name": "Whisperwind - Composer Recovery Slice",
+      "url": "/assets/worlds/whisperwind_composer_recovery.json"
+    },
+    {
       "id": "whisperwind_tavern_district",
       "name": "Whisperwind - Driftwood Tavern District",
       "url": "/assets/worlds/whisperwind_tavern_district.json"

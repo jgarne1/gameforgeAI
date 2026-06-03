@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "direction": "Use existing audited assets first. This catalog names the selected Whisperwind vertical-slice assets.",
+  "version": 3,
+  "direction": "World Forger consolidated catalog. Use these existing extracted assets first; weak generated placeholders are prototype-only.",
   "assets": [
     {
       "id": "B001",
@@ -9,8 +9,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/b001_coastal_cottage.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -20,8 +20,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/b002_market_house.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -31,8 +31,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/b007_driftwood_tavern.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -42,8 +42,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p001_round_tree.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -53,8 +53,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p002_small_tree.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -64,8 +64,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p003_fence_segment.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -75,8 +75,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p004_bench.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -86,8 +86,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p005_sign_board.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -97,8 +97,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p006_flower_box.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -108,8 +108,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p008_lamp_pair.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -119,8 +119,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p010_well.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -130,8 +130,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p011_cart.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -141,8 +141,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p012_notice_board.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -152,8 +152,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p013_work_table.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -163,8 +163,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p015_large_tree_a.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -174,8 +174,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/p016_large_tree_b.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -185,8 +185,8 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/s001_dock_corner.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
       ]
     },
     {
@@ -196,8 +196,74 @@
       "src": "/assets/worldkit/whisperwind/vertical_slice/s004_long_plank.png",
       "tags": [
         "whisperwind",
-        "vertical-slice",
-        "existing-vendor-asset"
+        "vendor-extracted",
+        "world-composer"
+      ]
+    },
+    {
+      "id": "P007",
+      "name": "Shrub",
+      "category": "prop",
+      "src": "/assets/worldkit/whisperwind/vertical_slice/p007_shrub.png",
+      "tags": [
+        "whisperwind",
+        "vendor-extracted",
+        "world-composer"
+      ]
+    },
+    {
+      "id": "P009",
+      "name": "Table",
+      "category": "prop",
+      "src": "/assets/worldkit/whisperwind/vertical_slice/p009_table.png",
+      "tags": [
+        "whisperwind",
+        "vendor-extracted",
+        "world-composer"
+      ]
+    },
+    {
+      "id": "P014",
+      "name": "Anvil",
+      "category": "prop",
+      "src": "/assets/worldkit/whisperwind/vertical_slice/p014_anvil.png",
+      "tags": [
+        "whisperwind",
+        "vendor-extracted",
+        "world-composer"
+      ]
+    },
+    {
+      "id": "S002",
+      "name": "Log Pile",
+      "category": "structure",
+      "src": "/assets/worldkit/whisperwind/vertical_slice/s002_log_pile.png",
+      "tags": [
+        "whisperwind",
+        "vendor-extracted",
+        "world-composer"
+      ]
+    },
+    {
+      "id": "S003",
+      "name": "Rope Fence",
+      "category": "structure",
+      "src": "/assets/worldkit/whisperwind/vertical_slice/s003_rope_fence.png",
+      "tags": [
+        "whisperwind",
+        "vendor-extracted",
+        "world-composer"
+      ]
+    },
+    {
+      "id": "S005",
+      "name": "Wood Ramp",
+      "category": "structure",
+      "src": "/assets/worldkit/whisperwind/vertical_slice/s005_wood_ramp.png",
+      "tags": [
+        "whisperwind",
+        "vendor-extracted",
+        "world-composer"
       ]
     }
   ]

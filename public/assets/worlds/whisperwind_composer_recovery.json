@@ -1,0 +1,469 @@
+{
+  "id": "whisperwind_composer_recovery",
+  "name": "Whisperwind - Composer Recovery Slice",
+  "size": {
+    "w": 1800,
+    "h": 1200
+  },
+  "mode": "composer",
+  "playerScale": 0.72,
+  "spawn": {
+    "x": 900,
+    "y": 720,
+    "face": "up"
+  },
+  "artNotes": "Recovered scene intentionally avoids huge filled road polygons. Paths are soft painterly strokes rendered by engine; assets are placed as objects.",
+  "terrain": {
+    "type": "painted",
+    "base": "grass",
+    "water": [
+      {
+        "id": "harbor",
+        "points": [
+          [
+            0,
+            780
+          ],
+          [
+            170,
+            735
+          ],
+          [
+            325,
+            760
+          ],
+          [
+            405,
+            860
+          ],
+          [
+            360,
+            1200
+          ],
+          [
+            0,
+            1200
+          ]
+        ]
+      }
+    ]
+  },
+  "paths": [
+    {
+      "id": "main_path",
+      "kind": "path",
+      "width": 112,
+      "points": [
+        [
+          890,
+          1120
+        ],
+        [
+          890,
+          905
+        ],
+        [
+          830,
+          785
+        ],
+        [
+          700,
+          710
+        ],
+        [
+          540,
+          675
+        ],
+        [
+          410,
+          710
+        ],
+        [
+          255,
+          805
+        ]
+      ]
+    },
+    {
+      "id": "plaza_loop",
+      "kind": "plaza",
+      "width": 170,
+      "points": [
+        [
+          515,
+          690
+        ],
+        [
+          710,
+          590
+        ],
+        [
+          915,
+          555
+        ],
+        [
+          1135,
+          585
+        ],
+        [
+          1345,
+          555
+        ]
+      ]
+    },
+    {
+      "id": "tavern_walk",
+      "kind": "path",
+      "width": 92,
+      "points": [
+        [
+          900,
+          720
+        ],
+        [
+          875,
+          615
+        ],
+        [
+          880,
+          500
+        ]
+      ]
+    },
+    {
+      "id": "market_walk",
+      "kind": "path",
+      "width": 82,
+      "points": [
+        [
+          1060,
+          650
+        ],
+        [
+          1245,
+          680
+        ],
+        [
+          1450,
+          625
+        ]
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "tavern",
+      "asset": "B007",
+      "x": 760,
+      "y": 350,
+      "scale": 2.05,
+      "layer": "buildings",
+      "label": "Driftwood Tavern",
+      "collide": [
+        -210,
+        -155,
+        420,
+        180
+      ]
+    },
+    {
+      "id": "west_cottage",
+      "asset": "B001",
+      "x": 455,
+      "y": 475,
+      "scale": 1.65,
+      "layer": "buildings",
+      "label": "West Cottage",
+      "collide": [
+        -105,
+        -110,
+        210,
+        125
+      ]
+    },
+    {
+      "id": "east_cottage",
+      "asset": "B001",
+      "x": 1125,
+      "y": 500,
+      "scale": 1.55,
+      "layer": "buildings",
+      "label": "Harbor Cottage",
+      "collide": [
+        -100,
+        -105,
+        200,
+        120
+      ]
+    },
+    {
+      "id": "market_house",
+      "asset": "B002",
+      "x": 1305,
+      "y": 330,
+      "scale": 1.75,
+      "layer": "buildings",
+      "label": "Market House",
+      "collide": [
+        -145,
+        -130,
+        290,
+        155
+      ]
+    },
+    {
+      "id": "south_house",
+      "asset": "B002",
+      "x": 1435,
+      "y": 620,
+      "scale": 1.35,
+      "layer": "buildings",
+      "label": "Canal House",
+      "collide": [
+        -115,
+        -95,
+        230,
+        115
+      ]
+    },
+    {
+      "id": "tree_west_big",
+      "asset": "P015",
+      "x": 225,
+      "y": 610,
+      "scale": 1.35,
+      "layer": "canopy",
+      "collide": [
+        -42,
+        -25,
+        84,
+        55
+      ]
+    },
+    {
+      "id": "tree_north",
+      "asset": "P001",
+      "x": 585,
+      "y": 285,
+      "scale": 1.65,
+      "layer": "canopy",
+      "collide": [
+        -35,
+        -15,
+        70,
+        40
+      ]
+    },
+    {
+      "id": "tree_east",
+      "asset": "P001",
+      "x": 1535,
+      "y": 305,
+      "scale": 1.65,
+      "layer": "canopy",
+      "collide": [
+        -35,
+        -15,
+        70,
+        40
+      ]
+    },
+    {
+      "id": "tree_south",
+      "asset": "P001",
+      "x": 1215,
+      "y": 690,
+      "scale": 1.55,
+      "layer": "canopy",
+      "collide": [
+        -35,
+        -15,
+        70,
+        40
+      ]
+    },
+    {
+      "id": "dock_corner",
+      "asset": "S001",
+      "x": 135,
+      "y": 850,
+      "scale": 2.4,
+      "layer": "structures"
+    },
+    {
+      "id": "dock_plank_1",
+      "asset": "S004",
+      "x": 285,
+      "y": 915,
+      "scale": 3.4,
+      "rotation": 0,
+      "layer": "structures"
+    },
+    {
+      "id": "dock_plank_2",
+      "asset": "S004",
+      "x": 355,
+      "y": 990,
+      "scale": 3.0,
+      "rotation": 0,
+      "layer": "structures"
+    },
+    {
+      "id": "notice",
+      "asset": "P012",
+      "x": 810,
+      "y": 690,
+      "scale": 0.72,
+      "layer": "props",
+      "label": "Town Board"
+    },
+    {
+      "id": "bench_a",
+      "asset": "P004",
+      "x": 735,
+      "y": 635,
+      "scale": 1.2,
+      "layer": "props"
+    },
+    {
+      "id": "bench_b",
+      "asset": "P004",
+      "x": 825,
+      "y": 635,
+      "scale": 1.2,
+      "layer": "props"
+    },
+    {
+      "id": "lamp_a",
+      "asset": "P008",
+      "x": 640,
+      "y": 610,
+      "scale": 1.0,
+      "layer": "props"
+    },
+    {
+      "id": "lamp_b",
+      "asset": "P008",
+      "x": 1010,
+      "y": 610,
+      "scale": 1.0,
+      "layer": "props"
+    },
+    {
+      "id": "flowers_1",
+      "asset": "P006",
+      "x": 560,
+      "y": 650,
+      "scale": 1.3,
+      "layer": "props"
+    },
+    {
+      "id": "flowers_2",
+      "asset": "P006",
+      "x": 1165,
+      "y": 655,
+      "scale": 1.3,
+      "layer": "props"
+    },
+    {
+      "id": "cart",
+      "asset": "P011",
+      "x": 1345,
+      "y": 675,
+      "scale": 1.1,
+      "layer": "props"
+    },
+    {
+      "id": "table",
+      "asset": "P013",
+      "x": 1260,
+      "y": 675,
+      "scale": 1.1,
+      "layer": "props"
+    },
+    {
+      "id": "well",
+      "asset": "P010",
+      "x": 645,
+      "y": 705,
+      "scale": 0.68,
+      "layer": "props"
+    },
+    {
+      "id": "shrub1",
+      "asset": "P007",
+      "x": 320,
+      "y": 600,
+      "scale": 1.0,
+      "layer": "props"
+    },
+    {
+      "id": "shrub2",
+      "asset": "P007",
+      "x": 1530,
+      "y": 590,
+      "scale": 1.0,
+      "layer": "props"
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "driftwood_tavern",
+      "type": "dialogue",
+      "x": 880,
+      "y": 555,
+      "r": 86,
+      "label": "Enter The Driftwood Tavern",
+      "message": "The tavern is the first anchor landmark. Next pass should add a real interior and NPC gathering logic."
+    },
+    {
+      "id": "town_board",
+      "type": "dialogue",
+      "x": 810,
+      "y": 700,
+      "r": 70,
+      "label": "Town Board",
+      "message": "World Forger Recovery: avoid giant brown polygons. Use soft paths, districts, prefabs, and curated assets."
+    },
+    {
+      "id": "harbor_dock",
+      "type": "fish",
+      "x": 250,
+      "y": 900,
+      "r": 120,
+      "label": "Harbor Dock"
+    },
+    {
+      "id": "market",
+      "type": "dialogue",
+      "x": 1290,
+      "y": 675,
+      "r": 80,
+      "label": "Market Stall",
+      "message": "This market nook is a prefab candidate: cart + table + lamps + house + fence."
+    }
+  ],
+  "npcs": [
+    {
+      "id": "mira",
+      "name": "Mira",
+      "x": 785,
+      "y": 650,
+      "message": "Mira: This scene is rendered from objects and soft paths now, not big filled rectangles."
+    },
+    {
+      "id": "bram",
+      "name": "Bram",
+      "x": 1180,
+      "y": 665,
+      "message": "Bram: Use Composer mode to drag assets and place stamps."
+    }
+  ],
+  "prefabHints": [
+    "Tavern Front",
+    "Market Nook",
+    "Harbor Dock",
+    "Cottage Lot",
+    "Garden Corner"
+  ]
+}
