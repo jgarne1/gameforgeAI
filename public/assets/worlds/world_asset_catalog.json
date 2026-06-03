@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "direction": "World Forger consolidated catalog. Use these existing extracted assets first; weak generated placeholders are prototype-only.",
+  "version": 4,
+  "direction": "World Forger v2 hub catalog. Existing vendor-extracted assets first; composer is layer/object based.",
   "assets": [
     {
       "id": "B001",
@@ -11,7 +11,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/b001_coastal_cottage.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "B002",
@@ -22,7 +27,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/b002_market_house.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "B007",
@@ -33,7 +43,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/b007_driftwood_tavern.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P001",
@@ -44,7 +59,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p001_round_tree.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P002",
@@ -55,7 +75,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p002_small_tree.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P003",
@@ -66,7 +91,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p003_fence_segment.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P004",
@@ -77,7 +107,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p004_bench.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P005",
@@ -88,7 +123,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p005_sign_board.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P006",
@@ -99,7 +139,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p006_flower_box.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P008",
@@ -110,7 +155,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p008_lamp_pair.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P010",
@@ -121,7 +171,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p010_well.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P011",
@@ -132,7 +187,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p011_cart.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P012",
@@ -143,7 +203,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p012_notice_board.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P013",
@@ -154,7 +219,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p013_work_table.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P015",
@@ -165,7 +235,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p015_large_tree_a.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P016",
@@ -176,7 +251,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p016_large_tree_b.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "S001",
@@ -187,7 +267,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s001_dock_corner.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "S004",
@@ -198,7 +283,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s004_long_plank.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P007",
@@ -209,7 +299,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p007_shrub.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P009",
@@ -220,7 +315,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p009_table.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "P014",
@@ -231,7 +331,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p014_anvil.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "S002",
@@ -242,7 +347,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s002_log_pile.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "S003",
@@ -253,7 +363,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s003_rope_fence.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     },
     {
       "id": "S005",
@@ -264,7 +379,12 @@
         "whisperwind",
         "vendor-extracted",
         "world-composer"
-      ]
+      ],
+      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s005_wood_ramp.png",
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     }
   ]
 }

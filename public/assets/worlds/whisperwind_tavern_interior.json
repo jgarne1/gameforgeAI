@@ -1,0 +1,109 @@
+{
+  "id": "whisperwind_tavern_interior",
+  "name": "The Driftwood Tavern - Interior",
+  "size": {
+    "w": 1100,
+    "h": 760
+  },
+  "mode": "interior",
+  "playerScale": 0.75,
+  "spawn": {
+    "x": 640,
+    "y": 600,
+    "face": "up"
+  },
+  "interior": {
+    "floor": "#5b3722",
+    "wall": "#3a251b",
+    "rug": "#8d3f32",
+    "trim": "#c18445"
+  },
+  "objects": [
+    {
+      "id": "bar_table",
+      "asset": "P009",
+      "x": 520,
+      "y": 320,
+      "scale": 2.8,
+      "layer": "props",
+      "collide": [
+        -120,
+        -40,
+        240,
+        70
+      ]
+    },
+    {
+      "id": "notice",
+      "asset": "P012",
+      "x": 780,
+      "y": 355,
+      "scale": 1.1,
+      "layer": "props"
+    },
+    {
+      "id": "bench1",
+      "asset": "P004",
+      "x": 375,
+      "y": 515,
+      "scale": 1.2,
+      "layer": "props"
+    },
+    {
+      "id": "bench2",
+      "asset": "P004",
+      "x": 725,
+      "y": 515,
+      "scale": 1.2,
+      "layer": "props"
+    },
+    {
+      "id": "flowers",
+      "asset": "P006",
+      "x": 250,
+      "y": 270,
+      "scale": 1.1,
+      "layer": "props"
+    }
+  ],
+  "paths": [],
+  "terrain": {
+    "water": []
+  },
+  "hotspots": [
+    {
+      "id": "exit",
+      "type": "door",
+      "label": "Exit to Whisperwind",
+      "x": 640,
+      "y": 690,
+      "r": 80,
+      "targetScene": "whisperwind_v2_hub",
+      "targetSpawn": {
+        "x": 930,
+        "y": 560,
+        "face": "down"
+      },
+      "message": "You step back into the tavern lane."
+    },
+    {
+      "id": "stairs_tavern",
+      "type": "message",
+      "label": "Second Floor Rooms",
+      "x": 875,
+      "y": 230,
+      "r": 70,
+      "message": "The second floor rooms are locked for now. This is where rentable tavern rooms can live."
+    }
+  ],
+  "npcs": [
+    {
+      "id": "mira_inside",
+      "name": "Mira",
+      "x": 545,
+      "y": 395,
+      "r": 60,
+      "message": "Mira: This interior is real scene data now, not just a painted background."
+    }
+  ]
+}

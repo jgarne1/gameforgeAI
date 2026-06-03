@@ -1,0 +1,1300 @@
+{
+  "id": "whisperwind_v2_hub",
+  "name": "Whisperwind v2 - Living Hub",
+  "size": {
+    "w": 1700,
+    "h": 1250
+  },
+  "mode": "world-forger-v2",
+  "playerScale": 0.72,
+  "playerSprite": "/assets/sprites/wanderer_sheet.png",
+  "spawn": {
+    "x": 875,
+    "y": 1010,
+    "face": "up"
+  },
+  "artNotes": "First object-based hub pass. No giant brown road polygons. Buildings, doors, stairs, hidden alleys, and interiors are real data.",
+  "layers": [
+    {
+      "id": "terrain",
+      "label": "Terrain",
+      "visible": true
+    },
+    {
+      "id": "paths",
+      "label": "Soft Paths",
+      "visible": true
+    },
+    {
+      "id": "water",
+      "label": "Water",
+      "visible": true
+    },
+    {
+      "id": "structures",
+      "label": "Structures/Stairs",
+      "visible": true
+    },
+    {
+      "id": "buildings",
+      "label": "Buildings",
+      "visible": true
+    },
+    {
+      "id": "props",
+      "label": "Props",
+      "visible": true
+    },
+    {
+      "id": "canopy",
+      "label": "Canopy",
+      "visible": true
+    },
+    {
+      "id": "gameplay",
+      "label": "Doors/NPCs/Hotspots",
+      "visible": true
+    }
+  ],
+  "levels": [
+    {
+      "id": 0,
+      "name": "Lower Town",
+      "color": "#244f2f"
+    },
+    {
+      "id": 1,
+      "name": "Tavern Terrace",
+      "color": "#315f39"
+    },
+    {
+      "id": 2,
+      "name": "Upper Cliff Homes",
+      "color": "#3c7042"
+    }
+  ],
+  "districts": [
+    {
+      "id": "upper_cliff",
+      "name": "Upper Cliff",
+      "bounds": [
+        580,
+        160,
+        850,
+        300
+      ],
+      "level": 2
+    },
+    {
+      "id": "market_square",
+      "name": "Market Square",
+      "bounds": [
+        650,
+        540,
+        630,
+        260
+      ],
+      "level": 1
+    },
+    {
+      "id": "tavern_lane",
+      "name": "Tavern Lane",
+      "bounds": [
+        650,
+        320,
+        600,
+        300
+      ],
+      "level": 1
+    },
+    {
+      "id": "residential_row",
+      "name": "Residential Row",
+      "bounds": [
+        610,
+        760,
+        560,
+        240
+      ],
+      "level": 0
+    },
+    {
+      "id": "hidden_alley",
+      "name": "Hidden Alley",
+      "bounds": [
+        360,
+        620,
+        330,
+        220
+      ],
+      "level": 0
+    },
+    {
+      "id": "dockside",
+      "name": "Dockside",
+      "bounds": [
+        120,
+        930,
+        550,
+        260
+      ],
+      "level": 0
+    }
+  ],
+  "paint": {
+    "terraces": [
+      {
+        "id": "upper",
+        "level": 2,
+        "points": [
+          [
+            560,
+            145
+          ],
+          [
+            1410,
+            120
+          ],
+          [
+            1490,
+            410
+          ],
+          [
+            1320,
+            520
+          ],
+          [
+            760,
+            515
+          ],
+          [
+            545,
+            355
+          ]
+        ],
+        "fill": "#355f3d"
+      },
+      {
+        "id": "middle",
+        "level": 1,
+        "points": [
+          [
+            585,
+            380
+          ],
+          [
+            1295,
+            355
+          ],
+          [
+            1425,
+            700
+          ],
+          [
+            1140,
+            790
+          ],
+          [
+            610,
+            735
+          ],
+          [
+            405,
+            610
+          ]
+        ],
+        "fill": "#2f5d37"
+      }
+    ],
+    "shoreDecor": true
+  },
+  "terrain": {
+    "type": "composed",
+    "base": "grass",
+    "water": [
+      {
+        "id": "harbor_canal",
+        "points": [
+          [
+            0,
+            940
+          ],
+          [
+            180,
+            885
+          ],
+          [
+            370,
+            900
+          ],
+          [
+            560,
+            1010
+          ],
+          [
+            620,
+            1250
+          ],
+          [
+            0,
+            1250
+          ]
+        ]
+      },
+      {
+        "id": "canal",
+        "points": [
+          [
+            1200,
+            780
+          ],
+          [
+            1390,
+            820
+          ],
+          [
+            1700,
+            760
+          ],
+          [
+            1700,
+            1250
+          ],
+          [
+            1390,
+            1250
+          ],
+          [
+            1280,
+            1050
+          ]
+        ]
+      }
+    ]
+  },
+  "paths": [
+    {
+      "id": "main_street",
+      "kind": "path",
+      "width": 82,
+      "points": [
+        [
+          880,
+          1135
+        ],
+        [
+          865,
+          1000
+        ],
+        [
+          815,
+          875
+        ],
+        [
+          800,
+          755
+        ],
+        [
+          850,
+          645
+        ],
+        [
+          935,
+          570
+        ],
+        [
+          930,
+          500
+        ]
+      ]
+    },
+    {
+      "id": "market_loop",
+      "kind": "plaza",
+      "width": 145,
+      "points": [
+        [
+          735,
+          665
+        ],
+        [
+          890,
+          610
+        ],
+        [
+          1075,
+          640
+        ],
+        [
+          1210,
+          725
+        ],
+        [
+          1075,
+          820
+        ],
+        [
+          850,
+          805
+        ],
+        [
+          700,
+          745
+        ],
+        [
+          735,
+          665
+        ]
+      ]
+    },
+    {
+      "id": "residential_walk",
+      "kind": "path",
+      "width": 70,
+      "points": [
+        [
+          470,
+          955
+        ],
+        [
+          650,
+          875
+        ],
+        [
+          840,
+          820
+        ],
+        [
+          1040,
+          835
+        ],
+        [
+          1220,
+          910
+        ]
+      ]
+    },
+    {
+      "id": "hidden_alley_path",
+      "kind": "alley",
+      "width": 44,
+      "points": [
+        [
+          640,
+          720
+        ],
+        [
+          545,
+          690
+        ],
+        [
+          445,
+          705
+        ],
+        [
+          365,
+          790
+        ],
+        [
+          335,
+          925
+        ]
+      ]
+    },
+    {
+      "id": "dock_path",
+      "kind": "path",
+      "width": 72,
+      "points": [
+        [
+          610,
+          1005
+        ],
+        [
+          510,
+          1050
+        ],
+        [
+          390,
+          1085
+        ],
+        [
+          260,
+          1080
+        ]
+      ]
+    },
+    {
+      "id": "upper_stair_path",
+      "kind": "stairs",
+      "width": 54,
+      "points": [
+        [
+          675,
+          655
+        ],
+        [
+          650,
+          600
+        ],
+        [
+          625,
+          550
+        ],
+        [
+          605,
+          500
+        ],
+        [
+          590,
+          450
+        ],
+        [
+          630,
+          370
+        ],
+        [
+          745,
+          315
+        ]
+      ]
+    },
+    {
+      "id": "cliff_stair_path",
+      "kind": "stairs",
+      "width": 50,
+      "points": [
+        [
+          1190,
+          625
+        ],
+        [
+          1240,
+          565
+        ],
+        [
+          1290,
+          500
+        ],
+        [
+          1325,
+          430
+        ],
+        [
+          1340,
+          350
+        ]
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "tavern",
+      "asset": "B007",
+      "x": 930,
+      "y": 470,
+      "scale": 2.35,
+      "layer": "buildings",
+      "level": 1,
+      "collide": [
+        -125,
+        -105,
+        250,
+        115
+      ],
+      "notes": "Enterable tavern anchor"
+    },
+    {
+      "id": "pet_center",
+      "asset": "B002",
+      "x": 530,
+      "y": 525,
+      "scale": 1.75,
+      "layer": "buildings",
+      "level": 0,
+      "collide": [
+        -95,
+        -88,
+        190,
+        90
+      ],
+      "notes": "Pet Center opens PetWorld"
+    },
+    {
+      "id": "general_store",
+      "asset": "B002",
+      "x": 1240,
+      "y": 600,
+      "scale": 1.55,
+      "layer": "buildings",
+      "level": 0,
+      "collide": [
+        -82,
+        -75,
+        164,
+        80
+      ]
+    },
+    {
+      "id": "home_riverbend",
+      "asset": "B001",
+      "x": 720,
+      "y": 820,
+      "scale": 1.7,
+      "layer": "buildings",
+      "level": 0,
+      "collide": [
+        -84,
+        -75,
+        168,
+        82
+      ],
+      "notes": "Claimable starter home"
+    },
+    {
+      "id": "home_lantern",
+      "asset": "B001",
+      "x": 1035,
+      "y": 835,
+      "scale": 1.55,
+      "layer": "buildings",
+      "level": 0,
+      "collide": [
+        -78,
+        -70,
+        156,
+        76
+      ]
+    },
+    {
+      "id": "cliff_home",
+      "asset": "B001",
+      "x": 1325,
+      "y": 310,
+      "scale": 1.45,
+      "layer": "buildings",
+      "level": 2,
+      "collide": [
+        -72,
+        -66,
+        144,
+        72
+      ]
+    },
+    {
+      "id": "arcade",
+      "asset": "B002",
+      "x": 330,
+      "y": 860,
+      "scale": 1.45,
+      "layer": "buildings",
+      "level": 0,
+      "collide": [
+        -70,
+        -68,
+        140,
+        72
+      ],
+      "notes": "Future minigame arcade"
+    },
+    {
+      "id": "tree_0",
+      "asset": "P015",
+      "x": 250,
+      "y": 450,
+      "scale": 1.6,
+      "layer": "canopy",
+      "level": 0
+    },
+    {
+      "id": "tree_1",
+      "asset": "P016",
+      "x": 280,
+      "y": 700,
+      "scale": 1.3,
+      "layer": "canopy",
+      "level": 0
+    },
+    {
+      "id": "tree_2",
+      "asset": "P015",
+      "x": 1550,
+      "y": 420,
+      "scale": 1.7,
+      "layer": "canopy",
+      "level": 1
+    },
+    {
+      "id": "tree_3",
+      "asset": "P016",
+      "x": 1460,
+      "y": 780,
+      "scale": 1.3,
+      "layer": "canopy",
+      "level": 0
+    },
+    {
+      "id": "tree_4",
+      "asset": "P015",
+      "x": 630,
+      "y": 290,
+      "scale": 1.4,
+      "layer": "canopy",
+      "level": 2
+    },
+    {
+      "id": "tree_5",
+      "asset": "P016",
+      "x": 1180,
+      "y": 230,
+      "scale": 1.45,
+      "layer": "canopy",
+      "level": 2
+    },
+    {
+      "id": "tree_6",
+      "asset": "P015",
+      "x": 1510,
+      "y": 1040,
+      "scale": 1.55,
+      "layer": "canopy",
+      "level": 0
+    },
+    {
+      "id": "tree_7",
+      "asset": "P016",
+      "x": 440,
+      "y": 1040,
+      "scale": 1.45,
+      "layer": "canopy",
+      "level": 0
+    },
+    {
+      "id": "tree_8",
+      "asset": "P015",
+      "x": 1130,
+      "y": 1000,
+      "scale": 1.25,
+      "layer": "canopy",
+      "level": 0
+    },
+    {
+      "id": "lamp_0",
+      "asset": "P008",
+      "x": 800,
+      "y": 605,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "lamp_1",
+      "asset": "P008",
+      "x": 1060,
+      "y": 603,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "lamp_2",
+      "asset": "P008",
+      "x": 710,
+      "y": 705,
+      "scale": 0.9,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "lamp_3",
+      "asset": "P008",
+      "x": 1120,
+      "y": 710,
+      "scale": 0.9,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "lamp_4",
+      "asset": "P008",
+      "x": 910,
+      "y": 720,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "lamp_5",
+      "asset": "P008",
+      "x": 1240,
+      "y": 730,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "lamp_6",
+      "asset": "P008",
+      "x": 535,
+      "y": 690,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "bench_0",
+      "asset": "P004",
+      "x": 780,
+      "y": 610,
+      "scale": 1.15,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "bench_1",
+      "asset": "P004",
+      "x": 1070,
+      "y": 630,
+      "scale": 1.15,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "bench_2",
+      "asset": "P004",
+      "x": 870,
+      "y": 640,
+      "scale": 1.05,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "bench_3",
+      "asset": "P004",
+      "x": 1010,
+      "y": 660,
+      "scale": 1.05,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "bench_4",
+      "asset": "P004",
+      "x": 1220,
+      "y": 720,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "bench_5",
+      "asset": "P004",
+      "x": 1250,
+      "y": 760,
+      "scale": 0.9,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "bench_6",
+      "asset": "P004",
+      "x": 565,
+      "y": 690,
+      "scale": 0.9,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "notice_0",
+      "asset": "P005",
+      "x": 890,
+      "y": 680,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "notice_1",
+      "asset": "P012",
+      "x": 1185,
+      "y": 710,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "notice_2",
+      "asset": "P005",
+      "x": 515,
+      "y": 715,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "notice_3",
+      "asset": "P012",
+      "x": 340,
+      "y": 960,
+      "scale": 0.8,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "notice_4",
+      "asset": "P005",
+      "x": 1280,
+      "y": 385,
+      "scale": 0.8,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_0",
+      "asset": "P006",
+      "x": 760,
+      "y": 480,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_1",
+      "asset": "P006",
+      "x": 1120,
+      "y": 480,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_2",
+      "asset": "P006",
+      "x": 890,
+      "y": 830,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_3",
+      "asset": "P006",
+      "x": 1040,
+      "y": 910,
+      "scale": 0.9,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_4",
+      "asset": "P006",
+      "x": 1225,
+      "y": 915,
+      "scale": 0.9,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_5",
+      "asset": "P006",
+      "x": 615,
+      "y": 860,
+      "scale": 0.8,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_6",
+      "asset": "P006",
+      "x": 470,
+      "y": 620,
+      "scale": 0.8,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "flowers_7",
+      "asset": "P006",
+      "x": 1340,
+      "y": 635,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "cratecart_0",
+      "asset": "S002",
+      "x": 390,
+      "y": 710,
+      "scale": 1.1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "cratecart_1",
+      "asset": "P011",
+      "x": 440,
+      "y": 735,
+      "scale": 1.1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "cratecart_2",
+      "asset": "S002",
+      "x": 1380,
+      "y": 865,
+      "scale": 1.2,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "cratecart_3",
+      "asset": "P011",
+      "x": 1510,
+      "y": 920,
+      "scale": 1.1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "cratecart_4",
+      "asset": "S002",
+      "x": 220,
+      "y": 1000,
+      "scale": 1,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "dock_corner",
+      "asset": "S001",
+      "x": 260,
+      "y": 1080,
+      "scale": 2.2,
+      "layer": "structures",
+      "level": 0,
+      "collide": [
+        -90,
+        -40,
+        180,
+        70
+      ]
+    },
+    {
+      "id": "dock_plank",
+      "asset": "S004",
+      "x": 385,
+      "y": 1115,
+      "scale": 3.25,
+      "layer": "structures",
+      "level": 0,
+      "collide": [
+        -30,
+        -14,
+        170,
+        35
+      ]
+    },
+    {
+      "id": "dock_ramp",
+      "asset": "S005",
+      "x": 525,
+      "y": 1045,
+      "scale": 2.0,
+      "layer": "structures",
+      "level": 0,
+      "collide": [
+        -60,
+        -22,
+        120,
+        44
+      ]
+    },
+    {
+      "id": "stair_detail_0",
+      "asset": "S005",
+      "x": 610,
+      "y": 590,
+      "scale": 0.9,
+      "layer": "structures",
+      "level": 1,
+      "locked": true
+    },
+    {
+      "id": "stair_detail_1",
+      "asset": "S005",
+      "x": 635,
+      "y": 615,
+      "scale": 0.9,
+      "layer": "structures",
+      "level": 1,
+      "locked": true
+    },
+    {
+      "id": "stair_detail_2",
+      "asset": "S005",
+      "x": 660,
+      "y": 640,
+      "scale": 0.9,
+      "layer": "structures",
+      "level": 1,
+      "locked": true
+    },
+    {
+      "id": "stair_detail_3",
+      "asset": "S005",
+      "x": 1310,
+      "y": 430,
+      "scale": 0.9,
+      "layer": "structures",
+      "level": 1,
+      "locked": true
+    },
+    {
+      "id": "stair_detail_4",
+      "asset": "S005",
+      "x": 1330,
+      "y": 455,
+      "scale": 0.9,
+      "layer": "structures",
+      "level": 1,
+      "locked": true
+    },
+    {
+      "id": "stair_detail_5",
+      "asset": "S005",
+      "x": 1350,
+      "y": 480,
+      "scale": 0.9,
+      "layer": "structures",
+      "level": 1,
+      "locked": true
+    },
+    {
+      "id": "fence_0",
+      "asset": "P003",
+      "x": 690,
+      "y": 545,
+      "scale": 1.4,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "fence_1",
+      "asset": "P003",
+      "x": 705,
+      "y": 565,
+      "scale": 1.4,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "fence_2",
+      "asset": "P003",
+      "x": 1165,
+      "y": 535,
+      "scale": 1.2,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "fence_3",
+      "asset": "P003",
+      "x": 1185,
+      "y": 555,
+      "scale": 1.2,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "fence_4",
+      "asset": "P003",
+      "x": 405,
+      "y": 795,
+      "scale": 1.2,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "fence_5",
+      "asset": "P003",
+      "x": 430,
+      "y": 815,
+      "scale": 1.2,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "fence_6",
+      "asset": "P003",
+      "x": 1180,
+      "y": 820,
+      "scale": 1.2,
+      "layer": "props",
+      "level": 0
+    },
+    {
+      "id": "fence_7",
+      "asset": "P003",
+      "x": 1205,
+      "y": 840,
+      "scale": 1.2,
+      "layer": "props",
+      "level": 0
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "door_tavern",
+      "type": "door",
+      "label": "Enter Driftwood Tavern",
+      "x": 930,
+      "y": 505,
+      "r": 72,
+      "targetScene": "whisperwind_tavern_interior",
+      "targetSpawn": {
+        "x": 640,
+        "y": 600,
+        "face": "up"
+      },
+      "message": "The tavern door opens with warm music and lantern light."
+    },
+    {
+      "id": "door_home_riverbend",
+      "type": "home",
+      "label": "Riverbend Cottage",
+      "x": 720,
+      "y": 855,
+      "r": 70,
+      "neighborhoodId": "whisperwind_01",
+      "plotId": "plot_01",
+      "targetScene": "riverbend_cottage_interior",
+      "targetSpawn": {
+        "x": 540,
+        "y": 590,
+        "face": "up"
+      },
+      "message": "This cottage can become your home."
+    },
+    {
+      "id": "door_pet_center",
+      "type": "link",
+      "label": "Pet Center",
+      "x": 530,
+      "y": 555,
+      "r": 70,
+      "href": "/games/petworld.html",
+      "message": "The Pet Center connects to PetWorld."
+    },
+    {
+      "id": "door_arcade",
+      "type": "message",
+      "label": "Future Arcade",
+      "x": 330,
+      "y": 895,
+      "r": 60,
+      "message": "The arcade is being built. This can later launch minigames."
+    },
+    {
+      "id": "stairs_upper",
+      "type": "stairs",
+      "label": "Climb to Upper Cliff",
+      "x": 620,
+      "y": 505,
+      "r": 70,
+      "target": {
+        "x": 760,
+        "y": 330
+      },
+      "message": "You climb the stone stairwell to the upper cliff."
+    },
+    {
+      "id": "stairs_down_upper",
+      "type": "stairs",
+      "label": "Return to Market",
+      "x": 760,
+      "y": 330,
+      "r": 70,
+      "target": {
+        "x": 660,
+        "y": 650
+      },
+      "message": "You descend back toward the market."
+    },
+    {
+      "id": "stairs_cliff_home",
+      "type": "stairs",
+      "label": "Cliff Home Steps",
+      "x": 1300,
+      "y": 500,
+      "r": 64,
+      "target": {
+        "x": 1335,
+        "y": 350
+      },
+      "message": "The narrow stairs wind up to the cliff homes."
+    },
+    {
+      "id": "hidden_alley",
+      "type": "message",
+      "label": "Hidden Alley",
+      "x": 410,
+      "y": 760,
+      "r": 75,
+      "message": "A quiet alley hides behind the tavern. A rare merchant could live here later."
+    },
+    {
+      "id": "dock_fishing",
+      "type": "link",
+      "label": "Fishing Dock",
+      "x": 315,
+      "y": 1090,
+      "r": 80,
+      "href": "/games/petworld.html?zone=fishing",
+      "message": "The docks can connect into fishing zones."
+    }
+  ],
+  "npcs": [
+    {
+      "id": "npc_mira",
+      "name": "Mira",
+      "role": "Tavern Keeper",
+      "x": 865,
+      "y": 610,
+      "r": 60,
+      "message": "Mira: Welcome to the Driftwood Tavern. Rumors and quests will start here."
+    },
+    {
+      "id": "npc_toma",
+      "name": "Toma",
+      "role": "Pet Guide",
+      "x": 565,
+      "y": 650,
+      "r": 60,
+      "message": "Toma: Bring your pets here when they need care, training, or a new adventure."
+    },
+    {
+      "id": "npc_kip",
+      "name": "Kip",
+      "role": "Alley Kid",
+      "x": 405,
+      "y": 830,
+      "r": 55,
+      "message": "Kip: Not everyone notices this alley. Good. That means it works."
+    },
+    {
+      "id": "npc_dockmaster",
+      "name": "Dockmaster",
+      "role": "Fishing",
+      "x": 265,
+      "y": 1015,
+      "r": 60,
+      "message": "Dockmaster: Boats, fishing, and travel all start down here."
+    }
+  ],
+  "editorNotes": [
+    "Use World Composer to move objects. Lock background/terrace helpers. Doors, stairs, and homes are hotspots under gameplay layer.",
+    "This scene is designed to reveal itself: lower town -> market -> tavern terrace -> upper cliff -> hidden alley -> docks."
+  ]
+}
