@@ -1,111 +1,43 @@
-# World Editor + Animation Fix v3
+# World Forger Polygon/Zones Restore
 
-## Files changed
-- `games/world_editor.html`
+Drop these files into the repo root, preserving paths:
+
+- `games/world_composer.html`
 - `games/js/world_engine.js`
-- `public/assets/worlds/shadow_woods_dock.json`
-- `public/assets/worlds/world_scenes.json`
-- `README.md`
 
-## What this fixes
-- Idle animations now use the correct idle rows instead of walking rows.
-- Right-facing walk now uses the correct walk_right row.
-- Fishing hotspots are JSON-driven instead of hardcoded.
-- The engine reads browser-saved scene drafts from localStorage for fast testing.
+## Restored / upgraded editor behavior
 
-## Editor workflow
-Open:
+- Restores first-class polygon tools for:
+  - Walkable areas
+  - Water areas
+  - No-walk collision polygons
+  - Fishing spots
+  - General hotspots/interactives
+- Polygon zones are selectable from the object list.
+- Polygon vertices can be dragged directly on the canvas to reshape the area.
+- Clicking inside a polygon lets you move the whole shape.
+- Rectangular collision zones can be converted to polygons from the inspector.
+- Water polygons can be marked as blocking walking and/or fishable.
+- Fishing hotspots include fish table and water ID fields.
+- Buildings still keep the object metadata from the previous upgrade: owner type, owner ID, interior scene, occupants, services, notes, and plot ID.
 
-`/games/world_editor.html`
+## Runtime upgrade
 
-You can now:
-- draw walkable polygons
-- draw blocker polygons
-- draw foreground/fade polygons
-- add draggable fishing zones
-- add draggable NPC/dialogue zones
-- add draggable chest zones
-- add draggable exit zones
-- edit text/dialogue/title fields
-- drag fishing stand point and cast target separately
-- Save Browser Draft for quick testing
-- Download JSON when ready to replace the GitHub file
+`world_engine.js` now respects:
 
-## Fast test workflow
-1. Open `/games/world_editor.html`.
-2. Load `Shadow Woods Dock`.
-3. Move/edit zones.
-4. Click `Save Browser Draft`.
-5. Refresh PetWorld and test the scene.
+- `scene.walkable` polygons: if any exist, the player must stay inside one.
+- `scene.terrain.water` polygons: blocks walking unless `blocksWalking:false`.
+- polygon `scene.collisions` entries.
+- rectangular legacy `blockers` still work.
 
-The game engine checks localStorage first:
+## Usage
 
-`gfWorldSceneDraft:shadow_woods_dock`
+Open World Forger Composer, then use the toolbar:
 
-So you can test without committing JSON every time.
+- **Walk**: adds a walkable polygon.
+- **Water**: adds a water polygon.
+- **Collision**: adds a no-walk polygon.
+- **Fishing**: adds a fishing interaction hotspot.
+- **+ Collision**: still adds a rectangular collision block for quick/simple blockers.
 
-## Commit workflow
-When the map feels right:
-1. Click `Download JSON`.
-2. Replace:
-   `public/assets/worlds/shadow_woods_dock.json`
-3. Commit and deploy.
-
-## Sprite sheet contract
-The engine expects:
-- 128 x 128 frame cells
-- 6 columns x 12 rows
-- canvas: 768 x 1536
-- transparent PNG
-
-Rows:
-1. idle_down
-2. idle_up
-3. idle_left
-4. idle_right
-5. walk_down
-6. walk_up
-7. walk_left
-8. walk_right
-9. fish_idle_right
-10. fish_cast_right
-11. fish_reel_right
-12. fish_catch_right
-
-## GameForge RPG Scene Engine Direction
-
-GameForge is moving toward a website + RPG-world hybrid. The website shell should remain responsible for login, sidebar navigation, account state, chat, admin tools, and iframe hosting. The shared RPG scene engine in `games/js/world_engine.js` should become the reusable walk-around layer for Shadow Woods, fishing scenes, neighborhoods, homes, shops, guild halls, and future Echo Game social spaces.
-
-Current first-pass RPG scene features:
-
-- Data-driven scene loading from `public/assets/worlds/world_scenes.json`.
-- Walkable polygons, blockers, hotspots, exits, ambient effects, and scene transitions.
-- Lightweight WebSocket multiplayer presence per scene using `worldJoin`, `worldMove`, `worldLeave`, and `worldEvent` messages in `server.js`.
-- Remote players with name tags above their heads.
-- Appearance payload support reserved for upcoming clothing/avatar customization.
-- Estate test scene: `whisperwind_village`, launched by `games/estate.html`.
-
-Design rules for future AI/code work:
-
-1. Do not create separate one-off engines for fishing, housing, towns, shops, or guild halls unless there is a strong reason. Extend the shared RPG scene layer instead.
-2. Neighborhoods should behave like RPG town scenes: plots, doors, signs, shops, and homes are scene data and interactables.
-3. Housing should use real placement rules: floor grid, wall slots, tabletop anchors, and yard zones. Avoid arbitrary free placement that will become hard to validate.
-4. Multiplayer visibility should be considered part of the MVP for shared neighborhood/town scenes.
-5. Testing Mode and Story Mode are stored in `data/site_settings.json` through Admin → Site Settings. Testing Mode keeps features easy to test; Story Mode will later allow unlock/teaser rules without removing the feature from code.
-6. Admin-only tools should stay permission-gated. The main UI should only show Admin navigation when the logged-in user is an admin.
-
-### Estate / Neighborhood MVP Notes
-
-`Whisperwind Village` is the first test neighborhood. It is intentionally small and uses the existing shared scene engine so movement, transitions, player presence, and future housing ownership can be tested early.
-
-Future neighborhood plot states should include:
-
-- `empty`
-- `for_sale`
-- `reserved`
-- `owned`
-- `public`
-- `friends_only`
-- `private`
-
-A plot should visually change based on state, and the door/sign hotspot should determine whether the visiting player can enter, request access, purchase, or simply read that it is unavailable.
+Drag gold vertex handles to reshape polygons.
