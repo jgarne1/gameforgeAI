@@ -4280,10 +4280,45 @@ app.post('/api/admin/world-forger/save',(req,res)=>{
     const sceneDir=path.join(__dirname,'public','assets','worlds');
     const target=path.join(sceneDir,sceneId+'.json');
     if(!target.startsWith(sceneDir))return res.status(400).json({ok:false,error:'Invalid scene path'});
+    if(Array.isArray(scene.collisions)){
+      scene.blockers=scene.collisions.filter(c=>c&&c.type!=='polygon').map(c=>({id:c.id,label:c.label,x:Number(c.x||0),y:Number(c.y||0),w:Number(c.w||0),h:Number(c.h||0)}));
+    }
+    fs.mkdirSync(sceneDir,{recursive:true});
     fs.writeFileSync(target,JSON.stringify(scene,null,2));
     res.json({ok:true,path:'/assets/worlds/'+sceneId+'.json',savedBy:adminUser,updatedAt:Date.now()});
   }catch(err){
     res.status(500).json({ok:false,error:err.message||'Could not save world scene'});
+  }
+});
+
+
+
+// -----------------------------
+// World Forger scene listing API
+// -----------------------------
+app.get('/api/world-forger/scenes',(req,res)=>{
+  try{
+    const sceneDir=path.join(__dirname,'public','assets','worlds');
+    const files=fs.existsSync(sceneDir)?fs.readdirSync(sceneDir).filter(f=>f.endsWith('.json')):[];
+    const scenes=files.map(file=>{
+      const full=path.join(sceneDir,file);
+      let data={};
+      try{data=readJSON(full,{})||{};}catch(e){}
+      const id=String(data.id||file.replace(/\.json$/,''));
+      return {
+        id,
+        name:String(data.name||id),
+        path:'/assets/worlds/'+file,
+        mode:data.mode||'',
+        hasBackground:!!data.background,
+        objectCount:Array.isArray(data.objects)?data.objects.length:0,
+        hotspotCount:Array.isArray(data.hotspots)?data.hotspots.length:0,
+        legacy:!!(data.walkable||data.blockers||data.interactables||data.ambientEffects)
+      };
+    }).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+    res.json({ok:true,scenes});
+  }catch(err){
+    res.status(500).json({ok:false,error:err.message||'Could not list World Forger scenes'});
   }
 });
 
