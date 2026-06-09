@@ -1,43 +1,24 @@
-# World Forger Polygon/Zones Restore
+World Forger Editor Overhaul v6
 
-Drop these files into the repo root, preserving paths:
+Drop these files into the repo root, preserving folders.
 
-- `games/world_composer.html`
-- `games/js/world_engine.js`
+Files included:
+- games/world_composer.html
+- games/js/world_engine.js
+- server.js
 
-## Restored / upgraded editor behavior
+Main changes:
+- Reorganized editor into clean left workspaces: Scene, Paint, Assets, Zones, World, Validation.
+- Top bar now focuses on loading, saving, duplicating, deleting, playing, fit, and grid.
+- Right panel remains context-sensitive for selected object/zone/building properties.
+- Boundaries/zones are first-class tools with their own Zone workspace.
+- Zone list shows what each boundary is for: Walkable, Blocked, Water, Fishing, Trigger, Teleport.
+- Zone visibility checkboxes let you hide/show each zone type; Solo Fishing helps debug fishing setup.
+- Polygon vertex dragging and whole-polygon movement are preserved.
+- Scene size, day/night mode, fixed time, brightness, fog, tint, music, ground skin, and background path are saveable scene fields.
+- Runtime world engine renders saved day/night lighting overlay and supports teleport hotspots.
+- Fishing spots no longer silently require water unless their requiresWater flag is enabled. The editor links a fishing spot to a water polygon when placed inside one and validation reports fishing spots that are not on water.
 
-- Restores first-class polygon tools for:
-  - Walkable areas
-  - Water areas
-  - No-walk collision polygons
-  - Fishing spots
-  - General hotspots/interactives
-- Polygon zones are selectable from the object list.
-- Polygon vertices can be dragged directly on the canvas to reshape the area.
-- Clicking inside a polygon lets you move the whole shape.
-- Rectangular collision zones can be converted to polygons from the inspector.
-- Water polygons can be marked as blocking walking and/or fishable.
-- Fishing hotspots include fish table and water ID fields.
-- Buildings still keep the object metadata from the previous upgrade: owner type, owner ID, interior scene, occupants, services, notes, and plot ID.
-
-## Runtime upgrade
-
-`world_engine.js` now respects:
-
-- `scene.walkable` polygons: if any exist, the player must stay inside one.
-- `scene.terrain.water` polygons: blocks walking unless `blocksWalking:false`.
-- polygon `scene.collisions` entries.
-- rectangular legacy `blockers` still work.
-
-## Usage
-
-Open World Forger Composer, then use the toolbar:
-
-- **Walk**: adds a walkable polygon.
-- **Water**: adds a water polygon.
-- **Collision**: adds a no-walk polygon.
-- **Fishing**: adds a fishing interaction hotspot.
-- **+ Collision**: still adds a rectangular collision block for quick/simple blockers.
-
-Drag gold vertex handles to reshape polygons.
+Notes:
+- The Layers checkboxes are now labeled as editor visibility only. They hide/show map categories while editing and do not delete anything.
+- Fishing zones are hotspots with type=fishing. Water polygons are optional unless you enable Require Water in the fishing hotspot properties.

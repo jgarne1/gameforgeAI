@@ -4292,6 +4292,28 @@ app.post('/api/admin/world-forger/save',(req,res)=>{
 });
 
 
+app.post('/api/admin/world-forger/delete',(req,res)=>{
+  let adminUser=requireAdmin(req,res,'full_admin');
+  if(!adminUser)return;
+  try{
+    const sceneId=String((req.body&&req.body.sceneId)||'').replace(/[^a-zA-Z0-9_-]/g,'');
+    if(!sceneId)return res.status(400).json({ok:false,error:'Missing sceneId'});
+    const sceneDir=path.join(__dirname,'public','assets','worlds');
+    const target=path.join(sceneDir,sceneId+'.json');
+    if(!target.startsWith(sceneDir))return res.status(400).json({ok:false,error:'Invalid scene path'});
+    if(!fs.existsSync(target))return res.status(404).json({ok:false,error:'Scene not found'});
+    const trashDir=path.join(sceneDir,'_deleted');
+    fs.mkdirSync(trashDir,{recursive:true});
+    const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+    const backup=path.join(trashDir,sceneId+'.'+stamp+'.json');
+    fs.renameSync(target,backup);
+    res.json({ok:true,deleted:sceneId,backup:'/assets/worlds/_deleted/'+path.basename(backup),deletedBy:adminUser,updatedAt:Date.now()});
+  }catch(err){
+    res.status(500).json({ok:false,error:err.message||'Could not delete world scene'});
+  }
+});
+
+
 
 // -----------------------------
 // World Forger scene listing API
