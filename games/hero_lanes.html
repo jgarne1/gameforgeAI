@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Hero Lanes</title>
+<style>
+:root{
+  --bg:#090b14;--panel:rgba(18,24,42,.88);--panel2:rgba(30,38,61,.92);--text:#f5edcf;--muted:#b9b09a;
+  --gold:#ffd46a;--green:#72e08d;--red:#ff6d6d;--blue:#7dbbff;--purple:#c795ff;--line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:radial-gradient(circle at 50% 0%,#1c2747 0,#080a12 55%,#030408 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}
+button,select{font:inherit}button{border:1px solid var(--line);border-radius:12px;background:linear-gradient(#38466d,#212941);color:var(--text);padding:9px 11px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.28)}button:hover{filter:brightness(1.12)}button:active{transform:translateY(1px);box-shadow:none}button.primary{background:linear-gradient(#8b6428,#4b3519);border-color:#c99a44;color:#fff4cf}button.danger{background:linear-gradient(#703535,#3d1d24)}button:disabled{opacity:.45;cursor:not-allowed}
+#app{height:100%;display:grid;grid-template-columns:310px 1fr 330px;grid-template-rows:64px 1fr;gap:10px;padding:10px}
+.top{grid-column:1/4;background:linear-gradient(90deg,rgba(25,31,54,.96),rgba(47,37,65,.92));border:1px solid var(--line);border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:9px 14px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.logo{display:flex;align-items:center;gap:12px}.crest{width:42px;height:42px;border-radius:14px;background:radial-gradient(circle at 35% 25%,#fff3a6 0 6%,#d69b35 7% 28%,#8b342f 29% 55%,#263a70 56%);border:1px solid rgba(255,255,255,.28)}h1{font-size:20px;margin:0;letter-spacing:.4px}.sub{font-size:12px;color:var(--muted)}.topStats{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.pill{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-weight:700}.pill small{color:var(--muted);font-weight:600}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;min-height:0;box-shadow:0 12px 35px rgba(0,0,0,.32);overflow:hidden}.panel h2{margin:0;padding:12px 14px;font-size:15px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.035)}.content{padding:12px;overflow:auto;height:calc(100% - 45px)}
+.heroGrid{display:grid;grid-template-columns:1fr;gap:9px}.heroCard{padding:10px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.045);cursor:pointer}.heroCard.active{outline:2px solid var(--gold);background:rgba(255,212,106,.12)}.heroTitle{display:flex;justify-content:space-between;font-weight:800}.hint{font-size:12px;color:var(--muted);line-height:1.35}.bar{height:10px;border-radius:999px;background:rgba(0,0,0,.35);overflow:hidden;border:1px solid var(--line)}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#d4ff77);width:50%}.bar.red>i{background:linear-gradient(90deg,#ff5959,#ffb16e)}.bar.blue>i{background:linear-gradient(90deg,#5ba6ff,#9df5ff)}
+#stageWrap{position:relative;background:linear-gradient(#18213b,#0b0d17);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:inset 0 0 80px rgba(0,0,0,.5),0 12px 35px rgba(0,0,0,.32)}canvas{display:block;width:100%;height:100%}.laneHud{position:absolute;left:12px;top:12px;right:12px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.laneBadge{background:rgba(0,0,0,.38);border:1px solid var(--line);border-radius:14px;padding:8px 10px;min-width:150px}.laneBadge b{display:block}.laneBadge span{font-size:12px;color:var(--muted)}
+.upgrade{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px;border-bottom:1px solid var(--line)}.upgrade:last-child{border-bottom:0}.upgrade b{font-size:14px}.upgrade .desc{font-size:12px;color:var(--muted)}.tabs{display:flex;gap:6px;padding:8px;background:rgba(0,0,0,.18);border-bottom:1px solid var(--line)}.tabs button{flex:1;padding:8px;border-radius:10px}.tabs button.active{background:linear-gradient(#74552a,#3c2a18);border-color:#b88435}.log{font-size:12px;line-height:1.35;display:flex;flex-direction:column;gap:6px}.log div{padding:7px 8px;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:10px}.row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:8px 0}.shopSec{display:none}.shopSec.active{display:block}.bigNumber{font-size:26px;font-weight:900;color:var(--gold);text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.card{max-width:720px;width:100%;background:#11182b;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.65)}.classPick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.classPick button{text-align:left;min-height:110px}.classPick b{display:block;font-size:17px;margin-bottom:4px}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:10px 16px;display:none;z-index:30}.toast.show{display:block}
+@media(max-width:980px){#app{grid-template-columns:1fr;grid-template-rows:64px 170px 1fr 260px;overflow:auto}.top{grid-column:1}.panel{min-height:0}.left .content{display:flex;gap:8px}.heroGrid{grid-template-columns:repeat(5,190px)}body{overflow:auto}#stageWrap{min-height:440px}.right{min-height:360px}.classPick{grid-template-columns:1fr}.topStats{font-size:12px;gap:5px}.pill{padding:5px 7px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <div class="logo"><div class="crest"></div><div><h1>Hero Lanes</h1><div class="sub">A lane-based upgrade RPG side game prototype</div></div></div>
+    <div class="topStats">
+      <div class="pill"><small>Level</small> <span id="levelTop">1</span></div>
+      <div class="pill"><small>Gold</small> <span id="goldTop">0</span></div>
+      <div class="pill"><small>Souls</small> <span id="soulsTop">0</span></div>
+      <button id="saveBtn">Save</button><button id="resetBtn" class="danger">Reset</button>
+    </div>
+  </div>
+
+  <aside class="panel left"><h2>Hero</h2><div class="content">
+    <div class="heroGrid" id="heroGrid"></div>
+    <div style="margin-top:12px">
+      <div class="row"><span>HP</span><b id="hpText"></b></div><div class="bar red"><i id="hpBar"></i></div>
+      <div class="row"><span>XP</span><b id="xpText"></b></div><div class="bar blue"><i id="xpBar"></i></div>
+      <div class="row"><span>Current Lane</span><b id="laneText"></b></div>
+      <button id="rebirthBtn" class="primary" style="width:100%;margin-top:10px">Ascend / Rebirth</button>
+      <p class="hint">Rebirth becomes useful around level 25+. It resets level, gold, and shop upgrades, then gives permanent souls.</p>
+    </div>
+  </div></aside>
+
+  <main id="stageWrap">
+    <canvas id="game"></canvas>
+    <div class="laneHud" id="laneHud"></div>
+  </main>
+
+  <aside class="panel right"><h2>Upgrades</h2>
+    <div class="tabs"><button class="active" data-tab="battle">Battle</button><button data-tab="perm">Permanent</button><button data-tab="logTab">Log</button></div>
+    <div class="content">
+      <section class="shopSec active" id="battle"></section>
+      <section class="shopSec" id="perm"></section>
+      <section class="shopSec" id="logTab"><div class="log" id="log"></div></section>
+    </div>
+  </aside>
+</div>
+
+<div class="modal" id="pickModal"><div class="card">
+  <h2 style="margin:0 0 6px">Choose your hero</h2>
+  <div class="hint">This is a playable first pass: pick a class, click lanes, defeat waves, buy upgrades, and rebirth for permanent power.</div>
+  <div class="classPick" id="classPick"></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const SAVE_KEY='gameforge_hero_lanes_v1';
+const classes={
+  warrior:{name:'Iron Warden',icon:'🛡️',desc:'Tough melee hero. Forgiving starter.',base:{hp:145,damage:9,regen:1.4,crit:.05,speed:1}},
+  ranger:{name:'Gale Ranger',icon:'🏹',desc:'Fast attacks and higher crit.',base:{hp:95,damage:8,regen:.9,crit:.15,speed:1.35}},
+  mage:{name:'Rune Mage',icon:'✨',desc:'High damage, fragile, scales well.',base:{hp:78,damage:13,regen:.75,crit:.08,speed:1.08}},
+  paladin:{name:'Sun Paladin',icon:'☀️',desc:'Balanced fighter with strong sustain.',base:{hp:125,damage:8,regen:2.0,crit:.06,speed:.95}},
+  rogue:{name:'Night Rogue',icon:'🗡️',desc:'Explosive crit-focused farmer.',base:{hp:88,damage:7,regen:1.0,crit:.24,speed:1.45}}
+};
+const lanes=[
+  {id:'forest',name:'Forest Path',color:'#54d86a',enemy:'Bramble Imp',boss:'Elder Treant',level:1,x:.22,reward:1},
+  {id:'mountain',name:'Mountain Pass',color:'#d9a85d',enemy:'Stone Gnoll',boss:'Iron Troll',level:6,x:.50,reward:1.55},
+  {id:'void',name:'Shadow Road',color:'#b78cff',enemy:'Voidling',boss:'Rift Horror',level:14,x:.78,reward:2.35}
+];
+const battleUpgrades=[
+  {id:'damage',name:'Weapon Damage',desc:'+3 damage per rank',base:35,growth:1.22},
+  {id:'health',name:'Vitality',desc:'+18 max HP per rank',base:30,growth:1.2},
+  {id:'regen',name:'Regen Charm',desc:'+0.35 HP/sec per rank',base:45,growth:1.25},
+  {id:'crit',name:'Sharp Edge',desc:'+1.5% crit per rank',base:70,growth:1.28},
+  {id:'speed',name:'Attack Speed',desc:'+3% attack rate per rank',base:85,growth:1.3}
+];
+const permUpgrades=[
+  {id:'goldBoost',name:'Golden Soul',desc:'+10% gold forever',base:1,growth:1.55},
+  {id:'xpBoost',name:'Ancient Memory',desc:'+10% XP forever',base:1,growth:1.55},
+  {id:'soulPower',name:'Soul Power',desc:'+5% damage and HP forever',base:2,growth:1.65},
+  {id:'luck',name:'Rare Luck',desc:'+3% bonus boss rewards',base:2,growth:1.7}
+];
+let state=load()||newState();
+let enemy=null,last=performance.now(),attackTimer=0,particles=[];
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+function newState(cls){return{classId:cls||null,level:1,xp:0,gold:0,souls:0,lane:'forest',battle:{damage:0,health:0,regen:0,crit:0,speed:0},perm:{goldBoost:0,xpBoost:0,soulPower:0,luck:0},kills:0,bossKills:0,totalRebirths:0,hp:null,createdAt:Date.now(),updatedAt:Date.now()}}
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||'null')}catch(e){return null}}
+function save(){state.updatedAt=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(state));toast('Saved Hero Lanes progress')}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1600)}
+function heroBase(){return classes[state.classId]?.base||classes.warrior.base}
+function stats(){const b=heroBase(), soul=1+state.perm.soulPower*.05, hp=(b.hp+state.battle.health*18+state.level*9)*soul;return{maxHp:hp,damage:(b.damage+state.battle.damage*3+state.level*1.5)*soul,regen:b.regen+state.battle.regen*.35,crit:Math.min(.65,b.crit+state.battle.crit*.015),speed:b.speed*(1+state.battle.speed*.03),goldMult:1+state.perm.goldBoost*.10,xpMult:1+state.perm.xpBoost*.10,luck:state.perm.luck*.03}}
+function xpNeed(){return Math.floor(45*Math.pow(state.level,1.45))}
+function lane(){return lanes.find(l=>l.id===state.lane)||lanes[0]}
+function enemyForLane(){const l=lane();const wave=Math.max(1,state.level+l.level-1+Math.floor(state.kills/12));const boss=(state.kills>0&&state.kills%12===0);const hp=(boss?90:32)*Math.pow(1.115,wave)*(boss?2.4:1);const dmg=(boss?8:3)*Math.pow(1.08,wave);return{id:Date.now(),name:boss?l.boss:l.enemy,level:wave,boss,maxHp:hp,hp,damage:dmg,gold:Math.floor((boss?55:12)*Math.pow(1.075,wave)*l.reward),xp:Math.floor((boss?75:16)*Math.pow(1.07,wave)*l.reward)}}
+function ensureEnemy(){if(!enemy)enemy=enemyForLane();if(state.hp==null)state.hp=stats().maxHp}
+function addLog(t){const log=state.log||[];log.unshift(t);state.log=log.slice(0,30);renderLog()}
+function gainXp(x){state.xp+=Math.floor(x*stats().xpMult);while(state.xp>=xpNeed()){state.xp-=xpNeed();state.level++;state.hp=stats().maxHp;addLog('Level up! You reached level '+state.level+'.')}}
+function killEnemy(){const s=stats();let g=Math.floor(enemy.gold*s.goldMult*(enemy.boss?1+s.luck:1));let x=enemy.xp;state.gold+=g;gainXp(x);state.kills++;if(enemy.boss){state.bossKills++;addLog('Boss defeated: '+enemy.name+'! +'+g+' gold.')}else if(state.kills%4===0){addLog(enemy.name+' wave cleared. +'+g+' gold.')}enemy=null;saveSilent();}
+function saveSilent(){state.updatedAt=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(state));}
+function buy(up,perm){const bag=perm?state.perm:state.battle;const currency=perm?'souls':'gold';const cost=costOf(up,perm);if(state[currency]<cost)return;state[currency]-=cost;bag[up.id]=(bag[up.id]||0)+1;addLog('Bought '+up.name+' rank '+bag[up.id]+'.');renderAll();saveSilent();}
+function costOf(up,perm){const r=(perm?state.perm:state.battle)[up.id]||0;return Math.ceil(up.base*Math.pow(up.growth,r));}
+function rebirth(){if(state.level<15){toast('Reach at least level 15 before rebirth. Level 25+ is better.');return}const gained=Math.max(1,Math.floor(Math.pow(state.level-12,1.22)/4)+Math.floor(state.bossKills/5));const cls=state.classId;const perm=state.perm;const souls=state.souls+gained;const reb=state.totalRebirths+1;state=newState(cls);state.perm=perm;state.souls=souls;state.totalRebirths=reb;state.hp=stats().maxHp;enemy=null;addLog('Rebirth complete. Gained '+gained+' souls.');renderAll();save();}
+function renderHeroCards(){const root=document.getElementById('heroGrid');root.innerHTML='';Object.entries(classes).forEach(([id,c])=>{const div=document.createElement('div');div.className='heroCard '+(state.classId===id?'active':'');div.innerHTML='<div class="heroTitle"><span>'+c.icon+' '+c.name+'</span><span>'+Math.round(c.base.damage)+' DMG</span></div><div class="hint">'+c.desc+'</div>';div.onclick=()=>{state.classId=id;state.hp=stats().maxHp;enemy=null;renderAll();saveSilent()};root.appendChild(div)});}
+function renderShop(){const battle=document.getElementById('battle');battle.innerHTML='';battleUpgrades.forEach(up=>{const r=state.battle[up.id]||0,c=costOf(up,false);const div=document.createElement('div');div.className='upgrade';div.innerHTML='<div><b>'+up.name+' <span class="hint">Rank '+r+'</span></b><div class="desc">'+up.desc+'</div></div><button '+(state.gold<c?'disabled':'')+'>Buy '+c+'g</button>';div.querySelector('button').onclick=()=>buy(up,false);battle.appendChild(div)});
+const perm=document.getElementById('perm');perm.innerHTML='<div class="hint" style="padding:8px 10px">Permanent upgrades use souls earned from rebirth.</div>';permUpgrades.forEach(up=>{const r=state.perm[up.id]||0,c=costOf(up,true);const div=document.createElement('div');div.className='upgrade';div.innerHTML='<div><b>'+up.name+' <span class="hint">Rank '+r+'</span></b><div class="desc">'+up.desc+'</div></div><button '+(state.souls<c?'disabled':'')+'>Buy '+c+' souls</button>';div.querySelector('button').onclick=()=>buy(up,true);perm.appendChild(div)});}
+function renderHud(){const s=stats();document.getElementById('levelTop').textContent=state.level;document.getElementById('goldTop').textContent=Math.floor(state.gold);document.getElementById('soulsTop').textContent=state.souls;document.getElementById('hpText').textContent=Math.ceil(state.hp)+' / '+Math.ceil(s.maxHp);document.getElementById('hpBar').style.width=Math.max(0,Math.min(100,state.hp/s.maxHp*100))+'%';document.getElementById('xpText').textContent=Math.floor(state.xp)+' / '+xpNeed();document.getElementById('xpBar').style.width=Math.max(0,Math.min(100,state.xp/xpNeed()*100))+'%';document.getElementById('laneText').textContent=lane().name;document.getElementById('rebirthBtn').textContent='Ascend / Rebirth ('+(state.level<15?'Lv 15 needed':'gain ~'+(Math.max(1,Math.floor(Math.pow(state.level-12,1.22)/4)+Math.floor(state.bossKills/5)))+' souls')+')';}
+function renderLaneHud(){const root=document.getElementById('laneHud');root.innerHTML='';lanes.forEach(l=>{const d=document.createElement('div');d.className='laneBadge';d.innerHTML='<b style="color:'+l.color+'">'+l.name+'</b><span>Click lane • Starts around Lv '+l.level+'</span>';root.appendChild(d)});}
+function renderLog(){const root=document.getElementById('log');root.innerHTML='';(state.log||['Welcome to Hero Lanes. Pick a lane and start farming.']).slice(0,24).forEach(t=>{const d=document.createElement('div');d.textContent=t;root.appendChild(d)});}
+function renderAll(){renderHeroCards();renderShop();renderHud();renderLaneHud();renderLog();}
+function resize(){const r=document.getElementById('stageWrap').getBoundingClientRect();canvas.width=Math.max(400,Math.floor(r.width*devicePixelRatio));canvas.height=Math.max(300,Math.floor(r.height*devicePixelRatio));}
+function draw(){const w=canvas.width,h=canvas.height, DPR=devicePixelRatio;ctx.clearRect(0,0,w,h);ctx.save();ctx.scale(DPR,DPR);const cw=w/DPR,ch=h/DPR;ctx.fillStyle='#0a0f1e';ctx.fillRect(0,0,cw,ch);
+// background
+let grd=ctx.createLinearGradient(0,0,0,ch);grd.addColorStop(0,'#17223e');grd.addColorStop(1,'#071019');ctx.fillStyle=grd;ctx.fillRect(0,0,cw,ch);
+lanes.forEach(l=>{const x=cw*l.x;ctx.strokeStyle=l.color;ctx.globalAlpha=state.lane===l.id?.75:.28;ctx.lineWidth=state.lane===l.id?34:24;ctx.beginPath();ctx.moveTo(x,70);ctx.bezierCurveTo(x-90,ch*.28,x+90,ch*.50,x,ch-64);ctx.stroke();ctx.globalAlpha=1;ctx.fillStyle='rgba(0,0,0,.36)';ctx.beginPath();ctx.arc(x,ch-70,32,0,Math.PI*2);ctx.fill();ctx.fillStyle=l.color;ctx.font='24px system-ui';ctx.textAlign='center';ctx.fillText(l.id==='forest'?'🌲':l.id==='mountain'?'⛰️':'🌙',x,ch-62);});
+const l=lane(),hx=cw*l.x,hy=ch-135;ctx.fillStyle='rgba(255,255,255,.14)';ctx.beginPath();ctx.ellipse(hx,hy+30,42,13,0,0,Math.PI*2);ctx.fill();ctx.font='42px system-ui';ctx.textAlign='center';ctx.fillText(classes[state.classId]?.icon||'🛡️',hx,hy);ctx.fillStyle='#fff3ce';ctx.font='bold 13px system-ui';ctx.fillText(classes[state.classId]?.name||'Hero',hx,hy+52);
+if(enemy){const ex=hx,ey=105;ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.ellipse(ex,ey+40,55,16,0,0,Math.PI*2);ctx.fill();ctx.font=enemy.boss?'58px system-ui':'44px system-ui';ctx.fillText(enemy.boss?'👹':'👾',ex,ey+18);ctx.fillStyle=enemy.boss?'#ffd46a':'#fff3ce';ctx.font='bold 16px system-ui';ctx.fillText(enemy.name+' Lv '+enemy.level,ex,ey+74);ctx.fillStyle='rgba(0,0,0,.45)';roundRect(ctx,ex-70,ey+84,140,12,999);ctx.fill();ctx.fillStyle=enemy.boss?'#ff7b6d':'#75e08a';roundRect(ctx,ex-68,ey+86,136*(enemy.hp/enemy.maxHp),8,999);ctx.fill();}
+particles.forEach(p=>{ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.font='bold '+p.size+'px system-ui';ctx.fillText(p.text,p.x,p.y);ctx.globalAlpha=1});ctx.restore();}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function tick(now){const dt=Math.min(.08,(now-last)/1000);last=now;if(state.classId){ensureEnemy();const s=stats();state.hp=Math.min(s.maxHp,state.hp+s.regen*dt);attackTimer+=dt*s.speed;if(attackTimer>=.8){attackTimer=0;let dmg=s.damage*(Math.random()<s.crit?2.2:1)*(0.85+Math.random()*0.3);enemy.hp-=dmg;particles.push({x:canvas.width/devicePixelRatio*lane().x+(Math.random()*50-25),y:145+Math.random()*30,text:String(Math.floor(dmg)),color:'#ffe190',size:16,life:1});if(enemy.hp<=0)killEnemy();}
+if(enemy){state.hp-=enemy.damage*dt;if(state.hp<=0){state.hp=s.maxHp*.72;state.gold=Math.max(0,Math.floor(state.gold*.94));addLog('You were knocked back by '+enemy.name+'. Lost a little gold.');enemy=null;}}
+}
+particles.forEach(p=>{p.y-=32*dt;p.life-=dt*1.4});particles=particles.filter(p=>p.life>0);renderHud();draw();requestAnimationFrame(tick)}
+function setupTabs(){document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.shopSec').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')})}
+function setupLaneClick(){canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;let best=lanes[0],bd=99;lanes.forEach(l=>{let d=Math.abs(x-l.x);if(d<bd){bd=d;best=l}});state.lane=best.id;enemy=null;addLog('Moved to '+best.name+'.');renderAll();saveSilent();});}
+function setupClassPick(){const modal=document.getElementById('pickModal'),root=document.getElementById('classPick');root.innerHTML='';Object.entries(classes).forEach(([id,c])=>{const b=document.createElement('button');b.innerHTML='<b>'+c.icon+' '+c.name+'</b><span class="hint">'+c.desc+'</span>';b.onclick=()=>{state.classId=id;state.hp=stats().maxHp;modal.classList.remove('show');addLog('Your '+c.name+' enters the lanes.');renderAll();save();};root.appendChild(b)});if(!state.classId)modal.classList.add('show');}
+document.getElementById('saveBtn').onclick=save;document.getElementById('resetBtn').onclick=()=>{if(confirm('Reset Hero Lanes progress?')){localStorage.removeItem(SAVE_KEY);state=newState();enemy=null;setupClassPick();renderAll();}};document.getElementById('rebirthBtn').onclick=rebirth;window.addEventListener('resize',resize);
+setupTabs();setupLaneClick();setupClassPick();resize();renderAll();requestAnimationFrame(tick);setInterval(saveSilent,10000);
+})();
+</script>
+</body>
+</html>

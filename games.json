@@ -1,5 +1,13 @@
 [
   {
+    "id": "hero_lanes",
+    "name": "Hero Lanes",
+    "file": "hero_lanes.html",
+    "minPlayers": 1,
+    "maxPlayers": 1,
+    "seats": 1
+  },
+  {
     "id": "battlehall",
     "name": "Battle Hall",
     "file": "battlehall.html",
@@ -126,7 +134,7 @@
     "minPlayers": 1,
     "maxPlayers": 2,
     "seats": 2,
-    "icon": "\ud83d\udccd",
+    "icon": "📍",
     "showInLauncher": true,
     "requiresUnlock": true,
     "enabled": true
@@ -154,7 +162,7 @@
     "minPlayers": 1,
     "maxPlayers": 1,
     "seats": 1,
-    "icon": "\ud83c\udfa3",
+    "icon": "🎣",
     "showInLauncher": true,
     "enabled": true
   },
@@ -173,7 +181,7 @@
     "minPlayers": 1,
     "maxPlayers": 2,
     "seats": 2,
-    "icon": "\ud83c\udfae",
+    "icon": "🎮",
     "showInLauncher": true,
     "requiresUnlock": true,
     "enabled": true
