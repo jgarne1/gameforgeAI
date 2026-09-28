@@ -90,6 +90,9 @@ app.use((req,res,next)=>{
   next();
 });
 
+const TownScenes=require('./lib/town_scene_store');
+app.get('/assets/worlds/:file',(req,res,next)=>{const name=req.params.file,id=name.endsWith('.json')?name.slice(0,-5):'';if(!TownScenes.townId(id))return next();const file=TownScenes.resolve(__dirname,DATA,id);if(file.startsWith(path.join(DATA,'town_scenes'))&&fs.existsSync(file)){res.set('Cache-Control','no-store');return res.sendFile(file);}next();});
+
 app.use(express.static(path.join(__dirname,'public'),{
   etag:false,
   lastModified:false,
@@ -910,7 +913,7 @@ function publicWorldContext(username){
 function worldSceneData(sceneId){
   const clean=String(sceneId||'').replace(/[^a-zA-Z0-9_\-]/g,'');
   if(!clean)return null;
-  const f=path.join(__dirname,'public','assets','worlds',clean+'.json');
+  const f=TownScenes.resolve(__dirname,DATA,clean);
   if(!fs.existsSync(f))return null;
   return readJSON(f,null);
 }
@@ -4327,8 +4330,9 @@ app.get('/api/world-forger/scenes',(req,res)=>{
     const sceneDir=path.join(__dirname,'public','assets','worlds');
     const metadataFiles=new Set(['world_scenes.json','world_asset_catalog.json','world_prefabs.json']);
     const files=fs.existsSync(sceneDir)?fs.readdirSync(sceneDir).filter(f=>f.endsWith('.json')&&!metadataFiles.has(f)):[];
-    const scenes=files.map(file=>{
-      const full=path.join(sceneDir,file);
+    const allFiles=[...new Set([...files,...TownScenes.list(DATA)])];
+    const scenes=allFiles.map(file=>{
+      const full=TownScenes.resolve(__dirname,DATA,file.slice(0,-5));
       let data={};
       try{data=readJSON(full,{})||{};}catch(e){}
       const id=String(data.id||file.replace(/\.json$/,''));
@@ -6508,3 +6512,4 @@ wss.on('connection',(ws,request)=>{
 });
 
 server.listen(PORT,()=>console.log('GameForge running on '+PORT));
+

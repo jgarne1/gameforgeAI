@@ -71,6 +71,12 @@
       "id": "whisperwind_hd_home",
       "name": "Home Interior Template",
       "path": "/assets/worlds/whisperwind_hd_home.json"
+    },
+    {
+      "id": "whisperwind_hd_inn",
+      "name": "Lantern Inn \u00b7 Lobby",
+      "path": "/assets/worlds/whisperwind_hd_inn.json"
     }
   ]
 }
+

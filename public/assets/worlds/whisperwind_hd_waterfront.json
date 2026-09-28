@@ -12,7 +12,7 @@
   "id": "whisperwind_hd_waterfront",
   "name": "Whisperwind Hometown",
   "size": {
-    "w": 5200,
+    "w": 6800,
     "h": 3700
   },
   "groundSkin": "whisperwind",
@@ -33,2682 +33,10 @@
   },
   "spawn": {
     "x": 1200,
-    "y": 1300,
+    "y": 1630,
     "face": "down"
   },
   "objects": [
-    {
-      "id": "street_380_900",
-      "asset": "wwhd_paving",
-      "x": 380,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_508_900",
-      "asset": "wwhd_paving",
-      "x": 508,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_636_900",
-      "asset": "wwhd_paving",
-      "x": 636,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_764_900",
-      "asset": "wwhd_paving",
-      "x": 764,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_892_900",
-      "asset": "wwhd_paving",
-      "x": 892,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1020_900",
-      "asset": "wwhd_paving",
-      "x": 1020,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1148_900",
-      "asset": "wwhd_paving",
-      "x": 1148,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1276_900",
-      "asset": "wwhd_paving",
-      "x": 1276,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1404_900",
-      "asset": "wwhd_paving",
-      "x": 1404,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1532_900",
-      "asset": "wwhd_paving",
-      "x": 1532,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1660_900",
-      "asset": "wwhd_paving",
-      "x": 1660,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1788_900",
-      "asset": "wwhd_paving",
-      "x": 1788,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1916_900",
-      "asset": "wwhd_paving",
-      "x": 1916,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2044_900",
-      "asset": "wwhd_paving",
-      "x": 2044,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2172_900",
-      "asset": "wwhd_paving",
-      "x": 2172,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2300_900",
-      "asset": "wwhd_paving",
-      "x": 2300,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2428_900",
-      "asset": "wwhd_paving",
-      "x": 2428,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2556_900",
-      "asset": "wwhd_paving",
-      "x": 2556,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2684_900",
-      "asset": "wwhd_paving",
-      "x": 2684,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2812_900",
-      "asset": "wwhd_paving",
-      "x": 2812,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2940_900",
-      "asset": "wwhd_paving",
-      "x": 2940,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3068_900",
-      "asset": "wwhd_paving",
-      "x": 3068,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3196_900",
-      "asset": "wwhd_paving",
-      "x": 3196,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3324_900",
-      "asset": "wwhd_paving",
-      "x": 3324,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3452_900",
-      "asset": "wwhd_paving",
-      "x": 3452,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3580_900",
-      "asset": "wwhd_paving",
-      "x": 3580,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3708_900",
-      "asset": "wwhd_paving",
-      "x": 3708,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3836_900",
-      "asset": "wwhd_paving",
-      "x": 3836,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3964_900",
-      "asset": "wwhd_paving",
-      "x": 3964,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4092_900",
-      "asset": "wwhd_paving",
-      "x": 4092,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4220_900",
-      "asset": "wwhd_paving",
-      "x": 4220,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4348_900",
-      "asset": "wwhd_paving",
-      "x": 4348,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4476_900",
-      "asset": "wwhd_paving",
-      "x": 4476,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4604_900",
-      "asset": "wwhd_paving",
-      "x": 4604,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4732_900",
-      "asset": "wwhd_paving",
-      "x": 4732,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4860_900",
-      "asset": "wwhd_paving",
-      "x": 4860,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4988_900",
-      "asset": "wwhd_paving",
-      "x": 4988,
-      "y": 900,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_380_1500",
-      "asset": "wwhd_paving",
-      "x": 380,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_508_1500",
-      "asset": "wwhd_paving",
-      "x": 508,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_636_1500",
-      "asset": "wwhd_paving",
-      "x": 636,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_764_1500",
-      "asset": "wwhd_paving",
-      "x": 764,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_892_1500",
-      "asset": "wwhd_paving",
-      "x": 892,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1020_1500",
-      "asset": "wwhd_paving",
-      "x": 1020,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1148_1500",
-      "asset": "wwhd_paving",
-      "x": 1148,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1276_1500",
-      "asset": "wwhd_paving",
-      "x": 1276,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1404_1500",
-      "asset": "wwhd_paving",
-      "x": 1404,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1532_1500",
-      "asset": "wwhd_paving",
-      "x": 1532,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1660_1500",
-      "asset": "wwhd_paving",
-      "x": 1660,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1788_1500",
-      "asset": "wwhd_paving",
-      "x": 1788,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1916_1500",
-      "asset": "wwhd_paving",
-      "x": 1916,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2044_1500",
-      "asset": "wwhd_paving",
-      "x": 2044,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2172_1500",
-      "asset": "wwhd_paving",
-      "x": 2172,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2300_1500",
-      "asset": "wwhd_paving",
-      "x": 2300,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2428_1500",
-      "asset": "wwhd_paving",
-      "x": 2428,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2556_1500",
-      "asset": "wwhd_paving",
-      "x": 2556,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2684_1500",
-      "asset": "wwhd_paving",
-      "x": 2684,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2812_1500",
-      "asset": "wwhd_paving",
-      "x": 2812,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2940_1500",
-      "asset": "wwhd_paving",
-      "x": 2940,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3068_1500",
-      "asset": "wwhd_paving",
-      "x": 3068,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3196_1500",
-      "asset": "wwhd_paving",
-      "x": 3196,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3324_1500",
-      "asset": "wwhd_paving",
-      "x": 3324,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3452_1500",
-      "asset": "wwhd_paving",
-      "x": 3452,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3580_1500",
-      "asset": "wwhd_paving",
-      "x": 3580,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3708_1500",
-      "asset": "wwhd_paving",
-      "x": 3708,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3836_1500",
-      "asset": "wwhd_paving",
-      "x": 3836,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3964_1500",
-      "asset": "wwhd_paving",
-      "x": 3964,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4092_1500",
-      "asset": "wwhd_paving",
-      "x": 4092,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4220_1500",
-      "asset": "wwhd_paving",
-      "x": 4220,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4348_1500",
-      "asset": "wwhd_paving",
-      "x": 4348,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4476_1500",
-      "asset": "wwhd_paving",
-      "x": 4476,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4604_1500",
-      "asset": "wwhd_paving",
-      "x": 4604,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4732_1500",
-      "asset": "wwhd_paving",
-      "x": 4732,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4860_1500",
-      "asset": "wwhd_paving",
-      "x": 4860,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4988_1500",
-      "asset": "wwhd_paving",
-      "x": 4988,
-      "y": 1500,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_380_2100",
-      "asset": "wwhd_paving",
-      "x": 380,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_508_2100",
-      "asset": "wwhd_paving",
-      "x": 508,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_636_2100",
-      "asset": "wwhd_paving",
-      "x": 636,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_764_2100",
-      "asset": "wwhd_paving",
-      "x": 764,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_892_2100",
-      "asset": "wwhd_paving",
-      "x": 892,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1020_2100",
-      "asset": "wwhd_paving",
-      "x": 1020,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1148_2100",
-      "asset": "wwhd_paving",
-      "x": 1148,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1276_2100",
-      "asset": "wwhd_paving",
-      "x": 1276,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1404_2100",
-      "asset": "wwhd_paving",
-      "x": 1404,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1532_2100",
-      "asset": "wwhd_paving",
-      "x": 1532,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1660_2100",
-      "asset": "wwhd_paving",
-      "x": 1660,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1788_2100",
-      "asset": "wwhd_paving",
-      "x": 1788,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1916_2100",
-      "asset": "wwhd_paving",
-      "x": 1916,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2044_2100",
-      "asset": "wwhd_paving",
-      "x": 2044,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2172_2100",
-      "asset": "wwhd_paving",
-      "x": 2172,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2300_2100",
-      "asset": "wwhd_paving",
-      "x": 2300,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2428_2100",
-      "asset": "wwhd_paving",
-      "x": 2428,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2556_2100",
-      "asset": "wwhd_paving",
-      "x": 2556,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2684_2100",
-      "asset": "wwhd_paving",
-      "x": 2684,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2812_2100",
-      "asset": "wwhd_paving",
-      "x": 2812,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2940_2100",
-      "asset": "wwhd_paving",
-      "x": 2940,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3068_2100",
-      "asset": "wwhd_paving",
-      "x": 3068,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3196_2100",
-      "asset": "wwhd_paving",
-      "x": 3196,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3324_2100",
-      "asset": "wwhd_paving",
-      "x": 3324,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3452_2100",
-      "asset": "wwhd_paving",
-      "x": 3452,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3580_2100",
-      "asset": "wwhd_paving",
-      "x": 3580,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3708_2100",
-      "asset": "wwhd_paving",
-      "x": 3708,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3836_2100",
-      "asset": "wwhd_paving",
-      "x": 3836,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3964_2100",
-      "asset": "wwhd_paving",
-      "x": 3964,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4092_2100",
-      "asset": "wwhd_paving",
-      "x": 4092,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4220_2100",
-      "asset": "wwhd_paving",
-      "x": 4220,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4348_2100",
-      "asset": "wwhd_paving",
-      "x": 4348,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4476_2100",
-      "asset": "wwhd_paving",
-      "x": 4476,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4604_2100",
-      "asset": "wwhd_paving",
-      "x": 4604,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4732_2100",
-      "asset": "wwhd_paving",
-      "x": 4732,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4860_2100",
-      "asset": "wwhd_paving",
-      "x": 4860,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4988_2100",
-      "asset": "wwhd_paving",
-      "x": 4988,
-      "y": 2100,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_380_2700",
-      "asset": "wwhd_paving",
-      "x": 380,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_508_2700",
-      "asset": "wwhd_paving",
-      "x": 508,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_636_2700",
-      "asset": "wwhd_paving",
-      "x": 636,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_764_2700",
-      "asset": "wwhd_paving",
-      "x": 764,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_892_2700",
-      "asset": "wwhd_paving",
-      "x": 892,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1020_2700",
-      "asset": "wwhd_paving",
-      "x": 1020,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1148_2700",
-      "asset": "wwhd_paving",
-      "x": 1148,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1276_2700",
-      "asset": "wwhd_paving",
-      "x": 1276,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1404_2700",
-      "asset": "wwhd_paving",
-      "x": 1404,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1532_2700",
-      "asset": "wwhd_paving",
-      "x": 1532,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1660_2700",
-      "asset": "wwhd_paving",
-      "x": 1660,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1788_2700",
-      "asset": "wwhd_paving",
-      "x": 1788,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1916_2700",
-      "asset": "wwhd_paving",
-      "x": 1916,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2044_2700",
-      "asset": "wwhd_paving",
-      "x": 2044,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2172_2700",
-      "asset": "wwhd_paving",
-      "x": 2172,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2300_2700",
-      "asset": "wwhd_paving",
-      "x": 2300,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2428_2700",
-      "asset": "wwhd_paving",
-      "x": 2428,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2556_2700",
-      "asset": "wwhd_paving",
-      "x": 2556,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2684_2700",
-      "asset": "wwhd_paving",
-      "x": 2684,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2812_2700",
-      "asset": "wwhd_paving",
-      "x": 2812,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2940_2700",
-      "asset": "wwhd_paving",
-      "x": 2940,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3068_2700",
-      "asset": "wwhd_paving",
-      "x": 3068,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3196_2700",
-      "asset": "wwhd_paving",
-      "x": 3196,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3324_2700",
-      "asset": "wwhd_paving",
-      "x": 3324,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3452_2700",
-      "asset": "wwhd_paving",
-      "x": 3452,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3580_2700",
-      "asset": "wwhd_paving",
-      "x": 3580,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3708_2700",
-      "asset": "wwhd_paving",
-      "x": 3708,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3836_2700",
-      "asset": "wwhd_paving",
-      "x": 3836,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3964_2700",
-      "asset": "wwhd_paving",
-      "x": 3964,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4092_2700",
-      "asset": "wwhd_paving",
-      "x": 4092,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4220_2700",
-      "asset": "wwhd_paving",
-      "x": 4220,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4348_2700",
-      "asset": "wwhd_paving",
-      "x": 4348,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4476_2700",
-      "asset": "wwhd_paving",
-      "x": 4476,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4604_2700",
-      "asset": "wwhd_paving",
-      "x": 4604,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4732_2700",
-      "asset": "wwhd_paving",
-      "x": 4732,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4860_2700",
-      "asset": "wwhd_paving",
-      "x": 4860,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4988_2700",
-      "asset": "wwhd_paving",
-      "x": 4988,
-      "y": 2700,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_380_3180",
-      "asset": "wwhd_paving",
-      "x": 380,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_508_3180",
-      "asset": "wwhd_paving",
-      "x": 508,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_636_3180",
-      "asset": "wwhd_paving",
-      "x": 636,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_764_3180",
-      "asset": "wwhd_paving",
-      "x": 764,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_892_3180",
-      "asset": "wwhd_paving",
-      "x": 892,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1020_3180",
-      "asset": "wwhd_paving",
-      "x": 1020,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1148_3180",
-      "asset": "wwhd_paving",
-      "x": 1148,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1276_3180",
-      "asset": "wwhd_paving",
-      "x": 1276,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1404_3180",
-      "asset": "wwhd_paving",
-      "x": 1404,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1532_3180",
-      "asset": "wwhd_paving",
-      "x": 1532,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1660_3180",
-      "asset": "wwhd_paving",
-      "x": 1660,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1788_3180",
-      "asset": "wwhd_paving",
-      "x": 1788,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_1916_3180",
-      "asset": "wwhd_paving",
-      "x": 1916,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2044_3180",
-      "asset": "wwhd_paving",
-      "x": 2044,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2172_3180",
-      "asset": "wwhd_paving",
-      "x": 2172,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2300_3180",
-      "asset": "wwhd_paving",
-      "x": 2300,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2428_3180",
-      "asset": "wwhd_paving",
-      "x": 2428,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2556_3180",
-      "asset": "wwhd_paving",
-      "x": 2556,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2684_3180",
-      "asset": "wwhd_paving",
-      "x": 2684,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2812_3180",
-      "asset": "wwhd_paving",
-      "x": 2812,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_2940_3180",
-      "asset": "wwhd_paving",
-      "x": 2940,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3068_3180",
-      "asset": "wwhd_paving",
-      "x": 3068,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3196_3180",
-      "asset": "wwhd_paving",
-      "x": 3196,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3324_3180",
-      "asset": "wwhd_paving",
-      "x": 3324,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3452_3180",
-      "asset": "wwhd_paving",
-      "x": 3452,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3580_3180",
-      "asset": "wwhd_paving",
-      "x": 3580,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3708_3180",
-      "asset": "wwhd_paving",
-      "x": 3708,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3836_3180",
-      "asset": "wwhd_paving",
-      "x": 3836,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_3964_3180",
-      "asset": "wwhd_paving",
-      "x": 3964,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4092_3180",
-      "asset": "wwhd_paving",
-      "x": 4092,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4220_3180",
-      "asset": "wwhd_paving",
-      "x": 4220,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4348_3180",
-      "asset": "wwhd_paving",
-      "x": 4348,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4476_3180",
-      "asset": "wwhd_paving",
-      "x": 4476,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4604_3180",
-      "asset": "wwhd_paving",
-      "x": 4604,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4732_3180",
-      "asset": "wwhd_paving",
-      "x": 4732,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4860_3180",
-      "asset": "wwhd_paving",
-      "x": 4860,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "street_4988_3180",
-      "asset": "wwhd_paving",
-      "x": 4988,
-      "y": 3180,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_380",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 380,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_508",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 508,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_636",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 636,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_764",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 764,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_892",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 892,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1020",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1020,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1148",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1148,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1276",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1276,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1404",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1404,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1532",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1532,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1660",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1660,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1788",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1788,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_1916",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 1916,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2044",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2044,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2172",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2172,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2300",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2300,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2428",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2428,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2556",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2556,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2684",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2684,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2812",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2812,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_2940",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 2940,
-      "layer": "terrain"
-    },
-    {
-      "id": "spine_3068",
-      "asset": "wwhd_paving",
-      "x": 1200,
-      "y": 3068,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_850",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 850,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_978",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 978,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_1106",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 1106,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_1234",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 1234,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_1362",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 1362,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_1490",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 1490,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_1618",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 1618,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_1746",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 1746,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_1874",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 1874,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2002",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2002,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2130",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2130,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2258",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2258,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2386",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2386,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2514",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2514,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2642",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2642,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2770",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2770,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_2898",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 2898,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_3026",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 3026,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_1800_3154",
-      "asset": "wwhd_paving",
-      "x": 1800,
-      "y": 3154,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_850",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 850,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_978",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 978,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_1106",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 1106,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_1234",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 1234,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_1362",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 1362,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_1490",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 1490,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_1618",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 1618,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_1746",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 1746,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_1874",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 1874,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2002",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2002,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2130",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2130,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2258",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2258,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2386",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2386,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2514",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2514,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2642",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2642,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2770",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2770,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_2898",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 2898,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_3026",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 3026,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_2400_3154",
-      "asset": "wwhd_paving",
-      "x": 2400,
-      "y": 3154,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_850",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 850,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_978",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 978,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_1106",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 1106,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_1234",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 1234,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_1362",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 1362,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_1490",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 1490,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_1618",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 1618,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_1746",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 1746,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_1874",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 1874,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2002",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2002,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2130",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2130,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2258",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2258,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2386",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2386,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2514",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2514,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2642",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2642,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2770",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2770,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_2898",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 2898,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_3026",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 3026,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3000_3154",
-      "asset": "wwhd_paving",
-      "x": 3000,
-      "y": 3154,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_850",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 850,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_978",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 978,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_1106",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 1106,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_1234",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 1234,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_1362",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 1362,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_1490",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 1490,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_1618",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 1618,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_1746",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 1746,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_1874",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 1874,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2002",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2002,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2130",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2130,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2258",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2258,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2386",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2386,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2514",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2514,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2642",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2642,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2770",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2770,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_2898",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 2898,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_3026",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 3026,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_3600_3154",
-      "asset": "wwhd_paving",
-      "x": 3600,
-      "y": 3154,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_850",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 850,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_978",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 978,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_1106",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 1106,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_1234",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 1234,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_1362",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 1362,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_1490",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 1490,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_1618",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 1618,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_1746",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 1746,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_1874",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 1874,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2002",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2002,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2130",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2130,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2258",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2258,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2386",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2386,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2514",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2514,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2642",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2642,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2770",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2770,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_2898",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 2898,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_3026",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 3026,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4200_3154",
-      "asset": "wwhd_paving",
-      "x": 4200,
-      "y": 3154,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_850",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 850,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_978",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 978,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_1106",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 1106,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_1234",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 1234,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_1362",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 1362,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_1490",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 1490,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_1618",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 1618,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_1746",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 1746,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_1874",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 1874,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2002",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2002,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2130",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2130,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2258",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2258,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2386",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2386,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2514",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2514,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2642",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2642,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2770",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2770,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_2898",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 2898,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_3026",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 3026,
-      "layer": "terrain"
-    },
-    {
-      "id": "cross_4800_3154",
-      "asset": "wwhd_paving",
-      "x": 4800,
-      "y": 3154,
-      "layer": "terrain"
-    },
-    {
-      "id": "town_home_01",
-      "asset": "wwhd_cottage",
-      "x": 1800,
-      "y": 800,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_01",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_02",
-      "asset": "wwhd_cottage",
-      "x": 2400,
-      "y": 800,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_02",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_03",
-      "asset": "wwhd_cottage",
-      "x": 3000,
-      "y": 800,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_03",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_04",
-      "asset": "wwhd_cottage",
-      "x": 3600,
-      "y": 800,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_04",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_05",
-      "asset": "wwhd_cottage",
-      "x": 4200,
-      "y": 800,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_05",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_06",
-      "asset": "wwhd_cottage",
-      "x": 4800,
-      "y": 800,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_06",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_07",
-      "asset": "wwhd_cottage",
-      "x": 1800,
-      "y": 1400,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_07",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_08",
-      "asset": "wwhd_cottage",
-      "x": 2400,
-      "y": 1400,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_08",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_09",
-      "asset": "wwhd_cottage",
-      "x": 3000,
-      "y": 1400,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_09",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_10",
-      "asset": "wwhd_cottage",
-      "x": 3600,
-      "y": 1400,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_10",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_11",
-      "asset": "wwhd_cottage",
-      "x": 4200,
-      "y": 1400,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_11",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_12",
-      "asset": "wwhd_cottage",
-      "x": 4800,
-      "y": 1400,
-      "layer": "buildings",
-      "baseAsset": "wwhd_cottage",
-      "plotId": "town_home_12",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_13",
-      "asset": "wwhd_apartment",
-      "x": 1800,
-      "y": 2000,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_13",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_14",
-      "asset": "wwhd_apartment",
-      "x": 2400,
-      "y": 2000,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_14",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_15",
-      "asset": "wwhd_apartment",
-      "x": 3000,
-      "y": 2000,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_15",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_16",
-      "asset": "wwhd_apartment",
-      "x": 3600,
-      "y": 2000,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_16",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_17",
-      "asset": "wwhd_apartment",
-      "x": 4200,
-      "y": 2000,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_17",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_18",
-      "asset": "wwhd_apartment",
-      "x": 4800,
-      "y": 2000,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_18",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_19",
-      "asset": "wwhd_apartment",
-      "x": 1800,
-      "y": 2600,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_19",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_20",
-      "asset": "wwhd_apartment",
-      "x": 2400,
-      "y": 2600,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_20",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_21",
-      "asset": "wwhd_apartment",
-      "x": 3000,
-      "y": 2600,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_21",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_22",
-      "asset": "wwhd_apartment",
-      "x": 3600,
-      "y": 2600,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_22",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_23",
-      "asset": "wwhd_apartment",
-      "x": 4200,
-      "y": 2600,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_23",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "town_home_24",
-      "asset": "wwhd_apartment",
-      "x": 4800,
-      "y": 2600,
-      "layer": "buildings",
-      "baseAsset": "wwhd_apartment",
-      "plotId": "town_home_24",
-      "collide": [
-        -130,
-        -210,
-        270,
-        195
-      ]
-    },
-    {
-      "id": "tavern",
-      "asset": "wwhd_tavern",
-      "x": 600,
-      "y": 800,
-      "layer": "buildings",
-      "collide": [
-        -160,
-        -230,
-        320,
-        210
-      ]
-    },
-    {
-      "id": "pet_center",
-      "asset": "wwhd_pet_center",
-      "x": 600,
-      "y": 1400,
-      "layer": "buildings",
-      "collide": [
-        -160,
-        -230,
-        320,
-        210
-      ]
-    },
-    {
-      "id": "bakery",
-      "asset": "wwhd_bakery",
-      "x": 600,
-      "y": 2000,
-      "layer": "buildings",
-      "collide": [
-        -160,
-        -230,
-        320,
-        210
-      ]
-    },
-    {
-      "id": "fishing_shop",
-      "asset": "wwhd_fishing_shop",
-      "x": 600,
-      "y": 2600,
-      "layer": "buildings",
-      "collide": [
-        -160,
-        -230,
-        320,
-        210
-      ]
-    },
-    {
-      "id": "echo_hall",
-      "asset": "wwhd_apartment",
-      "x": 1800,
-      "y": 430,
-      "layer": "buildings",
-      "collide": [
-        -160,
-        -230,
-        320,
-        210
-      ]
-    },
     {
       "id": "dock",
       "asset": "wwhd_dock",
@@ -2815,572 +143,2670 @@
       "layer": "structures"
     },
     {
-      "id": "tree_0",
+      "id": "town_home_01",
+      "asset": "wwhd_cottage",
+      "x": 2200,
+      "y": 620,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_01",
+      "roofColor": "original",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 0.82,
+      "yard": {
+        "ownedWithHome": true,
+        "bounds": [
+          1955,
+          540,
+          490,
+          260
+        ]
+      }
+    },
+    {
+      "id": "town_home_02",
+      "asset": "wwhd_cottage",
+      "x": 2700,
+      "y": 560,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_02",
+      "roofColor": "moss",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 0.82
+    },
+    {
+      "id": "town_home_03",
+      "asset": "wwhd_cottage",
+      "x": 3330,
+      "y": 620,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_03",
+      "roofColor": "slate",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 0.82,
+      "yard": {
+        "ownedWithHome": true,
+        "bounds": [
+          3085,
+          540,
+          490,
+          260
+        ]
+      }
+    },
+    {
+      "id": "town_home_04",
+      "asset": "wwhd_cottage",
+      "x": 3860,
+      "y": 520,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_04",
+      "roofColor": "plum",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 0.82
+    },
+    {
+      "id": "town_home_05",
+      "asset": "wwhd_cottage",
+      "x": 4400,
+      "y": 620,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_05",
+      "roofColor": "original",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 0.82
+    },
+    {
+      "id": "town_home_06",
+      "asset": "wwhd_cottage",
+      "x": 4850,
+      "y": 880,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_06",
+      "roofColor": "moss",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 0.82
+    },
+    {
+      "id": "town_home_07",
+      "asset": "wwhd_cottage",
+      "x": 2150,
+      "y": 1380,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_07",
+      "roofColor": "slate",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.15
+    },
+    {
+      "id": "town_home_08",
+      "asset": "wwhd_cottage",
+      "x": 2610,
+      "y": 1520,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_08",
+      "roofColor": "plum",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.15
+    },
+    {
+      "id": "town_home_09",
+      "asset": "wwhd_cottage",
+      "x": 3100,
+      "y": 1390,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_09",
+      "roofColor": "original",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.15
+    },
+    {
+      "id": "town_home_10",
+      "asset": "wwhd_cottage",
+      "x": 3600,
+      "y": 1540,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_10",
+      "roofColor": "moss",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.15
+    },
+    {
+      "id": "town_home_11",
+      "asset": "wwhd_cottage",
+      "x": 4130,
+      "y": 1380,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_11",
+      "roofColor": "slate",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.15
+    },
+    {
+      "id": "town_home_12",
+      "asset": "wwhd_cottage",
+      "x": 4710,
+      "y": 1570,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_12",
+      "roofColor": "plum",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.15
+    },
+    {
+      "id": "town_home_13",
+      "asset": "wwhd_apartment",
+      "x": 2300,
+      "y": 2140,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_13",
+      "roofColor": "original",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_14",
+      "asset": "wwhd_apartment",
+      "x": 2750,
+      "y": 2290,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_14",
+      "roofColor": "moss",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_15",
+      "asset": "wwhd_apartment",
+      "x": 3270,
+      "y": 2160,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_15",
+      "roofColor": "slate",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_16",
+      "asset": "wwhd_apartment",
+      "x": 3750,
+      "y": 2380,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_16",
+      "roofColor": "plum",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_17",
+      "asset": "wwhd_apartment",
+      "x": 4240,
+      "y": 2160,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_17",
+      "roofColor": "original",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_18",
+      "asset": "wwhd_apartment",
+      "x": 4780,
+      "y": 2420,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_18",
+      "roofColor": "moss",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_19",
+      "asset": "wwhd_apartment",
+      "x": 1960,
+      "y": 2880,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_19",
+      "roofColor": "slate",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_20",
+      "asset": "wwhd_apartment",
+      "x": 2450,
+      "y": 3010,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_20",
+      "roofColor": "plum",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1
+    },
+    {
+      "id": "town_home_21",
+      "asset": "wwhd_cottage",
+      "x": 2930,
+      "y": 2830,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_21",
+      "roofColor": "original",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.2,
+      "yard": {
+        "ownedWithHome": true,
+        "bounds": [
+          2685,
+          2750,
+          490,
+          260
+        ]
+      }
+    },
+    {
+      "id": "town_home_22",
+      "asset": "wwhd_cottage",
+      "x": 3450,
+      "y": 3070,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_22",
+      "roofColor": "moss",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.2
+    },
+    {
+      "id": "town_home_23",
+      "asset": "wwhd_cottage",
+      "x": 4050,
+      "y": 2880,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_23",
+      "roofColor": "slate",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.2
+    },
+    {
+      "id": "town_home_24",
+      "asset": "wwhd_cottage",
+      "x": 4700,
+      "y": 3100,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_24",
+      "roofColor": "plum",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ],
+      "scale": 1.2,
+      "yard": {
+        "ownedWithHome": true,
+        "bounds": [
+          4455,
+          3020,
+          490,
+          260
+        ]
+      }
+    },
+    {
+      "id": "tavern",
+      "asset": "wwhd_tavern",
+      "x": 600,
+      "y": 800,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "pet_center",
+      "asset": "wwhd_pet_center",
+      "x": 780,
+      "y": 1830,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "bakery",
+      "asset": "wwhd_bakery",
+      "x": 1550,
+      "y": 2200,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "fishing_shop",
+      "asset": "wwhd_fishing_shop",
+      "x": 650,
+      "y": 2880,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "echo_hall",
+      "asset": "wwhd_apartment",
+      "x": 1650,
+      "y": 630,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "chronicle_board",
+      "asset": "wwhd_board",
+      "x": 1330,
+      "y": 1440,
+      "layer": "props",
+      "collide": [
+        -35,
+        -15,
+        70,
+        20
+      ]
+    },
+    {
+      "id": "heart_fountain",
+      "asset": "wwhd_river_fountain",
+      "x": 1250,
+      "y": 1500,
+      "layer": "props",
+      "collide": [
+        -135,
+        -55,
+        270,
+        70
+      ]
+    },
+    {
+      "id": "hill_stair",
+      "asset": "wwhd_stairs",
+      "x": 3000,
+      "y": 1130,
+      "layer": "structures",
+      "w": 260,
+      "h": 190
+    },
+    {
+      "id": "hill_wall_0",
+      "asset": "wwhd_retaining_wall",
+      "x": 2140,
+      "y": 1060,
+      "layer": "structures",
+      "w": 430,
+      "h": 105,
+      "collide": [
+        -210,
+        -50,
+        420,
+        55
+      ]
+    },
+    {
+      "id": "hill_wall_1",
+      "asset": "wwhd_retaining_wall",
+      "x": 2560,
+      "y": 1060,
+      "layer": "structures",
+      "w": 430,
+      "h": 105,
+      "collide": [
+        -210,
+        -50,
+        420,
+        55
+      ]
+    },
+    {
+      "id": "hill_wall_2",
+      "asset": "wwhd_retaining_wall",
+      "x": 3360,
+      "y": 1060,
+      "layer": "structures",
+      "w": 430,
+      "h": 105,
+      "collide": [
+        -210,
+        -50,
+        420,
+        55
+      ]
+    },
+    {
+      "id": "hill_wall_3",
+      "asset": "wwhd_retaining_wall",
+      "x": 3780,
+      "y": 1060,
+      "layer": "structures",
+      "w": 430,
+      "h": 105,
+      "collide": [
+        -210,
+        -50,
+        420,
+        55
+      ]
+    },
+    {
+      "id": "hill_wall_4",
+      "asset": "wwhd_retaining_wall",
+      "x": 4200,
+      "y": 1060,
+      "layer": "structures",
+      "w": 430,
+      "h": 105,
+      "collide": [
+        -210,
+        -50,
+        420,
+        55
+      ]
+    },
+    {
+      "id": "orchard_stair",
+      "asset": "wwhd_stairs",
+      "x": 1960,
+      "y": 2070,
+      "layer": "structures",
+      "w": 180,
+      "h": 230
+    },
+    {
+      "id": "grass_ledge_0",
+      "asset": "wwhd_grass_ledge",
+      "x": 2170,
+      "y": 2040,
+      "layer": "structures",
+      "w": 390,
+      "h": 135
+    },
+    {
+      "id": "grass_ledge_1",
+      "asset": "wwhd_grass_ledge",
+      "x": 2530,
+      "y": 2110,
+      "layer": "structures",
+      "w": 390,
+      "h": 135
+    },
+    {
+      "id": "grass_ledge_2",
+      "asset": "wwhd_grass_ledge",
+      "x": 4800,
+      "y": 1220,
+      "layer": "structures",
+      "w": 390,
+      "h": 135
+    },
+    {
+      "id": "shade_0",
       "asset": "wwhd_tree",
-      "x": 250,
+      "x": 315,
+      "y": 520,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_1",
+      "asset": "wwhd_tree",
+      "x": 925,
+      "y": 780,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_2",
+      "asset": "wwhd_tree",
+      "x": 520,
+      "y": 1240,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_3",
+      "asset": "wwhd_tree",
+      "x": 1860,
+      "y": 1460,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_4",
+      "asset": "wwhd_tree",
+      "x": 380,
+      "y": 2180,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_5",
+      "asset": "wwhd_tree",
+      "x": 1010,
+      "y": 2630,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_6",
+      "asset": "wwhd_tree",
+      "x": 1820,
+      "y": 2620,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_7",
+      "asset": "wwhd_tree",
+      "x": 2440,
+      "y": 1210,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_8",
+      "asset": "wwhd_tree",
+      "x": 3350,
+      "y": 1220,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_9",
+      "asset": "wwhd_tree",
+      "x": 4080,
+      "y": 1170,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_10",
+      "asset": "wwhd_tree",
+      "x": 4800,
+      "y": 1920,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_11",
+      "asset": "wwhd_tree",
+      "x": 3820,
+      "y": 2000,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_12",
+      "asset": "wwhd_tree",
+      "x": 3430,
+      "y": 2690,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_13",
+      "asset": "wwhd_tree",
+      "x": 2100,
+      "y": 3180,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_14",
+      "asset": "wwhd_tree",
+      "x": 4900,
+      "y": 3030,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_15",
+      "asset": "wwhd_tree",
+      "x": 4400,
+      "y": 410,
+      "layer": "props",
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ],
+      "sway": true
+    },
+    {
+      "id": "shade_16",
+      "asset": "wwhd_tree",
+      "x": 1900,
       "y": 400,
       "layer": "props",
       "collide": [
-        -20,
-        -20,
-        40,
-        30
+        -18,
+        -18,
+        36,
+        25
       ],
       "sway": true
     },
     {
-      "id": "tree_1",
+      "id": "shade_17",
       "asset": "wwhd_tree",
-      "x": 920,
-      "y": 650,
+      "x": 3450,
+      "y": 390,
       "layer": "props",
       "collide": [
-        -20,
-        -20,
-        40,
-        30
+        -18,
+        -18,
+        36,
+        25
       ],
       "sway": true
     },
     {
-      "id": "tree_2",
-      "asset": "wwhd_tree",
-      "x": 300,
-      "y": 1150,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_3",
-      "asset": "wwhd_tree",
-      "x": 920,
-      "y": 1780,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_4",
-      "asset": "wwhd_tree",
-      "x": 300,
-      "y": 2300,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_5",
-      "asset": "wwhd_tree",
-      "x": 1000,
-      "y": 2940,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_6",
-      "asset": "wwhd_tree",
-      "x": 1600,
-      "y": 3050,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_7",
-      "asset": "wwhd_tree",
-      "x": 2300,
-      "y": 3050,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_8",
-      "asset": "wwhd_tree",
-      "x": 3100,
-      "y": 3050,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_9",
-      "asset": "wwhd_tree",
-      "x": 3900,
-      "y": 3050,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_10",
-      "asset": "wwhd_tree",
-      "x": 4700,
-      "y": 3050,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_11",
-      "asset": "wwhd_tree",
-      "x": 5050,
-      "y": 600,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "tree_12",
-      "asset": "wwhd_tree",
-      "x": 5050,
-      "y": 1800,
-      "layer": "props",
-      "collide": [
-        -20,
-        -20,
-        40,
-        30
-      ],
-      "sway": true
-    },
-    {
-      "id": "town_home_01_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2010,
-      "y": 810,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_02_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2610,
-      "y": 810,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_03_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3210,
-      "y": 810,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_03_garden",
-      "asset": "wwhd_tree",
-      "x": 2775,
-      "y": 720,
+      "id": "village_swing",
+      "asset": "wwhd_swing_tree",
+      "x": 620,
+      "y": 1500,
       "layer": "props",
       "sway": true,
-      "scale": 0.65
+      "collide": [
+        -18,
+        -18,
+        36,
+        25
+      ]
     },
     {
-      "id": "town_home_04_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3810,
-      "y": 810,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_05_flowers",
-      "asset": "wwhd_flowers",
-      "x": 4410,
-      "y": 810,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_06_flowers",
-      "asset": "wwhd_flowers",
-      "x": 5010,
-      "y": 810,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_06_garden",
-      "asset": "wwhd_tree",
-      "x": 4575,
-      "y": 720,
+      "id": "dock_supplies",
+      "asset": "wwhd_fishing_gear",
+      "x": 970,
+      "y": 3260,
       "layer": "props",
-      "sway": true,
-      "scale": 0.65
+      "collide": [
+        -80,
+        -45,
+        160,
+        50
+      ]
     },
     {
-      "id": "town_home_07_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2010,
-      "y": 1410,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_08_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2610,
-      "y": 1410,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_09_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3210,
-      "y": 1410,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_09_garden",
-      "asset": "wwhd_tree",
-      "x": 2775,
-      "y": 1320,
+      "id": "hammer_shrine",
+      "asset": "wwhd_shrine",
+      "x": 1510,
+      "y": 3150,
       "layer": "props",
-      "sway": true,
-      "scale": 0.65
-    },
-    {
-      "id": "town_home_10_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3810,
-      "y": 1410,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_11_flowers",
-      "asset": "wwhd_flowers",
-      "x": 4410,
-      "y": 1410,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_12_flowers",
-      "asset": "wwhd_flowers",
-      "x": 5010,
-      "y": 1410,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_12_garden",
-      "asset": "wwhd_tree",
-      "x": 4575,
-      "y": 1320,
-      "layer": "props",
-      "sway": true,
-      "scale": 0.65
-    },
-    {
-      "id": "town_home_13_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2010,
-      "y": 2010,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_14_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2610,
-      "y": 2010,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_15_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3210,
-      "y": 2010,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_15_garden",
-      "asset": "wwhd_tree",
-      "x": 2775,
-      "y": 1920,
-      "layer": "props",
-      "sway": true,
-      "scale": 0.65
-    },
-    {
-      "id": "town_home_16_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3810,
-      "y": 2010,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_17_flowers",
-      "asset": "wwhd_flowers",
-      "x": 4410,
-      "y": 2010,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_18_flowers",
-      "asset": "wwhd_flowers",
-      "x": 5010,
-      "y": 2010,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_18_garden",
-      "asset": "wwhd_tree",
-      "x": 4575,
-      "y": 1920,
-      "layer": "props",
-      "sway": true,
-      "scale": 0.65
-    },
-    {
-      "id": "town_home_19_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2010,
-      "y": 2610,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_20_flowers",
-      "asset": "wwhd_flowers",
-      "x": 2610,
-      "y": 2610,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_21_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3210,
-      "y": 2610,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_21_garden",
-      "asset": "wwhd_tree",
-      "x": 2775,
-      "y": 2520,
-      "layer": "props",
-      "sway": true,
-      "scale": 0.65
-    },
-    {
-      "id": "town_home_22_flowers",
-      "asset": "wwhd_flowers",
-      "x": 3810,
-      "y": 2610,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_23_flowers",
-      "asset": "wwhd_flowers",
-      "x": 4410,
-      "y": 2610,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_24_flowers",
-      "asset": "wwhd_flowers",
-      "x": 5010,
-      "y": 2610,
-      "layer": "props"
-    },
-    {
-      "id": "town_home_24_garden",
-      "asset": "wwhd_tree",
-      "x": 4575,
-      "y": 2520,
-      "layer": "props",
-      "sway": true,
-      "scale": 0.65
-    },
-    {
-      "id": "street_lamp_0",
-      "asset": "wwhd_lamp",
-      "x": 1325,
-      "y": 820,
-      "layer": "props"
-    },
-    {
-      "id": "street_lamp_1",
-      "asset": "wwhd_lamp",
-      "x": 1325,
-      "y": 1420,
-      "layer": "props"
-    },
-    {
-      "id": "street_lamp_2",
-      "asset": "wwhd_lamp",
-      "x": 1325,
-      "y": 2020,
-      "layer": "props"
-    },
-    {
-      "id": "street_lamp_3",
-      "asset": "wwhd_lamp",
-      "x": 1325,
-      "y": 2620,
-      "layer": "props"
-    },
-    {
-      "id": "street_lamp_4",
-      "asset": "wwhd_lamp",
-      "x": 1325,
-      "y": 3120,
-      "layer": "props"
+      "collide": [
+        -30,
+        -60,
+        60,
+        50
+      ]
     },
     {
       "id": "bench_0",
       "asset": "wwhd_bench",
-      "x": 1450,
-      "y": 1100,
-      "layer": "props"
+      "x": 1020,
+      "y": 1850,
+      "layer": "props",
+      "collide": [
+        -65,
+        -25,
+        130,
+        30
+      ],
+      "placementNote": "South edge of Commonlight Square, facing the fountain"
     },
     {
       "id": "bench_1",
       "asset": "wwhd_bench",
-      "x": 1450,
-      "y": 2350,
-      "layer": "props"
+      "x": 3300,
+      "y": 930,
+      "layer": "props",
+      "collide": [
+        -65,
+        -25,
+        130,
+        30
+      ],
+      "placementNote": "Lantern Hill overlook"
     },
     {
       "id": "bench_2",
       "asset": "wwhd_bench",
-      "x": 2000,
-      "y": 3050,
-      "layer": "props"
+      "x": 1740,
+      "y": 780,
+      "layer": "props",
+      "collide": [
+        -65,
+        -25,
+        130,
+        30
+      ],
+      "placementNote": "Echo Hall courtyard"
     },
     {
       "id": "bench_3",
       "asset": "wwhd_bench",
+      "x": 480,
+      "y": 1670,
+      "layer": "props",
+      "collide": [
+        -65,
+        -25,
+        130,
+        30
+      ],
+      "placementNote": "Rest near the old swing"
+    },
+    {
+      "id": "bench_4",
+      "asset": "wwhd_bench",
+      "x": 3320,
+      "y": 2250,
+      "layer": "props",
+      "collide": [
+        -65,
+        -25,
+        130,
+        30
+      ],
+      "placementNote": "Lantern Inn garden"
+    },
+    {
+      "id": "bench_5",
+      "asset": "wwhd_bench",
+      "x": 1750,
+      "y": 3270,
+      "layer": "props",
+      "collide": [
+        -65,
+        -25,
+        130,
+        30
+      ],
+      "placementNote": "Watch the river"
+    },
+    {
+      "id": "bench_6",
+      "asset": "wwhd_bench",
+      "x": 5000,
+      "y": 3110,
+      "layer": "props",
+      "collide": [
+        -65,
+        -25,
+        130,
+        30
+      ],
+      "placementNote": "Orchard garden seat"
+    },
+    {
+      "id": "lamp_0",
+      "asset": "wwhd_lamp",
+      "x": 1040,
+      "y": 1300,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_1",
+      "asset": "wwhd_lamp",
+      "x": 1460,
+      "y": 1320,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_2",
+      "asset": "wwhd_lamp",
+      "x": 1590,
+      "y": 1740,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_3",
+      "asset": "wwhd_lamp",
+      "x": 720,
+      "y": 1940,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_4",
+      "asset": "wwhd_lamp",
+      "x": 1440,
+      "y": 2250,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_5",
+      "asset": "wwhd_lamp",
+      "x": 740,
+      "y": 3000,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_6",
+      "asset": "wwhd_lamp",
+      "x": 2810,
+      "y": 920,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_7",
+      "asset": "wwhd_lamp",
+      "x": 3140,
+      "y": 930,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_8",
+      "asset": "wwhd_lamp",
+      "x": 3450,
+      "y": 3060,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "lamp_9",
+      "asset": "wwhd_lamp",
+      "x": 1770,
+      "y": 3110,
+      "layer": "props",
+      "collide": [
+        -10,
+        -10,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "flowers_0",
+      "asset": "wwhd_flower_planter",
+      "x": 830,
+      "y": 1450,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_1",
+      "asset": "wwhd_flower_planter",
+      "x": 1460,
+      "y": 1410,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_2",
+      "asset": "wwhd_flower_planter",
+      "x": 1100,
+      "y": 1720,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_3",
+      "asset": "wwhd_flower_planter",
+      "x": 1750,
+      "y": 650,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_4",
+      "asset": "wwhd_flower_planter",
+      "x": 875,
+      "y": 1840,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_5",
+      "asset": "wwhd_flower_planter",
+      "x": 1430,
+      "y": 2210,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_6",
+      "asset": "wwhd_flower_planter",
+      "x": 2810,
+      "y": 980,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_7",
+      "asset": "wwhd_flower_planter",
+      "x": 3160,
+      "y": 980,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_8",
+      "asset": "wwhd_flower_planter",
+      "x": 2400,
+      "y": 2930,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "flowers_9",
+      "asset": "wwhd_flower_planter",
+      "x": 4720,
+      "y": 3130,
+      "layer": "props",
+      "scale": 0.65,
+      "collide": [
+        -30,
+        -20,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "market_0",
+      "asset": "wwhd_market_stall",
+      "x": 1470,
+      "y": 2070,
+      "layer": "props",
+      "collide": [
+        -55,
+        -75,
+        110,
+        70
+      ]
+    },
+    {
+      "id": "market_1",
+      "asset": "wwhd_market_stall",
+      "x": 1800,
+      "y": 2240,
+      "layer": "props",
+      "collide": [
+        -55,
+        -75,
+        110,
+        70
+      ]
+    },
+    {
+      "id": "market_2",
+      "asset": "wwhd_market_stall",
+      "x": 1860,
+      "y": 2110,
+      "layer": "props",
+      "collide": [
+        -55,
+        -75,
+        110,
+        70
+      ]
+    },
+    {
+      "id": "lantern_inn",
+      "asset": "wwhd_apartment_roof_slate",
       "x": 3600,
-      "y": 3050,
+      "y": 1980,
+      "scale": 1.3,
+      "layer": "buildings",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "grove_0",
+      "asset": "wwhd_tree_oak",
+      "x": 160,
+      "y": 300,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_1",
+      "asset": "wwhd_tree_apple",
+      "x": 330,
+      "y": 310,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_2",
+      "asset": "wwhd_tree_cedar",
+      "x": 560,
+      "y": 340,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_3",
+      "asset": "wwhd_tree_willow",
+      "x": 760,
+      "y": 420,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_4",
+      "asset": "wwhd_tree_oak",
+      "x": 1150,
+      "y": 310,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_5",
+      "asset": "wwhd_tree_apple",
+      "x": 1440,
+      "y": 300,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_6",
+      "asset": "wwhd_tree_cedar",
+      "x": 1690,
+      "y": 260,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_7",
+      "asset": "wwhd_tree_willow",
+      "x": 1830,
+      "y": 200,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_8",
+      "asset": "wwhd_tree_oak",
+      "x": 1990,
+      "y": 290,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_9",
+      "asset": "wwhd_tree_apple",
+      "x": 2510,
+      "y": 260,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_10",
+      "asset": "wwhd_tree_cedar",
+      "x": 2900,
+      "y": 270,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_11",
+      "asset": "wwhd_tree_willow",
+      "x": 3200,
+      "y": 280,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_12",
+      "asset": "wwhd_tree_oak",
+      "x": 3680,
+      "y": 280,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_13",
+      "asset": "wwhd_tree_apple",
+      "x": 4150,
+      "y": 260,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_14",
+      "asset": "wwhd_tree_cedar",
+      "x": 4600,
+      "y": 300,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_15",
+      "asset": "wwhd_tree_willow",
+      "x": 4970,
+      "y": 300,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_16",
+      "asset": "wwhd_tree_oak",
+      "x": 250,
+      "y": 1000,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_17",
+      "asset": "wwhd_tree_apple",
+      "x": 300,
+      "y": 1600,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_18",
+      "asset": "wwhd_tree_apple",
+      "x": 400,
+      "y": 1760,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_19",
+      "asset": "wwhd_tree_willow",
+      "x": 340,
+      "y": 2470,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_20",
+      "asset": "wwhd_tree_oak",
+      "x": 310,
+      "y": 2800,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_21",
+      "asset": "wwhd_tree_apple",
+      "x": 180,
+      "y": 3120,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_22",
+      "asset": "wwhd_tree_cedar",
+      "x": 1780,
+      "y": 1240,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_23",
+      "asset": "wwhd_tree_willow",
+      "x": 1960,
+      "y": 1250,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_24",
+      "asset": "wwhd_tree_oak",
+      "x": 2270,
+      "y": 1170,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_25",
+      "asset": "wwhd_tree_apple",
+      "x": 2790,
+      "y": 1210,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_26",
+      "asset": "wwhd_tree_cedar",
+      "x": 3790,
+      "y": 1200,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_27",
+      "asset": "wwhd_tree_willow",
+      "x": 4490,
+      "y": 1240,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_28",
+      "asset": "wwhd_tree_oak",
+      "x": 4980,
+      "y": 1350,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_29",
+      "asset": "wwhd_tree_apple",
+      "x": 5000,
+      "y": 1690,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_30",
+      "asset": "wwhd_tree_cedar",
+      "x": 5060,
+      "y": 2250,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_31",
+      "asset": "wwhd_tree_apple",
+      "x": 2180,
+      "y": 1800,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_32",
+      "asset": "wwhd_tree_apple",
+      "x": 2350,
+      "y": 1830,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_33",
+      "asset": "wwhd_tree_apple",
+      "x": 2500,
+      "y": 1840,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_34",
+      "asset": "wwhd_tree_apple",
+      "x": 2700,
+      "y": 1930,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_35",
+      "asset": "wwhd_tree_apple",
+      "x": 2960,
+      "y": 1820,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_36",
+      "asset": "wwhd_tree_apple",
+      "x": 4030,
+      "y": 1840,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_37",
+      "asset": "wwhd_tree_apple",
+      "x": 4250,
+      "y": 1900,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_38",
+      "asset": "wwhd_tree_cedar",
+      "x": 2060,
+      "y": 2440,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_39",
+      "asset": "wwhd_tree_willow",
+      "x": 2510,
+      "y": 2640,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_40",
+      "asset": "wwhd_tree_oak",
+      "x": 3270,
+      "y": 2510,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_41",
+      "asset": "wwhd_tree_apple",
+      "x": 3970,
+      "y": 2690,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_42",
+      "asset": "wwhd_tree_cedar",
+      "x": 4430,
+      "y": 2780,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_43",
+      "asset": "wwhd_tree_willow",
+      "x": 1800,
+      "y": 3240,
+      "scale": 1.04,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_44",
+      "asset": "wwhd_tree_oak",
+      "x": 2560,
+      "y": 3240,
+      "scale": 1.12,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_45",
+      "asset": "wwhd_tree_apple",
+      "x": 3250,
+      "y": 3250,
+      "scale": 0.8,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_46",
+      "asset": "wwhd_tree_cedar",
+      "x": 4290,
+      "y": 3260,
+      "scale": 0.88,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "grove_47",
+      "asset": "wwhd_tree_willow",
+      "x": 5000,
+      "y": 3240,
+      "scale": 0.9600000000000001,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -15,
+        -15,
+        30,
+        25
+      ]
+    },
+    {
+      "id": "old_lake_mansion",
+      "asset": "wwhd_old_mansion",
+      "x": 6200,
+      "y": 1080,
+      "layer": "buildings",
+      "collide": [
+        -290,
+        -330,
+        580,
+        300
+      ]
+    },
+    {
+      "id": "ferry_bell",
+      "asset": "wwhd_belfry",
+      "x": 1520,
+      "y": 1320,
+      "layer": "props",
+      "collide": [
+        -80,
+        -65,
+        160,
+        70
+      ]
+    },
+    {
+      "id": "square_fern_0",
+      "asset": "wwhd_fern_planter",
+      "x": 860,
+      "y": 1280,
+      "layer": "props",
+      "collide": [
+        -65,
+        -30,
+        130,
+        35
+      ]
+    },
+    {
+      "id": "square_fern_1",
+      "asset": "wwhd_fern_planter",
+      "x": 1650,
+      "y": 1730,
+      "layer": "props",
+      "collide": [
+        -65,
+        -30,
+        130,
+        35
+      ]
+    },
+    {
+      "id": "square_fern_2",
+      "asset": "wwhd_fern_planter",
+      "x": 1480,
+      "y": 1880,
+      "layer": "props",
+      "collide": [
+        -65,
+        -30,
+        130,
+        35
+      ]
+    },
+    {
+      "id": "lake_tree_0",
+      "asset": "wwhd_tree_willow",
+      "x": 5140,
+      "y": 1380,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_1",
+      "asset": "wwhd_tree_oak",
+      "x": 5480,
+      "y": 1310,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_2",
+      "asset": "wwhd_tree_oak",
+      "x": 5930,
+      "y": 1330,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_3",
+      "asset": "wwhd_tree_willow",
+      "x": 6480,
+      "y": 1520,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_4",
+      "asset": "wwhd_tree_oak",
+      "x": 6520,
+      "y": 2000,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_5",
+      "asset": "wwhd_tree_oak",
+      "x": 6420,
+      "y": 2580,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_6",
+      "asset": "wwhd_tree_willow",
+      "x": 5900,
+      "y": 2780,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_7",
+      "asset": "wwhd_tree_oak",
+      "x": 5400,
+      "y": 2780,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_8",
+      "asset": "wwhd_tree_oak",
+      "x": 5070,
+      "y": 2640,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "lake_tree_9",
+      "asset": "wwhd_tree_willow",
+      "x": 6510,
+      "y": 1130,
+      "layer": "canopy",
+      "collide": [
+        -24,
+        -18,
+        48,
+        24
+      ]
+    },
+    {
+      "id": "town_home_01_fence_0",
+      "asset": "wwhd_garden_fence",
+      "x": 2070,
+      "y": 800,
+      "layer": "props",
+      "plotOwnerId": "town_home_01",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "town_home_01_fence_1",
+      "asset": "wwhd_garden_fence",
+      "x": 2330,
+      "y": 800,
+      "layer": "props",
+      "plotOwnerId": "town_home_01",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "town_home_03_fence_0",
+      "asset": "wwhd_garden_fence",
+      "x": 3200,
+      "y": 800,
+      "layer": "props",
+      "plotOwnerId": "town_home_03",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "town_home_03_fence_1",
+      "asset": "wwhd_garden_fence",
+      "x": 3460,
+      "y": 800,
+      "layer": "props",
+      "plotOwnerId": "town_home_03",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "town_home_21_fence_0",
+      "asset": "wwhd_garden_fence",
+      "x": 2800,
+      "y": 3010,
+      "layer": "props",
+      "plotOwnerId": "town_home_21",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "town_home_21_fence_1",
+      "asset": "wwhd_garden_fence",
+      "x": 3060,
+      "y": 3010,
+      "layer": "props",
+      "plotOwnerId": "town_home_21",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "town_home_24_fence_0",
+      "asset": "wwhd_garden_fence",
+      "x": 4570,
+      "y": 3280,
+      "layer": "props",
+      "plotOwnerId": "town_home_24",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "town_home_24_fence_1",
+      "asset": "wwhd_garden_fence",
+      "x": 4830,
+      "y": 3280,
+      "layer": "props",
+      "plotOwnerId": "town_home_24",
+      "collide": [
+        -105,
+        -18,
+        210,
+        23
+      ]
+    },
+    {
+      "id": "lake_reed_0",
+      "asset": "wwhd_lake_reeds",
+      "x": 6065,
+      "y": 1950,
       "layer": "props"
     },
     {
-      "id": "plaza_1050_1700",
-      "asset": "wwhd_paving",
-      "x": 1050,
-      "y": 1700,
-      "layer": "terrain"
+      "id": "lake_rock_0",
+      "asset": "wwhd_shoreline_rocks",
+      "x": 6089,
+      "y": 1950,
+      "layer": "props",
+      "collide": [
+        -35,
+        -20,
+        70,
+        25
+      ]
     },
     {
-      "id": "plaza_1050_1828",
-      "asset": "wwhd_paving",
-      "x": 1050,
-      "y": 1828,
-      "layer": "terrain"
+      "id": "lake_reed_1",
+      "asset": "wwhd_lake_reeds",
+      "x": 6048,
+      "y": 2055,
+      "layer": "props"
     },
     {
-      "id": "plaza_1178_1700",
-      "asset": "wwhd_paving",
-      "x": 1178,
-      "y": 1700,
-      "layer": "terrain"
+      "id": "lake_reed_2",
+      "asset": "wwhd_lake_reeds",
+      "x": 5999,
+      "y": 2154,
+      "layer": "props"
     },
     {
-      "id": "plaza_1178_1828",
-      "asset": "wwhd_paving",
-      "x": 1178,
-      "y": 1828,
-      "layer": "terrain"
+      "id": "lake_reed_3",
+      "asset": "wwhd_lake_reeds",
+      "x": 5920,
+      "y": 2238,
+      "layer": "props"
     },
     {
-      "id": "plaza_1306_1700",
-      "asset": "wwhd_paving",
-      "x": 1306,
-      "y": 1700,
-      "layer": "terrain"
+      "id": "lake_rock_3",
+      "asset": "wwhd_shoreline_rocks",
+      "x": 5937,
+      "y": 2255,
+      "layer": "props",
+      "collide": [
+        -35,
+        -20,
+        70,
+        25
+      ]
     },
     {
-      "id": "plaza_1306_1828",
-      "asset": "wwhd_paving",
-      "x": 1306,
-      "y": 1828,
-      "layer": "terrain"
+      "id": "lake_reed_4",
+      "asset": "wwhd_lake_reeds",
+      "x": 5818,
+      "y": 2302,
+      "layer": "props"
     },
     {
-      "id": "plaza_1434_1700",
-      "asset": "wwhd_paving",
-      "x": 1434,
-      "y": 1700,
-      "layer": "terrain"
+      "id": "lake_reed_5",
+      "asset": "wwhd_lake_reeds",
+      "x": 5698,
+      "y": 2343,
+      "layer": "props"
     },
     {
-      "id": "plaza_1434_1828",
-      "asset": "wwhd_paving",
-      "x": 1434,
-      "y": 1828,
-      "layer": "terrain"
+      "id": "lake_reed_6",
+      "asset": "wwhd_lake_reeds",
+      "x": 5570,
+      "y": 2357,
+      "layer": "props"
     },
     {
-      "id": "town_fountain",
-      "asset": "wwhd_fountain",
-      "x": 1370,
-      "y": 1860,
+      "id": "lake_rock_6",
+      "asset": "wwhd_shoreline_rocks",
+      "x": 5570,
+      "y": 2381,
+      "layer": "props",
+      "collide": [
+        -35,
+        -20,
+        70,
+        25
+      ]
+    },
+    {
+      "id": "lake_reed_7",
+      "asset": "wwhd_lake_reeds",
+      "x": 5442,
+      "y": 2343,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_10",
+      "asset": "wwhd_lake_reeds",
+      "x": 5141,
+      "y": 2154,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_11",
+      "asset": "wwhd_lake_reeds",
+      "x": 5092,
+      "y": 2055,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_12",
+      "asset": "wwhd_lake_reeds",
+      "x": 5075,
+      "y": 1950,
+      "layer": "props"
+    },
+    {
+      "id": "lake_rock_12",
+      "asset": "wwhd_shoreline_rocks",
+      "x": 5051,
+      "y": 1950,
+      "layer": "props",
+      "collide": [
+        -35,
+        -20,
+        70,
+        25
+      ]
+    },
+    {
+      "id": "lake_reed_13",
+      "asset": "wwhd_lake_reeds",
+      "x": 5092,
+      "y": 1845,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_14",
+      "asset": "wwhd_lake_reeds",
+      "x": 5141,
+      "y": 1746,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_15",
+      "asset": "wwhd_lake_reeds",
+      "x": 5220,
+      "y": 1662,
+      "layer": "props"
+    },
+    {
+      "id": "lake_rock_15",
+      "asset": "wwhd_shoreline_rocks",
+      "x": 5203,
+      "y": 1645,
+      "layer": "props",
+      "collide": [
+        -35,
+        -20,
+        70,
+        25
+      ]
+    },
+    {
+      "id": "lake_reed_16",
+      "asset": "wwhd_lake_reeds",
+      "x": 5322,
+      "y": 1598,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_17",
+      "asset": "wwhd_lake_reeds",
+      "x": 5442,
+      "y": 1557,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_18",
+      "asset": "wwhd_lake_reeds",
+      "x": 5570,
+      "y": 1543,
+      "layer": "props"
+    },
+    {
+      "id": "lake_rock_18",
+      "asset": "wwhd_shoreline_rocks",
+      "x": 5570,
+      "y": 1519,
+      "layer": "props",
+      "collide": [
+        -35,
+        -20,
+        70,
+        25
+      ]
+    },
+    {
+      "id": "lake_reed_19",
+      "asset": "wwhd_lake_reeds",
+      "x": 5698,
+      "y": 1557,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_20",
+      "asset": "wwhd_lake_reeds",
+      "x": 5818,
+      "y": 1598,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_21",
+      "asset": "wwhd_lake_reeds",
+      "x": 5920,
+      "y": 1662,
+      "layer": "props"
+    },
+    {
+      "id": "lake_rock_21",
+      "asset": "wwhd_shoreline_rocks",
+      "x": 5937,
+      "y": 1645,
+      "layer": "props",
+      "collide": [
+        -35,
+        -20,
+        70,
+        25
+      ]
+    },
+    {
+      "id": "lake_reed_22",
+      "asset": "wwhd_lake_reeds",
+      "x": 5999,
+      "y": 1746,
+      "layer": "props"
+    },
+    {
+      "id": "lake_reed_23",
+      "asset": "wwhd_lake_reeds",
+      "x": 6048,
+      "y": 1845,
+      "layer": "props"
+    },
+    {
+      "id": "garden_climber",
+      "asset": "wwhd_climbing_frame",
+      "x": 470,
+      "y": 2120,
       "layer": "props",
       "collide": [
         -65,
         -45,
         130,
-        45
+        50
       ]
     },
     {
-      "id": "chronicle_board",
-      "asset": "wwhd_noticeboard",
-      "x": 1275,
-      "y": 1320,
-      "layer": "props"
-    },
-    {
-      "id": "market_stall",
-      "asset": "wwhd_stall",
-      "x": 870,
-      "y": 2000,
-      "layer": "props"
+      "id": "garden_seesaw",
+      "asset": "wwhd_seesaw",
+      "x": 620,
+      "y": 2220,
+      "layer": "props",
+      "collide": [
+        -65,
+        -22,
+        130,
+        26
+      ]
     }
   ],
   "hotspots": [
@@ -3388,8 +2814,8 @@
       "id": "door_town_home_01",
       "type": "home",
       "label": "Garden Cottage 1",
-      "x": 1775,
-      "y": 820,
+      "x": 2179.5,
+      "y": 650,
       "r": 75,
       "plotId": "town_home_01",
       "neighborhoodId": "whisperwind_01"
@@ -3398,8 +2824,8 @@
       "id": "door_town_home_02",
       "type": "home",
       "label": "Garden Cottage 2",
-      "x": 2375,
-      "y": 820,
+      "x": 2679.5,
+      "y": 590,
       "r": 75,
       "plotId": "town_home_02",
       "neighborhoodId": "whisperwind_01"
@@ -3408,8 +2834,8 @@
       "id": "door_town_home_03",
       "type": "home",
       "label": "Garden Cottage 3",
-      "x": 2975,
-      "y": 820,
+      "x": 3309.5,
+      "y": 650,
       "r": 75,
       "plotId": "town_home_03",
       "neighborhoodId": "whisperwind_01"
@@ -3418,8 +2844,8 @@
       "id": "door_town_home_04",
       "type": "home",
       "label": "Garden Cottage 4",
-      "x": 3575,
-      "y": 820,
+      "x": 3839.5,
+      "y": 550,
       "r": 75,
       "plotId": "town_home_04",
       "neighborhoodId": "whisperwind_01"
@@ -3428,8 +2854,8 @@
       "id": "door_town_home_05",
       "type": "home",
       "label": "Garden Cottage 5",
-      "x": 4175,
-      "y": 820,
+      "x": 4379.5,
+      "y": 650,
       "r": 75,
       "plotId": "town_home_05",
       "neighborhoodId": "whisperwind_01"
@@ -3438,8 +2864,8 @@
       "id": "door_town_home_06",
       "type": "home",
       "label": "Garden Cottage 6",
-      "x": 4775,
-      "y": 820,
+      "x": 4829.5,
+      "y": 910,
       "r": 75,
       "plotId": "town_home_06",
       "neighborhoodId": "whisperwind_01"
@@ -3447,9 +2873,9 @@
     {
       "id": "door_town_home_07",
       "type": "home",
-      "label": "Garden Cottage 7",
-      "x": 1775,
-      "y": 1420,
+      "label": "Family House 7",
+      "x": 2121.25,
+      "y": 1410,
       "r": 75,
       "plotId": "town_home_07",
       "neighborhoodId": "whisperwind_01"
@@ -3457,9 +2883,9 @@
     {
       "id": "door_town_home_08",
       "type": "home",
-      "label": "Garden Cottage 8",
-      "x": 2375,
-      "y": 1420,
+      "label": "Family House 8",
+      "x": 2581.25,
+      "y": 1550,
       "r": 75,
       "plotId": "town_home_08",
       "neighborhoodId": "whisperwind_01"
@@ -3467,8 +2893,8 @@
     {
       "id": "door_town_home_09",
       "type": "home",
-      "label": "Garden Cottage 9",
-      "x": 2975,
+      "label": "Family House 9",
+      "x": 3071.25,
       "y": 1420,
       "r": 75,
       "plotId": "town_home_09",
@@ -3477,9 +2903,9 @@
     {
       "id": "door_town_home_10",
       "type": "home",
-      "label": "Garden Cottage 10",
-      "x": 3575,
-      "y": 1420,
+      "label": "Family House 10",
+      "x": 3571.25,
+      "y": 1570,
       "r": 75,
       "plotId": "town_home_10",
       "neighborhoodId": "whisperwind_01"
@@ -3487,9 +2913,9 @@
     {
       "id": "door_town_home_11",
       "type": "home",
-      "label": "Garden Cottage 11",
-      "x": 4175,
-      "y": 1420,
+      "label": "Family House 11",
+      "x": 4101.25,
+      "y": 1410,
       "r": 75,
       "plotId": "town_home_11",
       "neighborhoodId": "whisperwind_01"
@@ -3497,9 +2923,9 @@
     {
       "id": "door_town_home_12",
       "type": "home",
-      "label": "Garden Cottage 12",
-      "x": 4775,
-      "y": 1420,
+      "label": "Family House 12",
+      "x": 4681.25,
+      "y": 1600,
       "r": 75,
       "plotId": "town_home_12",
       "neighborhoodId": "whisperwind_01"
@@ -3508,8 +2934,8 @@
       "id": "door_town_home_13",
       "type": "home",
       "label": "Lantern Apartment 13",
-      "x": 1775,
-      "y": 2020,
+      "x": 2275,
+      "y": 2170,
       "r": 75,
       "plotId": "town_home_13",
       "neighborhoodId": "whisperwind_01"
@@ -3518,8 +2944,8 @@
       "id": "door_town_home_14",
       "type": "home",
       "label": "Lantern Apartment 14",
-      "x": 2375,
-      "y": 2020,
+      "x": 2725,
+      "y": 2320,
       "r": 75,
       "plotId": "town_home_14",
       "neighborhoodId": "whisperwind_01"
@@ -3528,8 +2954,8 @@
       "id": "door_town_home_15",
       "type": "home",
       "label": "Lantern Apartment 15",
-      "x": 2975,
-      "y": 2020,
+      "x": 3245,
+      "y": 2190,
       "r": 75,
       "plotId": "town_home_15",
       "neighborhoodId": "whisperwind_01"
@@ -3538,8 +2964,8 @@
       "id": "door_town_home_16",
       "type": "home",
       "label": "Lantern Apartment 16",
-      "x": 3575,
-      "y": 2020,
+      "x": 3725,
+      "y": 2410,
       "r": 75,
       "plotId": "town_home_16",
       "neighborhoodId": "whisperwind_01"
@@ -3548,8 +2974,8 @@
       "id": "door_town_home_17",
       "type": "home",
       "label": "Lantern Apartment 17",
-      "x": 4175,
-      "y": 2020,
+      "x": 4215,
+      "y": 2190,
       "r": 75,
       "plotId": "town_home_17",
       "neighborhoodId": "whisperwind_01"
@@ -3558,8 +2984,8 @@
       "id": "door_town_home_18",
       "type": "home",
       "label": "Lantern Apartment 18",
-      "x": 4775,
-      "y": 2020,
+      "x": 4755,
+      "y": 2450,
       "r": 75,
       "plotId": "town_home_18",
       "neighborhoodId": "whisperwind_01"
@@ -3568,8 +2994,8 @@
       "id": "door_town_home_19",
       "type": "home",
       "label": "Lantern Apartment 19",
-      "x": 1775,
-      "y": 2620,
+      "x": 1935,
+      "y": 2910,
       "r": 75,
       "plotId": "town_home_19",
       "neighborhoodId": "whisperwind_01"
@@ -3578,8 +3004,8 @@
       "id": "door_town_home_20",
       "type": "home",
       "label": "Lantern Apartment 20",
-      "x": 2375,
-      "y": 2620,
+      "x": 2425,
+      "y": 3040,
       "r": 75,
       "plotId": "town_home_20",
       "neighborhoodId": "whisperwind_01"
@@ -3587,9 +3013,9 @@
     {
       "id": "door_town_home_21",
       "type": "home",
-      "label": "Lantern Apartment 21",
-      "x": 2975,
-      "y": 2620,
+      "label": "Orchard House 21",
+      "x": 2900.0,
+      "y": 2860,
       "r": 75,
       "plotId": "town_home_21",
       "neighborhoodId": "whisperwind_01"
@@ -3597,9 +3023,9 @@
     {
       "id": "door_town_home_22",
       "type": "home",
-      "label": "Lantern Apartment 22",
-      "x": 3575,
-      "y": 2620,
+      "label": "Orchard House 22",
+      "x": 3420.0,
+      "y": 3100,
       "r": 75,
       "plotId": "town_home_22",
       "neighborhoodId": "whisperwind_01"
@@ -3607,9 +3033,9 @@
     {
       "id": "door_town_home_23",
       "type": "home",
-      "label": "Lantern Apartment 23",
-      "x": 4175,
-      "y": 2620,
+      "label": "Orchard House 23",
+      "x": 4020.0,
+      "y": 2910,
       "r": 75,
       "plotId": "town_home_23",
       "neighborhoodId": "whisperwind_01"
@@ -3617,9 +3043,9 @@
     {
       "id": "door_town_home_24",
       "type": "home",
-      "label": "Lantern Apartment 24",
-      "x": 4775,
-      "y": 2620,
+      "label": "Orchard House 24",
+      "x": 4670.0,
+      "y": 3130,
       "r": 75,
       "plotId": "town_home_24",
       "neighborhoodId": "whisperwind_01"
@@ -3638,8 +3064,8 @@
       "id": "pet_center_door",
       "type": "door",
       "label": "Enter Pet Center",
-      "x": 575,
-      "y": 1420,
+      "x": 755,
+      "y": 1850,
       "r": 80,
       "targetScene": "whisperwind_hd_pet_center",
       "targetSpawn": "from_street"
@@ -3648,8 +3074,8 @@
       "id": "bakery_door",
       "type": "door",
       "label": "Enter Market Bakery",
-      "x": 575,
-      "y": 2020,
+      "x": 1525,
+      "y": 2220,
       "r": 80,
       "targetScene": "whisperwind_hd_market",
       "targetSpawn": "from_street"
@@ -3658,8 +3084,8 @@
       "id": "fishing_shop_door",
       "type": "door",
       "label": "Enter Fishing Outfitter",
-      "x": 575,
-      "y": 2620,
+      "x": 625,
+      "y": 2900,
       "r": 80,
       "targetScene": "whisperwind_hd_fishing_shop",
       "targetSpawn": "from_street"
@@ -3668,8 +3094,8 @@
       "id": "echo_hall_door",
       "type": "door",
       "label": "Enter Echo Hall",
-      "x": 1775,
-      "y": 450,
+      "x": 1625,
+      "y": 650,
       "r": 80,
       "targetScene": "whisperwind_hd_echo_hall",
       "targetSpawn": "from_street"
@@ -3678,8 +3104,8 @@
       "id": "town_board",
       "type": "townGuide",
       "label": "Chronicle Board and Town Guide",
-      "x": 1200,
-      "y": 1300,
+      "x": 1300,
+      "y": 1460,
       "r": 100
     },
     {
@@ -3699,6 +3125,79 @@
       "y": 3440,
       "r": 90,
       "targetScene": "shadow_woods_dock"
+    },
+    {
+      "id": "swing_memory",
+      "type": "message",
+      "label": "The Old Swing",
+      "x": 650,
+      "y": 1500,
+      "r": 65,
+      "message": "A little rope swing creaks in the breeze. Someone has tucked a flower into the knot. Toma says every child in town has taken a turn."
+    },
+    {
+      "id": "upper_garden",
+      "type": "message",
+      "label": "Look Across Whisperwind",
+      "x": 3000,
+      "y": 820,
+      "r": 65,
+      "message": "The market bells drift up the stone steps. Far below, the river catches the sun. This is a good place to come when you need a quiet moment."
+    },
+    {
+      "id": "inn_door",
+      "type": "door",
+      "label": "Enter Lantern Inn",
+      "x": 3567,
+      "y": 2020,
+      "r": 80,
+      "targetScene": "whisperwind_hd_inn",
+      "targetSpawn": "from_street"
+    },
+    {
+      "id": "commonlight_history",
+      "type": "message",
+      "x": 960,
+      "y": 1260,
+      "r": 65,
+      "label": "Read the square inscription",
+      "message": "One stone, one welcome. After the spring flood, each household brought a stone for this square. There is still room for yours."
+    },
+    {
+      "id": "orchard_letter",
+      "type": "message",
+      "x": 4890,
+      "y": 2980,
+      "r": 65,
+      "label": "Read the garden letter",
+      "message": "We planted these trees when the river took our first garden. If you are beginning again, take an apple and stay awhile."
+    },
+    {
+      "id": "hill_view",
+      "type": "message",
+      "x": 3450,
+      "y": 930,
+      "r": 65,
+      "label": "Look over Whisperwind",
+      "message": "Lanterns follow the river below. These high terraces sheltered the families who rebuilt the ferry landing. Somewhere a supper bell rings."
+    },
+    {
+      "id": "old_mansion_door",
+      "type": "message",
+      "x": 6180,
+      "y": 1130,
+      "r": 65,
+      "label": "Old lakeside mansion",
+      "message": "The door is boarded shut. A faded notice asks visitors to leave the house undisturbed until its missing records are recovered. A light flickers in the attic."
+    },
+    {
+      "id": "orchard_lake_shore",
+      "type": "message",
+      "x": 5260,
+      "y": 2370,
+      "r": 65,
+      "label": "Orchard Lake shore",
+      "message": "Small fish flicker among the reeds. This quiet shore will become a fishing spot; for now, River Tackle can guide you to the working fishing dock."
     }
   ],
   "npcs": [
@@ -3748,8 +3247,8 @@
       "name": "Toma",
       "label": "Talk to Toma",
       "skinId": "toma",
-      "x": 800,
-      "y": 1450,
+      "x": 980,
+      "y": 1860,
       "r": 105,
       "face": "down",
       "storyIntro": true,
@@ -3758,26 +3257,26 @@
         "speed": 50,
         "points": [
           {
-            "x": 800,
-            "y": 1450,
+            "x": 980,
+            "y": 1860,
             "wait": 4,
             "face": "down"
           },
           {
-            "x": 1000,
-            "y": 1450,
+            "x": 1120,
+            "y": 1930,
             "wait": 6,
             "face": "down"
           },
           {
-            "x": 1000,
-            "y": 1600,
+            "x": 1110,
+            "y": 2100,
             "wait": 4,
             "face": "down"
           },
           {
-            "x": 800,
-            "y": 1600,
+            "x": 930,
+            "y": 2080,
             "wait": 6,
             "face": "down"
           }
@@ -3824,9 +3323,67 @@
           }
         ]
       }
+    },
+    {
+      "id": "npc_innkeeper",
+      "name": "Innkeeper",
+      "label": "Talk to the Innkeeper",
+      "skinId": "mira",
+      "x": 3410,
+      "y": 2020,
+      "r": 100,
+      "face": "down",
+      "message": "The kettle is always on at Lantern Inn. Travelers bring stories from beyond the ridge, and we give them somewhere warm to share them. The lobby is open; overnight room booking will come later.",
+      "routine": {
+        "speed": 42,
+        "points": [
+          {
+            "x": 3410,
+            "y": 2020,
+            "wait": 8,
+            "face": "down"
+          },
+          {
+            "x": 3390,
+            "y": 2110,
+            "wait": 6,
+            "face": "left"
+          },
+          {
+            "x": 3540,
+            "y": 2160,
+            "wait": 8,
+            "face": "down"
+          },
+          {
+            "x": 3410,
+            "y": 2020,
+            "wait": 4,
+            "face": "right"
+          }
+        ]
+      }
     }
   ],
   "ambient": [
+    {
+      "type": "windowPet",
+      "pet": "dog",
+      "x": 770,
+      "y": 1610,
+      "w": 28,
+      "h": 34,
+      "offset": 0
+    },
+    {
+      "type": "windowPet",
+      "pet": "cat",
+      "x": 890,
+      "y": 1720,
+      "w": 31,
+      "h": 37,
+      "offset": 4
+    },
     {
       "type": "smoke",
       "x": 670,
@@ -3834,74 +3391,1176 @@
     },
     {
       "type": "smoke",
-      "x": 670,
-      "y": 1140
+      "x": 850,
+      "y": 1570
     },
     {
       "type": "smoke",
-      "x": 670,
-      "y": 1740
+      "x": 1620,
+      "y": 1940
     },
     {
       "type": "smoke",
-      "x": 670,
-      "y": 2340
+      "x": 720,
+      "y": 2620
     },
     {
       "type": "smoke",
-      "x": 1870,
-      "y": 170
-    },
-    {
-      "type": "windowPet",
-      "pet": "dog",
-      "x": 553,
-      "y": 1300,
-      "w": 25,
-      "h": 35,
-      "offset": 0
-    },
-    {
-      "type": "windowPet",
-      "pet": "cat",
-      "x": 710,
-      "y": 1290,
-      "w": 31,
-      "h": 37,
-      "offset": 4
-    },
-    {
-      "type": "lampGlow",
-      "x": 1330,
-      "y": 715
-    },
-    {
-      "type": "lampGlow",
-      "x": 1330,
-      "y": 1315
-    },
-    {
-      "type": "lampGlow",
-      "x": 1330,
-      "y": 1915
-    },
-    {
-      "type": "lampGlow",
-      "x": 1330,
-      "y": 2515
-    },
-    {
-      "type": "lampGlow",
-      "x": 1330,
-      "y": 3015
+      "x": 1720,
+      "y": 370
     },
     {
       "type": "fountain",
-      "x": 1370,
-      "y": 1780
+      "x": 1250,
+      "y": 1475,
+      "streams": [
+        [
+          -61,
+          -120,
+          -55,
+          -22
+        ],
+        [
+          0,
+          -120,
+          0,
+          -10
+        ],
+        [
+          61,
+          -120,
+          55,
+          -22
+        ]
+      ],
+      "width": 90
+    },
+    {
+      "type": "lampGlow",
+      "x": 1048,
+      "y": 1180
+    },
+    {
+      "type": "lampGlow",
+      "x": 1468,
+      "y": 1200
+    },
+    {
+      "type": "lampGlow",
+      "x": 1598,
+      "y": 1620
+    },
+    {
+      "type": "lampGlow",
+      "x": 728,
+      "y": 1820
+    },
+    {
+      "type": "lampGlow",
+      "x": 1448,
+      "y": 2130
+    },
+    {
+      "type": "lampGlow",
+      "x": 748,
+      "y": 2880
+    },
+    {
+      "type": "lampGlow",
+      "x": 2818,
+      "y": 800
+    },
+    {
+      "type": "lampGlow",
+      "x": 3148,
+      "y": 810
+    },
+    {
+      "type": "lampGlow",
+      "x": 3458,
+      "y": 2940
+    },
+    {
+      "type": "lampGlow",
+      "x": 1778,
+      "y": 2990
+    },
+    {
+      "type": "smoke",
+      "x": 3690,
+      "y": 1640
     }
   ],
-  "paths": [],
+  "paths": [
+    {
+      "id": "tavern_lane",
+      "points": [
+        [
+          575,
+          845
+        ],
+        [
+          700,
+          990
+        ],
+        [
+          860,
+          1020
+        ],
+        [
+          1030,
+          1180
+        ],
+        [
+          1020,
+          1330
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "echo_walk",
+      "points": [
+        [
+          1380,
+          1350
+        ],
+        [
+          1590,
+          1160
+        ],
+        [
+          1540,
+          850
+        ],
+        [
+          1625,
+          675
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "pet_lane",
+      "points": [
+        [
+          880,
+          1640
+        ],
+        [
+          840,
+          1740
+        ],
+        [
+          755,
+          1875
+        ],
+        [
+          800,
+          1990
+        ],
+        [
+          1130,
+          2180
+        ],
+        [
+          1525,
+          2245
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "market_lane",
+      "points": [
+        [
+          1460,
+          1790
+        ],
+        [
+          1570,
+          1930
+        ],
+        [
+          1700,
+          2010
+        ],
+        [
+          1700,
+          2250
+        ],
+        [
+          1525,
+          2245
+        ]
+      ],
+      "width": 190,
+      "kind": "lane"
+    },
+    {
+      "id": "quay_lane",
+      "points": [
+        [
+          1130,
+          2180
+        ],
+        [
+          1150,
+          2410
+        ],
+        [
+          970,
+          2610
+        ],
+        [
+          625,
+          2925
+        ],
+        [
+          920,
+          3130
+        ],
+        [
+          1200,
+          3410
+        ]
+      ],
+      "width": 190,
+      "kind": "lane"
+    },
+    {
+      "id": "upper_hill_lane",
+      "points": [
+        [
+          1590,
+          1160
+        ],
+        [
+          1960,
+          1080
+        ],
+        [
+          2470,
+          1090
+        ],
+        [
+          3000,
+          1120
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "main_stair_walk",
+      "points": [
+        [
+          3000,
+          1120
+        ],
+        [
+          3000,
+          940
+        ],
+        [
+          2990,
+          790
+        ]
+      ],
+      "width": 180,
+      "kind": "stairs"
+    },
+    {
+      "id": "hilltop_crescent",
+      "points": [
+        [
+          2175,
+          665
+        ],
+        [
+          2460,
+          800
+        ],
+        [
+          2690,
+          710
+        ],
+        [
+          3050,
+          790
+        ],
+        [
+          3305,
+          665
+        ],
+        [
+          3630,
+          780
+        ],
+        [
+          3835,
+          565
+        ],
+        [
+          4180,
+          790
+        ],
+        [
+          4375,
+          665
+        ],
+        [
+          4700,
+          910
+        ],
+        [
+          4825,
+          925
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "orchard_lane",
+      "points": [
+        [
+          1580,
+          1520
+        ],
+        [
+          1890,
+          1730
+        ],
+        [
+          2150,
+          1550
+        ],
+        [
+          2585,
+          1565
+        ],
+        [
+          2890,
+          1700
+        ],
+        [
+          3075,
+          1435
+        ],
+        [
+          3500,
+          1700
+        ],
+        [
+          3575,
+          1585
+        ],
+        [
+          4105,
+          1425
+        ],
+        [
+          4450,
+          1730
+        ],
+        [
+          4685,
+          1615
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "south_lane",
+      "points": [
+        [
+          1700,
+          2250
+        ],
+        [
+          2275,
+          2185
+        ],
+        [
+          2600,
+          2420
+        ],
+        [
+          2725,
+          2335
+        ],
+        [
+          3100,
+          2380
+        ],
+        [
+          3245,
+          2205
+        ],
+        [
+          3530,
+          2500
+        ],
+        [
+          3725,
+          2425
+        ],
+        [
+          4020,
+          2380
+        ],
+        [
+          4215,
+          2205
+        ],
+        [
+          4580,
+          2580
+        ],
+        [
+          4755,
+          2465
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "river_road",
+      "points": [
+        [
+          920,
+          3130
+        ],
+        [
+          1700,
+          3180
+        ],
+        [
+          1935,
+          2925
+        ],
+        [
+          2425,
+          3055
+        ],
+        [
+          2690,
+          3160
+        ],
+        [
+          2905,
+          2875
+        ],
+        [
+          3425,
+          3115
+        ],
+        [
+          3830,
+          3210
+        ],
+        [
+          4025,
+          2925
+        ],
+        [
+          4470,
+          3220
+        ],
+        [
+          4675,
+          3145
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "orchard_steps",
+      "points": [
+        [
+          1900,
+          1730
+        ],
+        [
+          1900,
+          1960
+        ],
+        [
+          2275,
+          2185
+        ]
+      ],
+      "width": 120,
+      "kind": "stairs"
+    },
+    {
+      "id": "east_river_connector",
+      "points": [
+        [
+          4450,
+          1730
+        ],
+        [
+          4520,
+          2110
+        ],
+        [
+          4580,
+          2580
+        ],
+        [
+          4470,
+          3220
+        ]
+      ],
+      "width": 90,
+      "kind": "alley"
+    },
+    {
+      "id": "central_river_connector",
+      "points": [
+        [
+          2890,
+          1700
+        ],
+        [
+          2950,
+          1960
+        ],
+        [
+          3100,
+          2380
+        ],
+        [
+          2905,
+          2875
+        ]
+      ],
+      "width": 100,
+      "kind": "alley"
+    },
+    {
+      "id": "inn_lane",
+      "points": [
+        [
+          3500,
+          1700
+        ],
+        [
+          3360,
+          1900
+        ],
+        [
+          3567,
+          2050
+        ],
+        [
+          3750,
+          2150
+        ],
+        [
+          4020,
+          2380
+        ]
+      ],
+      "width": 145,
+      "kind": "lane"
+    },
+    {
+      "id": "pet_threshold",
+      "points": [
+        [
+          755,
+          1850
+        ],
+        [
+          755,
+          1930
+        ],
+        [
+          840,
+          1990
+        ]
+      ],
+      "width": 90,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_01",
+      "points": [
+        [
+          2179.5,
+          650
+        ],
+        [
+          2179.5,
+          705
+        ],
+        [
+          2208,
+          680
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_02",
+      "points": [
+        [
+          2679.5,
+          590
+        ],
+        [
+          2679.5,
+          645
+        ],
+        [
+          2690,
+          710
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_03",
+      "points": [
+        [
+          3309.5,
+          650
+        ],
+        [
+          3309.5,
+          705
+        ],
+        [
+          3279,
+          678
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_04",
+      "points": [
+        [
+          3839.5,
+          550
+        ],
+        [
+          3839.5,
+          605
+        ],
+        [
+          3800,
+          602
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_05",
+      "points": [
+        [
+          4379.5,
+          650
+        ],
+        [
+          4379.5,
+          705
+        ],
+        [
+          4414,
+          694
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_06",
+      "points": [
+        [
+          4829.5,
+          910
+        ],
+        [
+          4829.5,
+          965
+        ],
+        [
+          4825,
+          925
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_07",
+      "points": [
+        [
+          2121.25,
+          1410
+        ],
+        [
+          2121.25,
+          1465
+        ],
+        [
+          2150,
+          1550
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_08",
+      "points": [
+        [
+          2581.25,
+          1550
+        ],
+        [
+          2581.25,
+          1605
+        ],
+        [
+          2610,
+          1576
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_09",
+      "points": [
+        [
+          3071.25,
+          1420
+        ],
+        [
+          3071.25,
+          1475
+        ],
+        [
+          3039,
+          1487
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_10",
+      "points": [
+        [
+          3571.25,
+          1570
+        ],
+        [
+          3571.25,
+          1625
+        ],
+        [
+          3540,
+          1639
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_11",
+      "points": [
+        [
+          4101.25,
+          1410
+        ],
+        [
+          4101.25,
+          1465
+        ],
+        [
+          4140,
+          1456
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_12",
+      "points": [
+        [
+          4681.25,
+          1600
+        ],
+        [
+          4681.25,
+          1655
+        ],
+        [
+          4652,
+          1631
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_13",
+      "points": [
+        [
+          2275,
+          2170
+        ],
+        [
+          2275,
+          2225
+        ],
+        [
+          2311,
+          2211
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_14",
+      "points": [
+        [
+          2725,
+          2320
+        ],
+        [
+          2725,
+          2375
+        ],
+        [
+          2690,
+          2359
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_15",
+      "points": [
+        [
+          3245,
+          2190
+        ],
+        [
+          3245,
+          2245
+        ],
+        [
+          3208,
+          2249
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_16",
+      "points": [
+        [
+          3725,
+          2410
+        ],
+        [
+          3725,
+          2465
+        ],
+        [
+          3700,
+          2435
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_17",
+      "points": [
+        [
+          4215,
+          2190
+        ],
+        [
+          4215,
+          2245
+        ],
+        [
+          4252,
+          2244
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_18",
+      "points": [
+        [
+          4755,
+          2450
+        ],
+        [
+          4755,
+          2505
+        ],
+        [
+          4721,
+          2488
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_19",
+      "points": [
+        [
+          1935,
+          2910
+        ],
+        [
+          1935,
+          2965
+        ],
+        [
+          1898,
+          2966
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_20",
+      "points": [
+        [
+          2425,
+          3040
+        ],
+        [
+          2425,
+          3095
+        ],
+        [
+          2451,
+          3065
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_21",
+      "points": [
+        [
+          2900.0,
+          2860
+        ],
+        [
+          2900.0,
+          2915
+        ],
+        [
+          2867,
+          2925
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_22",
+      "points": [
+        [
+          3420.0,
+          3100
+        ],
+        [
+          3420.0,
+          3155
+        ],
+        [
+          3437,
+          3118
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_23",
+      "points": [
+        [
+          4020.0,
+          2910
+        ],
+        [
+          4020.0,
+          2965
+        ],
+        [
+          3988,
+          2978
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "approach_door_town_home_24",
+      "points": [
+        [
+          4670.0,
+          3130
+        ],
+        [
+          4670.0,
+          3185
+        ],
+        [
+          4646,
+          3155
+        ]
+      ],
+      "width": 80,
+      "kind": "lane"
+    },
+    {
+      "id": "lake_walk",
+      "points": [
+        [
+          4685,
+          1615
+        ],
+        [
+          5100,
+          1530
+        ],
+        [
+          5360,
+          1510
+        ],
+        [
+          5700,
+          1470
+        ],
+        [
+          6120,
+          1530
+        ],
+        [
+          6250,
+          1790
+        ],
+        [
+          6290,
+          2220
+        ],
+        [
+          6110,
+          2540
+        ],
+        [
+          5570,
+          2640
+        ],
+        [
+          5130,
+          2480
+        ],
+        [
+          4755,
+          2465
+        ]
+      ],
+      "width": 110,
+      "kind": "lane"
+    },
+    {
+      "id": "mansion_approach",
+      "points": [
+        [
+          6120,
+          1530
+        ],
+        [
+          6180,
+          1280
+        ],
+        [
+          6180,
+          1130
+        ]
+      ],
+      "width": 85,
+      "kind": "lane"
+    },
+    {
+      "id": "lake_shore",
+      "points": [
+        [
+          5130,
+          2480
+        ],
+        [
+          5240,
+          2370
+        ],
+        [
+          5260,
+          2370
+        ]
+      ],
+      "width": 75,
+      "kind": "lane"
+    },
+    {
+      "id": "playground_path",
+      "points": [
+        [
+          800,
+          1990
+        ],
+        [
+          700,
+          2080
+        ],
+        [
+          680,
+          2260
+        ],
+        [
+          490,
+          2300
+        ]
+      ],
+      "width": 90,
+      "kind": "lane"
+    }
+  ],
   "effects": [],
   "walkable": [
     {
@@ -3912,11 +4571,11 @@
           150
         ],
         [
-          5100,
+          6700,
           150
         ],
         [
-          5100,
+          6700,
           3280
         ],
         [
@@ -3981,6 +4640,112 @@
           ]
         ],
         "blocksWalking": true
+      },
+      {
+        "id": "orchard_lake",
+        "points": [
+          [
+            6060,
+            1950
+          ],
+          [
+            6046,
+            2054
+          ],
+          [
+            5989,
+            2150
+          ],
+          [
+            5923,
+            2233
+          ],
+          [
+            5809,
+            2296
+          ],
+          [
+            5701,
+            2336
+          ],
+          [
+            5570,
+            2350
+          ],
+          [
+            5438,
+            2336
+          ],
+          [
+            5335,
+            2296
+          ],
+          [
+            5209,
+            2233
+          ],
+          [
+            5165,
+            2150
+          ],
+          [
+            5075,
+            2054
+          ],
+          [
+            5102,
+            1950
+          ],
+          [
+            5076,
+            1846
+          ],
+          [
+            5163,
+            1750
+          ],
+          [
+            5210,
+            1667
+          ],
+          [
+            5333,
+            1604
+          ],
+          [
+            5439,
+            1564
+          ],
+          [
+            5570,
+            1550
+          ],
+          [
+            5699,
+            1564
+          ],
+          [
+            5812,
+            1604
+          ],
+          [
+            5919,
+            1667
+          ],
+          [
+            5994,
+            1750
+          ],
+          [
+            6041,
+            1846
+          ]
+        ],
+        "material": {
+          "calm": true,
+          "speed": 0.7,
+          "tileSize": 900
+        }
       }
     ]
   },
@@ -3992,23 +4757,262 @@
     },
     {
       "id": "from_pet_center",
-      "x": 575,
-      "y": 1445
+      "x": 755,
+      "y": 1875
     },
     {
       "id": "from_market",
-      "x": 575,
-      "y": 2045
+      "x": 1525,
+      "y": 2245
     },
     {
       "id": "from_fishing_shop",
-      "x": 575,
-      "y": 2645
+      "x": 625,
+      "y": 2925
     },
     {
       "id": "from_echo_hall",
-      "x": 1775,
-      "y": 475
+      "x": 1625,
+      "y": 675
+    },
+    {
+      "id": "from_inn",
+      "x": 3567,
+      "y": 2050
+    }
+  ],
+  "paint": {
+    "terraces": [
+      {
+        "id": "lantern_hill",
+        "points": [
+          [
+            1900,
+            260
+          ],
+          [
+            5000,
+            260
+          ],
+          [
+            5010,
+            980
+          ],
+          [
+            4670,
+            1130
+          ],
+          [
+            3670,
+            1000
+          ],
+          [
+            3090,
+            940
+          ],
+          [
+            2900,
+            940
+          ],
+          [
+            2420,
+            1030
+          ],
+          [
+            1900,
+            980
+          ]
+        ],
+        "fill": "#45623c",
+        "height": 105
+      },
+      {
+        "id": "orchard_bank",
+        "points": [
+          [
+            1970,
+            1760
+          ],
+          [
+            2480,
+            1740
+          ],
+          [
+            2710,
+            1900
+          ],
+          [
+            2720,
+            2050
+          ],
+          [
+            2390,
+            2070
+          ],
+          [
+            1970,
+            1980
+          ]
+        ],
+        "fill": "#4a693f",
+        "height": 65
+      }
+    ],
+    "groundDabs": [
+      {
+        "x": 600,
+        "y": 850,
+        "r": 170,
+        "kind": "dirt",
+        "alpha": 0.3
+      },
+      {
+        "x": 900,
+        "y": 1450,
+        "r": 170,
+        "kind": "dirt",
+        "alpha": 0.3
+      },
+      {
+        "x": 1550,
+        "y": 2280,
+        "r": 170,
+        "kind": "dirt",
+        "alpha": 0.3
+      },
+      {
+        "x": 650,
+        "y": 2930,
+        "r": 170,
+        "kind": "dirt",
+        "alpha": 0.3
+      },
+      {
+        "x": 1100,
+        "y": 3130,
+        "r": 170,
+        "kind": "dirt",
+        "alpha": 0.3
+      }
+    ]
+  },
+  "blockers": [
+    {
+      "id": "hill_face_west",
+      "x": 1900,
+      "y": 990,
+      "w": 990,
+      "h": 65
+    },
+    {
+      "id": "hill_face_east",
+      "x": 3120,
+      "y": 990,
+      "w": 1490,
+      "h": 65
+    },
+    {
+      "id": "main_stair_left_rail",
+      "x": 2870,
+      "y": 860,
+      "w": 35,
+      "h": 265
+    },
+    {
+      "id": "main_stair_right_rail",
+      "x": 3095,
+      "y": 860,
+      "w": 35,
+      "h": 265
+    }
+  ],
+  "guidePlaces": [
+    {
+      "name": "Market Square",
+      "x": 1670,
+      "y": 2270
+    },
+    {
+      "name": "Driftwood Tavern",
+      "x": 575,
+      "y": 845
+    },
+    {
+      "name": "Pet Center",
+      "x": 755,
+      "y": 1875
+    },
+    {
+      "name": "Fishing Outfitter",
+      "x": 625,
+      "y": 2925
+    },
+    {
+      "name": "Lantern Hill",
+      "x": 3000,
+      "y": 790
+    },
+    {
+      "name": "River Docks",
+      "x": 1200,
+      "y": 3180
+    },
+    {
+      "name": "Lantern Inn",
+      "x": 3567,
+      "y": 2020
+    },
+    {
+      "x": 5260,
+      "y": 2370,
+      "name": "Orchard Lake"
+    },
+    {
+      "x": 6180,
+      "y": 1130,
+      "name": "Old Lakeside Mansion"
+    }
+  ],
+  "plazas": [
+    {
+      "id": "commonlight_square",
+      "name": "Commonlight Square",
+      "points": [
+        [
+          820,
+          1200
+        ],
+        [
+          1530,
+          1200
+        ],
+        [
+          1690,
+          1380
+        ],
+        [
+          1690,
+          1770
+        ],
+        [
+          1450,
+          1920
+        ],
+        [
+          990,
+          1920
+        ],
+        [
+          820,
+          1730
+        ]
+      ],
+      "center": [
+        1250,
+        1500
+      ],
+      "radius": 225
     }
   ]
 }
+

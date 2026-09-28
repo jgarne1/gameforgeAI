@@ -146,6 +146,26 @@ The campaign route is Whisperwind → Sunny Meadows → Shadow Woods/Riverbend/C
 
 **Landmark preservation:** Echo Hall becomes the arcade/community festival hall; Chronicle Board is the in-world journal mirror; Forge Gate is a late travel threshold. These are narrative uses for existing landmark direction, not proof that finished scenes already exist.
 
+### Whisperwind local history and exploration design
+
+**Owner-approved expansion — 2026-09-28; authored design, not a claim of shipped quests.**
+
+Whisperwind began with a ferry landing and a shared supper table. Travelers stranded by a spring flood stayed to rebuild the quay; fishers, gardeners and craftspeople gradually made a town where a newcomer could earn a place by helping. The river remains its livelihood. The oldest paths follow the ferry's dry ground, while stone terraces protect homes above the flood line. Stairs exist to connect those terraces, with landings that meet both the upper street and lower lane.
+
+The town's heart is **Commonlight Square**, a generous, ornate gathering place around the fountain and market bell. Its paving was laid by households contributing one stone apiece. Market days, meals and seasonal celebrations keep that tradition alive. Leave a broad clear event floor; arrange shops, flower beds, lamps and seats around its edges. Driftwood opens toward the square, while the Pet Center and playground share a quieter garden nearby.
+
+**Reedwater Quay** is the working waterfront: River Tackle, nets, fish crates, moored boats and a riverside promenade. **Lantern Hill** holds older homes and the inn above a continuous retaining wall, reached by purposeful stairs and overlooked by a small resting terrace. **Orchard Gardens** grew where flood-recovery families planted fruit trees; selected houses own fenced gardens, while apartments share courtyards. **The Hidden Alley** is an older passage behind the market, sheltered enough that companions seek its warmth. Echo Hall connects play with the town's public life, and the Chronicle Board belongs on the square's main approach.
+
+The Anchor beneath Driftwood predates the visible town. Its custodians once understood that ordinary acts of care sustain continuity; later generations retained the bell ceremony while forgetting its purpose. A faint broken-circle hammer in an old wall, a letter tucked in a garden, and a riverside viewpoint can invite curiosity before the C1 mystery. Preserve the existing spindle, Orin, Mara and cellar sequence. New discoveries may provide flavor until their validated quest dependencies exist.
+
+**Orchard Lake and the old mansion.** Beyond the fruit gardens, a sheltered lake offers a quiet shore and a potential fishing destination. A narrow path follows its reeds toward a weathered mansion partly hidden by mature trees. The house is an optional future-story landmark, not a new main-campaign gate. Its history and quest remain to be authored; an inaccessible door gives an in-world explanation. Lake catches must use the existing validated fishing and fish-record services before fishing is presented as active.
+
+The exploration promise is beauty first, then curiosity: glimpses of a flowering terrace beyond a doorway, a lane disappearing beneath willows, a quiet fishing nook, or a small story left by a resident. Each district has a recognizable landmark, an ordinary daily purpose, and something worth finding. Avoid scattering objects across open grass. Place benches where someone would rest, trees where gardens or riverbanks support them, and stairs where the terrain visibly changes. Paths merge cleanly, vary width by importance, and end at actual thresholds.
+
+Children may spend free time in the garden playground, take turns with shared activities, and move elsewhere when its capacity is reached. A jump-rope station can be used by a player when unclaimed. These are planned atmosphere and optional play; schedules and occupancy must never block main-story access.
+
+Visual references: Final Fantasy VI for layered districts, readable landmarks and civic grandeur; Stardew Valley for approachable community spaces and daily life. GameForge's layout, art and lore remain original.
+
 ## 5. Complete campaign treatment
 
 Chapter names and quest IDs below define the campaign spine. All required objective counts are deterministic. Optional branches personalize dialogue, decorations, reputation, and epilogues; they do not create mutually incompatible shared multiplayer worlds.
@@ -736,6 +756,8 @@ Design precedence: explicit project-owner direction → this living narrative DD
 
 ### Change log
 
+Town design expansion, 2026-09-28: added Whisperwind settlement history, named district purposes, story-led elevation, exploration direction and planned playground atmosphere in section 4. Owner prioritized beautiful town exploration. Existing chapter order and quest contracts are unchanged.
+
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-09-28 | Initial comprehensive campaign, world/cast bible, website unlock model, 33-quest progression matrix, shared-state contracts, audit, and staged AI roadmap |
@@ -743,3 +765,4 @@ Design precedence: explicit project-owner direction → this living narrative DD
 ### Implementation status at publication
 
 All new main campaign quests, new Chronicle/Council pages, capability director, and new transactional receipt contracts are **planned**. Existing world, pet, inventory, marketplace, housing, table-game, and administrative infrastructure is **observed in source**, with integration gaps detailed in the audit. No gameplay implementation, production mode switch, balance edit, or save migration is included in this documentation commit.
+

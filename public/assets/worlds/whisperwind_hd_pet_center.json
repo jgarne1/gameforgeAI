@@ -48,14 +48,26 @@
       "asset": "wwhd_bar",
       "x": 340,
       "y": 390,
-      "layer": "props"
+      "layer": "props",
+      "collide": [
+        -125,
+        -65,
+        250,
+        60
+      ]
     },
     {
       "id": "table",
       "asset": "wwhd_table",
       "x": 790,
       "y": 620,
-      "layer": "props"
+      "layer": "props",
+      "collide": [
+        -60,
+        -30,
+        120,
+        30
+      ]
     },
     {
       "id": "rug",
@@ -116,3 +128,4 @@
   "paths": [],
   "effects": []
 }
+

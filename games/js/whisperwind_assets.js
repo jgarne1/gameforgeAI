@@ -30,10 +30,10 @@
     ctx.save();ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.clip();
     ctx.fillStyle='#10465c';ctx.fillRect(x,y,w,h);
     const dx=(t*(material.speed??5))%size,dy=(t*1.8)%size;
-    ctx.imageSmoothingEnabled=false;
+    ctx.imageSmoothingEnabled=false;ctx.globalAlpha=material.calm?.35:1;
     for(let ty=y-size+dy;ty<y+h;ty+=size)for(let tx=x-size+dx;tx<x+w;tx+=size)ctx.drawImage(image,tx,ty,size,size);
-    ctx.fillStyle='rgba(6,34,43,.24)';ctx.fillRect(x,y,w,h);
-    for(let i=0;i<75;i++){
+    ctx.globalAlpha=1;ctx.fillStyle=material.calm?'rgba(35,76,65,.15)':'rgba(6,34,43,.24)';ctx.fillRect(x,y,w,h);
+    for(let i=0;i<(material.calm?25:75);i++){
       const alpha=.08+.23*Math.pow(Math.max(0,Math.sin(t*.8+i*1.71)),6);
       ctx.fillStyle='rgba(255,240,187,'+alpha+')';
       ctx.fillRect(x+(i*137.43)%w,y+(i*83.91)%h,3+i%6,1);
@@ -48,3 +48,4 @@
   }
   window.WhisperwindAssets={metrics,draw,water,tile};
 })();
+

@@ -18,9 +18,8 @@ test('pending sale journal recovers both ownership and existing coin balances',(
 });
 test('home list omits malformed legacy records without deleting saved ownership',()=>{
   const handlers={},legacy={name:'Old record',owner:'Owner'},valid={id:'plot_01',owner:'Owner'};
-  const estate={neighborhoods:[{id:'whisperwind_01',plots:[legacy,valid,null]}]};
+  const estate={neighborhoods:[{id:'whisperwind_01',plots:[legacy,valid]}]};
   // Legacy records with no identifier must not reach buttons that require an address.
-  estate.neighborhoods[0].plots.pop();
   require('../lib/town_routes')({app:{get(url,fn){handlers[url]=fn;},post(){}},DATA:root,root,loadEstateNeighborhoods:()=>estate});
   let result;handlers['/api/town/homes']({}, {json(value){result=value;}});
   assert.equal(result.plots.length,25);assert.ok(result.plots.every(p=>typeof p.id==='string'));
@@ -45,6 +44,9 @@ test('newcomer grants are once per account; multiple paid homes stay protected',
   H.transact(p,'Player','move',profiles);assert.equal(profiles.Player.world.residence.plotId,p.id);
 });
 test('decoration rejects arbitrary assets, oversized payloads and blocked entrances',()=>{
+  assert.throws(()=>H.decorate({objects:[],exterior:{roof:'neon'}}),/roof color/);
+  assert.equal(H.decorate({objects:[],exterior:{roof:'moss'}}).exterior.roof,'moss');
+  assert.equal(H.decorate({objects:[]}).exterior.roof,'original');
   assert.throws(()=>H.decorate({objects:[{asset:'/evil.png',x:350,y:400}]}),/Invalid/);
   assert.throws(()=>H.decorate({objects:[{asset:'wwhd_bed',x:600,y:730}]}),/entrance/);
   assert.throws(()=>H.decorate({objects:Array(81).fill({})}),/80/);
@@ -56,6 +58,19 @@ test('estate expansion preserves existing ownership and is idempotent',()=>{
   assert.equal(data.neighborhoods[0].plots.length,25);assert.equal(data.neighborhoods[0].plots[0].owner,'Existing');assert.deepEqual(data.neighborhoods[0].plots[0].decoration,{old:true});
 });
 function world(){const ctx=vm.createContext({window:{},document:{}});vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,canStand};'),ctx);const sc=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json'));ctx.window.test.E.scene=sc;return {sc,canStand:ctx.window.test.canStand};}
+test('hillside stair break remains walkable while the retaining wall blocks walking',()=>{
+  const {sc,canStand}=world();assert.ok(sc.paint.terraces.some(t=>t.height>0));
+  assert.equal(canStand(2600,1020),false);assert.equal(canStand(3000,1020),true);
+  assert.ok(M.route(sc.spawn,{x:3000,y:790},canStand,sc.size).length);
+  assert.ok(sc.objects.filter(o=>o.asset.startsWith('wwhd_tree')).length>60);
+});
+test('painted ground keeps valid RGBA gradient colors',()=>{
+  const context=vm.createContext({window:{},document:{}});
+  vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.WorldForgerEngine={start,loadScene,loadWorldContext};window.drawPaintTest=drawPaint;'),context);
+  const colors=[],c={createRadialGradient(){return {addColorStop(_,color){assert.match(color,/^rgba\(\d+,\d+,\d+,[\d.]+\)$/);colors.push(color);}};},beginPath(){},ellipse(){},fill(){}};
+  context.window.drawPaintTest(c,{paint:{groundDabs:[{kind:'dirt',x:100,y:100,alpha:.3}]}});
+  assert.equal(colors[0],'rgba(125,93,58,0.3)');assert.equal(colors[1],'rgba(125,93,58,0)');
+});
 test('all houses and landmark entrances have reachable paths from the plaza',()=>{
   const {sc,canStand}=world();assert.equal(sc.hotspots.filter(h=>h.plotId).length,24);
   for(const h of sc.hotspots.filter(h=>h.type==='door'||h.type==='home')){
@@ -72,5 +87,25 @@ test('NPC pauses for interaction and resumes movement safely',()=>{
 test('every NPC and pet atlas frame stays inside its source PNG',()=>{
   const data=JSON.parse(read('public/assets/whisperwind_hd/v1/npc_skins.json'));
   for(const skin of [...Object.values(data.skins),...Object.values(data.pets)]){const im=fs.readFileSync(path.join(root,'public',skin.src));const frames=Array.isArray(skin.frames)?skin.frames:Object.values(skin.frames).flat();for(const r of frames)assert.ok(r.x>=0&&r.y>=0&&r.x+r.w<=im.readUInt32BE(16)&&r.y+r.h<=im.readUInt32BE(20));}
+});
+
+test('saved town layouts survive new store instances without rewriting shipped scenes',()=>{
+ const os=require('node:os'),T=require('../lib/town_scene_store'),dir=fs.mkdtempSync(path.join(os.tmpdir(),'gameforge-scenes-'));
+ try{const source=read('public/assets/worlds/whisperwind_hd_waterfront.json'),scene=JSON.parse(source);scene.name='Saved editor layout';T.save(dir,scene);
+ assert.equal(JSON.parse(fs.readFileSync(T.resolve(root,dir,scene.id))).name,'Saved editor layout');assert.equal(read('public/assets/worlds/whisperwind_hd_waterfront.json'),source);
+ assert.deepEqual(T.list(dir),[scene.id+'.json']);assert.throws(()=>T.resolve(root,dir,'../users'),/Invalid/);assert.throws(()=>T.save(dir,{id:'../../users',size:{w:1000,h:1000}}),/Whisperwind/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+test('only an authenticated world admin can save persistent town layouts',()=>{
+ const os=require('node:os'),dir=fs.mkdtempSync(path.join(os.tmpdir(),'gameforge-scene-auth-')),handlers={};let cookie;
+ const api=require('../lib/town_routes')({app:{get(){},post(url,fn){handlers[url]=fn;}},DATA:dir,root,users:()=>({Admin:{password:'fixture'},Player:{password:'fixture'}}),pets:()=>({}),canAdmin:name=>name==='Admin'});
+ const response=()=>({code:200,status(code){this.code=code;return this;},json(data){this.data=data;}}),scene=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json'));
+ try{api.login({headers:{}},{cookie(name,value){cookie=name+'='+value;}},'Player');let res=response();handlers['/api/town/admin/scene']({method:'POST',headers:{cookie},body:{sceneId:scene.id,scene}},res);assert.equal(res.code,403);
+ api.login({headers:{}},{cookie(name,value){cookie=name+'='+value;}},'Admin');res=response();handlers['/api/town/admin/scene']({method:'POST',headers:{cookie},body:{sceneId:scene.id,scene}},res);assert.equal(res.data.ok,true);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+test('lake shore and mansion are reachable while lake water is blocked',()=>{
+ const {sc,canStand}=world();assert.equal(canStand(5570,1950),false);
+ for(const id of ['old_mansion_door','orchard_lake_shore']){const h=sc.hotspots.find(h=>h.id===id);assert.equal(canStand(h.x,h.y),true,id);assert.ok(M.route(sc.spawn,h,canStand,sc.size).length,id);}
 });
 

@@ -15,10 +15,11 @@ async function run(){
   assert.equal((await request(url+'/list',{username:owner,price:30},bc)).status,409);
   await request(url+'/list',{price:30},oc);await request(url+'/unlist',{},oc);
   assert.equal((await request(url+'/buy',{},bc)).status,409);
-  const decoration={objects:[{asset:'wwhd_sofa',x:350,y:450,scale:1,rotation:90}],floor:'stone',wall:'blue',privacy:'private',exterior:{style:'apartment',accent:'blue',sign:'My river home'}};
+  const decoration={objects:[{asset:'wwhd_sofa',x:350,y:450,scale:1,rotation:90}],floor:'stone',wall:'blue',privacy:'private',exterior:{style:'apartment',accent:'blue',roof:'plum',sign:'My river home'}};
   r=await request(url+'/decorate',{decoration},oc);assert.equal(r.status,200);
   assert.equal((await request('/api/town/home-scene/'+plot.id,null,bc)).status,403);
-  r=await request('/api/town/home-scene/'+plot.id,null,oc);assert.equal(r.data.home.decoration.exterior.sign,'My river home');assert.equal(r.data.objects[0].rotation,Math.PI/2);assert.equal(r.data.home.canEdit,true);
+  r=await request('/api/town/home-scene/'+plot.id,null,oc);assert.equal(r.data.home.decoration.exterior.sign,'My river home');assert.equal(r.data.objects[0].rotation,Math.PI/2);assert.equal(r.data.home.canEdit,true);assert.equal(r.data.objects[0].collide.length,4);assert.ok(r.data.objects[0].collide[2]>0);
+  assert.equal(r.data.home.decoration.exterior.roof,'plum');assert.equal(r.data.size.w,1200*plot.roomScale);assert.equal(r.data.objects[0].x,350*plot.roomScale);
   await new Promise((resolve,reject)=>{const ws=new WebSocket(base.replace('http','ws'),{headers:{Cookie:bc}}),timer=setTimeout(()=>{ws.close();reject(Error('Private home websocket response missing'));},3000);ws.on('open',()=>ws.send(JSON.stringify({type:'worldJoin',username:owner,sceneId:'home__'+plot.id})));ws.on('message',raw=>{const m=JSON.parse(raw);if(m.type==='error'){assert.equal(m.code,'home_access');clearTimeout(timer);ws.close();resolve();}});ws.on('error',reject);});
   console.log('PASS: authenticated ownership, cancel listing, saved decoration, private HTTP and socket access');
   await request(url+'/list',{price:30},oc);
@@ -37,3 +38,4 @@ async function run(){
   console.log('PASS: one winner in concurrent resale, exact coin transfer, shop inventory, admin denial, story and logout');
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
+
