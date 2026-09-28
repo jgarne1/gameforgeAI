@@ -38,7 +38,7 @@ function key(ev){const down=ev.type==='keydown',k=ev.key.toLowerCase();if(['arro
     if(k==='i'&&down){showBackpack();ev.preventDefault();return}if(k==='b'&&down){E.debug=!E.debug;const b=$('#wfDebug');if(b)b.classList.toggle('on',E.debug);return}if(k==='escape'&&down){hideHomeBox();hideBackpack();return}E.keys[k]=down;ev.preventDefault()}}
 async function start(o){
   o=o||{};E.username=o.username||localStorage.getItem('gf_user')||'Wanderer';E.displayName=E.username;E.onClose=o.onClose;
-  mount();await loadWorldContext();await loadScene(o.sceneId||new URLSearchParams(location.search).get('scene')||'whisperwind_v2_hub');connectWorldSocket();E.last=performance.now();cancelAnimationFrame(E.raf);E.raf=requestAnimationFrame(loop);
+  oSpawnId=o.spawnId||'';mount();await loadWorldContext();await loadScene(o.sceneId||new URLSearchParams(location.search).get('scene')||'whisperwind_v2_hub');connectWorldSocket();E.last=performance.now();cancelAnimationFrame(E.raf);E.raf=requestAnimationFrame(loop);
 }
 async function loadWorldContext(){
   const box=$('#wfProfile');
@@ -69,12 +69,14 @@ function renderProfile(){
     '<div style="margin-top:9px"><button id="wfProfileBag" style="pointer-events:auto;border:1px solid #33445e;background:#101b2b;color:#d8ecff;border-radius:10px;padding:7px 9px;font-weight:900">Open Backpack</button></div>';
   setTimeout(()=>{const b=$('#wfProfileBag');if(b)b.onclick=showBackpack},0);
 }
+let oSpawnId='';
 async function loadScene(id,spawn){
+  if(String(id).startsWith('shadow_woods_')){location.href='/games/world.html?scene='+encodeURIComponent(id);return;}
   E.sceneId=id||'whisperwind_v2_hub';$('#wfFade')?.classList.add('on');
   try{
     const [sc,cat]=await Promise.all([loadJson('/assets/worlds/'+E.sceneId+'.json'),loadJson('/assets/worlds/world_asset_catalog.json').catch(()=>loadJson('/data/world_asset_catalog.json'))]);
     E.scene=sc;E.catalog={};(cat.assets||[]).forEach(a=>E.catalog[a.id]=a);
-    const p=spawn||sc.spawn||{};E.player.x=Number(p.x||E.player.x||100);E.player.y=Number(p.y||E.player.y||100);E.player.face=p.face||E.player.face||'down';
+    const requested=spawn||oSpawnId;const p=(typeof requested==='string'?(sc.spawnPoints||[]).find(p=>p.id===requested):requested)||sc.spawn||{};E.player.x=Number(p.x??100);E.player.y=Number(p.y??100);E.player.face=p.face||E.player.face||'down';oSpawnId='';
     $('#wfTitle').textContent=sc.name||E.sceneId;$('#wfSub').textContent=sc.mode==='interior'?'Interior scene · E exits/interacts':'Layered hub · doors, stairs, homes, alleys';
     const imgs=[];(sc.objects||[]).forEach(o=>{const a=E.catalog[o.asset];if(a&&a.src)imgs.push(loadImg(a.src))});(sc.effects||[]).forEach(o=>{const a=E.catalog[o.asset];if(a&&a.src)imgs.push(loadImg(a.src))});if(sc.background)imgs.push(loadImg(sc.background));if(sc.playerSprite)imgs.push(loadImg(sc.playerSprite));await Promise.all(imgs);
     toast(sc.name||'Scene loaded');sendWorldJoin();

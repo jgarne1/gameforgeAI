@@ -1251,8 +1251,8 @@
       "x": 315,
       "y": 1090,
       "r": 80,
-      "href": "/games/petworld.html?zone=fishing",
-      "message": "The docks can connect into fishing zones."
+      "href": "/games/world.html?scene=shadow_woods_dock",
+      "message": "Travel to the Shadow Woods fishing dock."
     }
   ],
   "npcs": [

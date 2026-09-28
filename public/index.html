@@ -2256,6 +2256,7 @@ body.gameMode #gameFrame{
 
     <div class="navDivider"></div>
     <div class="navGroupLabel">The Wilds</div>
+    <button onclick="openTownDirect()" id="navTown"><span class="navIcon">🏘️</span>Whisperwind Town</button>
     <button onclick="openWorldDirect()" id="navWorld"><span class="navIcon">🌲</span>Shadow Woods</button>
 
     <div class="navDivider"></div>
@@ -2608,6 +2609,8 @@ let room=null;
 let games=[];
 let loadedGameKey='';
 let directGameKey='';
+let directReturnSection='home';
+function rememberReturnSection(){if(!document.body.classList.contains('directGameMode'))directReturnSection=document.querySelector('.section.active')?.id||'home';}
 let overlayChatCollapsed=false;
 let lastChatCount=0;
 let petProfile=null;
@@ -2897,6 +2900,7 @@ function joinReadyBattle(url){
   if(instanceId&&battleJoinInProgress===instanceId)return;
   battleJoinInProgress=instanceId||battleUrl;
 
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -3568,6 +3572,7 @@ async function loadGames(){
   drawGames();
   drawHomeGames();
   updateQuickStats();
+  if(new URLSearchParams(location.search).get('view')==='games')showSection('play');
 }
 
 function gameIsSolo(g){
@@ -4069,6 +4074,8 @@ function openPetWorldDirect(){
   launchSoloGame(g);
 }
 
+function openTownDirect(){launchSoloGame({id:'world',name:'Whisperwind Town',file:'world.html?scene=whisperwind_v2_hub',minPlayers:1,maxPlayers:1,seats:1});}
+
 function openWorldDirect(){
   let g=games.find(x=>x.id==='world')||{id:'world',name:'Shadow Woods',file:'world.html',minPlayers:1,maxPlayers:1,seats:1};
   launchSoloGame(g);
@@ -4162,6 +4169,7 @@ function openMarketDirect(){
     return;
   }
 
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -4192,6 +4200,7 @@ function openInventory(){
 
   // Inventory is a direct system panel, not a games.json game card.
   // Keep /games/inventory.html as a standalone iframe page so it can use the same shell as PetWorld/Marketplace.
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -4219,6 +4228,7 @@ async function launchSoloGame(g){
     return;
   }
 
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -4310,8 +4320,10 @@ function updateGameExitButton(){
     btn.innerText='🏳 Forfeit Battle';
     btn.title='End this battle as a forfeit. You can still safely return after results.';
   }else{
-    btn.innerText='Exit Game';
-    btn.title='Exit the current game screen.';
+    const direct=document.body.classList.contains('directGameMode');
+    const destination={home:'Home',pet:'Pet Sanctuary',play:'Game Tables'}[directReturnSection]||'Home';
+    btn.innerText=direct?'← Back to '+destination:'Exit Game';
+    btn.title=direct?'Return to '+destination+'.':'Exit the current game screen.';
   }
 }
 
@@ -4324,6 +4336,7 @@ function handleGameExitButton(){
 }
 
 function exitGameMode(){
+  const returnTo=document.body.classList.contains('directGameMode')?directReturnSection:'play';
   document.body.classList.remove('gameMode');
   document.body.classList.remove('directGameMode');
   gameArea.classList.add('hidden');
@@ -4334,7 +4347,7 @@ function exitGameMode(){
   directGameKey='';
   loadedGameKey='';
   launcherLoadedGameKey='';
-  showSection('play');
+  showSection(returnTo);
   updateGameExitButton();
 }
 
@@ -4958,6 +4971,10 @@ window.addEventListener('message',function(e){
 
   if(msg.type==='launcherStartGame'){
     handleLauncherStartGame(msg);
+  }
+
+  if(msg.type==='openGameLibrary'&&e.origin===location.origin&&e.source===gameFrame.contentWindow){
+    exitGameMode();showSection('play');return;
   }
 
   if(msg.type==='gameExitRequested'){

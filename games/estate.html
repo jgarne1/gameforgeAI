@@ -28,7 +28,7 @@
 <script>
 let GAME_CONTEXT=null;
 function playerName(){try{return (GAME_CONTEXT&&GAME_CONTEXT.username)||localStorage.getItem('gf_user')||'Wanderer';}catch(e){return 'Wanderer';}}
-function start(){const boot=document.getElementById('boot');if(boot)boot.style.display='none';if(!window.RPGSceneEngine){alert('RPG engine did not load.');return;}window.RPGSceneEngine.start({username:playerName(),onClose:function(){if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'estate'},'*');}}});}
+function start(){const scene=new URLSearchParams(location.search).get('scene')||'whisperwind_village';if(scene!=='whisperwind_village'){location.replace('/games/world.html?scene='+encodeURIComponent(scene));return;}const boot=document.getElementById('boot');if(boot)boot.style.display='none';if(!window.RPGSceneEngine){alert('RPG engine did not load.');return;}window.RPGSceneEngine.start({username:playerName(),onClose:function(){if(window.parent&&window.parent!==window){window.parent.postMessage({type:'gameExitRequested',gameId:'estate'},'*');}}});}
 window.addEventListener('message',function(ev){const m=ev.data||{};if(m.type==='GAME_CONTEXT'){GAME_CONTEXT=m.data||GAME_CONTEXT;try{localStorage.setItem('gf_user',GAME_CONTEXT.username||'Wanderer');}catch(e){}}if(m.type==='gameSetup'&&m.username){GAME_CONTEXT=GAME_CONTEXT||{};GAME_CONTEXT.username=m.username;try{localStorage.setItem('gf_user',m.username);}catch(e){}}});
 setTimeout(start,100);
 </script>

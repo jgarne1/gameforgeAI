@@ -4281,7 +4281,7 @@ app.post('/api/admin/world-forger/save',(req,res)=>{
     const target=path.join(sceneDir,sceneId+'.json');
     if(!target.startsWith(sceneDir))return res.status(400).json({ok:false,error:'Invalid scene path'});
     if(Array.isArray(scene.collisions)){
-      scene.blockers=scene.collisions.filter(c=>c&&c.type!=='polygon').map(c=>({id:c.id,label:c.label,x:Number(c.x||0),y:Number(c.y||0),w:Number(c.w||0),h:Number(c.h||0)}));
+      scene.blockers=scene.collisions.filter(Boolean).map(c=>({...c}));
     }
     fs.mkdirSync(sceneDir,{recursive:true});
     fs.writeFileSync(target,JSON.stringify(scene,null,2));
@@ -4321,7 +4321,8 @@ app.post('/api/admin/world-forger/delete',(req,res)=>{
 app.get('/api/world-forger/scenes',(req,res)=>{
   try{
     const sceneDir=path.join(__dirname,'public','assets','worlds');
-    const files=fs.existsSync(sceneDir)?fs.readdirSync(sceneDir).filter(f=>f.endsWith('.json')):[];
+    const metadataFiles=new Set(['world_scenes.json','world_asset_catalog.json','world_prefabs.json']);
+    const files=fs.existsSync(sceneDir)?fs.readdirSync(sceneDir).filter(f=>f.endsWith('.json')&&!metadataFiles.has(f)):[];
     const scenes=files.map(file=>{
       const full=path.join(sceneDir,file);
       let data={};

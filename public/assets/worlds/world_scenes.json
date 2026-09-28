@@ -16,6 +16,26 @@
       "id": "riverbend_cottage_interior",
       "name": "Riverbend Cottage Interior",
       "path": "/assets/worlds/riverbend_cottage_interior.json"
+    },
+    {
+      "id": "shadow_woods_dock",
+      "name": "Shadow Woods - Fishing Dock",
+      "path": "/assets/worlds/shadow_woods_dock.json"
+    },
+    {
+      "id": "shadow_woods_river_bend",
+      "name": "Shadow Woods - River Bend",
+      "path": "/assets/worlds/shadow_woods_river_bend.json"
+    },
+    {
+      "id": "shadow_woods_crystal_cave",
+      "name": "Shadow Woods - Crystal Cave",
+      "path": "/assets/worlds/shadow_woods_crystal_cave.json"
+    },
+    {
+      "id": "shadow_woods_scroll_test",
+      "name": "Shadow Woods - Scrolling Overworld Test",
+      "path": "/assets/worlds/shadow_woods_scroll_test.json"
     }
   ]
 }
