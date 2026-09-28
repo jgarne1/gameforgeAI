@@ -1,0 +1,714 @@
+{
+  "playerPack": "/assets/whisperwind_hd/v1/manifest.json",
+  "time": {
+    "mode": "fixed",
+    "fixed": "day"
+  },
+  "lighting": {
+    "brightness": 1,
+    "fog": 0
+  },
+  "previewOnly": true,
+  "id": "whisperwind_hd_waterfront",
+  "name": "Whisperwind \u2014 Waterfront Preview",
+  "size": {
+    "w": 2400,
+    "h": 1900
+  },
+  "groundSkin": "whisperwind",
+  "spawn": {
+    "x": 1200,
+    "y": 930,
+    "face": "up"
+  },
+  "spawnPoints": [
+    {
+      "id": "from_tavern",
+      "x": 1210,
+      "y": 840,
+      "face": "down"
+    }
+  ],
+  "objects": [
+    {
+      "id": "paving_960_420",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 420,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_420",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 420,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_420",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 420,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_420",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 420,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_420",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 420,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_960_548",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 548,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_548",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 548,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_548",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 548,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_548",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 548,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_548",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 548,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_960_676",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 676,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_676",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 676,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_676",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 676,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_676",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 676,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_676",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 676,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_960_804",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 804,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_804",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 804,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_804",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 804,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_804",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 804,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_804",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 804,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_960_932",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 932,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_932",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 932,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_932",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 932,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_932",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 932,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_932",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 932,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_448_1060",
+      "asset": "wwhd_paving",
+      "x": 448,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_576_1060",
+      "asset": "wwhd_paving",
+      "x": 576,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_704_1060",
+      "asset": "wwhd_paving",
+      "x": 704,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_832_1060",
+      "asset": "wwhd_paving",
+      "x": 832,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_960_1060",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_1060",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_1060",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_1060",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_1060",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1600_1060",
+      "asset": "wwhd_paving",
+      "x": 1600,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1728_1060",
+      "asset": "wwhd_paving",
+      "x": 1728,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1856_1060",
+      "asset": "wwhd_paving",
+      "x": 1856,
+      "y": 1060,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_448_1188",
+      "asset": "wwhd_paving",
+      "x": 448,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_576_1188",
+      "asset": "wwhd_paving",
+      "x": 576,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_704_1188",
+      "asset": "wwhd_paving",
+      "x": 704,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_832_1188",
+      "asset": "wwhd_paving",
+      "x": 832,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_960_1188",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_1188",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_1188",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_1188",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_1188",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1600_1188",
+      "asset": "wwhd_paving",
+      "x": 1600,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1728_1188",
+      "asset": "wwhd_paving",
+      "x": 1728,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1856_1188",
+      "asset": "wwhd_paving",
+      "x": 1856,
+      "y": 1188,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_448_1316",
+      "asset": "wwhd_paving",
+      "x": 448,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_576_1316",
+      "asset": "wwhd_paving",
+      "x": 576,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_704_1316",
+      "asset": "wwhd_paving",
+      "x": 704,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_832_1316",
+      "asset": "wwhd_paving",
+      "x": 832,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_960_1316",
+      "asset": "wwhd_paving",
+      "x": 960,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1088_1316",
+      "asset": "wwhd_paving",
+      "x": 1088,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1216_1316",
+      "asset": "wwhd_paving",
+      "x": 1216,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1344_1316",
+      "asset": "wwhd_paving",
+      "x": 1344,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1472_1316",
+      "asset": "wwhd_paving",
+      "x": 1472,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1600_1316",
+      "asset": "wwhd_paving",
+      "x": 1600,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1728_1316",
+      "asset": "wwhd_paving",
+      "x": 1728,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "paving_1856_1316",
+      "asset": "wwhd_paving",
+      "x": 1856,
+      "y": 1316,
+      "layer": "terrain"
+    },
+    {
+      "id": "hd_tavern",
+      "asset": "wwhd_tavern",
+      "x": 1220,
+      "y": 785,
+      "layer": "buildings",
+      "collide": [
+        -210,
+        -230,
+        420,
+        195
+      ]
+    },
+    {
+      "id": "quay_460",
+      "asset": "wwhd_quay",
+      "x": 460,
+      "y": 1408,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_812",
+      "asset": "wwhd_quay",
+      "x": 812,
+      "y": 1408,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_1164",
+      "asset": "wwhd_quay",
+      "x": 1164,
+      "y": 1408,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_1516",
+      "asset": "wwhd_quay",
+      "x": 1516,
+      "y": 1408,
+      "layer": "structures"
+    },
+    {
+      "id": "fishing_pier",
+      "asset": "wwhd_dock",
+      "x": 1400,
+      "y": 1510,
+      "layer": "structures"
+    },
+    {
+      "id": "tree_0",
+      "asset": "wwhd_tree",
+      "x": 260,
+      "y": 580,
+      "layer": "props",
+      "collide": [
+        -22,
+        -24,
+        44,
+        32
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_1",
+      "asset": "wwhd_tree",
+      "x": 260,
+      "y": 1000,
+      "layer": "props",
+      "collide": [
+        -22,
+        -24,
+        44,
+        32
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_2",
+      "asset": "wwhd_tree",
+      "x": 1990,
+      "y": 580,
+      "layer": "props",
+      "collide": [
+        -22,
+        -24,
+        44,
+        32
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_3",
+      "asset": "wwhd_tree",
+      "x": 1990,
+      "y": 1000,
+      "layer": "props",
+      "collide": [
+        -22,
+        -24,
+        44,
+        32
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_4",
+      "asset": "wwhd_tree",
+      "x": 710,
+      "y": 340,
+      "layer": "props",
+      "collide": [
+        -22,
+        -24,
+        44,
+        32
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_5",
+      "asset": "wwhd_tree",
+      "x": 1710,
+      "y": 340,
+      "layer": "props",
+      "collide": [
+        -22,
+        -24,
+        44,
+        32
+      ],
+      "sway": true
+    }
+  ],
+  "terrain": {
+    "water": [
+      {
+        "id": "river",
+        "points": [
+          [
+            0,
+            1400
+          ],
+          [
+            1220,
+            1400
+          ],
+          [
+            1220,
+            1520
+          ],
+          [
+            1580,
+            1520
+          ],
+          [
+            1580,
+            1400
+          ],
+          [
+            2400,
+            1400
+          ],
+          [
+            2400,
+            1900
+          ],
+          [
+            0,
+            1900
+          ]
+        ],
+        "blocksWalking": true,
+        "fishable": false
+      }
+    ]
+  },
+  "waterMaterial": {
+    "src": "/assets/whisperwind_hd/v1/water.png",
+    "tileSize": 640,
+    "speed": 5
+  },
+  "walkable": [
+    {
+      "id": "shore",
+      "points": [
+        [
+          120,
+          300
+        ],
+        [
+          2180,
+          300
+        ],
+        [
+          2180,
+          1390
+        ],
+        [
+          1580,
+          1390
+        ],
+        [
+          1580,
+          1515
+        ],
+        [
+          1220,
+          1515
+        ],
+        [
+          1220,
+          1390
+        ],
+        [
+          120,
+          1390
+        ]
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "tavern_door",
+      "type": "door",
+      "label": "Enter Driftwood Tavern",
+      "x": 1210,
+      "y": 820,
+      "r": 85,
+      "targetScene": "whisperwind_hd_tavern",
+      "targetSpawn": "from_street"
+    },
+    {
+      "id": "dock_notice",
+      "type": "message",
+      "label": "Waterfront",
+      "x": 1400,
+      "y": 1460,
+      "r": 65,
+      "message": "A quiet place to watch the river. Fishing gameplay remains in Shadow Woods during this art preview."
+    }
+  ],
+  "npcs": [],
+  "paths": [],
+  "effects": [],
+  "groundMaterial": {
+    "src": "/assets/whisperwind_hd/v1/materials.png",
+    "sourceRect": {
+      "x": 0,
+      "y": 0,
+      "w": 627,
+      "h": 627
+    },
+    "tileSize": 256
+  }
+}
