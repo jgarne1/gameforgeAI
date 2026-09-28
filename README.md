@@ -1,3 +1,9 @@
+## Canonical game design and AI implementation guide
+
+Start with **[GameForge — The World Remembers: Narrative, Progression & Website Integration DDS](docs/design/GAMEFORGE_NARRATIVE_PROGRESSION_WEBSITE_DDS.md)** and **[AI project entry point](AI_README.md)**. The website hosts the persistent player; the DDS defines story, website navigation, shared state, quest gates, and what to code next. [Repository audit](docs/design/REPOSITORY_CANON_AUDIT.md) separates existing infrastructure from planned work.
+
+---
+
 World Forger Editor Overhaul v6
 
 Drop these files into the repo root, preserving folders.
