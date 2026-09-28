@@ -3,6 +3,8 @@
 <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#060b13;color:#eaf6ff;font-family:system-ui}#boot{padding:32px}a{color:#ffe9a6}</style></head><body>
 <div id="boot">Loading world…</div>
 <script src="/games/js/whisperwind_assets.js?v=1"></script>
+<script src="/games/js/town_motion.js?v=1"></script>
+<script src="/games/js/town_life.js?v=1"></script>
 <script src="/games/js/world_engine.js?v=recovery1"></script>
 <script src="/games/js/shadow_woods_engine.js?v=recovery1"></script>
 <script>
@@ -20,7 +22,7 @@ function leaveWorld(){
 async function startWorld(){
   var params=new URLSearchParams(location.search),scene=params.get('scene')||'shadow_woods_dock';
   try{
-    var r=await fetch('/assets/worlds/'+encodeURIComponent(scene)+'.json',{cache:'no-store'});
+    var r=await fetch(scene.startsWith('home__')?'/api/town/home-scene/'+encodeURIComponent(scene.slice(6)):'/assets/worlds/'+encodeURIComponent(scene)+'.json',{cache:'no-store'});
     if(!r.ok)throw Error('Scene unavailable: '+scene);
     var config=await r.json();
     var engine=config.mode!=='interior'&&scene.indexOf('shadow_woods_')===0?ShadowWoodsEngine:WorldForgerEngine;

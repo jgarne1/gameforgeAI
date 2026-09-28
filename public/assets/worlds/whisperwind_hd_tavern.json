@@ -10,7 +10,7 @@
   },
   "previewOnly": true,
   "id": "whisperwind_hd_tavern",
-  "name": "Driftwood Tavern \u2014 Interior Preview",
+  "name": "Driftwood Tavern",
   "mode": "interior",
   "size": {
     "w": 1100,
@@ -129,6 +129,16 @@
       "r": 65,
       "targetScene": "whisperwind_hd_waterfront",
       "targetSpawn": "from_tavern"
+    },
+    {
+      "id": "supper",
+      "type": "shop",
+      "label": "Supper and Supplies",
+      "x": 340,
+      "y": 420,
+      "r": 100,
+      "shopId": "snack_shack",
+      "message": "Mara sets out supper. Ordinary kindness holds a place together."
     }
   ],
   "npcs": [],

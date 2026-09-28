@@ -51,3 +51,6 @@ Production acceptance requires full direction/frame review, believable terrain t
 ## Generation provenance
 
 Artwork was made with the built-in image-generation tool, using the owner-approved Whisperwind concept as a style reference. Prompt recipes: isolated warm-stone/timber tavern with transparent background; 2×2 dock/quay/paving/tree atlas; 4×2 player/dog directional-idle atlas; 4×4 matching player walking atlas; opaque teal repeatable water texture; 2×2 bar/table/fireplace/rug atlas. All requests specify detailed crisp pixel clusters, fixed elevated JRPG view, consistent upper-left light, no scene backdrop, labels, text, or franchise copies. Actual image dimensions and selected rectangles are authoritative in the manifest, not the requested prompt dimensions.
+
+
+Expanded town pack: see TOWN_BUILD_V2.md and TOWN_ASSET_PROMPTS.md for architecture, three NPC animation sheets, window animal overlays, street props, furnishings, and ownership-safe customization.

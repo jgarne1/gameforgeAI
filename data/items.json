@@ -3523,5 +3523,73 @@
       "fishing",
       "legendary"
     ]
+  },
+  "driftwood_rod": {
+    "id": "driftwood_rod",
+    "name": "Driftwood Rod",
+    "category": "fishing_equipment",
+    "rarity": "common",
+    "description": "A river-town starter rod. Collectible tackle; fishing currently supplies a shared rod.",
+    "image": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "basePrice": 35,
+    "sellValue": 17,
+    "tags": [
+      "fishing",
+      "tackle"
+    ],
+    "defaultShopId": "whisperwind_tackle"
+  },
+  "plain_hook": {
+    "id": "plain_hook",
+    "name": "Plain Hook",
+    "category": "fishing_equipment",
+    "rarity": "common",
+    "description": "A simple hook for your tackle collection.",
+    "image": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "basePrice": 8,
+    "sellValue": 4,
+    "tags": [
+      "fishing",
+      "tackle"
+    ],
+    "defaultShopId": "whisperwind_tackle"
+  },
+  "root_worm": {
+    "id": "root_worm",
+    "name": "Root Worm Bait",
+    "category": "fishing_equipment",
+    "rarity": "common",
+    "description": "River bait for your tackle collection. Bait is not consumed by current fishing.",
+    "image": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "basePrice": 16,
+    "sellValue": 8,
+    "tags": [
+      "fishing",
+      "tackle"
+    ],
+    "defaultShopId": "whisperwind_tackle"
+  },
+  "glow_lure": {
+    "id": "glow_lure",
+    "name": "Glow Lure",
+    "category": "fishing_equipment",
+    "rarity": "common",
+    "description": "A luminous lure for your tackle collection. Equipment bonuses are planned.",
+    "image": "/assets/items/placeholder_item.png",
+    "stackable": true,
+    "usable": false,
+    "basePrice": 45,
+    "sellValue": 22,
+    "tags": [
+      "fishing",
+      "tackle"
+    ],
+    "defaultShopId": "whisperwind_tackle"
   }
 }

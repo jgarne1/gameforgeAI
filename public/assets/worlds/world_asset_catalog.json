@@ -529,12 +529,12 @@
       "sourceRect": {
         "x": 44,
         "y": 89,
-        "w": 583,
+        "w": 608,
         "h": 511
       },
       "displaySize": {
         "w": 300,
-        "h": 263
+        "h": 252
       },
       "placeOrigin": {
         "x": 0.5,
@@ -554,14 +554,14 @@
       "src": "/assets/whisperwind_hd/v1/furniture.png",
       "category": "prop",
       "sourceRect": {
-        "x": 627,
+        "x": 674,
         "y": 168,
-        "w": 587,
+        "w": 540,
         "h": 438
       },
       "displaySize": {
         "w": 155,
-        "h": 116
+        "h": 126
       },
       "placeOrigin": {
         "x": 0.5,
@@ -948,6 +948,346 @@
         "v1"
       ],
       "status": "prototype"
+    },
+    {
+      "id": "wwhd_cottage",
+      "name": "Garden Cottage",
+      "src": "/assets/whisperwind_hd/v1/buildings.png",
+      "category": "building",
+      "sourceRect": {
+        "x": 33,
+        "y": 109,
+        "w": 570,
+        "h": 492
+      },
+      "displaySize": {
+        "w": 360,
+        "h": 311
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_apartment",
+      "name": "Lantern Apartment",
+      "src": "/assets/whisperwind_hd/v1/buildings.png",
+      "category": "building",
+      "sourceRect": {
+        "x": 672,
+        "y": 31,
+        "w": 567,
+        "h": 597
+      },
+      "displaySize": {
+        "w": 380,
+        "h": 400
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_bakery",
+      "name": "Market Bakery",
+      "src": "/assets/whisperwind_hd/v1/buildings.png",
+      "category": "building",
+      "sourceRect": {
+        "x": 47,
+        "y": 652,
+        "w": 563,
+        "h": 561
+      },
+      "displaySize": {
+        "w": 400,
+        "h": 399
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_pet_center",
+      "name": "Pet Center",
+      "src": "/assets/whisperwind_hd/v1/buildings.png",
+      "category": "building",
+      "sourceRect": {
+        "x": 683,
+        "y": 650,
+        "w": 548,
+        "h": 571
+      },
+      "displaySize": {
+        "w": 410,
+        "h": 427
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_fishing_shop",
+      "name": "River Tackle Fishing Outfitter",
+      "src": "/assets/whisperwind_hd/v1/fishing_shop.png",
+      "category": "building",
+      "sourceRect": {
+        "x": 48,
+        "y": 0,
+        "w": 1258,
+        "h": 1140
+      },
+      "displaySize": {
+        "w": 430,
+        "h": 390
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_bed",
+      "name": "Bed",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/home_furniture.png",
+      "sourceRect": {
+        "x": 31,
+        "y": 21,
+        "w": 493,
+        "h": 501
+      },
+      "displaySize": {
+        "w": 185,
+        "h": 188
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_sofa",
+      "name": "Sofa",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/home_furniture.png",
+      "sourceRect": {
+        "x": 570,
+        "y": 131,
+        "w": 473,
+        "h": 379
+      },
+      "displaySize": {
+        "w": 200,
+        "h": 160
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_bookcase",
+      "name": "Bookcase",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/home_furniture.png",
+      "sourceRect": {
+        "x": 1151,
+        "y": 6,
+        "w": 333,
+        "h": 536
+      },
+      "displaySize": {
+        "w": 150,
+        "h": 241
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_plant",
+      "name": "Fern",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/home_furniture.png",
+      "sourceRect": {
+        "x": 65,
+        "y": 559,
+        "w": 382,
+        "h": 413
+      },
+      "displaySize": {
+        "w": 90,
+        "h": 97
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_desk",
+      "name": "Writing Desk",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/home_furniture.png",
+      "sourceRect": {
+        "x": 535,
+        "y": 542,
+        "w": 487,
+        "h": 461
+      },
+      "displaySize": {
+        "w": 190,
+        "h": 180
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_chair",
+      "name": "Chair",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/home_furniture.png",
+      "sourceRect": {
+        "x": 1143,
+        "y": 560,
+        "w": 253,
+        "h": 440
+      },
+      "displaySize": {
+        "w": 80,
+        "h": 139
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_bench",
+      "name": "Park Bench",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/street_props.png",
+      "sourceRect": {
+        "x": 55,
+        "y": 109,
+        "w": 430,
+        "h": 360
+      },
+      "displaySize": {
+        "w": 155,
+        "h": 130
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_lamp",
+      "name": "Street Lantern",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/street_props.png",
+      "sourceRect": {
+        "x": 684,
+        "y": 10,
+        "w": 176,
+        "h": 494
+      },
+      "displaySize": {
+        "w": 60,
+        "h": 168
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_flowers",
+      "name": "Flower Planter",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/street_props.png",
+      "sourceRect": {
+        "x": 1076,
+        "y": 95,
+        "w": 390,
+        "h": 393
+      },
+      "displaySize": {
+        "w": 70,
+        "h": 71
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_fountain",
+      "name": "Town Fountain",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/street_props.png",
+      "sourceRect": {
+        "x": 38,
+        "y": 554,
+        "w": 448,
+        "h": 408
+      },
+      "displaySize": {
+        "w": 240,
+        "h": 219
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_noticeboard",
+      "name": "Chronicle Board",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/street_props.png",
+      "sourceRect": {
+        "x": 577,
+        "y": 522,
+        "w": 371,
+        "h": 471
+      },
+      "displaySize": {
+        "w": 140,
+        "h": 178
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
+    },
+    {
+      "id": "wwhd_stall",
+      "name": "Market Stall",
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/v1/street_props.png",
+      "sourceRect": {
+        "x": 1053,
+        "y": 522,
+        "w": 454,
+        "h": 472
+      },
+      "displaySize": {
+        "w": 210,
+        "h": 218
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      }
     }
   ]
 }

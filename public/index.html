@@ -3393,6 +3393,7 @@ function clearRuntimeState(){
 }
 
 function logout(){
+  fetch('/api/town/logout',{method:'POST',keepalive:true}).catch(()=>{});
   localStorage.removeItem('gf_user');
   localStorage.removeItem('gf_admin');
   sessionStorage.setItem('gf_session_nonce',String(Date.now()));
@@ -4086,9 +4087,15 @@ function openEstateNeighborhood(){
   return openHometown();
 }
 
-function openMyHouse(){
-  let g=games.find(x=>x.id==='estate_house')||{id:'estate_house',name:'Starter Cottage',file:'estate.html?scene=riverbend_cottage_interior',minPlayers:1,maxPlayers:1,seats:1};
-  launchSoloGame(g);
+async function openMyHouse(){
+  try{
+    const r=await fetch('/api/town/homes');const data=await r.json();
+    const allOwned=(data.plots||[]).filter(p=>p.owner&&p.owner.toLowerCase()===String(me).toLowerCase());
+    const owned=allOwned.filter(p=>p.id.startsWith('town_home_'));
+    if(!owned.length&&allOwned.length){launchSoloGame(games.find(x=>x.id==='estate_house')||{id:'estate_house',name:'Starter Cottage',file:'estate.html?scene=riverbend_cottage_interior',minPlayers:1,maxPlayers:1,seats:1});return;}
+    if(owned.length){launchSoloGame({id:'estate_house',name:owned[0].name,file:'world.html?scene=home__'+encodeURIComponent(owned[0].id),minPlayers:1,maxPlayers:1,seats:1});return;}
+  }catch(e){}
+  return openHometown();
 }
 
 

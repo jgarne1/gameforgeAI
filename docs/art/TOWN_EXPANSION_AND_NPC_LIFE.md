@@ -1,6 +1,6 @@
 # Hometown expansion and authored NPC life
 
-Owner direction, 2026-09-28: grow the original Whisperwind art into a larger walkable hometown for at least 20 players plus NPCs. Residents should enact small recognizable moments of life, rather than wander randomly. This is the next art/content slice; routines and the full town are not implemented by this note. Narrative identities, quest order and server-authorized effects remain governed by the DDS.
+Owner direction, 2026-09-28: grow the original Whisperwind art into a larger walkable hometown for at least 20 players plus NPCs. Residents should enact small recognizable moments of life, rather than wander randomly. The next slice has now implemented the first expanded town and three bounded residents; see TOWN_BUILD_V2.md for shipped draft behavior and remaining work. Narrative identities, quest order and server-authorized effects remain governed by the DDS.
 
 ## Assets and layout
 
@@ -27,4 +27,4 @@ The sidebar's Neighborhood entry is now Hometown. Its default is `whisperwind_hd
 
 `publicWorldContext` projects a `hometown` destination through `lib/hometown.js`. `public/js/hometown.js` consumes that projection in the shell and PetWorld. No residence selection defaults every new and existing user to Whisperwind without rewriting existing saves.
 
-Future trusted purchase/move handlers may persist `profile.world.residence = {neighborhoodId, plotId}` after validating the transaction and ownership. Owning multiple houses alone must not silently choose a new hometown. The resolver verifies the selected plot still belongs to the user and that the neighborhood's `hometownSceneId` (or `sceneId`) is available. Missing/released/invalid residences fall back safely to Whisperwind. Purchasing and moving UI are still future work; there is no new client-writable residence endpoint in this slice.
+Future trusted purchase/move handlers may persist `profile.world.residence = {neighborhoodId, plotId}` after validating the transaction and ownership. Owning multiple houses alone must not silently choose a new hometown. The resolver verifies the selected plot still belongs to the user and that the neighborhood's `hometownSceneId` (or `sceneId`) is available. Missing/released/invalid residences fall back safely to Whisperwind. Authenticated owner-validated buy/move actions now select residence through lib/town_routes.js. Browser-provided usernames cannot set residence.

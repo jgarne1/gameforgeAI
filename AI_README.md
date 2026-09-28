@@ -37,3 +37,14 @@ The owner allows replacing legacy artwork. Replace references in bounded distric
 Player grounding: `player.motion` in the manifest sets speed, distance per walking cycle, and foot-contact shadow. Frames advance from actual movement distance; stopped/blocked players must not slide or keep stepping. Walking frame rows are measured from the source, not inferred from a perfect 4×4 grid. See the asset guide before changing them.
 
 The sidebar's Neighborhood entry is now **Hometown**, defaulting all users to this Whisperwind. Read [town expansion, NPC life and future residence routing](docs/art/TOWN_EXPANSION_AND_NPC_LIFE.md). Use the server's `hometown` projection for launch destinations; a future verified home purchase/move can change the selected residence. Authored NPC routines and the larger modular asset set are the next town content slice; they are not yet shipped.
+
+
+## Expanded Hometown implementation (2026-09-28)
+
+Read `docs/art/TOWN_BUILD_V2.md` before editing town housing or NPCs. Read `docs/art/TOWN_ASSET_PROMPTS.md` for the matching built-in imagegen source specifications. `whisperwind_hd_waterfront` is now the expanded town, with 24 new addresses, five enterable landmarks and a distinct home template. Existing plot IDs/data are preserved.
+
+`lib/town_routes.js` protects new housing/shop/story/skin mutations with the login session; do not reintroduce browser username authority. `lib/town_housing.js` defines owner-only listing/unlisting/decorating and validated coin transfer. Owned homes are never purchasable without a current owner listing. `town_transaction.json` must be recovered before changing balances/estate state. `home__<plotId>` HTTP and socket joins must both honor privacy. Legacy release/claim cannot bypass these rules.
+
+NPC skins are independent from identities and routes. World Composer links to the NPC Skins tool; persistent overrides live in DATA/town_npc_skins.json. Add four-direction source frames in npc_skins.json. TownMotion handles bounded routes and player pathfinding; TownLife handles resident presentation, introductions, housing controls and ambient animal overlays. Keep scenery pets distinct from the user's saved companion.
+
+Home editor decorations accept only approved catalog IDs and constrained coordinates/scales/rotations. Exterior facade changes keep fixed door/collision positions; use local facade customization rather than replacing plot identities. New shop products are collectible tackle; equipment effects remain future work. The introduction story is not the full DDS C0 campaign. Twenty-player capacity remains unverified.

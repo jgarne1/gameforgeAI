@@ -36,8 +36,8 @@ test('waterfront doorway round-trip is reachable and water cannot be walked into
   const api=context.window.test,shore=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json')),
     inside=JSON.parse(read('public/assets/worlds/whisperwind_hd_tavern.json'));
   api.E.scene=shore;
-  assert.equal(api.canStand(1210,840),true);assert.equal(api.canStand(1200,700),false);
-  assert.equal(api.canStand(1400,1490),true);assert.equal(api.canStand(1400,1800),false);
+  assert.equal(api.canStand(575,845),true);assert.equal(api.canStand(600,700),false);
+  assert.equal(api.canStand(1200,3410),true);assert.equal(api.canStand(1400,3500),false);
   const door=shore.hotspots.find(h=>h.type==='door'),exit=inside.hotspots.find(h=>h.type==='door');
   assert.equal(door.targetScene,inside.id);assert.ok(inside.spawnPoints.some(p=>p.id===door.targetSpawn));
   assert.equal(exit.targetScene,shore.id);assert.ok(shore.spawnPoints.some(p=>p.id===exit.targetSpawn));
@@ -48,7 +48,7 @@ function motionRuntime(){
   const prompt={style:{},classList:{add(){},remove(){}}};
   const draws=[];
   const context=vm.createContext({window:{},document:{querySelector:()=>prompt},innerWidth:1280,innerHeight:720,
-    performance:{now:()=>0},WhisperwindAssets:{draw(...args){draws.push(args)}}});
+    performance:{now:()=>0},TownLife:{update(){}},WhisperwindAssets:{draw(...args){draws.push(args)}}});
   vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};',
     'window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,update,drawPackShadow,drawPackCharacter};'),context);
   const api=context.window.test;api.E.pack=manifest;
@@ -70,9 +70,9 @@ test('walking pace is frame-rate independent and release has no coasting',()=>{
   }
 });
 test('blocked movement cannot advance the walking cycle',()=>{
-  const {api}=motionRuntime();api.E.player.x=2179;api.E.keys.d=true;
+  const {api}=motionRuntime();api.E.player.x=5099;api.E.keys.d=true;
   api.update(1/60);
-  assert.equal(api.E.player.x,2179);assert.equal(api.E.player.walkDistance,0);
+  assert.equal(api.E.player.x,5099);assert.equal(api.E.player.walkDistance,0);
   assert.equal(api.E.player.moving,false);
 });
 test('contact shadow overlaps the sole and walk frames follow traveled distance',()=>{

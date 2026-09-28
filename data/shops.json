@@ -639,5 +639,35 @@
     "keeperImage": "/assets/shops/meadow_tackle_keeper.png",
     "forceOpen": false,
     "forceClosed": false
+  },
+  "whisperwind_tackle": {
+    "id": "whisperwind_tackle",
+    "name": "River Tackle \u2014 Whisperwind",
+    "icon": "\ud83c\udfa3",
+    "theme": "fishing",
+    "description": "Rods, hooks and bait for the Whisperwind fish collector.",
+    "unlock": {
+      "type": "starter"
+    },
+    "items": {
+      "driftwood_rod": {
+        "price": 35,
+        "stock": "infinite"
+      },
+      "plain_hook": {
+        "price": 8,
+        "stock": "infinite"
+      },
+      "root_worm": {
+        "price": 16,
+        "stock": "infinite"
+      },
+      "glow_lure": {
+        "price": 45,
+        "stock": "infinite"
+      }
+    },
+    "forceOpen": true,
+    "forceClosed": false
   }
 }
