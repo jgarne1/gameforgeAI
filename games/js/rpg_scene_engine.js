@@ -31,16 +31,16 @@ function mount(){
   const root=document.createElement('div');root.className='gfRpgRoot';
   root.innerHTML=`
     <canvas id="gfRpgCanvas"></canvas>
-    <div class="gfAreaTitle"><b>Whisperwind Village</b><span>Production object-town pass • asset-pack scaffold • editable</span></div>
+    <div class="gfAreaTitle"><b>Whisperwind Village</b><span>Explore the neighborhood and meet its residents</span></div>
     <button class="gfLeave" id="gfLeave">Leave</button>
     <div class="gfPrompt hidden" id="gfPrompt"></div>
     <div class="gfQuest" id="gfQuest"><button title="Close" id="gfQuestClose">×</button><b>Whisperwind 1.0</b><p>Walk the larger FF-style town. Press <b>E</b> near NPCs, doors, plots, board, and docks.</p></div>
     <div class="gfDialog hidden" id="gfDialog"><button id="gfDialogClose">×</button><div id="gfDialogText"></div></div>
-    <div class="gfChat"><span>Press Enter to chat later.</span></div>
-    <div class="gfHotbar"><button>Bag</button><button>Build</button><button>Map</button></div>`;
+    <div class="gfHotbar"><button id="gfInventory">Backpack</button></div>`;
   document.body.appendChild(root);
   state.canvas=root.querySelector('#gfRpgCanvas');state.ctx=state.canvas.getContext('2d');
   root.querySelector('#gfLeave').onclick=()=>stop();
+  root.querySelector('#gfInventory').onclick=()=>{location.href='/games/inventory.html';};
   root.querySelector('#gfQuestClose').onclick=()=>root.querySelector('#gfQuest').classList.add('hidden');
   root.querySelector('#gfDialogClose').onclick=closeDialog;
   window.addEventListener('resize',resize);resize();

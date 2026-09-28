@@ -1,0 +1,4014 @@
+{
+  "playerPack": "/assets/whisperwind_hd/v1/manifest.json",
+  "time": {
+    "mode": "fixed",
+    "fixed": "day"
+  },
+  "lighting": {
+    "brightness": 1,
+    "fog": 0
+  },
+  "previewOnly": true,
+  "id": "whisperwind_hd_waterfront",
+  "name": "Whisperwind Hometown",
+  "size": {
+    "w": 5200,
+    "h": 3700
+  },
+  "groundSkin": "whisperwind",
+  "groundMaterial": {
+    "src": "/assets/whisperwind_hd/v1/materials.png",
+    "sourceRect": {
+      "x": 0,
+      "y": 0,
+      "w": 627,
+      "h": 627
+    },
+    "tileSize": 256
+  },
+  "waterMaterial": {
+    "src": "/assets/whisperwind_hd/v1/water.png",
+    "tileSize": 640,
+    "speed": 5
+  },
+  "spawn": {
+    "x": 1200,
+    "y": 1300,
+    "face": "down"
+  },
+  "objects": [
+    {
+      "id": "street_380_900",
+      "asset": "wwhd_paving",
+      "x": 380,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_508_900",
+      "asset": "wwhd_paving",
+      "x": 508,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_636_900",
+      "asset": "wwhd_paving",
+      "x": 636,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_764_900",
+      "asset": "wwhd_paving",
+      "x": 764,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_892_900",
+      "asset": "wwhd_paving",
+      "x": 892,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1020_900",
+      "asset": "wwhd_paving",
+      "x": 1020,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1148_900",
+      "asset": "wwhd_paving",
+      "x": 1148,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1276_900",
+      "asset": "wwhd_paving",
+      "x": 1276,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1404_900",
+      "asset": "wwhd_paving",
+      "x": 1404,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1532_900",
+      "asset": "wwhd_paving",
+      "x": 1532,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1660_900",
+      "asset": "wwhd_paving",
+      "x": 1660,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1788_900",
+      "asset": "wwhd_paving",
+      "x": 1788,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1916_900",
+      "asset": "wwhd_paving",
+      "x": 1916,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2044_900",
+      "asset": "wwhd_paving",
+      "x": 2044,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2172_900",
+      "asset": "wwhd_paving",
+      "x": 2172,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2300_900",
+      "asset": "wwhd_paving",
+      "x": 2300,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2428_900",
+      "asset": "wwhd_paving",
+      "x": 2428,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2556_900",
+      "asset": "wwhd_paving",
+      "x": 2556,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2684_900",
+      "asset": "wwhd_paving",
+      "x": 2684,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2812_900",
+      "asset": "wwhd_paving",
+      "x": 2812,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2940_900",
+      "asset": "wwhd_paving",
+      "x": 2940,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3068_900",
+      "asset": "wwhd_paving",
+      "x": 3068,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3196_900",
+      "asset": "wwhd_paving",
+      "x": 3196,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3324_900",
+      "asset": "wwhd_paving",
+      "x": 3324,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3452_900",
+      "asset": "wwhd_paving",
+      "x": 3452,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3580_900",
+      "asset": "wwhd_paving",
+      "x": 3580,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3708_900",
+      "asset": "wwhd_paving",
+      "x": 3708,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3836_900",
+      "asset": "wwhd_paving",
+      "x": 3836,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3964_900",
+      "asset": "wwhd_paving",
+      "x": 3964,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4092_900",
+      "asset": "wwhd_paving",
+      "x": 4092,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4220_900",
+      "asset": "wwhd_paving",
+      "x": 4220,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4348_900",
+      "asset": "wwhd_paving",
+      "x": 4348,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4476_900",
+      "asset": "wwhd_paving",
+      "x": 4476,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4604_900",
+      "asset": "wwhd_paving",
+      "x": 4604,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4732_900",
+      "asset": "wwhd_paving",
+      "x": 4732,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4860_900",
+      "asset": "wwhd_paving",
+      "x": 4860,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4988_900",
+      "asset": "wwhd_paving",
+      "x": 4988,
+      "y": 900,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_380_1500",
+      "asset": "wwhd_paving",
+      "x": 380,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_508_1500",
+      "asset": "wwhd_paving",
+      "x": 508,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_636_1500",
+      "asset": "wwhd_paving",
+      "x": 636,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_764_1500",
+      "asset": "wwhd_paving",
+      "x": 764,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_892_1500",
+      "asset": "wwhd_paving",
+      "x": 892,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1020_1500",
+      "asset": "wwhd_paving",
+      "x": 1020,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1148_1500",
+      "asset": "wwhd_paving",
+      "x": 1148,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1276_1500",
+      "asset": "wwhd_paving",
+      "x": 1276,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1404_1500",
+      "asset": "wwhd_paving",
+      "x": 1404,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1532_1500",
+      "asset": "wwhd_paving",
+      "x": 1532,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1660_1500",
+      "asset": "wwhd_paving",
+      "x": 1660,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1788_1500",
+      "asset": "wwhd_paving",
+      "x": 1788,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1916_1500",
+      "asset": "wwhd_paving",
+      "x": 1916,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2044_1500",
+      "asset": "wwhd_paving",
+      "x": 2044,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2172_1500",
+      "asset": "wwhd_paving",
+      "x": 2172,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2300_1500",
+      "asset": "wwhd_paving",
+      "x": 2300,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2428_1500",
+      "asset": "wwhd_paving",
+      "x": 2428,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2556_1500",
+      "asset": "wwhd_paving",
+      "x": 2556,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2684_1500",
+      "asset": "wwhd_paving",
+      "x": 2684,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2812_1500",
+      "asset": "wwhd_paving",
+      "x": 2812,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2940_1500",
+      "asset": "wwhd_paving",
+      "x": 2940,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3068_1500",
+      "asset": "wwhd_paving",
+      "x": 3068,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3196_1500",
+      "asset": "wwhd_paving",
+      "x": 3196,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3324_1500",
+      "asset": "wwhd_paving",
+      "x": 3324,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3452_1500",
+      "asset": "wwhd_paving",
+      "x": 3452,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3580_1500",
+      "asset": "wwhd_paving",
+      "x": 3580,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3708_1500",
+      "asset": "wwhd_paving",
+      "x": 3708,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3836_1500",
+      "asset": "wwhd_paving",
+      "x": 3836,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3964_1500",
+      "asset": "wwhd_paving",
+      "x": 3964,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4092_1500",
+      "asset": "wwhd_paving",
+      "x": 4092,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4220_1500",
+      "asset": "wwhd_paving",
+      "x": 4220,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4348_1500",
+      "asset": "wwhd_paving",
+      "x": 4348,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4476_1500",
+      "asset": "wwhd_paving",
+      "x": 4476,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4604_1500",
+      "asset": "wwhd_paving",
+      "x": 4604,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4732_1500",
+      "asset": "wwhd_paving",
+      "x": 4732,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4860_1500",
+      "asset": "wwhd_paving",
+      "x": 4860,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4988_1500",
+      "asset": "wwhd_paving",
+      "x": 4988,
+      "y": 1500,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_380_2100",
+      "asset": "wwhd_paving",
+      "x": 380,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_508_2100",
+      "asset": "wwhd_paving",
+      "x": 508,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_636_2100",
+      "asset": "wwhd_paving",
+      "x": 636,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_764_2100",
+      "asset": "wwhd_paving",
+      "x": 764,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_892_2100",
+      "asset": "wwhd_paving",
+      "x": 892,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1020_2100",
+      "asset": "wwhd_paving",
+      "x": 1020,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1148_2100",
+      "asset": "wwhd_paving",
+      "x": 1148,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1276_2100",
+      "asset": "wwhd_paving",
+      "x": 1276,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1404_2100",
+      "asset": "wwhd_paving",
+      "x": 1404,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1532_2100",
+      "asset": "wwhd_paving",
+      "x": 1532,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1660_2100",
+      "asset": "wwhd_paving",
+      "x": 1660,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1788_2100",
+      "asset": "wwhd_paving",
+      "x": 1788,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1916_2100",
+      "asset": "wwhd_paving",
+      "x": 1916,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2044_2100",
+      "asset": "wwhd_paving",
+      "x": 2044,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2172_2100",
+      "asset": "wwhd_paving",
+      "x": 2172,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2300_2100",
+      "asset": "wwhd_paving",
+      "x": 2300,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2428_2100",
+      "asset": "wwhd_paving",
+      "x": 2428,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2556_2100",
+      "asset": "wwhd_paving",
+      "x": 2556,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2684_2100",
+      "asset": "wwhd_paving",
+      "x": 2684,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2812_2100",
+      "asset": "wwhd_paving",
+      "x": 2812,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2940_2100",
+      "asset": "wwhd_paving",
+      "x": 2940,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3068_2100",
+      "asset": "wwhd_paving",
+      "x": 3068,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3196_2100",
+      "asset": "wwhd_paving",
+      "x": 3196,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3324_2100",
+      "asset": "wwhd_paving",
+      "x": 3324,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3452_2100",
+      "asset": "wwhd_paving",
+      "x": 3452,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3580_2100",
+      "asset": "wwhd_paving",
+      "x": 3580,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3708_2100",
+      "asset": "wwhd_paving",
+      "x": 3708,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3836_2100",
+      "asset": "wwhd_paving",
+      "x": 3836,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3964_2100",
+      "asset": "wwhd_paving",
+      "x": 3964,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4092_2100",
+      "asset": "wwhd_paving",
+      "x": 4092,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4220_2100",
+      "asset": "wwhd_paving",
+      "x": 4220,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4348_2100",
+      "asset": "wwhd_paving",
+      "x": 4348,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4476_2100",
+      "asset": "wwhd_paving",
+      "x": 4476,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4604_2100",
+      "asset": "wwhd_paving",
+      "x": 4604,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4732_2100",
+      "asset": "wwhd_paving",
+      "x": 4732,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4860_2100",
+      "asset": "wwhd_paving",
+      "x": 4860,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4988_2100",
+      "asset": "wwhd_paving",
+      "x": 4988,
+      "y": 2100,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_380_2700",
+      "asset": "wwhd_paving",
+      "x": 380,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_508_2700",
+      "asset": "wwhd_paving",
+      "x": 508,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_636_2700",
+      "asset": "wwhd_paving",
+      "x": 636,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_764_2700",
+      "asset": "wwhd_paving",
+      "x": 764,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_892_2700",
+      "asset": "wwhd_paving",
+      "x": 892,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1020_2700",
+      "asset": "wwhd_paving",
+      "x": 1020,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1148_2700",
+      "asset": "wwhd_paving",
+      "x": 1148,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1276_2700",
+      "asset": "wwhd_paving",
+      "x": 1276,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1404_2700",
+      "asset": "wwhd_paving",
+      "x": 1404,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1532_2700",
+      "asset": "wwhd_paving",
+      "x": 1532,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1660_2700",
+      "asset": "wwhd_paving",
+      "x": 1660,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1788_2700",
+      "asset": "wwhd_paving",
+      "x": 1788,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1916_2700",
+      "asset": "wwhd_paving",
+      "x": 1916,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2044_2700",
+      "asset": "wwhd_paving",
+      "x": 2044,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2172_2700",
+      "asset": "wwhd_paving",
+      "x": 2172,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2300_2700",
+      "asset": "wwhd_paving",
+      "x": 2300,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2428_2700",
+      "asset": "wwhd_paving",
+      "x": 2428,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2556_2700",
+      "asset": "wwhd_paving",
+      "x": 2556,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2684_2700",
+      "asset": "wwhd_paving",
+      "x": 2684,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2812_2700",
+      "asset": "wwhd_paving",
+      "x": 2812,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2940_2700",
+      "asset": "wwhd_paving",
+      "x": 2940,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3068_2700",
+      "asset": "wwhd_paving",
+      "x": 3068,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3196_2700",
+      "asset": "wwhd_paving",
+      "x": 3196,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3324_2700",
+      "asset": "wwhd_paving",
+      "x": 3324,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3452_2700",
+      "asset": "wwhd_paving",
+      "x": 3452,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3580_2700",
+      "asset": "wwhd_paving",
+      "x": 3580,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3708_2700",
+      "asset": "wwhd_paving",
+      "x": 3708,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3836_2700",
+      "asset": "wwhd_paving",
+      "x": 3836,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3964_2700",
+      "asset": "wwhd_paving",
+      "x": 3964,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4092_2700",
+      "asset": "wwhd_paving",
+      "x": 4092,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4220_2700",
+      "asset": "wwhd_paving",
+      "x": 4220,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4348_2700",
+      "asset": "wwhd_paving",
+      "x": 4348,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4476_2700",
+      "asset": "wwhd_paving",
+      "x": 4476,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4604_2700",
+      "asset": "wwhd_paving",
+      "x": 4604,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4732_2700",
+      "asset": "wwhd_paving",
+      "x": 4732,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4860_2700",
+      "asset": "wwhd_paving",
+      "x": 4860,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4988_2700",
+      "asset": "wwhd_paving",
+      "x": 4988,
+      "y": 2700,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_380_3180",
+      "asset": "wwhd_paving",
+      "x": 380,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_508_3180",
+      "asset": "wwhd_paving",
+      "x": 508,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_636_3180",
+      "asset": "wwhd_paving",
+      "x": 636,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_764_3180",
+      "asset": "wwhd_paving",
+      "x": 764,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_892_3180",
+      "asset": "wwhd_paving",
+      "x": 892,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1020_3180",
+      "asset": "wwhd_paving",
+      "x": 1020,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1148_3180",
+      "asset": "wwhd_paving",
+      "x": 1148,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1276_3180",
+      "asset": "wwhd_paving",
+      "x": 1276,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1404_3180",
+      "asset": "wwhd_paving",
+      "x": 1404,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1532_3180",
+      "asset": "wwhd_paving",
+      "x": 1532,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1660_3180",
+      "asset": "wwhd_paving",
+      "x": 1660,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1788_3180",
+      "asset": "wwhd_paving",
+      "x": 1788,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_1916_3180",
+      "asset": "wwhd_paving",
+      "x": 1916,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2044_3180",
+      "asset": "wwhd_paving",
+      "x": 2044,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2172_3180",
+      "asset": "wwhd_paving",
+      "x": 2172,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2300_3180",
+      "asset": "wwhd_paving",
+      "x": 2300,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2428_3180",
+      "asset": "wwhd_paving",
+      "x": 2428,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2556_3180",
+      "asset": "wwhd_paving",
+      "x": 2556,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2684_3180",
+      "asset": "wwhd_paving",
+      "x": 2684,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2812_3180",
+      "asset": "wwhd_paving",
+      "x": 2812,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_2940_3180",
+      "asset": "wwhd_paving",
+      "x": 2940,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3068_3180",
+      "asset": "wwhd_paving",
+      "x": 3068,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3196_3180",
+      "asset": "wwhd_paving",
+      "x": 3196,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3324_3180",
+      "asset": "wwhd_paving",
+      "x": 3324,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3452_3180",
+      "asset": "wwhd_paving",
+      "x": 3452,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3580_3180",
+      "asset": "wwhd_paving",
+      "x": 3580,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3708_3180",
+      "asset": "wwhd_paving",
+      "x": 3708,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3836_3180",
+      "asset": "wwhd_paving",
+      "x": 3836,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_3964_3180",
+      "asset": "wwhd_paving",
+      "x": 3964,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4092_3180",
+      "asset": "wwhd_paving",
+      "x": 4092,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4220_3180",
+      "asset": "wwhd_paving",
+      "x": 4220,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4348_3180",
+      "asset": "wwhd_paving",
+      "x": 4348,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4476_3180",
+      "asset": "wwhd_paving",
+      "x": 4476,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4604_3180",
+      "asset": "wwhd_paving",
+      "x": 4604,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4732_3180",
+      "asset": "wwhd_paving",
+      "x": 4732,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4860_3180",
+      "asset": "wwhd_paving",
+      "x": 4860,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "street_4988_3180",
+      "asset": "wwhd_paving",
+      "x": 4988,
+      "y": 3180,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_380",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 380,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_508",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 508,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_636",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 636,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_764",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 764,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_892",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 892,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1020",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1020,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1148",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1148,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1276",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1276,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1404",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1404,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1532",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1532,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1660",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1660,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1788",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1788,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_1916",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 1916,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2044",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2044,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2172",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2172,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2300",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2300,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2428",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2428,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2556",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2556,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2684",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2684,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2812",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2812,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_2940",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 2940,
+      "layer": "terrain"
+    },
+    {
+      "id": "spine_3068",
+      "asset": "wwhd_paving",
+      "x": 1200,
+      "y": 3068,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_850",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 850,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_978",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 978,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_1106",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 1106,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_1234",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 1234,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_1362",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 1362,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_1490",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 1490,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_1618",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 1618,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_1746",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 1746,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_1874",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 1874,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2002",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2002,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2130",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2130,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2258",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2258,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2386",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2386,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2514",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2514,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2642",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2642,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2770",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2770,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_2898",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 2898,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_3026",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 3026,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_1800_3154",
+      "asset": "wwhd_paving",
+      "x": 1800,
+      "y": 3154,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_850",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 850,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_978",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 978,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_1106",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 1106,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_1234",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 1234,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_1362",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 1362,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_1490",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 1490,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_1618",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 1618,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_1746",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 1746,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_1874",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 1874,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2002",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2002,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2130",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2130,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2258",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2258,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2386",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2386,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2514",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2514,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2642",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2642,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2770",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2770,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_2898",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 2898,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_3026",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 3026,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_2400_3154",
+      "asset": "wwhd_paving",
+      "x": 2400,
+      "y": 3154,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_850",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 850,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_978",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 978,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_1106",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 1106,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_1234",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 1234,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_1362",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 1362,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_1490",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 1490,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_1618",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 1618,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_1746",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 1746,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_1874",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 1874,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2002",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2002,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2130",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2130,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2258",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2258,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2386",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2386,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2514",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2514,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2642",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2642,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2770",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2770,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_2898",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 2898,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_3026",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 3026,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3000_3154",
+      "asset": "wwhd_paving",
+      "x": 3000,
+      "y": 3154,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_850",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 850,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_978",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 978,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_1106",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 1106,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_1234",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 1234,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_1362",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 1362,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_1490",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 1490,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_1618",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 1618,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_1746",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 1746,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_1874",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 1874,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2002",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2002,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2130",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2130,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2258",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2258,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2386",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2386,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2514",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2514,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2642",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2642,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2770",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2770,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_2898",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 2898,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_3026",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 3026,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_3600_3154",
+      "asset": "wwhd_paving",
+      "x": 3600,
+      "y": 3154,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_850",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 850,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_978",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 978,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_1106",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 1106,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_1234",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 1234,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_1362",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 1362,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_1490",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 1490,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_1618",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 1618,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_1746",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 1746,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_1874",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 1874,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2002",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2002,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2130",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2130,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2258",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2258,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2386",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2386,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2514",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2514,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2642",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2642,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2770",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2770,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_2898",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 2898,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_3026",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 3026,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4200_3154",
+      "asset": "wwhd_paving",
+      "x": 4200,
+      "y": 3154,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_850",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 850,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_978",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 978,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_1106",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 1106,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_1234",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 1234,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_1362",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 1362,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_1490",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 1490,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_1618",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 1618,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_1746",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 1746,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_1874",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 1874,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2002",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2002,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2130",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2130,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2258",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2258,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2386",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2386,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2514",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2514,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2642",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2642,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2770",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2770,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_2898",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 2898,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_3026",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 3026,
+      "layer": "terrain"
+    },
+    {
+      "id": "cross_4800_3154",
+      "asset": "wwhd_paving",
+      "x": 4800,
+      "y": 3154,
+      "layer": "terrain"
+    },
+    {
+      "id": "town_home_01",
+      "asset": "wwhd_cottage",
+      "x": 1800,
+      "y": 800,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_01",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_02",
+      "asset": "wwhd_cottage",
+      "x": 2400,
+      "y": 800,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_02",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_03",
+      "asset": "wwhd_cottage",
+      "x": 3000,
+      "y": 800,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_03",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_04",
+      "asset": "wwhd_cottage",
+      "x": 3600,
+      "y": 800,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_04",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_05",
+      "asset": "wwhd_cottage",
+      "x": 4200,
+      "y": 800,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_05",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_06",
+      "asset": "wwhd_cottage",
+      "x": 4800,
+      "y": 800,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_06",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_07",
+      "asset": "wwhd_cottage",
+      "x": 1800,
+      "y": 1400,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_07",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_08",
+      "asset": "wwhd_cottage",
+      "x": 2400,
+      "y": 1400,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_08",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_09",
+      "asset": "wwhd_cottage",
+      "x": 3000,
+      "y": 1400,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_09",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_10",
+      "asset": "wwhd_cottage",
+      "x": 3600,
+      "y": 1400,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_10",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_11",
+      "asset": "wwhd_cottage",
+      "x": 4200,
+      "y": 1400,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_11",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_12",
+      "asset": "wwhd_cottage",
+      "x": 4800,
+      "y": 1400,
+      "layer": "buildings",
+      "baseAsset": "wwhd_cottage",
+      "plotId": "town_home_12",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_13",
+      "asset": "wwhd_apartment",
+      "x": 1800,
+      "y": 2000,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_13",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_14",
+      "asset": "wwhd_apartment",
+      "x": 2400,
+      "y": 2000,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_14",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_15",
+      "asset": "wwhd_apartment",
+      "x": 3000,
+      "y": 2000,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_15",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_16",
+      "asset": "wwhd_apartment",
+      "x": 3600,
+      "y": 2000,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_16",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_17",
+      "asset": "wwhd_apartment",
+      "x": 4200,
+      "y": 2000,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_17",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_18",
+      "asset": "wwhd_apartment",
+      "x": 4800,
+      "y": 2000,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_18",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_19",
+      "asset": "wwhd_apartment",
+      "x": 1800,
+      "y": 2600,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_19",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_20",
+      "asset": "wwhd_apartment",
+      "x": 2400,
+      "y": 2600,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_20",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_21",
+      "asset": "wwhd_apartment",
+      "x": 3000,
+      "y": 2600,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_21",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_22",
+      "asset": "wwhd_apartment",
+      "x": 3600,
+      "y": 2600,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_22",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_23",
+      "asset": "wwhd_apartment",
+      "x": 4200,
+      "y": 2600,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_23",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "town_home_24",
+      "asset": "wwhd_apartment",
+      "x": 4800,
+      "y": 2600,
+      "layer": "buildings",
+      "baseAsset": "wwhd_apartment",
+      "plotId": "town_home_24",
+      "collide": [
+        -130,
+        -210,
+        270,
+        195
+      ]
+    },
+    {
+      "id": "tavern",
+      "asset": "wwhd_tavern",
+      "x": 600,
+      "y": 800,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "pet_center",
+      "asset": "wwhd_pet_center",
+      "x": 600,
+      "y": 1400,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "bakery",
+      "asset": "wwhd_bakery",
+      "x": 600,
+      "y": 2000,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "fishing_shop",
+      "asset": "wwhd_fishing_shop",
+      "x": 600,
+      "y": 2600,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "echo_hall",
+      "asset": "wwhd_apartment",
+      "x": 1800,
+      "y": 430,
+      "layer": "buildings",
+      "collide": [
+        -160,
+        -230,
+        320,
+        210
+      ]
+    },
+    {
+      "id": "dock",
+      "asset": "wwhd_dock",
+      "x": 1200,
+      "y": 3410,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_200",
+      "asset": "wwhd_quay",
+      "x": 200,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_552",
+      "asset": "wwhd_quay",
+      "x": 552,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_904",
+      "asset": "wwhd_quay",
+      "x": 904,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_1256",
+      "asset": "wwhd_quay",
+      "x": 1256,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_1608",
+      "asset": "wwhd_quay",
+      "x": 1608,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_1960",
+      "asset": "wwhd_quay",
+      "x": 1960,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_2312",
+      "asset": "wwhd_quay",
+      "x": 2312,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_2664",
+      "asset": "wwhd_quay",
+      "x": 2664,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_3016",
+      "asset": "wwhd_quay",
+      "x": 3016,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_3368",
+      "asset": "wwhd_quay",
+      "x": 3368,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_3720",
+      "asset": "wwhd_quay",
+      "x": 3720,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_4072",
+      "asset": "wwhd_quay",
+      "x": 4072,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_4424",
+      "asset": "wwhd_quay",
+      "x": 4424,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "quay_4776",
+      "asset": "wwhd_quay",
+      "x": 4776,
+      "y": 3320,
+      "layer": "structures"
+    },
+    {
+      "id": "tree_0",
+      "asset": "wwhd_tree",
+      "x": 250,
+      "y": 400,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_1",
+      "asset": "wwhd_tree",
+      "x": 920,
+      "y": 650,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_2",
+      "asset": "wwhd_tree",
+      "x": 300,
+      "y": 1150,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_3",
+      "asset": "wwhd_tree",
+      "x": 920,
+      "y": 1780,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_4",
+      "asset": "wwhd_tree",
+      "x": 300,
+      "y": 2300,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_5",
+      "asset": "wwhd_tree",
+      "x": 1000,
+      "y": 2940,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_6",
+      "asset": "wwhd_tree",
+      "x": 1600,
+      "y": 3050,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_7",
+      "asset": "wwhd_tree",
+      "x": 2300,
+      "y": 3050,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_8",
+      "asset": "wwhd_tree",
+      "x": 3100,
+      "y": 3050,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_9",
+      "asset": "wwhd_tree",
+      "x": 3900,
+      "y": 3050,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_10",
+      "asset": "wwhd_tree",
+      "x": 4700,
+      "y": 3050,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_11",
+      "asset": "wwhd_tree",
+      "x": 5050,
+      "y": 600,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "tree_12",
+      "asset": "wwhd_tree",
+      "x": 5050,
+      "y": 1800,
+      "layer": "props",
+      "collide": [
+        -20,
+        -20,
+        40,
+        30
+      ],
+      "sway": true
+    },
+    {
+      "id": "town_home_01_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2010,
+      "y": 810,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_02_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2610,
+      "y": 810,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_03_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3210,
+      "y": 810,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_03_garden",
+      "asset": "wwhd_tree",
+      "x": 2775,
+      "y": 720,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "town_home_04_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3810,
+      "y": 810,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_05_flowers",
+      "asset": "wwhd_flowers",
+      "x": 4410,
+      "y": 810,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_06_flowers",
+      "asset": "wwhd_flowers",
+      "x": 5010,
+      "y": 810,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_06_garden",
+      "asset": "wwhd_tree",
+      "x": 4575,
+      "y": 720,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "town_home_07_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2010,
+      "y": 1410,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_08_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2610,
+      "y": 1410,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_09_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3210,
+      "y": 1410,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_09_garden",
+      "asset": "wwhd_tree",
+      "x": 2775,
+      "y": 1320,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "town_home_10_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3810,
+      "y": 1410,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_11_flowers",
+      "asset": "wwhd_flowers",
+      "x": 4410,
+      "y": 1410,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_12_flowers",
+      "asset": "wwhd_flowers",
+      "x": 5010,
+      "y": 1410,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_12_garden",
+      "asset": "wwhd_tree",
+      "x": 4575,
+      "y": 1320,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "town_home_13_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2010,
+      "y": 2010,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_14_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2610,
+      "y": 2010,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_15_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3210,
+      "y": 2010,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_15_garden",
+      "asset": "wwhd_tree",
+      "x": 2775,
+      "y": 1920,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "town_home_16_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3810,
+      "y": 2010,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_17_flowers",
+      "asset": "wwhd_flowers",
+      "x": 4410,
+      "y": 2010,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_18_flowers",
+      "asset": "wwhd_flowers",
+      "x": 5010,
+      "y": 2010,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_18_garden",
+      "asset": "wwhd_tree",
+      "x": 4575,
+      "y": 1920,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "town_home_19_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2010,
+      "y": 2610,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_20_flowers",
+      "asset": "wwhd_flowers",
+      "x": 2610,
+      "y": 2610,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_21_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3210,
+      "y": 2610,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_21_garden",
+      "asset": "wwhd_tree",
+      "x": 2775,
+      "y": 2520,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "town_home_22_flowers",
+      "asset": "wwhd_flowers",
+      "x": 3810,
+      "y": 2610,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_23_flowers",
+      "asset": "wwhd_flowers",
+      "x": 4410,
+      "y": 2610,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_24_flowers",
+      "asset": "wwhd_flowers",
+      "x": 5010,
+      "y": 2610,
+      "layer": "props"
+    },
+    {
+      "id": "town_home_24_garden",
+      "asset": "wwhd_tree",
+      "x": 4575,
+      "y": 2520,
+      "layer": "props",
+      "sway": true,
+      "scale": 0.65
+    },
+    {
+      "id": "street_lamp_0",
+      "asset": "wwhd_lamp",
+      "x": 1325,
+      "y": 820,
+      "layer": "props"
+    },
+    {
+      "id": "street_lamp_1",
+      "asset": "wwhd_lamp",
+      "x": 1325,
+      "y": 1420,
+      "layer": "props"
+    },
+    {
+      "id": "street_lamp_2",
+      "asset": "wwhd_lamp",
+      "x": 1325,
+      "y": 2020,
+      "layer": "props"
+    },
+    {
+      "id": "street_lamp_3",
+      "asset": "wwhd_lamp",
+      "x": 1325,
+      "y": 2620,
+      "layer": "props"
+    },
+    {
+      "id": "street_lamp_4",
+      "asset": "wwhd_lamp",
+      "x": 1325,
+      "y": 3120,
+      "layer": "props"
+    },
+    {
+      "id": "bench_0",
+      "asset": "wwhd_bench",
+      "x": 1450,
+      "y": 1100,
+      "layer": "props"
+    },
+    {
+      "id": "bench_1",
+      "asset": "wwhd_bench",
+      "x": 1450,
+      "y": 2350,
+      "layer": "props"
+    },
+    {
+      "id": "bench_2",
+      "asset": "wwhd_bench",
+      "x": 2000,
+      "y": 3050,
+      "layer": "props"
+    },
+    {
+      "id": "bench_3",
+      "asset": "wwhd_bench",
+      "x": 3600,
+      "y": 3050,
+      "layer": "props"
+    },
+    {
+      "id": "plaza_1050_1700",
+      "asset": "wwhd_paving",
+      "x": 1050,
+      "y": 1700,
+      "layer": "terrain"
+    },
+    {
+      "id": "plaza_1050_1828",
+      "asset": "wwhd_paving",
+      "x": 1050,
+      "y": 1828,
+      "layer": "terrain"
+    },
+    {
+      "id": "plaza_1178_1700",
+      "asset": "wwhd_paving",
+      "x": 1178,
+      "y": 1700,
+      "layer": "terrain"
+    },
+    {
+      "id": "plaza_1178_1828",
+      "asset": "wwhd_paving",
+      "x": 1178,
+      "y": 1828,
+      "layer": "terrain"
+    },
+    {
+      "id": "plaza_1306_1700",
+      "asset": "wwhd_paving",
+      "x": 1306,
+      "y": 1700,
+      "layer": "terrain"
+    },
+    {
+      "id": "plaza_1306_1828",
+      "asset": "wwhd_paving",
+      "x": 1306,
+      "y": 1828,
+      "layer": "terrain"
+    },
+    {
+      "id": "plaza_1434_1700",
+      "asset": "wwhd_paving",
+      "x": 1434,
+      "y": 1700,
+      "layer": "terrain"
+    },
+    {
+      "id": "plaza_1434_1828",
+      "asset": "wwhd_paving",
+      "x": 1434,
+      "y": 1828,
+      "layer": "terrain"
+    },
+    {
+      "id": "town_fountain",
+      "asset": "wwhd_fountain",
+      "x": 1370,
+      "y": 1860,
+      "layer": "props",
+      "collide": [
+        -65,
+        -45,
+        130,
+        45
+      ]
+    },
+    {
+      "id": "chronicle_board",
+      "asset": "wwhd_noticeboard",
+      "x": 1275,
+      "y": 1320,
+      "layer": "props"
+    },
+    {
+      "id": "market_stall",
+      "asset": "wwhd_stall",
+      "x": 870,
+      "y": 2000,
+      "layer": "props"
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "door_town_home_01",
+      "type": "home",
+      "label": "Garden Cottage 1",
+      "x": 1775,
+      "y": 820,
+      "r": 75,
+      "plotId": "town_home_01",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_02",
+      "type": "home",
+      "label": "Garden Cottage 2",
+      "x": 2375,
+      "y": 820,
+      "r": 75,
+      "plotId": "town_home_02",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_03",
+      "type": "home",
+      "label": "Garden Cottage 3",
+      "x": 2975,
+      "y": 820,
+      "r": 75,
+      "plotId": "town_home_03",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_04",
+      "type": "home",
+      "label": "Garden Cottage 4",
+      "x": 3575,
+      "y": 820,
+      "r": 75,
+      "plotId": "town_home_04",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_05",
+      "type": "home",
+      "label": "Garden Cottage 5",
+      "x": 4175,
+      "y": 820,
+      "r": 75,
+      "plotId": "town_home_05",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_06",
+      "type": "home",
+      "label": "Garden Cottage 6",
+      "x": 4775,
+      "y": 820,
+      "r": 75,
+      "plotId": "town_home_06",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_07",
+      "type": "home",
+      "label": "Garden Cottage 7",
+      "x": 1775,
+      "y": 1420,
+      "r": 75,
+      "plotId": "town_home_07",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_08",
+      "type": "home",
+      "label": "Garden Cottage 8",
+      "x": 2375,
+      "y": 1420,
+      "r": 75,
+      "plotId": "town_home_08",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_09",
+      "type": "home",
+      "label": "Garden Cottage 9",
+      "x": 2975,
+      "y": 1420,
+      "r": 75,
+      "plotId": "town_home_09",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_10",
+      "type": "home",
+      "label": "Garden Cottage 10",
+      "x": 3575,
+      "y": 1420,
+      "r": 75,
+      "plotId": "town_home_10",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_11",
+      "type": "home",
+      "label": "Garden Cottage 11",
+      "x": 4175,
+      "y": 1420,
+      "r": 75,
+      "plotId": "town_home_11",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_12",
+      "type": "home",
+      "label": "Garden Cottage 12",
+      "x": 4775,
+      "y": 1420,
+      "r": 75,
+      "plotId": "town_home_12",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_13",
+      "type": "home",
+      "label": "Lantern Apartment 13",
+      "x": 1775,
+      "y": 2020,
+      "r": 75,
+      "plotId": "town_home_13",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_14",
+      "type": "home",
+      "label": "Lantern Apartment 14",
+      "x": 2375,
+      "y": 2020,
+      "r": 75,
+      "plotId": "town_home_14",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_15",
+      "type": "home",
+      "label": "Lantern Apartment 15",
+      "x": 2975,
+      "y": 2020,
+      "r": 75,
+      "plotId": "town_home_15",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_16",
+      "type": "home",
+      "label": "Lantern Apartment 16",
+      "x": 3575,
+      "y": 2020,
+      "r": 75,
+      "plotId": "town_home_16",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_17",
+      "type": "home",
+      "label": "Lantern Apartment 17",
+      "x": 4175,
+      "y": 2020,
+      "r": 75,
+      "plotId": "town_home_17",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_18",
+      "type": "home",
+      "label": "Lantern Apartment 18",
+      "x": 4775,
+      "y": 2020,
+      "r": 75,
+      "plotId": "town_home_18",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_19",
+      "type": "home",
+      "label": "Lantern Apartment 19",
+      "x": 1775,
+      "y": 2620,
+      "r": 75,
+      "plotId": "town_home_19",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_20",
+      "type": "home",
+      "label": "Lantern Apartment 20",
+      "x": 2375,
+      "y": 2620,
+      "r": 75,
+      "plotId": "town_home_20",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_21",
+      "type": "home",
+      "label": "Lantern Apartment 21",
+      "x": 2975,
+      "y": 2620,
+      "r": 75,
+      "plotId": "town_home_21",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_22",
+      "type": "home",
+      "label": "Lantern Apartment 22",
+      "x": 3575,
+      "y": 2620,
+      "r": 75,
+      "plotId": "town_home_22",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_23",
+      "type": "home",
+      "label": "Lantern Apartment 23",
+      "x": 4175,
+      "y": 2620,
+      "r": 75,
+      "plotId": "town_home_23",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "door_town_home_24",
+      "type": "home",
+      "label": "Lantern Apartment 24",
+      "x": 4775,
+      "y": 2620,
+      "r": 75,
+      "plotId": "town_home_24",
+      "neighborhoodId": "whisperwind_01"
+    },
+    {
+      "id": "tavern_door",
+      "type": "door",
+      "label": "Enter Driftwood Tavern",
+      "x": 575,
+      "y": 820,
+      "r": 80,
+      "targetScene": "whisperwind_hd_tavern",
+      "targetSpawn": "from_street"
+    },
+    {
+      "id": "pet_center_door",
+      "type": "door",
+      "label": "Enter Pet Center",
+      "x": 575,
+      "y": 1420,
+      "r": 80,
+      "targetScene": "whisperwind_hd_pet_center",
+      "targetSpawn": "from_street"
+    },
+    {
+      "id": "bakery_door",
+      "type": "door",
+      "label": "Enter Market Bakery",
+      "x": 575,
+      "y": 2020,
+      "r": 80,
+      "targetScene": "whisperwind_hd_market",
+      "targetSpawn": "from_street"
+    },
+    {
+      "id": "fishing_shop_door",
+      "type": "door",
+      "label": "Enter Fishing Outfitter",
+      "x": 575,
+      "y": 2620,
+      "r": 80,
+      "targetScene": "whisperwind_hd_fishing_shop",
+      "targetSpawn": "from_street"
+    },
+    {
+      "id": "echo_hall_door",
+      "type": "door",
+      "label": "Enter Echo Hall",
+      "x": 1775,
+      "y": 450,
+      "r": 80,
+      "targetScene": "whisperwind_hd_echo_hall",
+      "targetSpawn": "from_street"
+    },
+    {
+      "id": "town_board",
+      "type": "townGuide",
+      "label": "Chronicle Board and Town Guide",
+      "x": 1200,
+      "y": 1300,
+      "r": 100
+    },
+    {
+      "id": "old_mark",
+      "type": "message",
+      "label": "Inspect the Old Dock Mark",
+      "x": 1400,
+      "y": 3200,
+      "r": 70,
+      "message": "A broken-circle hammer is worn into the stone. The Dockmaster says it has outlasted every storm. For a moment, the river feels warm."
+    },
+    {
+      "id": "woods_path",
+      "type": "door",
+      "label": "Go Fishing \u00b7 Shadow Woods",
+      "x": 1200,
+      "y": 3440,
+      "r": 90,
+      "targetScene": "shadow_woods_dock"
+    }
+  ],
+  "npcs": [
+    {
+      "id": "npc_mira",
+      "name": "Mira",
+      "label": "Talk to Mira",
+      "skinId": "mira",
+      "x": 800,
+      "y": 850,
+      "r": 105,
+      "face": "down",
+      "storyIntro": true,
+      "message": "Mara says a town begins with a warm table. I say it begins with someone carrying the bread. Meet Toma at the Pet Center and our Dockmaster, then choose a home. We have room for another neighbor.",
+      "routine": {
+        "speed": 50,
+        "points": [
+          {
+            "x": 800,
+            "y": 850,
+            "wait": 4,
+            "face": "down"
+          },
+          {
+            "x": 1000,
+            "y": 850,
+            "wait": 6,
+            "face": "down"
+          },
+          {
+            "x": 1000,
+            "y": 1100,
+            "wait": 4,
+            "face": "down"
+          },
+          {
+            "x": 800,
+            "y": 1100,
+            "wait": 6,
+            "face": "down"
+          }
+        ]
+      }
+    },
+    {
+      "id": "npc_toma",
+      "name": "Toma",
+      "label": "Talk to Toma",
+      "skinId": "toma",
+      "x": 800,
+      "y": 1450,
+      "r": 105,
+      "face": "down",
+      "storyIntro": true,
+      "message": "That puppy keeps popping up to greet everyone, and the cat pretends she is not watching. Your own companion is welcome too. A home and a little care can make even a restless creature feel safe.",
+      "routine": {
+        "speed": 50,
+        "points": [
+          {
+            "x": 800,
+            "y": 1450,
+            "wait": 4,
+            "face": "down"
+          },
+          {
+            "x": 1000,
+            "y": 1450,
+            "wait": 6,
+            "face": "down"
+          },
+          {
+            "x": 1000,
+            "y": 1600,
+            "wait": 4,
+            "face": "down"
+          },
+          {
+            "x": 800,
+            "y": 1600,
+            "wait": 6,
+            "face": "down"
+          }
+        ]
+      }
+    },
+    {
+      "id": "npc_dockmaster",
+      "name": "Dockmaster",
+      "label": "Talk to Dockmaster",
+      "skinId": "dockmaster",
+      "x": 950,
+      "y": 3100,
+      "r": 105,
+      "face": "down",
+      "storyIntro": true,
+      "message": "The new fishing outfitter is open, and the path to Shadow Woods is clear. Bring your catches home. See that hammer mark by the quay? The old builders left us more than sturdy stone.",
+      "routine": {
+        "speed": 50,
+        "points": [
+          {
+            "x": 950,
+            "y": 3100,
+            "wait": 4,
+            "face": "down"
+          },
+          {
+            "x": 1200,
+            "y": 3100,
+            "wait": 6,
+            "face": "down"
+          },
+          {
+            "x": 1400,
+            "y": 3100,
+            "wait": 4,
+            "face": "down"
+          },
+          {
+            "x": 1200,
+            "y": 3100,
+            "wait": 6,
+            "face": "down"
+          }
+        ]
+      }
+    }
+  ],
+  "ambient": [
+    {
+      "type": "smoke",
+      "x": 670,
+      "y": 540
+    },
+    {
+      "type": "smoke",
+      "x": 670,
+      "y": 1140
+    },
+    {
+      "type": "smoke",
+      "x": 670,
+      "y": 1740
+    },
+    {
+      "type": "smoke",
+      "x": 670,
+      "y": 2340
+    },
+    {
+      "type": "smoke",
+      "x": 1870,
+      "y": 170
+    },
+    {
+      "type": "windowPet",
+      "pet": "dog",
+      "x": 553,
+      "y": 1300,
+      "w": 25,
+      "h": 35,
+      "offset": 0
+    },
+    {
+      "type": "windowPet",
+      "pet": "cat",
+      "x": 710,
+      "y": 1290,
+      "w": 31,
+      "h": 37,
+      "offset": 4
+    },
+    {
+      "type": "lampGlow",
+      "x": 1330,
+      "y": 715
+    },
+    {
+      "type": "lampGlow",
+      "x": 1330,
+      "y": 1315
+    },
+    {
+      "type": "lampGlow",
+      "x": 1330,
+      "y": 1915
+    },
+    {
+      "type": "lampGlow",
+      "x": 1330,
+      "y": 2515
+    },
+    {
+      "type": "lampGlow",
+      "x": 1330,
+      "y": 3015
+    },
+    {
+      "type": "fountain",
+      "x": 1370,
+      "y": 1780
+    }
+  ],
+  "paths": [],
+  "effects": [],
+  "walkable": [
+    {
+      "id": "town",
+      "points": [
+        [
+          100,
+          150
+        ],
+        [
+          5100,
+          150
+        ],
+        [
+          5100,
+          3280
+        ],
+        [
+          1350,
+          3280
+        ],
+        [
+          1350,
+          3460
+        ],
+        [
+          1050,
+          3460
+        ],
+        [
+          1050,
+          3280
+        ],
+        [
+          100,
+          3280
+        ]
+      ]
+    }
+  ],
+  "terrain": {
+    "water": [
+      {
+        "id": "river",
+        "points": [
+          [
+            0,
+            3290
+          ],
+          [
+            1030,
+            3290
+          ],
+          [
+            1030,
+            3490
+          ],
+          [
+            1370,
+            3490
+          ],
+          [
+            1370,
+            3290
+          ],
+          [
+            5200,
+            3290
+          ],
+          [
+            5200,
+            3700
+          ],
+          [
+            0,
+            3700
+          ]
+        ],
+        "blocksWalking": true
+      }
+    ]
+  },
+  "spawnPoints": [
+    {
+      "id": "from_tavern",
+      "x": 575,
+      "y": 845
+    },
+    {
+      "id": "from_pet_center",
+      "x": 575,
+      "y": 1445
+    },
+    {
+      "id": "from_market",
+      "x": 575,
+      "y": 2045
+    },
+    {
+      "id": "from_fishing_shop",
+      "x": 575,
+      "y": 2645
+    },
+    {
+      "id": "from_echo_hall",
+      "x": 1775,
+      "y": 475
+    }
+  ]
+}

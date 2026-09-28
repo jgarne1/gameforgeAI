@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "defaultScene": "whisperwind_v2_hub",
+  "defaultScene": "whisperwind_hd_waterfront",
   "scenes": [
     {
       "id": "whisperwind_v2_hub",
@@ -16,6 +16,61 @@
       "id": "riverbend_cottage_interior",
       "name": "Riverbend Cottage Interior",
       "path": "/assets/worlds/riverbend_cottage_interior.json"
+    },
+    {
+      "id": "shadow_woods_dock",
+      "name": "Shadow Woods - Fishing Dock",
+      "path": "/assets/worlds/shadow_woods_dock.json"
+    },
+    {
+      "id": "shadow_woods_river_bend",
+      "name": "Shadow Woods - River Bend",
+      "path": "/assets/worlds/shadow_woods_river_bend.json"
+    },
+    {
+      "id": "shadow_woods_crystal_cave",
+      "name": "Shadow Woods - Crystal Cave",
+      "path": "/assets/worlds/shadow_woods_crystal_cave.json"
+    },
+    {
+      "id": "shadow_woods_scroll_test",
+      "name": "Shadow Woods - Scrolling Overworld Test",
+      "path": "/assets/worlds/shadow_woods_scroll_test.json"
+    },
+    {
+      "id": "whisperwind_hd_waterfront",
+      "name": "Whisperwind Hometown",
+      "path": "/assets/worlds/whisperwind_hd_waterfront.json"
+    },
+    {
+      "id": "whisperwind_hd_tavern",
+      "name": "Driftwood Tavern",
+      "path": "/assets/worlds/whisperwind_hd_tavern.json"
+    },
+    {
+      "id": "whisperwind_hd_pet_center",
+      "name": "Pet Center",
+      "path": "/assets/worlds/whisperwind_hd_pet_center.json"
+    },
+    {
+      "id": "whisperwind_hd_market",
+      "name": "Market Bakery",
+      "path": "/assets/worlds/whisperwind_hd_market.json"
+    },
+    {
+      "id": "whisperwind_hd_fishing_shop",
+      "name": "Fishing Outfitter",
+      "path": "/assets/worlds/whisperwind_hd_fishing_shop.json"
+    },
+    {
+      "id": "whisperwind_hd_echo_hall",
+      "name": "Echo Hall",
+      "path": "/assets/worlds/whisperwind_hd_echo_hall.json"
+    },
+    {
+      "id": "whisperwind_hd_home",
+      "name": "Home Interior Template",
+      "path": "/assets/worlds/whisperwind_hd_home.json"
     }
   ]
 }

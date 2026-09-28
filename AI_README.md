@@ -21,3 +21,30 @@ The website shell is the persistent game host. Games and world activities consum
 At DDS publication, the next priority is the shared identity/capability/reward foundation (P0), then Whisperwind's arrival/home/companion slice (P1). Adding unrelated minigames or future towns does not resolve that dependency.
 
 Historical editor/drop-in READMEs remain technical references. Preserve useful IDs, assets and owned player data; development placeholder text may be rewritten during its scoped content implementation. This documentation does not itself enable Story Mode or ship campaign functionality.
+
+## Whisperwind HD artwork and scene editing
+
+The owner approved a new original HD pixel-art town direction. Read [the asset editing guide](docs/art/WHISPERWIND_HD_ASSET_WORKFLOW.md) before changing art, animation, placement, or collision. The first pack is at `public/assets/whisperwind_hd/v1/manifest.json`; asset IDs are added to the existing World Forger catalog. Keep the DDS as narrative authority.
+
+Open `/games/world.html?scene=whisperwind_hd_waterfront` for the art/movement proof, and `/games/world_composer.html?scene=whisperwind_hd_waterfront` to edit it. The tavern door enters `whisperwind_hd_tavern`; its exit returns to the waterfront. These are unreleased art-preview scenes, not campaign progress or housing entitlements.
+
+Use the shared atlas renderer `games/js/whisperwind_assets.js`. Source PNGs are immutable; `sourceRect`, `displaySize`, and `placeOrigin` in the manifest/catalog select and place pieces. Do not draw the entire atlas as one object or assume generated sheets are exactly 1024px. Inspect actual image dimensions and frame bounds.
+
+The player has four directional idle sprites and a first four-frame-per-direction walk sequence. Frame polish and outfit layers remain pending. The dog is an art sample; existing account pets stay authoritative, with pet followers deferred. Water uses the original texture plus runtime currents/shimmer. Tree canopy sway is presentation only; trunk/collision remain fixed. Town expansion must reserve generous streets and gathering areas for at least 20 players plus NPCs; this first district does not validate 20 concurrent clients.
+
+The owner allows replacing legacy artwork. Replace references in bounded districts, then remove assets only after a repository reference audit and a fallback check. Never interpret art replacement as permission to remove pets, inventories, homes, IDs, or campaign canon.
+
+Player grounding: `player.motion` in the manifest sets speed, distance per walking cycle, and foot-contact shadow. Frames advance from actual movement distance; stopped/blocked players must not slide or keep stepping. Walking frame rows are measured from the source, not inferred from a perfect 4×4 grid. See the asset guide before changing them.
+
+The sidebar's Neighborhood entry is now **Hometown**, defaulting all users to this Whisperwind. Read [town expansion, NPC life and future residence routing](docs/art/TOWN_EXPANSION_AND_NPC_LIFE.md). Use the server's `hometown` projection for launch destinations; a future verified home purchase/move can change the selected residence. Authored NPC routines and the larger modular asset set are the next town content slice; they are not yet shipped.
+
+
+## Expanded Hometown implementation (2026-09-28)
+
+Read `docs/art/TOWN_BUILD_V2.md` before editing town housing or NPCs. Read `docs/art/TOWN_ASSET_PROMPTS.md` for the matching built-in imagegen source specifications. `whisperwind_hd_waterfront` is now the expanded town, with 24 new addresses, five enterable landmarks and a distinct home template. Existing plot IDs/data are preserved.
+
+`lib/town_routes.js` protects new housing/shop/story/skin mutations with the login session; do not reintroduce browser username authority. `lib/town_housing.js` defines owner-only listing/unlisting/decorating and validated coin transfer. Owned homes are never purchasable without a current owner listing. `town_transaction.json` must be recovered before changing balances/estate state. `home__<plotId>` HTTP and socket joins must both honor privacy. Legacy release/claim cannot bypass these rules.
+
+NPC skins are independent from identities and routes. World Composer links to the NPC Skins tool; persistent overrides live in DATA/town_npc_skins.json. Add four-direction source frames in npc_skins.json. TownMotion handles bounded routes and player pathfinding; TownLife handles resident presentation, introductions, housing controls and ambient animal overlays. Keep scenery pets distinct from the user's saved companion.
+
+Home editor decorations accept only approved catalog IDs and constrained coordinates/scales/rotations. Exterior facade changes keep fixed door/collision positions; use local facade customization rather than replacing plot identities. New shop products are collectible tackle; equipment effects remain future work. The introduction story is not the full DDS C0 campaign. Twenty-player capacity remains unverified.

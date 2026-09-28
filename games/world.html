@@ -1,1 +1,38 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>World Forger</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#060b13;color:#eaf6ff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}#boot{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#143a31,#050910 70%);z-index:20;text-align:center}#boot h1{margin:0 0 8px;font-family:Georgia,serif;color:#f6e7b2}.muted{color:#a9c5c8;font-weight:700}</style></head><body><div id="boot"><div><h1>World Forger</h1><div class="muted">Loading Whisperwind v2 hub…</div></div></div><script src="/games/js/world_engine.js?v=wfv2hub"></script><script>function gfUser(){try{return localStorage.getItem('gf_user')||'Wanderer'}catch(e){return 'Wanderer'}}window.addEventListener('message',function(ev){var m=ev.data||{};if(m.type==='GAME_CONTEXT'&&m.data&&m.data.username){try{localStorage.setItem('gf_user',m.data.username)}catch(e){}}});setTimeout(function(){var boot=document.getElementById('boot');if(boot)boot.remove();var scene=new URLSearchParams(location.search).get('scene')||'whisperwind_v2_hub';if(!window.WorldForgerEngine){document.body.innerHTML='<div style="padding:32px">World engine failed to load.</div>';return;}WorldForgerEngine.start({sceneId:scene,username:gfUser(),onClose:function(){if(parent&&parent!==window)parent.postMessage({type:'gameExitRequested',gameId:'world'},'*');else location.href='/';}});},80);</script></body></html>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GameForge World</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#060b13;color:#eaf6ff;font-family:system-ui}#boot{padding:32px}a{color:#ffe9a6}</style></head><body>
+<div id="boot">Loading world…</div>
+<script src="/games/js/whisperwind_assets.js?v=1"></script>
+<script src="/games/js/town_motion.js?v=1"></script>
+<script src="/games/js/town_life.js?v=1"></script>
+<script src="/games/js/world_engine.js?v=recovery1"></script>
+<script src="/games/js/shadow_woods_engine.js?v=recovery1"></script>
+<script>
+function gfUser(){try{return localStorage.getItem('gf_user')||'guest'}catch(e){return 'guest'}}
+window.addEventListener('message',function(ev){
+  if(ev.origin!==location.origin)return;
+  var m=ev.data||{};
+  var user=m.type==='GAME_CONTEXT'&&m.data?m.data.username:m.type==='gameSetup'?m.username:'';
+  if(user){try{localStorage.setItem('gf_user',user)}catch(e){}}
+});
+function leaveWorld(){
+  if(parent!==window)parent.postMessage({type:'gameExitRequested',gameId:'world'},location.origin);
+  else location.href='/';
+}
+async function startWorld(){
+  var params=new URLSearchParams(location.search),scene=params.get('scene')||'shadow_woods_dock';
+  try{
+    var r=await fetch(scene.startsWith('home__')?'/api/town/home-scene/'+encodeURIComponent(scene.slice(6)):'/assets/worlds/'+encodeURIComponent(scene)+'.json',{cache:'no-store'});
+    if(!r.ok)throw Error('Scene unavailable: '+scene);
+    var config=await r.json();
+    var engine=config.mode!=='interior'&&scene.indexOf('shadow_woods_')===0?ShadowWoodsEngine:WorldForgerEngine;
+    document.getElementById('boot').remove();
+    await engine.start({sceneId:scene,spawnId:params.get('spawn')||'',username:gfUser(),onClose:leaveWorld});
+  }catch(err){
+    var boot=document.getElementById('boot')||document.body.appendChild(document.createElement('div'));
+    boot.textContent=err.message+' ';
+    var back=document.createElement('a');back.href='/';back.textContent='Return to GameForge';boot.appendChild(back);
+  }
+}
+setTimeout(startWorld,80);
+</script></body></html>

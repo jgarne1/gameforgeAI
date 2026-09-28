@@ -3,6 +3,7 @@ const fs=require('fs');
 const path=require('path');
 const http=require('http');
 const WebSocket=require('ws');
+const {resolveHometown}=require('./lib/hometown');
 
 const app=express();
 const server=http.createServer(app);
@@ -898,6 +899,7 @@ function publicWorldContext(username){
     activePetId:profile.activePetId||null,
     pets:petList,
     homes:ownedWorldHomes(username),
+    hometown:resolveHometown(username,profile,loadEstateNeighborhoods(),id=>!!worldSceneData(id)),
     world:{
       flags:profile.world.flags,
       chests:profile.world.chests
@@ -2926,6 +2928,7 @@ app.post('/api/register',(req,res)=>{
   getPetProfile(username);
 
   let refreshed=users();
+  townServices.login(req,res,username);
   res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username),adminRole:getAdminRole(username)});
 });
 
@@ -2944,6 +2947,7 @@ app.post('/api/login',(req,res)=>{
   getPetProfile(username);
 
   let refreshed=users();
+  townServices.login(req,res,username);
   res.json({ok:true,user:safeUser(refreshed[username]),admin:admins().includes(username),adminRole:getAdminRole(username)});
 });
 
@@ -4281,7 +4285,7 @@ app.post('/api/admin/world-forger/save',(req,res)=>{
     const target=path.join(sceneDir,sceneId+'.json');
     if(!target.startsWith(sceneDir))return res.status(400).json({ok:false,error:'Invalid scene path'});
     if(Array.isArray(scene.collisions)){
-      scene.blockers=scene.collisions.filter(c=>c&&c.type!=='polygon').map(c=>({id:c.id,label:c.label,x:Number(c.x||0),y:Number(c.y||0),w:Number(c.w||0),h:Number(c.h||0)}));
+      scene.blockers=scene.collisions.filter(Boolean).map(c=>({...c}));
     }
     fs.mkdirSync(sceneDir,{recursive:true});
     fs.writeFileSync(target,JSON.stringify(scene,null,2));
@@ -4321,7 +4325,8 @@ app.post('/api/admin/world-forger/delete',(req,res)=>{
 app.get('/api/world-forger/scenes',(req,res)=>{
   try{
     const sceneDir=path.join(__dirname,'public','assets','worlds');
-    const files=fs.existsSync(sceneDir)?fs.readdirSync(sceneDir).filter(f=>f.endsWith('.json')):[];
+    const metadataFiles=new Set(['world_scenes.json','world_asset_catalog.json','world_prefabs.json']);
+    const files=fs.existsSync(sceneDir)?fs.readdirSync(sceneDir).filter(f=>f.endsWith('.json')&&!metadataFiles.has(f)):[];
     const scenes=files.map(file=>{
       const full=path.join(sceneDir,file);
       let data={};
@@ -5688,46 +5693,16 @@ app.get('/api/estate/neighborhoods/:id',(req,res)=>{
   if(!neighborhood)return res.status(404).json({ok:false,error:'Neighborhood not found'});
   res.json({ok:true,neighborhood});
 });
+// Legacy estate mutations use the authenticated town identity too.
 app.post('/api/estate/neighborhoods/:id/claim',(req,res)=>{
-  const id=String(req.params.id||'whisperwind_01');
-  const username=String((req.body&&req.body.username)||'').trim();
-  const plotId=String((req.body&&req.body.plotId)||'').trim();
-  if(!username)return res.status(400).json({ok:false,error:'Missing username'});
-  if(!plotId)return res.status(400).json({ok:false,error:'Missing plot'});
-  const data=loadEstateNeighborhoods();
-  const neighborhood=(data.neighborhoods||[]).find(n=>n.id===id);
-  if(!neighborhood)return res.status(404).json({ok:false,error:'Neighborhood not found'});
-  const plot=(neighborhood.plots||[]).find(p=>p.id===plotId);
-  if(!plot)return res.status(404).json({ok:false,error:'Plot not found'});
-  const already=(neighborhood.plots||[]).find(p=>String(p.owner||'').toLowerCase()===username.toLowerCase());
-  if(already&&already.id!==plotId)return res.status(409).json({ok:false,error:'You already own a plot in this neighborhood.'});
-  if(plot.owner&&String(plot.owner).toLowerCase()!==username.toLowerCase())return res.status(409).json({ok:false,error:'That plot already belongs to '+plot.owner+'.'});
-  if(plot.status==='empty')return res.status(409).json({ok:false,error:'That cottage is not available yet.'});
-  plot.owner=username;plot.status='owned';plot.privacy=plot.privacy||'public';plot.houseType=plot.houseType||'starter_cottage';plot.claimedAt=Date.now();
-  saveEstateNeighborhoods(data);
-  res.json({ok:true,plot,neighborhood});
+  const actor=townServices.auth(req,res);if(!actor)return;
+  res.status(409).json({error:'Use Hometown to buy or claim a home safely.'});
 });
-
 app.post('/api/estate/neighborhoods/:id/release',(req,res)=>{
-  const id=String(req.params.id||'whisperwind_01');
-  const username=String((req.body&&req.body.username)||'').trim();
-  const plotId=String((req.body&&req.body.plotId)||'').trim();
-  if(!username)return res.status(400).json({ok:false,error:'Missing username'});
-  if(!plotId)return res.status(400).json({ok:false,error:'Missing plot'});
-  const data=loadEstateNeighborhoods();
-  const neighborhood=(data.neighborhoods||[]).find(n=>n.id===id);
-  if(!neighborhood)return res.status(404).json({ok:false,error:'Neighborhood not found'});
-  const plot=(neighborhood.plots||[]).find(p=>p.id===plotId);
-  if(!plot)return res.status(404).json({ok:false,error:'Plot not found'});
-  if(!plot.owner)return res.status(409).json({ok:false,error:'That plot is already available.'});
-  if(String(plot.owner||'').toLowerCase()!==username.toLowerCase())return res.status(403).json({ok:false,error:'Only the owner can release this house.'});
-  plot.owner=null;
-  plot.status='available_house';
-  plot.privacy='public';
-  plot.releasedAt=Date.now();
-  saveEstateNeighborhoods(data);
-  res.json({ok:true,plot,neighborhood});
+  const actor=townServices.auth(req,res);if(!actor)return;
+  res.status(409).json({error:'Your home stays yours. List it for sale from Hometown instead.'});
 });
+const townServices=require('./lib/town_routes')({app,DATA,root:__dirname,users,pets,getPetProfile,savePetProfile,loadEstateNeighborhoods,saveEstateNeighborhoods,getAdminRole,canAdmin});
 
 // -----------------------------
 // Multiplayer overworld support
@@ -5887,7 +5862,7 @@ app.post('/api/admin/world-assets/alignment',(req,res)=>{
   res.json({ok:true,message:'World asset alignment saved.',entry:clean});
 });
 
-wss.on('connection',ws=>{
+wss.on('connection',(ws,request)=>{
   clients.add(ws);
   ws.location='Home';
 
@@ -5904,9 +5879,10 @@ wss.on('connection',ws=>{
 
 
     if(m.type==='worldJoin'){
-      const username=String(m.username||ws.username||'').trim()||'Wanderer';
+      let username=String(m.username||ws.username||'').trim()||'Wanderer';
       ws.displayName=String(m.displayName||(m.appearance&&m.appearance.displayName)||username).trim().slice(0,40)||username;
       const sceneId=String(m.sceneId||'shadow_woods_dock').trim()||'shadow_woods_dock';
+      if(sceneId.startsWith('home__')){const actor=townServices.homeAccess(request,sceneId.slice(6));if(!actor){ws.send(JSON.stringify({type:'error',code:'home_access',message:'This home is private or unavailable.'}));return;}username=actor;}
       const previous=worldPlayers.get(ws);
       if(previous&&previous.sceneId!==sceneId){
         broadcastWorld(previous.sceneId,{type:'worldLeave',id:ws.worldId||'',username:ws.username||username},ws);
@@ -5925,6 +5901,7 @@ wss.on('connection',ws=>{
     if(m.type==='worldMove'){
       const st=worldPlayers.get(ws);
       if(!st)return;
+      if(st.sceneId.startsWith('home__')&&!townServices.homeAccess(request,st.sceneId.slice(6))){worldPlayers.delete(ws);ws.send(JSON.stringify({type:'error',code:'home_access',message:'Home access has changed.'}));return;}
       st.x=Number(m.x||st.x||0);st.y=Number(m.y||st.y||0);st.face=String(m.face||st.face||'down');st.moving=!!m.moving;st.mode=String(m.mode||st.mode||'explore');st.appearance=m.appearance||st.appearance||{};st.updatedAt=Date.now();
       broadcastWorld(st.sceneId,{type:'worldMove',player:worldPlayerPublic(ws)},ws);
       return;
@@ -5933,6 +5910,7 @@ wss.on('connection',ws=>{
     if(m.type==='worldEvent'){
       const st=worldPlayers.get(ws);
       if(!st)return;
+      if(st.sceneId.startsWith('home__')&&!townServices.homeAccess(request,st.sceneId.slice(6))){worldPlayers.delete(ws);ws.send(JSON.stringify({type:'error',code:'home_access',message:'Home access has changed.'}));return;}
       broadcastWorld(st.sceneId,{type:'worldEvent',id:ws.worldId||'',username:ws.username||st.username||'Wanderer',event:m.event||{},ts:Date.now()},ws);
       return;
     }

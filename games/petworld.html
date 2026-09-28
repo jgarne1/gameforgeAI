@@ -554,7 +554,7 @@ button,input,select{font-family:inherit}
   padding:8px;
   box-shadow:0 12px 34px rgba(15,23,42,.18);
 }
-.dockTop{
+.petDestinations{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.petDestinations button{flex:1;padding:7px;border-radius:13px;font-weight:900}.dockTop{
   display:grid;
   grid-template-columns:minmax(0,1fr)118px 108px;
   gap:7px;
@@ -1122,6 +1122,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 </div>
 
 <script src="/games/js/adventure_engine.js"></script>
+<script src="/games/js/shadow_woods_engine.js?v=recovery1"></script>
+<script src="/js/hometown.js?v=1"></script>
 <script>
 var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
@@ -1302,6 +1304,7 @@ function drawDock(){
     html+='</div>';
   }
 
+  html+='<div class="petDestinations" aria-label="Places and games"><button class="purple" onclick="openMiniGames()">🎮 Games</button><button class="sky" onclick="startShadowWoodsFishing()">🎣 Fishing</button><button class="gold" onclick="openTown()">🏘️ Hometown</button></div>';
   el('actionDock').innerHTML=html;
 
   var select=el('stageZoneSelect');
@@ -1673,8 +1676,8 @@ async function trainPet(stat){
 
 
 function startShadowWoodsFishing(){
-  if(!window.PetWorldWorldEngine)return notify('World engine did not load.');
-  PetWorldWorldEngine.start({onClose:function(){notify('Returned from Shadow Woods.');}});
+  if(!window.ShadowWoodsEngine)return notify('World engine did not load.');
+  ShadowWoodsEngine.start({username:username,sceneId:'shadow_woods_dock',onClose:function(){loadProfile();notify('Returned from Shadow Woods.');}});
   addLog('Entered Shadow Woods fishing dock.');
   speak('Shadow Woods is quiet. Walk to the dock and fish the glowing pond.');
 }
@@ -1862,6 +1865,13 @@ function nextUnlockHint(){
   var locked=Object.keys(zones).map(function(id){return zones[id]}).filter(function(z){return Number(z.minLevel||1)>level}).sort(function(a,b){return Number(a.minLevel||1)-Number(b.minLevel||1)});
   if(!locked.length)return 'All current zones are unlocked. Keep leveling for future rare events.';
   return 'Next unlock: '+locked[0].name+' at level '+Number(locked[0].minLevel||1)+'.';
+}
+
+async function openTown(){if(parent!==window){parent.postMessage({type:'openHometown'},location.origin);return;}const town=await GameForgeHometown.resolve(username);location.href='/games/world.html?scene='+encodeURIComponent(town.sceneId);}
+
+function openMiniGames(){
+  if(parent!==window){parent.postMessage({type:'openGameLibrary'},location.origin);return;}
+  location.href='/?view=games';
 }
 
 function openPetBattle(){

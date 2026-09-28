@@ -2270,7 +2270,7 @@ body.gameMode #gameFrame{
 
     <div class="navDivider"></div>
     <div class="navGroupLabel">Estate</div>
-    <button onclick="openEstateNeighborhood()" id="navEstate"><span class="navIcon">🏘️</span>Neighborhood</button>
+    <button onclick="openHometown()" id="navEstate"><span class="navIcon">🏘️</span>Hometown</button>
     <button onclick="openMyHouse()" id="navHouse"><span class="navIcon">🏡</span>My House</button>
 
     <div class="navDivider"></div>
@@ -2591,6 +2591,7 @@ body.gameMode #gameFrame{
   </div>
 </div>
 
+<script src="/js/hometown.js?v=1"></script>
 <script>
 /*
 Runtime notes for future AI chats:
@@ -2608,6 +2609,8 @@ let room=null;
 let games=[];
 let loadedGameKey='';
 let directGameKey='';
+let directReturnSection='home';
+function rememberReturnSection(){if(!document.body.classList.contains('directGameMode'))directReturnSection=document.querySelector('.section.active')?.id||'home';}
 let overlayChatCollapsed=false;
 let lastChatCount=0;
 let petProfile=null;
@@ -2897,6 +2900,7 @@ function joinReadyBattle(url){
   if(instanceId&&battleJoinInProgress===instanceId)return;
   battleJoinInProgress=instanceId||battleUrl;
 
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -3389,6 +3393,7 @@ function clearRuntimeState(){
 }
 
 function logout(){
+  fetch('/api/town/logout',{method:'POST',keepalive:true}).catch(()=>{});
   localStorage.removeItem('gf_user');
   localStorage.removeItem('gf_admin');
   sessionStorage.setItem('gf_session_nonce',String(Date.now()));
@@ -3568,6 +3573,7 @@ async function loadGames(){
   drawGames();
   drawHomeGames();
   updateQuickStats();
+  if(new URLSearchParams(location.search).get('view')==='games')showSection('play');
 }
 
 function gameIsSolo(g){
@@ -4069,21 +4075,27 @@ function openPetWorldDirect(){
   launchSoloGame(g);
 }
 
+async function openHometown(){const town=await GameForgeHometown.resolve(me);launchSoloGame({id:'estate',name:'Hometown · '+town.name,file:'world.html?scene='+encodeURIComponent(town.sceneId),minPlayers:1,maxPlayers:1,seats:1});}
+function openTownDirect(){return openHometown();}
+
 function openWorldDirect(){
   let g=games.find(x=>x.id==='world')||{id:'world',name:'Shadow Woods',file:'world.html',minPlayers:1,maxPlayers:1,seats:1};
   launchSoloGame(g);
 }
 
 function openEstateNeighborhood(){
-  let g=games.find(x=>x.id==='estate')||{id:'estate',name:'Whisperwind Village',file:'estate.html?scene=whisperwind_village',minPlayers:1,maxPlayers:1,seats:1};
-  // Estate is still testable in both Testing and Story mode. Future story gating should
-  // live behind site settings, not hard-coded button hiding.
-  launchSoloGame(g);
+  return openHometown();
 }
 
-function openMyHouse(){
-  let g=games.find(x=>x.id==='estate_house')||{id:'estate_house',name:'Starter Cottage',file:'estate.html?scene=riverbend_cottage_interior',minPlayers:1,maxPlayers:1,seats:1};
-  launchSoloGame(g);
+async function openMyHouse(){
+  try{
+    const r=await fetch('/api/town/homes');const data=await r.json();
+    const allOwned=(data.plots||[]).filter(p=>p.owner&&p.owner.toLowerCase()===String(me).toLowerCase());
+    const owned=allOwned.filter(p=>p.id.startsWith('town_home_'));
+    if(!owned.length&&allOwned.length){launchSoloGame(games.find(x=>x.id==='estate_house')||{id:'estate_house',name:'Starter Cottage',file:'estate.html?scene=riverbend_cottage_interior',minPlayers:1,maxPlayers:1,seats:1});return;}
+    if(owned.length){launchSoloGame({id:'estate_house',name:owned[0].name,file:'world.html?scene=home__'+encodeURIComponent(owned[0].id),minPlayers:1,maxPlayers:1,seats:1});return;}
+  }catch(e){}
+  return openHometown();
 }
 
 
@@ -4162,6 +4174,7 @@ function openMarketDirect(){
     return;
   }
 
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -4192,6 +4205,7 @@ function openInventory(){
 
   // Inventory is a direct system panel, not a games.json game card.
   // Keep /games/inventory.html as a standalone iframe page so it can use the same shell as PetWorld/Marketplace.
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -4219,6 +4233,7 @@ async function launchSoloGame(g){
     return;
   }
 
+  rememberReturnSection();
   document.body.classList.remove('gameMode');
   showSection('play');
   document.body.classList.add('directGameMode');
@@ -4310,8 +4325,10 @@ function updateGameExitButton(){
     btn.innerText='🏳 Forfeit Battle';
     btn.title='End this battle as a forfeit. You can still safely return after results.';
   }else{
-    btn.innerText='Exit Game';
-    btn.title='Exit the current game screen.';
+    const direct=document.body.classList.contains('directGameMode');
+    const destination={home:'Home',pet:'Pet Sanctuary',play:'Game Tables'}[directReturnSection]||'Home';
+    btn.innerText=direct?'← Back to '+destination:'Exit Game';
+    btn.title=direct?'Return to '+destination+'.':'Exit the current game screen.';
   }
 }
 
@@ -4324,6 +4341,7 @@ function handleGameExitButton(){
 }
 
 function exitGameMode(){
+  const returnTo=document.body.classList.contains('directGameMode')?directReturnSection:'play';
   document.body.classList.remove('gameMode');
   document.body.classList.remove('directGameMode');
   gameArea.classList.add('hidden');
@@ -4334,7 +4352,7 @@ function exitGameMode(){
   directGameKey='';
   loadedGameKey='';
   launcherLoadedGameKey='';
-  showSection('play');
+  showSection(returnTo);
   updateGameExitButton();
 }
 
@@ -4958,6 +4976,13 @@ window.addEventListener('message',function(e){
 
   if(msg.type==='launcherStartGame'){
     handleLauncherStartGame(msg);
+  }
+
+  if(msg.type==='openGameLibrary'&&e.origin===location.origin&&e.source===gameFrame.contentWindow){
+    exitGameMode();showSection('play');return;
+  }
+  if(msg.type==='openHometown'&&e.origin===location.origin&&e.source===gameFrame.contentWindow){
+    exitGameMode();openHometown();return;
   }
 
   if(msg.type==='gameExitRequested'){

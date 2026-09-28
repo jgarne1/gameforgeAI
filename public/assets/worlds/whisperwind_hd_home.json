@@ -1,0 +1,87 @@
+{
+  "playerPack": "/assets/whisperwind_hd/v1/manifest.json",
+  "time": {
+    "mode": "fixed",
+    "fixed": "day"
+  },
+  "lighting": {
+    "brightness": 1,
+    "fog": 0
+  },
+  "previewOnly": true,
+  "id": "whisperwind_hd_home",
+  "name": "Whisperwind Home",
+  "mode": "interior",
+  "size": {
+    "w": 1200,
+    "h": 900
+  },
+  "spawn": {
+    "x": 600,
+    "y": 735
+  },
+  "interior": {
+    "wall": "#b9a98a",
+    "floor": "#977c59",
+    "trim": "#bf9764"
+  },
+  "groundMaterial": {
+    "src": "/assets/whisperwind_hd/v1/materials.png",
+    "sourceRect": {
+      "x": 0,
+      "y": 627,
+      "w": 627,
+      "h": 627
+    },
+    "tileSize": 256
+  },
+  "stoneMaterial": {
+    "src": "/assets/whisperwind_hd/v1/materials.png",
+    "sourceRect": {
+      "x": 627,
+      "y": 0,
+      "w": 627,
+      "h": 627
+    },
+    "tileSize": 128
+  },
+  "objects": [],
+  "walkable": [
+    {
+      "id": "floor",
+      "points": [
+        [
+          100,
+          230
+        ],
+        [
+          1100,
+          230
+        ],
+        [
+          1100,
+          780
+        ],
+        [
+          100,
+          780
+        ]
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "exit",
+      "type": "door",
+      "label": "Return to Hometown",
+      "x": 600,
+      "y": 755,
+      "r": 65,
+      "targetScene": "whisperwind_hd_waterfront"
+    }
+  ],
+  "npcs": [],
+  "ambient": [],
+  "paths": [],
+  "effects": []
+}

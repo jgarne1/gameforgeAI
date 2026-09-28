@@ -1,391 +1,103 @@
 {
-  "version": 4,
-  "direction": "World Forger v2 hub catalog. Existing vendor-extracted assets first; composer is layer/object based.",
+  "version": 1,
+  "packId": "whisperwind_hd_v1",
+  "status": "expanded playable town",
+  "worldGrid": 32,
+  "playerHeight": 80,
+  "camera": "fixed elevated orthographic; no rotation",
+  "files": {
+    "waterfront.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "companions.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "water.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "tavern.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "player_walk.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "furniture.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "materials.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "buildings.png": {
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "npc_mira.png": {
+      "size": [
+        1223,
+        1286
+      ]
+    },
+    "npc_toma.png": {
+      "size": [
+        1224,
+        1285
+      ]
+    },
+    "npc_dockmaster.png": {
+      "size": [
+        1247,
+        1261
+      ]
+    },
+    "fishing_shop.png": {
+      "size": [
+        1312,
+        1199
+      ]
+    },
+    "window_pets.png": {
+      "size": [
+        1774,
+        887
+      ]
+    },
+    "home_furniture.png": {
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    "street_props.png": {
+      "size": [
+        1536,
+        1024
+      ]
+    }
+  },
   "assets": [
-    {
-      "id": "B001",
-      "name": "Coastal Cottage",
-      "category": "building",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/b001_coastal_cottage.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/b001_coastal_cottage.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "B002",
-      "name": "Market House",
-      "category": "building",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/b002_market_house.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/b002_market_house.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "B007",
-      "name": "The Driftwood Tavern",
-      "category": "building",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/b007_driftwood_tavern.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/b007_driftwood_tavern.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P001",
-      "name": "Round Tree",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p001_round_tree.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p001_round_tree.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P002",
-      "name": "Small Tree",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p002_small_tree.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p002_small_tree.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P003",
-      "name": "Fence Segment",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p003_fence_segment.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p003_fence_segment.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P004",
-      "name": "Bench",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p004_bench.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p004_bench.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P005",
-      "name": "Sign Board",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p005_sign_board.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p005_sign_board.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P006",
-      "name": "Flower Box",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p006_flower_box.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p006_flower_box.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P008",
-      "name": "Lamp Pair",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p008_lamp_pair.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p008_lamp_pair.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P010",
-      "name": "Well",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p010_well.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p010_well.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P011",
-      "name": "Cart",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p011_cart.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p011_cart.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P012",
-      "name": "Notice Board",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p012_notice_board.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p012_notice_board.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P013",
-      "name": "Work Table",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p013_work_table.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p013_work_table.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P015",
-      "name": "Large Tree A",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p015_large_tree_a.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p015_large_tree_a.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P016",
-      "name": "Large Tree B",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p016_large_tree_b.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p016_large_tree_b.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "S001",
-      "name": "Dock Corner",
-      "category": "structure",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/s001_dock_corner.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s001_dock_corner.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "S004",
-      "name": "Long Plank",
-      "category": "structure",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/s004_long_plank.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s004_long_plank.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P007",
-      "name": "Shrub",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p007_shrub.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p007_shrub.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P009",
-      "name": "Table",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p009_table.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p009_table.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "P014",
-      "name": "Anvil",
-      "category": "prop",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/p014_anvil.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/p014_anvil.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "S002",
-      "name": "Log Pile",
-      "category": "structure",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/s002_log_pile.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s002_log_pile.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "S003",
-      "name": "Rope Fence",
-      "category": "structure",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/s003_rope_fence.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s003_rope_fence.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
-    {
-      "id": "S005",
-      "name": "Wood Ramp",
-      "category": "structure",
-      "src": "/assets/worldkit/whisperwind/vertical_slice/s005_wood_ramp.png",
-      "tags": [
-        "whisperwind",
-        "vendor-extracted",
-        "world-composer"
-      ],
-      "thumb": "/assets/worldkit/whisperwind/vertical_slice/s005_wood_ramp.png",
-      "placeOrigin": {
-        "x": 0.5,
-        "y": 1
-      }
-    },
     {
       "id": "wwhd_dock",
       "name": "Dock Platform",
@@ -1289,5 +1001,152 @@
         "y": 1
       }
     }
-  ]
+  ],
+  "player": {
+    "idle": {
+      "down": "wwhd_player_down",
+      "left": "wwhd_player_left",
+      "right": "wwhd_player_right",
+      "up": "wwhd_player_up"
+    },
+    "walk": {
+      "src": "/assets/whisperwind_hd/v1/player_walk.png",
+      "fps": 8,
+      "height": 80,
+      "directions": {
+        "down": [
+          {
+            "x": 111,
+            "y": 26,
+            "w": 154,
+            "h": 302
+          },
+          {
+            "x": 395,
+            "y": 28,
+            "w": 144,
+            "h": 299
+          },
+          {
+            "x": 704,
+            "y": 25,
+            "w": 151,
+            "h": 302
+          },
+          {
+            "x": 999,
+            "y": 26,
+            "w": 147,
+            "h": 301
+          }
+        ],
+        "left": [
+          {
+            "x": 106,
+            "y": 339,
+            "w": 153,
+            "h": 296
+          },
+          {
+            "x": 399,
+            "y": 339,
+            "w": 140,
+            "h": 296
+          },
+          {
+            "x": 708,
+            "y": 339,
+            "w": 152,
+            "h": 296
+          },
+          {
+            "x": 1004,
+            "y": 339,
+            "w": 140,
+            "h": 296
+          }
+        ],
+        "right": [
+          {
+            "x": 111,
+            "y": 646,
+            "w": 148,
+            "h": 294
+          },
+          {
+            "x": 396,
+            "y": 643,
+            "w": 141,
+            "h": 298
+          },
+          {
+            "x": 706,
+            "y": 643,
+            "w": 156,
+            "h": 297
+          },
+          {
+            "x": 998,
+            "y": 643,
+            "w": 149,
+            "h": 297
+          }
+        ],
+        "up": [
+          {
+            "x": 106,
+            "y": 948,
+            "w": 148,
+            "h": 291
+          },
+          {
+            "x": 387,
+            "y": 948,
+            "w": 149,
+            "h": 289
+          },
+          {
+            "x": 709,
+            "y": 948,
+            "w": 147,
+            "h": 289
+          },
+          {
+            "x": 998,
+            "y": 948,
+            "w": 150,
+            "h": 291
+          }
+        ]
+      }
+    },
+    "motion": {
+      "speed": 144,
+      "interiorSpeed": 128,
+      "cycleDistance": 72,
+      "shadow": {
+        "y": 1,
+        "rx": 11,
+        "ry": 3,
+        "opacity": 0.25
+      }
+    }
+  },
+  "water": {
+    "src": "/assets/whisperwind_hd/v1/water.png",
+    "tileSize": 640,
+    "speed": 5
+  },
+  "remaining": [
+    "account pet followers",
+    "customizable character outfit layers",
+    "additional authored town stories",
+    "20-client load testing",
+    "equipment effects and fishing balance"
+  ],
+  "npcSkins": "/assets/whisperwind_hd/v1/npc_skins.json",
+  "generation": {
+    "mode": "built-in imagegen",
+    "note": "PNG sources unchanged; alpha bounds recorded in metadata. Buildings cleaned through imagegen to separate window pets."
+  }
 }

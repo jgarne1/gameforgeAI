@@ -1,0 +1,118 @@
+{
+  "playerPack": "/assets/whisperwind_hd/v1/manifest.json",
+  "time": {
+    "mode": "fixed",
+    "fixed": "day"
+  },
+  "lighting": {
+    "brightness": 1,
+    "fog": 0
+  },
+  "previewOnly": true,
+  "id": "whisperwind_hd_market",
+  "name": "Market Bakery",
+  "mode": "interior",
+  "size": {
+    "w": 1100,
+    "h": 850
+  },
+  "spawn": {
+    "x": 550,
+    "y": 720
+  },
+  "spawnPoints": [
+    {
+      "id": "from_street",
+      "x": 550,
+      "y": 720
+    }
+  ],
+  "interior": {
+    "wall": "#30241e",
+    "floor": "#775035",
+    "trim": "#bf9764"
+  },
+  "groundMaterial": {
+    "src": "/assets/whisperwind_hd/v1/materials.png",
+    "sourceRect": {
+      "x": 0,
+      "y": 627,
+      "w": 627,
+      "h": 627
+    },
+    "tileSize": 256
+  },
+  "objects": [
+    {
+      "id": "counter",
+      "asset": "wwhd_bar",
+      "x": 340,
+      "y": 390,
+      "layer": "props"
+    },
+    {
+      "id": "table",
+      "asset": "wwhd_table",
+      "x": 790,
+      "y": 620,
+      "layer": "props"
+    },
+    {
+      "id": "rug",
+      "asset": "wwhd_rug",
+      "x": 550,
+      "y": 620,
+      "layer": "terrain"
+    }
+  ],
+  "walkable": [
+    {
+      "id": "floor",
+      "points": [
+        [
+          100,
+          170
+        ],
+        [
+          1000,
+          170
+        ],
+        [
+          1000,
+          780
+        ],
+        [
+          100,
+          780
+        ]
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "exit",
+      "type": "door",
+      "label": "Return to Hometown",
+      "x": 550,
+      "y": 750,
+      "r": 65,
+      "targetScene": "whisperwind_hd_waterfront",
+      "targetSpawn": "from_market"
+    },
+    {
+      "id": "counter",
+      "type": "shop",
+      "label": "Browse Supplies",
+      "x": 340,
+      "y": 430,
+      "r": 100,
+      "shopId": "snack_shack",
+      "href": "/games/petworld.html",
+      "message": "Fresh bread, pet treats, and friendly company."
+    }
+  ],
+  "npcs": [],
+  "ambient": [],
+  "paths": [],
+  "effects": []
+}

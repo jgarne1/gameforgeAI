@@ -233,7 +233,9 @@
       "label": "Path deeper into Shadow Woods",
       "x": 185,
       "y": 280,
-      "r": 90
+      "r": 90,
+      "targetScene": "shadow_woods_river_bend",
+      "targetSpawn": "from_fishing_dock"
     }
   ],
   "foreground": [
@@ -408,6 +410,14 @@
       "density": 0.35,
       "speed": 0.85,
       "angle": 0
+    }
+  ],
+  "spawnPoints": [
+    {
+      "id": "from_river_bend",
+      "x": 185,
+      "y": 320,
+      "face": "down"
     }
   ]
 }

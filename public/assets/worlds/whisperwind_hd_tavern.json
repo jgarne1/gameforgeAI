@@ -1,0 +1,167 @@
+{
+  "playerPack": "/assets/whisperwind_hd/v1/manifest.json",
+  "time": {
+    "mode": "fixed",
+    "fixed": "day"
+  },
+  "lighting": {
+    "brightness": 1,
+    "fog": 0
+  },
+  "previewOnly": true,
+  "id": "whisperwind_hd_tavern",
+  "name": "Driftwood Tavern",
+  "mode": "interior",
+  "size": {
+    "w": 1100,
+    "h": 850
+  },
+  "spawn": {
+    "x": 550,
+    "y": 720,
+    "face": "up"
+  },
+  "spawnPoints": [
+    {
+      "id": "from_street",
+      "x": 550,
+      "y": 720,
+      "face": "up"
+    }
+  ],
+  "interior": {
+    "wall": "#30241e",
+    "floor": "#775035",
+    "trim": "#bf9764",
+    "rug": "#775035"
+  },
+  "objects": [
+    {
+      "id": "rug",
+      "asset": "wwhd_rug",
+      "x": 550,
+      "y": 600,
+      "layer": "terrain"
+    },
+    {
+      "id": "bar",
+      "asset": "wwhd_bar",
+      "x": 340,
+      "y": 390,
+      "layer": "props",
+      "collide": [
+        -145,
+        -80,
+        290,
+        80
+      ]
+    },
+    {
+      "id": "fireplace",
+      "asset": "wwhd_fireplace",
+      "x": 850,
+      "y": 350,
+      "layer": "props",
+      "collide": [
+        -95,
+        -55,
+        190,
+        55
+      ]
+    },
+    {
+      "id": "table_1",
+      "asset": "wwhd_table",
+      "x": 340,
+      "y": 620,
+      "layer": "props",
+      "collide": [
+        -60,
+        -50,
+        120,
+        50
+      ]
+    },
+    {
+      "id": "table_2",
+      "asset": "wwhd_table",
+      "x": 785,
+      "y": 650,
+      "layer": "props",
+      "collide": [
+        -60,
+        -50,
+        120,
+        50
+      ]
+    }
+  ],
+  "walkable": [
+    {
+      "id": "floor",
+      "points": [
+        [
+          100,
+          170
+        ],
+        [
+          1000,
+          170
+        ],
+        [
+          1000,
+          780
+        ],
+        [
+          100,
+          780
+        ]
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "exit",
+      "type": "door",
+      "label": "Return to Waterfront",
+      "x": 550,
+      "y": 750,
+      "r": 65,
+      "targetScene": "whisperwind_hd_waterfront",
+      "targetSpawn": "from_tavern"
+    },
+    {
+      "id": "supper",
+      "type": "shop",
+      "label": "Supper and Supplies",
+      "x": 340,
+      "y": 420,
+      "r": 100,
+      "shopId": "snack_shack",
+      "message": "Mara sets out supper. Ordinary kindness holds a place together."
+    }
+  ],
+  "npcs": [],
+  "paths": [],
+  "effects": [],
+  "groundMaterial": {
+    "src": "/assets/whisperwind_hd/v1/materials.png",
+    "sourceRect": {
+      "x": 0,
+      "y": 627,
+      "w": 627,
+      "h": 627
+    },
+    "tileSize": 256
+  },
+  "wallMaterial": {
+    "src": "/assets/whisperwind_hd/v1/materials.png",
+    "sourceRect": {
+      "x": 627,
+      "y": 627,
+      "w": 627,
+      "h": 627
+    },
+    "tileSize": 256
+  }
+}
