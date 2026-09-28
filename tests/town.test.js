@@ -16,6 +16,17 @@ test('pending sale journal recovers both ownership and existing coin balances',(
     assert.equal(fs.existsSync(path.join(dir,'town_transaction.json')),false);
   }finally{for(const name of fs.readdirSync(dir))fs.unlinkSync(path.join(dir,name));fs.rmdirSync(dir);}
 });
+test('home list omits malformed legacy records without deleting saved ownership',()=>{
+  const handlers={},legacy={name:'Old record',owner:'Owner'},valid={id:'plot_01',owner:'Owner'};
+  const estate={neighborhoods:[{id:'whisperwind_01',plots:[legacy,valid,null]}]};
+  // Legacy records with no identifier must not reach buttons that require an address.
+  estate.neighborhoods[0].plots.pop();
+  require('../lib/town_routes')({app:{get(url,fn){handlers[url]=fn;},post(){}},DATA:root,root,loadEstateNeighborhoods:()=>estate});
+  let result;handlers['/api/town/homes']({}, {json(value){result=value;}});
+  assert.equal(result.plots.length,25);assert.ok(result.plots.every(p=>typeof p.id==='string'));
+  assert.equal(result.plots.find(p=>p.id==='plot_01').owner,'Owner');
+  assert.ok(estate.neighborhoods[0].plots.includes(legacy));assert.equal(legacy.owner,'Owner');
+});
 test('owned homes cannot be purchased until their owner explicitly lists them',()=>{
   const p={id:'town_home_01',owner:'Owner',status:'owned'},profiles={Owner:{money:100},Buyer:{money:100}};
   assert.throws(()=>H.transact(p,'Buyer','buy',profiles),/not for sale/);
@@ -62,3 +73,4 @@ test('every NPC and pet atlas frame stays inside its source PNG',()=>{
   const data=JSON.parse(read('public/assets/whisperwind_hd/v1/npc_skins.json'));
   for(const skin of [...Object.values(data.skins),...Object.values(data.pets)]){const im=fs.readFileSync(path.join(root,'public',skin.src));const frames=Array.isArray(skin.frames)?skin.frames:Object.values(skin.frames).flat();for(const r of frames)assert.ok(r.x>=0&&r.y>=0&&r.x+r.w<=im.readUInt32BE(16)&&r.y+r.h<=im.readUInt32BE(20));}
 });
+
