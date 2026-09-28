@@ -2256,7 +2256,6 @@ body.gameMode #gameFrame{
 
     <div class="navDivider"></div>
     <div class="navGroupLabel">The Wilds</div>
-    <button onclick="openTownDirect()" id="navTown"><span class="navIcon">🏘️</span>Whisperwind Town</button>
     <button onclick="openWorldDirect()" id="navWorld"><span class="navIcon">🌲</span>Shadow Woods</button>
 
     <div class="navDivider"></div>
@@ -2271,7 +2270,7 @@ body.gameMode #gameFrame{
 
     <div class="navDivider"></div>
     <div class="navGroupLabel">Estate</div>
-    <button onclick="openEstateNeighborhood()" id="navEstate"><span class="navIcon">🏘️</span>Neighborhood</button>
+    <button onclick="openHometown()" id="navEstate"><span class="navIcon">🏘️</span>Hometown</button>
     <button onclick="openMyHouse()" id="navHouse"><span class="navIcon">🏡</span>My House</button>
 
     <div class="navDivider"></div>
@@ -2592,6 +2591,7 @@ body.gameMode #gameFrame{
   </div>
 </div>
 
+<script src="/js/hometown.js?v=1"></script>
 <script>
 /*
 Runtime notes for future AI chats:
@@ -4074,7 +4074,8 @@ function openPetWorldDirect(){
   launchSoloGame(g);
 }
 
-function openTownDirect(){launchSoloGame({id:'world',name:'Whisperwind Town',file:'world.html?scene=whisperwind_v2_hub',minPlayers:1,maxPlayers:1,seats:1});}
+async function openHometown(){const town=await GameForgeHometown.resolve(me);launchSoloGame({id:'estate',name:'Hometown · '+town.name,file:'world.html?scene='+encodeURIComponent(town.sceneId),minPlayers:1,maxPlayers:1,seats:1});}
+function openTownDirect(){return openHometown();}
 
 function openWorldDirect(){
   let g=games.find(x=>x.id==='world')||{id:'world',name:'Shadow Woods',file:'world.html',minPlayers:1,maxPlayers:1,seats:1};
@@ -4082,10 +4083,7 @@ function openWorldDirect(){
 }
 
 function openEstateNeighborhood(){
-  let g=games.find(x=>x.id==='estate')||{id:'estate',name:'Whisperwind Village',file:'estate.html?scene=whisperwind_village',minPlayers:1,maxPlayers:1,seats:1};
-  // Estate is still testable in both Testing and Story mode. Future story gating should
-  // live behind site settings, not hard-coded button hiding.
-  launchSoloGame(g);
+  return openHometown();
 }
 
 function openMyHouse(){
@@ -4975,6 +4973,9 @@ window.addEventListener('message',function(e){
 
   if(msg.type==='openGameLibrary'&&e.origin===location.origin&&e.source===gameFrame.contentWindow){
     exitGameMode();showSection('play');return;
+  }
+  if(msg.type==='openHometown'&&e.origin===location.origin&&e.source===gameFrame.contentWindow){
+    exitGameMode();openHometown();return;
   }
 
   if(msg.type==='gameExitRequested'){

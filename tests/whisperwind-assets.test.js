@@ -43,3 +43,50 @@ test('waterfront doorway round-trip is reachable and water cannot be walked into
   assert.equal(exit.targetScene,shore.id);assert.ok(shore.spawnPoints.some(p=>p.id===exit.targetSpawn));
   api.E.scene=inside;assert.equal(api.canStand(550,720),true);assert.equal(api.canStand(550,750),true);
 });
+
+function motionRuntime(){
+  const prompt={style:{},classList:{add(){},remove(){}}};
+  const draws=[];
+  const context=vm.createContext({window:{},document:{querySelector:()=>prompt},innerWidth:1280,innerHeight:720,
+    performance:{now:()=>0},WhisperwindAssets:{draw(...args){draws.push(args)}}});
+  vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};',
+    'window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,update,drawPackShadow,drawPackCharacter};'),context);
+  const api=context.window.test;api.E.pack=manifest;
+  api.E.scene=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json'));
+  api.E.player.x=1000;api.E.player.y=1100;
+  return {api,draws};
+}
+
+test('walking pace is frame-rate independent and release has no coasting',()=>{
+  for(const fps of [30,60]){
+    const {api}=motionRuntime();api.E.keys.d=true;
+    for(let i=0;i<fps;i++)api.update(1/fps);
+    assert.ok(Math.abs(api.E.player.x-1144)<.001);
+    assert.ok(Math.abs(api.E.player.walkDistance-144)<.001);
+    const x=api.E.player.x,d=api.E.player.walkDistance;
+    api.E.keys.d=false;api.update(1/fps);
+    assert.equal(api.E.player.x,x);assert.equal(api.E.player.walkDistance,d);
+    assert.equal(api.E.player.moving,false);
+  }
+});
+test('blocked movement cannot advance the walking cycle',()=>{
+  const {api}=motionRuntime();api.E.player.x=2179;api.E.keys.d=true;
+  api.update(1/60);
+  assert.equal(api.E.player.x,2179);assert.equal(api.E.player.walkDistance,0);
+  assert.equal(api.E.player.moving,false);
+});
+test('contact shadow overlaps the sole and walk frames follow traveled distance',()=>{
+  const {api,draws}=motionRuntime(),ellipses=[];
+  api.drawPackShadow({beginPath(){},fill(){},ellipse(...args){ellipses.push(args)}});
+  const s=manifest.player.motion.shadow;
+  assert.ok(s.y-s.ry<=0&&s.y+s.ry>=0);
+  assert.equal(ellipses[0][1],1);
+  const walk=manifest.player.walk;api.E.assets[walk.src]={};
+  for(let frame=0;frame<4;frame++){
+    api.drawPackCharacter({},'left',true,frame*manifest.player.motion.cycleDistance/4+.01);
+    assert.deepEqual(draws.at(-1)[2].sourceRect,walk.directions.left[frame]);
+    const r=walk.directions.left[frame],origin=draws.at(-1)[2].placeOrigin;
+    assert.ok((1-origin.y)*walk.height<1,'sole must remain within one unit of the ground');
+    assert.ok(r.y>=334&&r.y+r.h<=638,'no clipped boot or previous-row fragment');
+  }
+});

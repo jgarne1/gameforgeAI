@@ -3,6 +3,7 @@ const fs=require('fs');
 const path=require('path');
 const http=require('http');
 const WebSocket=require('ws');
+const {resolveHometown}=require('./lib/hometown');
 
 const app=express();
 const server=http.createServer(app);
@@ -898,6 +899,7 @@ function publicWorldContext(username){
     activePetId:profile.activePetId||null,
     pets:petList,
     homes:ownedWorldHomes(username),
+    hometown:resolveHometown(username,profile,loadEstateNeighborhoods(),id=>!!worldSceneData(id)),
     world:{
       flags:profile.world.flags,
       chests:profile.world.chests

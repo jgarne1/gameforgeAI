@@ -1123,6 +1123,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
 <script src="/games/js/adventure_engine.js"></script>
 <script src="/games/js/shadow_woods_engine.js?v=recovery1"></script>
+<script src="/js/hometown.js?v=1"></script>
 <script>
 var GAME_META={id:'petworld',name:'Pet World',minPlayers:1,maxPlayers:1,seats:1};
 
@@ -1303,7 +1304,7 @@ function drawDock(){
     html+='</div>';
   }
 
-  html+='<div class="petDestinations" aria-label="Places and games"><button class="purple" onclick="openMiniGames()">🎮 Games</button><button class="sky" onclick="startShadowWoodsFishing()">🎣 Fishing</button><button class="gold" onclick="openTown()">🏘️ Town</button></div>';
+  html+='<div class="petDestinations" aria-label="Places and games"><button class="purple" onclick="openMiniGames()">🎮 Games</button><button class="sky" onclick="startShadowWoodsFishing()">🎣 Fishing</button><button class="gold" onclick="openTown()">🏘️ Hometown</button></div>';
   el('actionDock').innerHTML=html;
 
   var select=el('stageZoneSelect');
@@ -1866,7 +1867,7 @@ function nextUnlockHint(){
   return 'Next unlock: '+locked[0].name+' at level '+Number(locked[0].minLevel||1)+'.';
 }
 
-function openTown(){location.href='/games/world.html?scene=whisperwind_v2_hub';}
+async function openTown(){if(parent!==window){parent.postMessage({type:'openHometown'},location.origin);return;}const town=await GameForgeHometown.resolve(username);location.href='/games/world.html?scene='+encodeURIComponent(town.sceneId);}
 
 function openMiniGames(){
   if(parent!==window){parent.postMessage({type:'openGameLibrary'},location.origin);return;}
