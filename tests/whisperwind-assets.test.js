@@ -70,9 +70,9 @@ test('walking pace is frame-rate independent and release has no coasting',()=>{
   }
 });
 test('blocked movement cannot advance the walking cycle',()=>{
-  const {api}=motionRuntime();api.E.player.x=5099;api.E.keys.d=true;
+  const {api}=motionRuntime();const edge=api.E.scene.size.w-101;api.E.player.x=edge;api.E.keys.d=true;
   api.update(1/60);
-  assert.equal(api.E.player.x,5099);assert.equal(api.E.player.walkDistance,0);
+  assert.equal(api.E.player.x,edge);assert.equal(api.E.player.walkDistance,0);
   assert.equal(api.E.player.moving,false);
 });
 test('contact shadow overlaps the sole and walk frames follow traveled distance',()=>{
@@ -90,3 +90,4 @@ test('contact shadow overlaps the sole and walk frames follow traveled distance'
     assert.ok(r.y>=334&&r.y+r.h<=638,'no clipped boot or previous-row fragment');
   }
 });
+

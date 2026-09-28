@@ -1,0 +1,264 @@
+{
+  "file": "nature_playground_source.png",
+  "absoluteSourcePath": "C:\\Users\\jerem\\Documents\\Codex\\2026-09-28\\gameforge-character-assets\\outputs\\nature_playground_source.png",
+  "size": [
+    1536,
+    1024
+  ],
+  "sha256": "f6c4de1d7c430eea8eb6feb8142137221b402c223b68417f282ab531cffb77e0",
+  "layout": "3 columns x 2 rows; row-major",
+  "alphaExtrema": [
+    0,
+    254
+  ],
+  "fullyTransparentFraction": 0.7104485829671224,
+  "measurementMethod": "alpha>=128 silhouette with 8px padding; originals untouched; faint stray alpha excluded",
+  "assets": [
+    {
+      "id": "wwhd_lake_reeds",
+      "name": "Lake reeds",
+      "row": 0,
+      "col": 0,
+      "sourceRect": {
+        "x": 54,
+        "y": 43,
+        "w": 377,
+        "h": 469
+      },
+      "solidBounds": {
+        "x": 62,
+        "y": 51,
+        "w": 361,
+        "h": 453
+      },
+      "displaySize": {
+        "w": 58.256,
+        "h": 72.472
+      },
+      "solidDisplaySize": {
+        "w": 55.784,
+        "h": 70.0
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9829424307036247
+      },
+      "sourceAnchor": [
+        242.5,
+        504
+      ],
+      "cellSolidMargins": [
+        62,
+        51,
+        89,
+        8
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.1545253863134658
+    },
+    {
+      "id": "wwhd_shoreline_rocks",
+      "name": "Mossy shoreline rocks",
+      "row": 0,
+      "col": 1,
+      "sourceRect": {
+        "x": 546,
+        "y": 216,
+        "w": 400,
+        "h": 302
+      },
+      "solidBounds": {
+        "x": 554,
+        "y": 224,
+        "w": 384,
+        "h": 286
+      },
+      "displaySize": {
+        "w": 98.958,
+        "h": 74.714
+      },
+      "solidDisplaySize": {
+        "w": 95.0,
+        "h": 70.755
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9735099337748344
+      },
+      "sourceAnchor": [
+        746.0,
+        510
+      ],
+      "cellSolidMargins": [
+        42,
+        224,
+        86,
+        2
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.24739583333333334
+    },
+    {
+      "id": "wwhd_timber_pier",
+      "name": "Small timber fishing pier",
+      "row": 0,
+      "col": 2,
+      "sourceRect": {
+        "x": 1017,
+        "y": 142,
+        "w": 488,
+        "h": 365
+      },
+      "solidBounds": {
+        "x": 1025,
+        "y": 150,
+        "w": 472,
+        "h": 349
+      },
+      "displaySize": {
+        "w": 248.136,
+        "h": 185.593
+      },
+      "solidDisplaySize": {
+        "w": 240.0,
+        "h": 177.458
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9780821917808219
+      },
+      "sourceAnchor": [
+        1261.0,
+        499
+      ],
+      "cellSolidMargins": [
+        1,
+        150,
+        39,
+        13
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.5084745762711864
+    },
+    {
+      "id": "wwhd_climbing_frame",
+      "name": "Rustic climbing frame",
+      "row": 1,
+      "col": 0,
+      "sourceRect": {
+        "x": 36,
+        "y": 569,
+        "w": 480,
+        "h": 399
+      },
+      "solidBounds": {
+        "x": 44,
+        "y": 577,
+        "w": 464,
+        "h": 383
+      },
+      "displaySize": {
+        "w": 175.862,
+        "h": 146.185
+      },
+      "solidDisplaySize": {
+        "w": 170.0,
+        "h": 140.323
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9799498746867168
+      },
+      "sourceAnchor": [
+        276.0,
+        960
+      ],
+      "cellSolidMargins": [
+        44,
+        65,
+        4,
+        64
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.36637931034482757
+    },
+    {
+      "id": "wwhd_seesaw",
+      "name": "Simple timber seesaw",
+      "row": 1,
+      "col": 1,
+      "sourceRect": {
+        "x": 554,
+        "y": 667,
+        "w": 468,
+        "h": 245
+      },
+      "solidBounds": {
+        "x": 562,
+        "y": 675,
+        "w": 452,
+        "h": 229
+      },
+      "displaySize": {
+        "w": 150.133,
+        "h": 78.595
+      },
+      "solidDisplaySize": {
+        "w": 145.0,
+        "h": 73.462
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9673469387755103
+      },
+      "sourceAnchor": [
+        788.0,
+        904
+      ],
+      "cellSolidMargins": [
+        50,
+        163,
+        10,
+        120
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.32079646017699115
+    },
+    {
+      "id": "wwhd_jump_rope",
+      "name": "Ground jump rope",
+      "row": 1,
+      "col": 2,
+      "sourceRect": {
+        "x": 1111,
+        "y": 736,
+        "w": 369,
+        "h": 195
+      },
+      "solidBounds": {
+        "x": 1119,
+        "y": 744,
+        "w": 353,
+        "h": 179
+      },
+      "displaySize": {
+        "w": 57.493,
+        "h": 30.382
+      },
+      "solidDisplaySize": {
+        "w": 55.0,
+        "h": 27.89
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "sourceAnchor": [
+        1295.5,
+        833.5
+      ],
+      "cellSolidMargins": [
+        95,
+        232,
+        64,
+        101
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.1558073654390935
+    }
+  ]
+}

@@ -9,8 +9,8 @@
     "fog": 0
   },
   "previewOnly": true,
-  "id": "whisperwind_hd_tavern",
-  "name": "Driftwood Tavern",
+  "id": "whisperwind_hd_inn",
+  "name": "Lantern Inn \u00b7 Lobby",
   "mode": "interior",
   "size": {
     "w": 1100,
@@ -88,6 +88,45 @@
         120,
         30
       ]
+    },
+    {
+      "id": "lobby_sofa",
+      "asset": "wwhd_sofa",
+      "x": 850,
+      "y": 620,
+      "layer": "props",
+      "collide": [
+        -80,
+        -40,
+        160,
+        40
+      ]
+    },
+    {
+      "id": "lobby_books",
+      "asset": "wwhd_bookcase",
+      "x": 900,
+      "y": 350,
+      "layer": "props",
+      "collide": [
+        -60,
+        -40,
+        120,
+        40
+      ]
+    },
+    {
+      "id": "lobby_fern",
+      "asset": "wwhd_plant",
+      "x": 720,
+      "y": 350,
+      "layer": "props",
+      "collide": [
+        -18,
+        -15,
+        36,
+        20
+      ]
     }
   ],
   "walkable": [
@@ -117,22 +156,22 @@
     {
       "id": "exit",
       "type": "door",
-      "label": "Return to Waterfront",
+      "label": "Return to Hometown",
       "x": 550,
       "y": 750,
-      "r": 65,
+      "r": 70,
       "targetScene": "whisperwind_hd_waterfront",
-      "targetSpawn": "from_tavern"
+      "targetSpawn": "from_inn"
     },
     {
-      "id": "supper",
+      "id": "reception",
       "type": "shop",
-      "label": "Supper and Supplies",
+      "label": "Tea and Supper at Lantern Inn",
       "x": 340,
-      "y": 420,
-      "r": 100,
+      "y": 430,
+      "r": 110,
       "shopId": "snack_shack",
-      "message": "Mara sets out supper. Ordinary kindness holds a place together."
+      "message": "A warm lobby for travelers. Share a table or browse supper supplies. Overnight room booking is not available yet."
     }
   ],
   "npcs": [],

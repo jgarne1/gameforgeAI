@@ -36,7 +36,7 @@ The owner allows replacing legacy artwork. Replace references in bounded distric
 
 Player grounding: `player.motion` in the manifest sets speed, distance per walking cycle, and foot-contact shadow. Frames advance from actual movement distance; stopped/blocked players must not slide or keep stepping. Walking frame rows are measured from the source, not inferred from a perfect 4×4 grid. See the asset guide before changing them.
 
-The sidebar's Neighborhood entry is now **Hometown**, defaulting all users to this Whisperwind. Read [town expansion, NPC life and future residence routing](docs/art/TOWN_EXPANSION_AND_NPC_LIFE.md). Use the server's `hometown` projection for launch destinations; a future verified home purchase/move can change the selected residence. Authored NPC routines and the larger modular asset set are the next town content slice; they are not yet shipped.
+The sidebar's Neighborhood entry is now **Hometown**, defaulting all users to this Whisperwind. Read [town expansion, NPC life and future residence routing](docs/art/TOWN_EXPANSION_AND_NPC_LIFE.md). Use the server's `hometown` projection for launch destinations; a future verified home purchase/move can change the selected residence. Authored NPC routines, protected homes and modular assets are implemented; see the town build and landscape guides for current behavior.
 
 
 ## Expanded Hometown implementation (2026-09-28)
@@ -48,3 +48,10 @@ Read `docs/art/TOWN_BUILD_V2.md` before editing town housing or NPCs. Read `docs
 NPC skins are independent from identities and routes. World Composer links to the NPC Skins tool; persistent overrides live in DATA/town_npc_skins.json. Add four-direction source frames in npc_skins.json. TownMotion handles bounded routes and player pathfinding; TownLife handles resident presentation, introductions, housing controls and ambient animal overlays. Keep scenery pets distinct from the user's saved companion.
 
 Home editor decorations accept only approved catalog IDs and constrained coordinates/scales/rotations. Exterior facade changes keep fixed door/collision positions; use local facade customization rather than replacing plot identities. New shop products are collectible tackle; equipment effects remain future work. The introduction story is not the full DDS C0 campaign. Twenty-player capacity remains unverified.
+
+## Town landscape and roofs
+
+Read [Town Character and Roofs](docs/art/TOWN_CHARACTER_AND_ROOFS.md) before editing the hillside layout, landscape sprites, guide destinations or home roof colors. Keep plot IDs and saved ownership stable.
+
+The story-led town pass extends DDS section 4 with Whisperwind's history and named district purposes. See docs/art/TOWN_CHARACTER_AND_ROOFS.md for clean path joins, the event plaza, lake/mansion landmarks, new movable furnishings and persistent Composer overrides. Character prototype sources have explicit limitations; wardrobe functionality, lake fishing and playground gameplay remain planned.
+

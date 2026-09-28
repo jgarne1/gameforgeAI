@@ -4,9 +4,10 @@ let actions={};const $=s=>document.querySelector(s),esc=s=>String(s??'').replace
 async function json(url,body){const r=await fetch(url,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{cache:'no-store'});const d=await r.json();if(!r.ok||d.error)throw Error(d.error||'Could not complete action.');return d;}
 function modal(E,html){E.keys={};E.target=null;E.route=[];E.player.vx=E.player.vy=0;const b=$('#wfHomeBox');b.style.maxHeight='80vh';b.style.overflow='auto';b.innerHTML=html+'<p><button id="townClose">Close</button></p>';b.classList.add('show');$('#townClose').onclick=()=>b.classList.remove('show');return b;}
 async function prepare(E,sc){
+  if(!E.guidePlaces)E.guidePlaces=(await json('/assets/worlds/whisperwind_hd_waterfront.json')).guidePlaces;
   E.npcSkins=await json('/api/town/npc-skins').catch(()=>({skins:{}}));
   for(const n of sc.npcs||[])n.skinId=E.npcSkins.overrides?.[sc.id+':'+n.id]||n.skinId;
-  if(sc.id==='whisperwind_hd_waterfront')E.townHomes=(await json('/api/town/homes')).plots;
+  if(sc.id==='whisperwind_hd_waterfront'){E.townHomes=(await json('/api/town/homes')).plots;E.guidePlaces=sc.guidePlaces;for(const o of sc.objects||[])if(o.plotId)o._defaultAsset=o.asset;}
   if(sc.home?.canEdit){const b=$('#townDecorate');if(b)b.hidden=false;}else if($('#townDecorate'))$('#townDecorate').hidden=true;
 }
 function tools(E,a){
@@ -16,9 +17,9 @@ function tools(E,a){
   const edit=document.createElement('button');edit.id='townDecorate';edit.textContent='Decorate Home';edit.hidden=true;edit.onclick=()=>location.href='/games/home_editor.html?plot='+encodeURIComponent(E.scene.home.plotId);tools.append(edit);
 }
 function showGuide(E){
-  const places=[['Market Square',1200,1300],['Driftwood Tavern',600,820],['Pet Center',600,1420],['Fishing Outfitter',600,2620],['Residential Row',1900,900],['River Docks',1200,3180]];
+  const places=(E.scene.guidePlaces||E.guidePlaces||[]).map(p=>[p.name,p.x,p.y]);
   const b=modal(E,'<h2>Whisperwind Town Guide</h2><p>Meet Mira, Toma and the Dockmaster. Find a home and leave your mark on a town that remembers its neighbors.</p><p>Choose a place to walk there, or use its door when you arrive.</p>'+(E.scene.npcs||[]).map(n=>'<button data-resident="'+esc(n.id)+'">Meet '+esc(n.name)+'</button>').join('')+'<p></p>'+places.map((p,i)=>'<button data-place="'+i+'">'+esc(p[0])+'</button>').join('')+'<p><a href="/games/world.html?scene=shadow_woods_dock">Go fishing in Shadow Woods</a> · <a href="/games/market.html">Marketplace</a> · <a href="/games/petworld.html">Care for pets and play games</a></p><p id="townStory">Loading your introductions…</p>');
-  b.querySelectorAll('[data-place]').forEach(btn=>btn.onclick=()=>{if(E.scene.mode==='interior'){actions.loadScene('whisperwind_hd_waterfront');b.classList.remove('show');return;}const p=places[Number(btn.dataset.place)];E.route=TownMotion.route(E.player,{x:p[1],y:p[2]},(x,y)=>window.TownWalkable(x,y),E.scene.size);E.target=E.route.shift();b.classList.remove('show');if(!E.target)actions.toast('Walk onto the street and try again.');});
+  b.querySelectorAll('[data-place]').forEach(btn=>btn.onclick=async()=>{b.classList.remove('show');if(E.scene.mode==='interior')await actions.loadScene('whisperwind_hd_waterfront');const p=places[Number(btn.dataset.place)];E.route=TownMotion.route(E.player,{x:p[1],y:p[2]},(x,y)=>window.TownWalkable(x,y),E.scene.size);E.target=E.route.shift();b.classList.remove('show');if(!E.target)actions.toast('Walk onto the street and try again.');});
   b.querySelectorAll('[data-resident]').forEach(btn=>btn.onclick=()=>{const n=E.scene.npcs.find(n=>n.id===btn.dataset.resident);const route=TownMotion.route(E.player,n,window.TownWalkable,E.scene.size);if(!route.length){actions.toast('Move onto the street and try again.');return;}E.followNpc=n.id;E.route=route;E.target=E.route.shift();b.classList.remove('show');});
   json('/api/town/story').then(d=>{const t=$('#townStory');if(t)t.textContent=d.story.complete?'A Place to Begin — complete. The residents know your name. The worn hammer mark by the old dock hints at a larger story.':'A Place to Begin — introductions '+(d.story.visits||[]).length+'/3. Speak to Mira at the tavern, Toma at the Pet Center, and the Dockmaster by the river.';}).catch(e=>{if($('#townStory'))$('#townStory').textContent=e.message;});
 }
@@ -58,8 +59,12 @@ function drawNpc(c,n,E){
   c.save();c.translate(n.x,n.y);c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(0,1,11,3,0,0,7);c.fill();WhisperwindAssets.draw(c,im,{sourceRect:r,displaySize:{w:80*r.w/r.h,h:80},placeOrigin:{x:.5,y:1}},{x:0,y:0});c.fillStyle='#fff0bd';c.font='bold 13px system-ui';c.textAlign='center';c.strokeStyle='#10170e';c.lineWidth=3;c.strokeText(n.name,0,-90);c.fillText(n.name,0,-90);c.restore();
 }
 function exterior(E,o){
-  if(!o.plotId)return;const p=E.townHomes?.find(p=>p.id===o.plotId),d=p?.decoration?.exterior;o.asset=d?{cottage:'wwhd_cottage',apartment:'wwhd_apartment',shop:'wwhd_bakery'}[d.style]:o.baseAsset||o.asset;
-  o.tint=d?{sage:'#759476',blue:'#547ca5',rose:'#b87585',gold:'#c7ac63'}[d.accent]:undefined;
+  if(!o.plotId)return;const p=E.townHomes?.find(p=>p.id===o.plotId),d=p?.decoration?.exterior;o.asset=d?{cottage:'wwhd_cottage',apartment:'wwhd_apartment',shop:'wwhd_bakery'}[d.style]:o._defaultAsset||o.baseAsset||o.asset;
+  const style=d?.style||((o._defaultAsset||o.baseAsset||'').includes('apartment')?'apartment':'cottage');
+  const roof=d?.roof||o.roofColor||'original';
+  const variant='wwhd_'+(style==='shop'?'bakery':style)+'_roof_'+roof;
+  if(roof!=='original'&&E.catalog?.[variant])o.asset=variant;
+  delete o.tint;
 }
 function drawAmbient(c,E,time){
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -67,11 +72,11 @@ function drawAmbient(c,E,time){
     if(!o.plotId||Math.hypot(o.x-E.player.x,o.y-E.player.y)>650||E.near?.plotId===o.plotId)continue;
     const p=E.townHomes?.find(p=>p.id===o.plotId);if(!p)continue;
     const text=p.decoration?.exterior?.sign||p.name;
-    c.save();c.font='bold 12px system-ui';c.textAlign='center';const width=c.measureText(text).width+18;c.fillStyle='rgba(14,29,20,.85)';c.fillRect(o.x-width/2,o.y+19,width,23);c.fillStyle=p.owner?'#e8e6c8':'#ffda8b';c.fillText(text,o.x,o.y+35);c.restore();
+    c.save();c.font='bold 12px system-ui';c.textAlign='center';const width=c.measureText(text).width+18;c.fillStyle={sage:'#344f3c',blue:'#29465f',rose:'#653d4e',gold:'#6b552b'}[p.decoration?.exterior?.accent]||'rgba(14,29,20,.85)';c.fillRect(o.x-width/2,o.y+19,width,23);c.fillStyle=p.owner?'#e8e6c8':'#ffda8b';c.fillText(text,o.x,o.y+35);c.restore();
   }
   for(const a of E.scene.ambient||[]){
     if(a.type==='lampGlow'){c.fillStyle='rgba(255,208,98,'+(reduced?.12:.12+Math.sin(time*1.7+a.y)*.025)+')';c.beginPath();c.ellipse(a.x,a.y,14,10,0,0,7);c.fill();}
-    if(a.type==='fountain'){c.save();c.strokeStyle='rgba(210,250,245,.4)';c.lineWidth=1;for(let i=0;i<3;i++){const phase=reduced?.5:(time*.4+i/3)%1;c.globalAlpha=1-phase;c.beginPath();c.ellipse(a.x,a.y,14+phase*34,4+phase*10,0,0,7);c.stroke();}c.restore();}
+    if(a.type==='fountain'){c.save();if(!reduced){for(const [x1,y1,x2,y2] of a.streams||[]){c.strokeStyle='rgba(174,230,238,.65)';c.lineWidth=2;c.beginPath();c.moveTo(a.x+x1,a.y+y1);c.lineTo(a.x+x2+Math.sin(time*3+x1)*1.5,a.y+y2);c.stroke();for(let i=0;i<4;i++){const p=(time*1.8+i/4)%1;c.fillStyle='rgba(233,255,255,.8)';c.fillRect(a.x+x1+(x2-x1)*p,a.y+y1+(y2-y1)*p,2,3);}}}c.strokeStyle='rgba(210,250,245,.4)';c.lineWidth=1;for(let i=0;i<3;i++){const phase=reduced?.5:(time*.4+i/3)%1;c.globalAlpha=1-phase;c.beginPath();c.ellipse(a.x,a.y,14+phase*34,4+phase*10,0,0,7);c.stroke();}c.restore();}
     if(a.type==='smoke'&&!reduced){for(let i=0;i<4;i++){const age=(time*.25+i*.24)%1;c.fillStyle='rgba(211,213,194,'+(.18*(1-age))+')';c.beginPath();c.ellipse(a.x+Math.sin(age*5+i)*7,a.y-age*75,5+age*10,3+age*8,0,0,7);c.fill();}}
     if(a.type==='windowPet'){
       const skin=E.npcSkins?.pets?.[a.pet],im=skin&&E.assets[skin.src];if(!im)continue;
@@ -87,3 +92,4 @@ function drawAmbient(c,E,time){
 }
 window.TownLife={prepare,tools,home,interact,update,drawNpc,drawAmbient,exterior};
 })();
+

@@ -1,6 +1,6 @@
 # Whisperwind town build — September 28, 2026
 
-This is an expanded playable town implementation on the recovery draft branch. It is not a main-branch deployment, a capacity certification, or the full DDS campaign.
+This is an expanded playable town implementation on the recovery draft branch. The first expanded town was merged for deployment. It is not a capacity certification or the full DDS campaign. Read TOWN_CHARACTER_AND_ROOFS.md for the subsequent landscape and housing pass.
 
 ## Playable content
 
@@ -20,7 +20,7 @@ These new mutations use an HttpOnly, SameSite=Strict session cookie issued by su
 
 ## Customization
 
-`games/home_editor.html?plot=<owned plot>` supports up to 80 approved furnishings, drag placement, selection, resize, quarter-turn rotation, removal, oak/walnut/stone floor, four wall colors, three exterior facade styles, four accents, a short escaped welcome sign, and visitor privacy. The server strips unapproved fields/assets and rejects entrance-center placements. Decorations are per address and persist through reload/ownership transfer. Furniture is decorative and does not add collision; keep room paths visually clear. Exterior changes do not change lot collision or entrance position.
+`games/home_editor.html?plot=<owned plot>` supports up to 80 approved furnishings, drag placement, selection, resize, quarter-turn rotation, removal, oak/walnut/stone floor, four wall colors, three exterior facade styles, four accents, a short escaped welcome sign, and visitor privacy. The server strips unapproved fields/assets and rejects entrance-center placements. Decorations are per address and persist through reload/ownership transfer. Solid furnishings now use bottom footprints through the existing object collision feature; rugs remain walkable. Keep paths to the exit clear. Exterior changes do not change lot collision or entrance position.
 
 World Composer's **NPC Skins** button opens `games/town_npc_admin.html`. An authenticated world editor admin selects scene, resident and skin, previews four directions, and saves. `DATA/town_npc_skins.json` stores overrides independently from scene files, so changes survive a deployed asset update. Add future skins to `npc_skins.json` using the same source/frame contract; do not rename NPC IDs to change appearance.
 
@@ -33,3 +33,4 @@ River Tackle uses canonical `data/shops.json` prices and `data/items.json` defin
 26 unit/recovery tests cover parsing, source bounds, grounded movement, default hometown, housing protection/resales/grants/decor validation, every public entrance's route, and NPC collision/pause behavior. Isolated local integration checks cover authentication/spoofing, cancelled listings, two competing buyers, exact coin transfer, private HTTP/socket access, saved decoration, shop purchases, admin denial, introductions and logout. Recovery integration covers catches, geometry round trips and 27 game URLs. Browser checks cover town navigation, house claim/entry/editor save/reload, shop access, and persisted NPC appearance choices.
 
 Still required: 20-client load validation, additional NPC activities and stories, individual equipment effects/balance, unlimited private starter-home entitlement, outfit customization, account pet followers, richer architectural variation, and a polish pass on source-frame consistency/seamless terrain. Do not report those as implemented.
+
