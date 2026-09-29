@@ -9,6 +9,24 @@ test('expanded layout preserves every player address and reaches every door',()=
 test('expanded shops, playground, mansion and lake approaches are reachable',()=>{
  const {sc,canStand}=world();for(const h of sc.hotspots.filter(h=>!h.plotId)){assert.ok(canStand(h.x,h.y),h.id+' blocked');assert.ok(M.route(sc.spawn,h,canStand,sc.size).length,h.id+' unreachable');}
 });
+test('fairground station, zoo walk, and enclosed animal pens stay connected',()=>{
+ const {sc,canStand}=world(),ride=sc.attractions.coaster,zoo=sc.attractions.zoo;
+ assert.ok(M.route(sc.spawn,ride.boarding,canStand,sc.size).length,'station approach');
+ assert.ok(canStand(ride.boarding.x,ride.boarding.y),'boarding point');
+ assert.ok(canStand(ride.exit.x,ride.exit.y),'safe disembark');
+ assert.ok(M.route(sc.spawn,{x:1300,y:7020},canStand,sc.size).length,'zoo walk');
+ assert.equal(zoo.pens.length,3);
+ for(const pen of zoo.pens){assert.equal(canStand(pen.x+pen.w/2,pen.y+pen.h/2),true,'animal ground is terrain');assert.equal(canStand(pen.x+pen.w/2,pen.y+pen.h),false,pen.id+' fence');assert.ok(sc.paths.every(p=>p.points.every(([x,y])=>x<=pen.x-p.width/2||x>=pen.x+pen.w+p.width/2||y<=pen.y-p.width/2||y>=pen.y+pen.h+p.width/2)),pen.id+' path cuts through pen');}
+});
+test('Lantern Run pauses for boarding and returns to the same station',()=>{
+ const ctx=vm.createContext({window:{}});vm.runInContext(fs.readFileSync(path.join(root,'games/js/town_attractions.js'),'utf8'),ctx);
+ const sc=JSON.parse(fs.readFileSync(path.join(root,'public/assets/worlds/whisperwind_hd_expanded.json'),'utf8'));
+ const at=ctx.window.TownAttractions.coasterAt,ride=sc.attractions.coaster,cycle=(ride.dwellSeconds+ride.travelSeconds)*1000;
+ const waiting=at(sc,1000),moving=at(sc,(ride.dwellSeconds+3)*1000),returned=at(sc,cycle+1000);
+ assert.equal(waiting.docked,true);assert.equal(moving.docked,false);assert.equal(returned.docked,true);
+ assert.ok(moving.z>20,'course gains elevation');assert.equal(waiting.x,returned.x);assert.equal(waiting.y,returned.y);
+ assert.ok(ride.track.length>100);assert.equal(ride.track[0].x,ride.track.at(-1).x);assert.equal(ride.track[0].y,ride.track.at(-1).y);
+});
 test('crossing decks allow walking over water while rail and open river block',()=>{
  const {sc,canStand}=world();assert.equal(sc.terrain.crossings.length,3);
  for(const deck of sc.terrain.crossings){const [x,y]=deck.origin;assert.equal(canStand(x,y),true,deck.id);assert.equal(canStand(x,y+150),false,deck.id+' water');assert.equal(canStand(x,y+120),false,deck.id+' rail');}

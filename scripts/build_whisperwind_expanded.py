@@ -45,7 +45,7 @@ def road(id,points,width=150):
  sc['paths'].append({'id':id,'points':planned_street(points,width),'width':width,'kind':'lane'})
 def ellipse(cx,cy,rx,ry,n=40):return [[round(cx+rx*math.cos(i*math.tau/n),1),round(cy+ry*math.sin(i*math.tau/n),1)] for i in range(n)]
 def hot(id,x,y,label,message='',**extra):
- h=dict(id=id,x=x,y=y,label=label,r=85,message=message,**extra);h.setdefault('type','message');sc['hotspots'].append(h);return h
+ h=dict(id=id,x=x,y=y,label=label,r=85,message=message);h.update(extra);h.setdefault('type','message');sc['hotspots'].append(h);return h
 river=[[6100,2050],[5550,2420],[5000,2850],[4900,3400],[5050,4000],[4780,4800],[5000,5600],[4600,6300],[4200,6900],[4000,7400]]
 center=smooth(river)
 sc['terrain']['water']=[{'id':'orchard_lake','points':ellipse(6930,1820,1230,720),'blocksWalking':True,'material':{'calm':True,'speed':.7,'tileSize':850}}, {'id':'river','points':[[x-220,y] for x,y in center]+[[x+220,y] for x,y in reversed(center)],'blocksWalking':True}]
@@ -89,6 +89,42 @@ road('east_quay_homes',[eq,(6000,6800),(6700,6900),(7600,7000),(8400,7040)],145)
 road('east_garden_walk',[(6900,4990),(7120,5400),(7350,5750),(7600,6120)],105)
 road('south_orchard_walk',[(6800,6120),(7180,6600),(7600,7000)],100)
 road('lake_mansion_trail',[en,(6200,2700),(7500,2700),(8400,2400),(8600,1600),(8220,1120)],120)
+road('fairground_promenade',[(3300,1480),(3600,1450),(3900,1480),(4200,1700),(4300,2130),(5290,2210),(4750,2510),(3900,2600),(3300,2790)],165)
+road('fairground_shortcut',[(4200,1700),(4490,1920),(4300,2130)],115)
+road('zoo_walk',[(2350,6950),(1930,7020),(1300,7020),(520,7020)],155)
+road('zoo_quay_access',[(2300,6350),(2090,6680),(1930,7020)],125)
+
+def coaster_track(knots,steps=14):
+ """Sample a closed 3D Catmull-Rom course; cart and rails share these points."""
+ out=[];count=len(knots)
+ for i in range(count):
+  a,b,c,d=(knots[(i+j)%count] for j in (-1,0,1,2))
+  for n in range(steps):
+   t=n/steps
+   out.append(dict(zip(('x','y','z'),[round(.5*(2*b[k]+(-a[k]+c[k])*t+(2*a[k]-5*b[k]+4*c[k]-d[k])*t*t+(-a[k]+3*b[k]-3*c[k]+d[k])*t*t*t),1) for k in range(3)])))
+ return out+[out[0].copy()]
+
+sc['attractions']={
+ 'coaster':{'id':'lantern_run','name':'Lantern Run','station':{'x':4170,'y':1400},'stationSprite':{'src':'/assets/whisperwind_hd/fairground_v1/lantern_run_station.png','x':3650,'y':1045,'w':720,'h':475},'queue':{'x':3790,'y':1350,'w':270,'h':225},
+            'boarding':{'x':4005,'y':1550},'exit':{'x':3970,'y':1640},'dwellSeconds':8,'travelSeconds':23,
+            'tunnel':{'x':4740,'y':405,'rx':155,'ry':92},
+            'track':coaster_track([(x+250,y-170,z) for x,y,z in [(3920,1570,20),(4320,1580,30),(4820,1590,95),(5210,1380,210),(5240,1050,260),(5010,730,170),(4490,660,85),(3990,800,105),(3700,1080,175),(3710,1440,40)]])},
+ 'zoo':{'id':'wildlife_garden','sprite':{'src':'/assets/whisperwind_hd/fairground_v1/wildlife_animals.png','sourceRects':{'deer':[55,10,460,875],'capybara':[610,15,600,850],'owl':[1250,15,450,850]}},'pens':[
+   {'id':'deer_meadow','name':'Deer Meadow','animal':'deer','x':350,'y':6350,'w':420,'h':460,'seed':1},
+   {'id':'capybara_pool','name':'Capybara Pool','animal':'capybara','x':955,'y':6350,'w':420,'h':460,'seed':3},
+   {'id':'owl_grove','name':'Owl Grove','animal':'owl','x':1440,'y':6350,'w':420,'h':460,'seed':5}]}}
+hot('lantern_run_board',4005,1550,'Board Lantern Run',type='coaster',r=120,message='The cart waits at the station before each circuit.')
+hot('fairground_board',4380,2110,'Fairground Chronicle','The river festival is growing. The Lantern Run is open; this green is kept clear for more rides and stalls.')
+for pen in sc['attractions']['zoo']['pens']:
+ hot(pen['id']+'_sign',pen['x']+pen['w']/2,6905,pen['name'],f"The {pen['animal']} is cared for at Whisperwind's little wildlife garden.")
+ for n,(xx,yy) in enumerate([(pen['x']+55,pen['y']+100),(pen['x']+pen['w']-55,pen['y']+250)]):obj(pen['id']+'_shrub_'+str(n),'wwhd_nature_shrub',xx,yy,scale=.75)
+ for x,y,w,h in [(pen['x']-9,pen['y']-9,18,pen['h']+18),(pen['x']+pen['w']-9,pen['y']-9,18,pen['h']+18),(pen['x'],pen['y']-9,pen['w'],18),(pen['x'],pen['y']+pen['h']-9,pen['w'],18)]:
+  sc['blockers'].append({'id':pen['id']+'_fence_'+str(len(sc['blockers'])),'x':x,'y':y,'w':w,'h':h})
+for x,y in [(3870,1260),(4280,740),(4930,560),(5430,830),(5450,1280),(5010,1430)]:
+ sc['collisions'].append({'id':'coaster_support_'+str(x),'x':x-15,'y':y-15,'w':30,'h':30})
+sc['collisions'].append({'id':'coaster_ticket_booth','x':3665,'y':1330,'w':135,'h':175})
+for x,y,w,h in [(3780,1340,12,245),(4052,1340,12,245)]:sc['blockers'].append({'id':'queue_rail_'+str(x),'x':x,'y':y,'w':w,'h':h})
+for i,(x,y) in enumerate([(4490,2260),(4960,2360)]):obj('fair_stall_'+str(i),'wwhd_stall',x,y,collide=[-70,-60,140,55])
 home_positions=[(800,1030),(1480,1110),(2180,980),(2900,1100),(800,1610),(1440,1740),(2360,1590),(3050,1670), (6100,3560),(6820,3420),(7500,3600),(8300,3950),(6250,4400),(6980,4600),(7690,4460),(8270,4850), (6100,5520),(6830,5640),(7560,5480),(8270,5860),(6010,6420),(6800,6600),(7550,6460),(8300,6700)]
 for i,(x,y) in enumerate(home_positions,1):
  source=copy.deepcopy(next(o for o in old['objects'] if o.get('plotId')==f'town_home_{i:02d}'))
@@ -184,6 +220,8 @@ buildings=[o for o in sc['objects'] if o['layer']=='buildings']
 def clearplant(x,y):
  # Keep tree trunks and their overhanging crowns off the complete ramp footprint.
  if any(abs(x-riverx(cy))<1130 and cy-240<y<cy+580 for cy in [3000,4800,6300]):return False
+ if 3420<x<5660 and 280<y<2670:return False
+ if 350<x<1960 and 6180<y<7180:return False
  if any(inside((x,y),w['points']) for w in sc['terrain']['water']):return False
  if any(inside((x,y),p['points']) for p in sc['groundPatches']+sc['plazas']+sc['terrain']['crossings']):return False
  if any(abs(x-o['x'])<cat[o['asset']]['displaySize']['w']*(o.get('scale',1))/2+80 and -cat[o['asset']]['displaySize']['h']*o.get('scale',1)-80<y-o['y']<200 for o in buildings):return False
@@ -225,8 +263,8 @@ for i,p in enumerate(sc['paths']):
   if any(math.hypot(x-o['x'],y-o['y'])<155 for o in sc['objects'] if not o['id'].startswith('nature_')):continue
   obj('street_lamp_'+str(i)+'_'+str(j),'wwhd_lamp',round(x),round(y),collide=[-8,-8,16,12])
 sc['districts']=[{'id':id,'name':name,'bounds':bounds} for id,name,bounds in [('lantern','Lantern Hill',[400,400,3400,1500]),('orchard','Orchard Gardens',[500,1900,1900,900]),('commonlight','Commonlight Square',[2600,3000,1500,1200]),('market','Market Lanes',[600,3100,2300,2000]),('lake','Orchard Lake',[5600,850,3100,2150]),('eastbank','Eastbank Homes',[5700,3200,3100,1800]),('southgardens','South Gardens',[5500,5300,3300,1700]),('quay','Fishing Quay',[1700,5800,2500,1300])]]
-sc['guidePlaces']=[{'name':name,'x':x,'y':y} for name,x,y in [('Commonlight Square',3300,3700),('Orchard Playground',1760,2590),('Lantern Hill',1800,1650),('River Tackle',2075,6280),('Lake Shore',7100,2730),('Old Mansion',8150,1130),('North Bridge',riverx(3200)-500,3200),('Market Bridge',riverx(4800)-500,4800),('Quay Bridge',riverx(6300)-500,6300)]]
-sc['spawnPoints']=[{'id':id,'x':x,'y':y,'face':'up'} for id,x,y in [('playground',1760,2650),('lake',7100,2730),('mansion',8150,1200),('bridge',riverx(4800)-1100,4977.5),('hill',1800,2000)]]
+sc['guidePlaces']=[{'name':name,'x':x,'y':y} for name,x,y in [('Commonlight Square',3300,3700),('Orchard Playground',1760,2590),('Lantern Run Fairground',4005,1550),('Wildlife Garden',1300,7020),('Lantern Hill',1800,1650),('River Tackle',2075,6280),('Lake Shore',7100,2730),('Old Mansion',8150,1130),('North Bridge',riverx(3200)-500,3200),('Market Bridge',riverx(4800)-500,4800),('Quay Bridge',riverx(6300)-500,6300)]]
+sc['spawnPoints']=[{'id':id,'x':x,'y':y,'face':'up'} for id,x,y in [('playground',1760,2650),('fair',4005,1550),('zoo',1300,7020),('lake',7100,2730),('mansion',8150,1200),('bridge',riverx(4800)-1100,4977.5),('hill',1800,2000)]]
 for id,(x,y) in landmarks.items():
  name={'lantern_inn':'inn','echo_hall':'echo_hall','pet_center':'pet_center','fishing_shop':'fishing_shop','bakery':'market','tavern':'tavern'}.get(id)
  if name:
