@@ -1,0 +1,360 @@
+{
+  "packId": "stone_bridge_integrated_v2",
+  "assets": [
+    {
+      "id": "wwhd_stone_bridge_integrated_v2",
+      "file": "bridge_source.png",
+      "sourceRect": {
+        "x": 9,
+        "y": 99,
+        "w": 2154,
+        "h": 516
+      },
+      "displaySize": {
+        "w": 2175.54,
+        "h": 521.16
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.375
+      },
+      "sourcePlacementAnchor": [
+        1086,
+        292.5
+      ],
+      "scale": 1.01,
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "solidBounds": [
+        14,
+        104,
+        2144,
+        506
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "3a216adae6165196ceaf08c9dd6c29aca4c4b563cceef263be4d489e83397754"
+    },
+    {
+      "id": "wwhd_shore_threshold_v2",
+      "file": "shore_threshold_source.png",
+      "sourceRect": {
+        "x": 371,
+        "y": 36,
+        "w": 259,
+        "h": 1482
+      },
+      "displaySize": {
+        "w": 29.26881118881119,
+        "h": 167.47636363636363
+      },
+      "placeOrigin": {
+        "x": 0.03474903474903475,
+        "y": 0.4865047233468286
+      },
+      "sourcePlacementAnchor": [
+        380,
+        757
+      ],
+      "scale": 0.113006993006993,
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "solidBounds": [
+        376,
+        41,
+        249,
+        1472
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "46b1efd78bab3036ff87f263dcb49c951863a928d33646272e31c5447f314d03",
+      "layer": "ground detail below actors",
+      "walkableBandLocal": [
+        [
+          -1,
+          -80.8
+        ],
+        [
+          27,
+          -80.8
+        ],
+        [
+          27,
+          80.8
+        ],
+        [
+          -1,
+          80.8
+        ]
+      ],
+      "collisionNotes": "Flat detail only. Do not add a wall blocker or separate water override. Existing shore road supplies traversal."
+    }
+  ],
+  "status": "Local light/dark geometry inspection passed; runtime navigation unverified",
+  "assembly": {
+    "originDescription": "Center of the clear central deck; all coordinates in world screen units at scale1.01",
+    "floorPolygonLocal": [
+      [
+        -1005.96,
+        98.475
+      ],
+      [
+        -371.68,
+        -103.525
+      ],
+      [
+        373.7,
+        -103.525
+      ],
+      [
+        1014.04,
+        98.475
+      ],
+      [
+        1028.18,
+        260.075
+      ],
+      [
+        373.7,
+        103.525
+      ],
+      [
+        -371.68,
+        103.525
+      ],
+      [
+        -1021.11,
+        260.075
+      ]
+    ],
+    "floorPolygonSource": [
+      [
+        90,
+        390
+      ],
+      [
+        718,
+        190
+      ],
+      [
+        1456,
+        190
+      ],
+      [
+        2090,
+        390
+      ],
+      [
+        2104,
+        550
+      ],
+      [
+        1456,
+        395
+      ],
+      [
+        718,
+        395
+      ],
+      [
+        75,
+        550
+      ]
+    ],
+    "centerlineLocal": [
+      [
+        -1013.535,
+        179.275
+      ],
+      [
+        -371.68,
+        0.0
+      ],
+      [
+        373.7,
+        0.0
+      ],
+      [
+        1021.11,
+        179.275
+      ]
+    ],
+    "centerlineSource": [
+      [
+        82.5,
+        470
+      ],
+      [
+        718,
+        292.5
+      ],
+      [
+        1456,
+        292.5
+      ],
+      [
+        2097,
+        470
+      ]
+    ],
+    "railLinesLocal": [
+      {
+        "side": "far",
+        "points": [
+          [
+            -1013.03,
+            80.295
+          ],
+          [
+            -394.91,
+            -115.645
+          ],
+          [
+            387.84000000000003,
+            -115.645
+          ],
+          [
+            1019.09,
+            80.295
+          ]
+        ],
+        "collisionHalfWidthProposal": 18,
+        "segments": [
+          {
+            "start": [
+              -1013.03,
+              80.295
+            ],
+            "end": [
+              -394.91,
+              -115.645
+            ]
+          },
+          {
+            "start": [
+              -394.91,
+              -115.645
+            ],
+            "end": [
+              387.84000000000003,
+              -115.645
+            ]
+          },
+          {
+            "start": [
+              387.84000000000003,
+              -115.645
+            ],
+            "end": [
+              1019.09,
+              80.295
+            ]
+          }
+        ]
+      },
+      {
+        "side": "near",
+        "points": [
+          [
+            -1051.41,
+            278.255
+          ],
+          [
+            -415.11,
+            130.795
+          ],
+          [
+            418.14,
+            130.795
+          ],
+          [
+            1054.44,
+            278.255
+          ]
+        ],
+        "collisionHalfWidthProposal": 18,
+        "segments": [
+          {
+            "start": [
+              -1051.41,
+              278.255
+            ],
+            "end": [
+              -415.11,
+              130.795
+            ]
+          },
+          {
+            "start": [
+              -415.11,
+              130.795
+            ],
+            "end": [
+              418.14,
+              130.795
+            ]
+          },
+          {
+            "start": [
+              418.14,
+              130.795
+            ],
+            "end": [
+              1054.44,
+              278.255
+            ]
+          }
+        ]
+      }
+    ],
+    "shoreToeAnchorsLocal": {
+      "west": [
+        -1013.535,
+        179.275
+      ],
+      "east": [
+        1021.11,
+        179.275
+      ]
+    },
+    "centralDeckLength": 745.38,
+    "centralClearFloorDepth": 207.05,
+    "toeClearFloorDepth": 161.6,
+    "riverGapAtArchFeetApprox": 443.39,
+    "overallWidth": 2165.44,
+    "rendering": "One complete structures entity below actors. Far parapet, low near rim and arch are baked into source. No separate independently generated rail. Constrain feet to inset floor polygon to keep them behind front rim.",
+    "notes": [
+      "All dimensions are screen-plane measurements, not physical Z heights.",
+      "Built-in long ramps have continuous paving and no assembly seam. No old separate apron or large square approach mats should accompany this bridge.",
+      "Central floor is207units deep; toes narrow to162. Do not claim190-220clear depth throughout both ramps.",
+      "This bridge is much longer than the prior610-unit span: complete footprint2165units, central deck745, ramps roughly650each. River opening near ground is approximately443units. Runtime must account for its full footprint."
+    ]
+  },
+  "thresholdAssembly": {
+    "eastPositionLocal": [
+      1044.34,
+      179.275
+    ],
+    "eastFlipX": false,
+    "westPositionLocal": [
+      -1044.34,
+      179.275
+    ],
+    "westFlipX": true,
+    "notes": "Bridge-facing border is source x380. Proposed stone-border contacts sit at the outer toe edges, slightly beyond inset navigation anchors. Width is about28units, height matches161.6-unit toe floor. Reflect west instance around its source placement anchor; no source pixel edits. Opaque loose pebbles thin organically into real alpha0, no faded square mat."
+  },
+  "qaNotes": [
+    "Original shore_threshold_source.png retained as approved selection. Broad brown hidden RGB is alpha0 and actual light/dark browser composite shows no haze.",
+    "Outside column band x360..649, approved original has21 pixels alpha1/255, no alpha above8/255.",
+    "Final cutout variant preserves near-transparent noise14pixels atalpha1/255, a negligible difference; excluded from catalog to preserve approved integration geometry.",
+    "Bridge inset floor, centerline and shore thresholds visually inspected on flat light/dark backgrounds. Runtime tests are main-project responsibility."
+  ]
+}

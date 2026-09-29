@@ -2126,6 +2126,56 @@
         "walk",
         "selected-pose"
       ]
+    },
+    {
+      "id": "wwhd_stone_bridge_integrated_v2",
+      "sourceRect": {
+        "x": 9,
+        "y": 99,
+        "w": 2154,
+        "h": 516
+      },
+      "displaySize": {
+        "w": 2175.54,
+        "h": 521.16
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.375
+      },
+      "src": "/assets/whisperwind_hd/stone_bridge_integrated_v2/bridge_source.png",
+      "name": "Stone Bridge Integrated V2",
+      "category": "structures",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "integrated-ramps"
+      ]
+    },
+    {
+      "id": "wwhd_shore_threshold_v2",
+      "sourceRect": {
+        "x": 371,
+        "y": 36,
+        "w": 259,
+        "h": 1482
+      },
+      "displaySize": {
+        "w": 29.26881118881119,
+        "h": 167.47636363636363
+      },
+      "placeOrigin": {
+        "x": 0.03474903474903475,
+        "y": 0.4865047233468286
+      },
+      "src": "/assets/whisperwind_hd/stone_bridge_integrated_v2/shore_threshold_source.png",
+      "name": "Shore Threshold V2",
+      "category": "structures",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "integrated-ramps"
+      ]
     }
   ],
   "player": {

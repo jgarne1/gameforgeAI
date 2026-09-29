@@ -45,6 +45,12 @@ test('shared renderer selects a single atlas rectangle at its world anchor',()=>
   assert.deepEqual(calls[0].slice(1,5),[a.sourceRect.x,a.sourceRect.y,a.sourceRect.w,a.sourceRect.h]);
   assert.equal(calls[0][7],a.displaySize.w);assert.equal(calls[0][8],a.displaySize.h);
 });
+test('shore threshold reflection keeps its bridge-facing placement anchor fixed',()=>{
+ const context=vm.createContext({window:{}});vm.runInContext(read('games/js/whisperwind_assets.js'),context);
+ const calls=[],ctx={save(){},restore(){},translate(x,y){calls.push(['translate',x,y]);},rotate(){},scale(x,y){calls.push(['scale',x,y]);},drawImage(...args){calls.push(['draw',...args]);}};
+ const a=catalog.find(a=>a.id==='wwhd_shore_threshold_v2');context.window.WhisperwindAssets.draw(ctx,{width:1024,height:1536},a,{x:100,y:200,flipX:true});
+ assert.deepEqual(calls[0],['translate',100,200]);assert.deepEqual(calls[1],['scale',-1,1]);const draw=calls[2];assert.equal(draw[6],-a.displaySize.w*a.placeOrigin.x);assert.equal(draw[7],-a.displaySize.h*a.placeOrigin.y);assert.equal(draw[8],a.displaySize.w);assert.equal(draw[9],a.displaySize.h);
+});
 test('waterfront doorway round-trip is reachable and water cannot be walked into',()=>{
   const context=vm.createContext({window:{},document:{}});
   vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,canStand};'),context);
