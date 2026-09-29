@@ -75,6 +75,9 @@ const petSpeciesFile=path.join(DATA,'pet_species.json');
 const repoPetSpeciesFile=path.join(REPO_DATA,'pet_species.json');
 const repoMovesFile=path.join(REPO_DATA,'pet_moves.json');
 
+// FamilyWire runs in a separate process and persistent directory, before game body parsers.
+require('./familywire/mount.cjs').install(app,PERSIST_ROOT);
+
 app.use(express.json({limit:'12mb'}));
 
 // Avoid stale launcher/catalog/profile data after deploys or admin edits.
