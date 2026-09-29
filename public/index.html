@@ -2236,50 +2236,96 @@ body.gameMode #gameFrame{
   .activityItem .activityAction{grid-column:1/-1;width:100%}
 }
 
+/* A focused home and game-library path share one quiet visual system. */
+body.homeMode:not(.gameMode):not(.directGameMode) .wrap,
+body.playBrowseMode:not(.gameMode):not(.directGameMode) .wrap{grid-template-columns:220px minmax(0,1fr)}
+body.homeMode:not(.gameMode):not(.directGameMode) .side,
+body.playBrowseMode:not(.gameMode):not(.directGameMode) .side{display:none}
+body.homeMode .main{max-width:1240px;width:100%;margin:0 auto}
+.nav{background:#091321}
+.navBrand{border-color:rgba(148,163,184,.16)}
+.navBrand .mark,.topStatusLogo{background:#2563eb;box-shadow:none}
+.navUser:has(.navGuestHint){display:none}
+.navGroupLabel{color:#93a7bd;letter-spacing:.09em}
+.navDivider{background:rgba(148,163,184,.14)}
+.nav button{background:transparent;border-color:transparent;border-radius:11px;font-weight:700;box-shadow:none}
+.nav button:hover{background:#172b3f;border-color:transparent;transform:none;box-shadow:none}
+.nav button.active{background:#173854;border-color:#3b82f6;box-shadow:none;color:#eaf7ff}
+.navIcon{background:rgba(148,163,184,.12)}
+.topStatusBar{background:#101c2d;border-color:rgba(148,163,184,.16);box-shadow:none}
+body.homeMode #topStatusPet,body.homeMode #topStatusRoom,
+body.playBrowseMode #topStatusRoom{display:none}
+#home .hero{background:#11243a;border-color:#2a4661;box-shadow:none;padding:28px 30px}
+#home .hero:after{display:none}
+#home .hero h2{font-size:clamp(28px,3vw,40px);letter-spacing:-.035em}
+#home .hero p{max-width:650px;line-height:1.5}
+.homeEyebrow{display:block;margin-bottom:9px;color:#7dd3fc;font-size:11px;font-weight:800;letter-spacing:.11em}
+#home .heroActions{margin-top:20px}
+#home .heroActions button{margin:0 8px 0 0;box-shadow:none}
+.homePlayButton{min-width:176px;display:inline-flex;align-items:center;justify-content:space-between;gap:18px}
+.homePlaySteps{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;color:#b9cada;font-size:12px}
+.homePlaySteps span{display:inline-flex;align-items:center;gap:7px}
+.homePlaySteps b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#244b68;color:#dff6ff;font-size:11px}
+.homeCommandGrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.homeCommandGrid:has(.homeActivityCard.hidden){grid-template-columns:1fr}
+.homeCommandCard,.homeCommandCard:after{box-shadow:none}
+.homeCommandCard:after{display:none}
+.announcementBoard{min-height:175px;transform:none;background:#101f32;border-color:rgba(148,163,184,.22);box-shadow:none}
+.announcementBoard:before,.announcementPin{display:none}
+.announcementKicker{color:#7dd3fc;border-color:#245577;background:#132c41}
+.announcementTitle,.announcementSignature{font-family:inherit;font-weight:800;letter-spacing:normal}
+.announcementTitle{font-size:21px}
+.announcementMessage{color:#cbd5e1}
+.playIntro{padding:14px 18px;margin-bottom:10px;background:#11243a;box-shadow:none;border-radius:18px}
+.playIntro:after{display:none}
+.playIntro h2{font-size:25px}
+.playIntro p{margin:6px 0 0;font-size:13px;line-height:1.4}
+.launcherShell{min-height:0}
+#launcherFrame{height:clamp(620px,calc(100dvh - 170px),900px);min-height:0}
+@media(max-width:900px){.homeCommandGrid{grid-template-columns:1fr}}
+@media(max-width:760px){
+  #home .hero{padding:20px}
+  .homePlaySteps{gap:7px 12px}
+  body.homeMode .main{max-width:none}
+  .playIntro{padding:14px}
+  #launcherFrame{height:680px}
+}
+
 </style>
 </head>
 
-<body>
+<body class="homeMode">
 <div class="wrap">
 
-  <div class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <div class="navBrand">
       <h1><span class="mark">✦</span>GameForge</h1>
-      <span>Arcade hub</span>
+      <span>Games, worlds, and friends</span>
     </div>
 
     <div class="navUser" id="navUserBox">
       <div class="navGuestHint">Log in to load your profile, pet, coins, and friends.</div>
     </div>
-    <div class="navGroupLabel">Forge Gate</div>
+    <div class="navGroupLabel">Start</div>
     <button onclick="showSection('home')" id="navHome" class="active"><span class="navIcon">🏠</span>Home</button>
+    <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Play Games</button>
+    <button onclick="openBattleHallDirect()" id="navBattleHall"><span class="navIcon">🏟️</span>Battle Hall</button>
 
     <div class="navDivider"></div>
-    <div class="navGroupLabel">The Wilds</div>
+    <div class="navGroupLabel">Explore</div>
     <button onclick="openWorldDirect()" id="navWorld"><span class="navIcon">🌲</span>Shadow Woods</button>
-
-    <div class="navDivider"></div>
-    <div class="navGroupLabel">Companions</div>
-    <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet Sanctuary</button>
-    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Pet Battles</button>
-
-    <div class="navDivider"></div>
-    <div class="navGroupLabel">Echo Games</div>
-    <button onclick="showSection('play')" id="navPlay"><span class="navIcon">🎮</span>Game Tables</button>
-    <button onclick="openBattleHallDirect()" id="navBattleHall" class="battleBtn"><span class="navIcon">🏟️</span>Battle Hall</button>
-
-    <div class="navDivider"></div>
-    <div class="navGroupLabel">Estate</div>
     <button onclick="openHometown()" id="navEstate"><span class="navIcon">🏘️</span>Hometown</button>
     <button onclick="openMyHouse()" id="navHouse"><span class="navIcon">🏡</span>My House</button>
 
     <div class="navDivider"></div>
-    <div class="navGroupLabel">Market</div>
-    <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
-    <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
+    <div class="navGroupLabel">Pets</div>
+    <button onclick="showSection('pet')" id="navPet"><span class="navIcon">🐾</span>Pet Sanctuary</button>
+    <button onclick="openPetBattleDirect()" id="navPetBattle"><span class="navIcon">⚔️</span>Pet Battles</button>
 
     <div class="navDivider"></div>
-    <div class="navGroupLabel">Community</div>
+    <div class="navGroupLabel">Account &amp; community</div>
+    <button onclick="openMarketDirect()" id="navMarket"><span class="navIcon">🏪</span>Marketplace</button>
+    <button onclick="openInventory()" id="navInventory"><span class="navIcon">🎒</span>Inventory</button>
     <button onclick="showSection('social')" id="navSocial"><span class="navIcon">👥</span>Social <span id="socialNavBadge" class="socialNavBadge">0</span></button>
 
     <div id="adminNavBlock" class="hidden">
@@ -2287,7 +2333,7 @@ body.gameMode #gameFrame{
       <div class="navGroupLabel">Admin</div>
       <button onclick="openAdmin()" id="navAdmin"><span class="navIcon">🛡️</span>Admin</button>
     </div>
-  </div>
+  </nav>
 
   <div class="main">
 
@@ -2295,7 +2341,7 @@ body.gameMode #gameFrame{
       <div class="topStatusLeft topStatusBrand">
         <span class="topStatusLogo">✦</span>
         <div>
-          <div class="topStatusBrandTitle">GameForge</div>
+          <div class="topStatusBrandTitle" id="topSectionLabel">Home</div>
           <div id="topStatusText" class="topStatusSub">GameForge ready</div>
         </div>
       </div>
@@ -2315,26 +2361,23 @@ body.gameMode #gameFrame{
       <div id="continueCard" class="continueCard hidden"></div>
 
       <div class="hero">
-        <h2>Welcome to GameForge</h2>
-        <p>A multiplayer browser arcade with persistent pets, rooms, live chat, and account progression.</p>
+        <span class="homeEyebrow">YOUR GAME HUB</span>
+        <h2>Find a game. Start playing.</h2>
+        <p>Browse the game library, choose a table, and play with friends. Your worlds and pets are here when you want a change of pace.</p>
         <div class="heroActions">
-          <button class="primary" onclick="showSection('play')">Play a Game</button>
-          <button class="gold" onclick="openPetWorldDirect()">Open Pet World</button>
-          <button class="gold" onclick="openWorldDirect()">Shadow Woods</button>
-          <button class="purple" onclick="openBattleHallDirect()">Battle Hall</button>
-          <button class="purple" onclick="openPetBattleDirect()">Private Battle</button>
-          <button class="gold" onclick="openMarketDirect()">Visit Marketplace</button>
+          <button class="primary homePlayButton" onclick="showSection('play')">Browse games <span aria-hidden="true">→</span></button>
+          <button class="ghost" onclick="openWorldDirect()">Explore Shadow Woods</button>
         </div>
+        <div class="homePlaySteps" aria-label="How to play"><span><b>1</b> Choose a game</span><span><b>2</b> Join a table</span><span><b>3</b> Start playing</span></div>
       </div>
 
       <div class="homeCommandGrid">
         <div class="card glow homeCommandCard homeActivityCard">
           <div class="cardHeader">
             <div>
-              <h3>Live Activity</h3>
-              <p class="muted">What is happening around GameForge right now.</p>
+              <h3>Activity</h3>
+              <p class="muted">Rooms, friends, and invitations.</p>
             </div>
-            <button class="ghost" onclick="showSection('social')">Social</button>
           </div>
           <div id="homeActivityFeed" class="activityFeed">
             <div class="activityItem">
@@ -2350,8 +2393,8 @@ body.gameMode #gameFrame{
         <div class="card glow homeCommandCard announcementHomeCard">
           <div class="cardHeader">
             <div>
-              <h3>Message Board</h3>
-              <p class="muted">Updates and notes from the GameForge team.</p>
+              <h3>Latest update</h3>
+              <p class="muted">News from the GameForge team.</p>
             </div>
           </div>
           <div id="homeAnnouncementBoard" class="announcementBoard">
@@ -2375,7 +2418,7 @@ body.gameMode #gameFrame{
         <div id="homePet"></div>
       </div>
 
-      <div class="grid3">
+      <div class="grid3 homeCompatibilityNodes">
         <div class="quickStat">
           <b id="quickRoomCount">0</b>
           <span>Open rooms</span>
@@ -2394,9 +2437,9 @@ body.gameMode #gameFrame{
     </div>
 
     <div id="play" class="section">
-      <div class="hero" id="playTop">
-        <h2>Game Table</h2>
-        <p>Create a private table, invite friends, choose a game, and start playing. The launcher now owns the table, seats, room players, chat, and game list.</p>
+      <div class="hero playIntro" id="playTop">
+        <h2>Play Games</h2>
+        <p>Choose a game below, take a seat, then start. Sign in to host; friends can join your room by code.</p>
       </div>
 
       <div class="card glow launcherShell" id="launcherShell">
@@ -2928,21 +2971,14 @@ function joinReadyBattle(url){
 function drawContinueCard(){
   let card=document.getElementById('continueCard');
   if(!card)return;
-  if(!me){card.classList.add('hidden');return;}
-
-  let pet=null;
-  try{pet=activePet&&activePet();}catch(e){pet=null;}
-  let petName=pet?(pet.name||'your companion'):'your companion';
-  let roomText=currentRoom?('Return to room '+currentRoom):'Start a table or train your companion';
+  if(!me||!currentRoom){card.classList.add('hidden');return;}
 
   card.classList.remove('hidden');
   card.innerHTML=
     '<div class="continueGrid">'+
-      '<div><h3>Continue your session</h3><p>'+escapeHtml(roomText)+' · '+escapeHtml(petName)+' is ready for action.</p></div>'+
+      '<div><h3>Your table is waiting</h3><p>Return to room '+escapeHtml(currentRoom)+'.</p></div>'+
       '<div class="continueActions">'+
-        '<button class="primary" onclick="showSection(\'play\')">Play</button>'+
-        '<button class="gold" onclick="openPetWorldDirect()">Pet World</button>'+
-        '<button class="battleBtn" onclick="openPetBattleDirect()">⚔ Battle</button>'+
+        '<button class="primary" onclick="showSection(\'play\')">Return to table</button>'+
       '</div>'+
     '</div>';
 }
@@ -3028,21 +3064,15 @@ function drawHomeActivity(){
     }
   }
 
-  items.push({
-    icon:'🎮',
-    title:'Game table ready',
-    sub:'Create or join a room from the launcher.',
-    action:'Play',
-    onclick:'showSection(\'play\')'
-  });
-
-  feed.innerHTML=items.slice(0,3).map(function(item){
+  const activityCard=feed.closest('.homeActivityCard');
+  if(activityCard)activityCard.classList.toggle('hidden',!items.length);
+  feed.innerHTML=items.length?items.slice(0,3).map(function(item){
     return '<div class="activityItem">'+
       '<div class="activityIcon">'+escapeHtml(item.icon)+'</div>'+
       '<div><div class="activityTitle">'+escapeHtml(item.title)+'</div><div class="activitySub">'+escapeHtml(item.sub)+'</div></div>'+
       (item.action?'<button class="activityAction primary" onclick="'+item.onclick+'">'+escapeHtml(item.action)+'</button>':'')+
     '</div>';
-  }).join('');
+  }).join(''):'<div class="activityItem"><div class="activityIcon">✓</div><div><div class="activityTitle">All caught up</div><div class="activitySub">Invitations and room updates will appear here.</div></div></div>';
 }
 
 
@@ -3108,6 +3138,10 @@ function commandButtonsHtml(){
 
 function showSection(id){
   document.body.classList.remove('directGameMode');
+  document.body.classList.toggle('homeMode',id==='home');
+  document.body.classList.toggle('playBrowseMode',id==='play');
+  let sectionLabel=document.getElementById('topSectionLabel');
+  if(sectionLabel)sectionLabel.textContent={home:'Home',play:'Play Games',pet:'Pets',inventory:'Inventory',social:'Social'}[id]||'GameForge';
 
   if(!document.body.classList.contains('gameMode')){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
