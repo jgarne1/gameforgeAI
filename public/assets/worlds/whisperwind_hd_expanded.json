@@ -40,127 +40,82 @@
   },
   "objects": [
     {
-      "id": "north_west_approach",
-      "asset": "wwhd_stone_bridge_approach_west",
-      "x": 4663.849912126538,
-      "y": 3200,
-      "scale": 1,
-      "layer": "structures",
-      "edgeBlend": {
-        "side": "left",
-        "length": 55
-      }
-    },
-    {
-      "id": "north_east_approach",
-      "asset": "wwhd_stone_bridge_approach_east",
-      "x": 5133.849912126538,
-      "y": 3200,
-      "scale": 1,
-      "layer": "structures",
-      "edgeBlend": {
-        "side": "right",
-        "length": 55
-      }
-    },
-    {
-      "id": "north_deck",
-      "asset": "wwhd_stone_bridge_deck",
-      "x": 4898.849912126538,
-      "y": 3299.1705374917055,
+      "id": "north_integrated_bridge",
+      "asset": "wwhd_stone_bridge_integrated_v2",
+      "x": 4930.667984934087,
+      "y": 3000,
       "scale": 1,
       "layer": "structures"
     },
     {
-      "id": "north_near_rail",
-      "asset": "wwhd_stone_bridge_near_rail",
-      "x": 4898.849912126538,
-      "y": 3299.1705374917055,
+      "id": "north_west_threshold",
+      "asset": "wwhd_shore_threshold_v2",
+      "x": 3886.327984934087,
+      "y": 3179.275,
       "scale": 1,
-      "layer": "foreground",
-      "crossingId": "north_bridge"
+      "layer": "structures",
+      "flipX": true
     },
     {
-      "id": "market_west_approach",
-      "asset": "wwhd_stone_bridge_approach_west",
-      "x": 4545.0,
+      "id": "north_east_threshold",
+      "asset": "wwhd_shore_threshold_v2",
+      "x": 5975.007984934087,
+      "y": 3179.275,
+      "scale": 1,
+      "layer": "structures",
+      "flipX": false
+    },
+    {
+      "id": "market_integrated_bridge",
+      "asset": "wwhd_stone_bridge_integrated_v2",
+      "x": 4780.0,
       "y": 4800,
       "scale": 1,
-      "layer": "structures",
-      "edgeBlend": {
-        "side": "left",
-        "length": 55
-      }
+      "layer": "structures"
     },
     {
-      "id": "market_east_approach",
-      "asset": "wwhd_stone_bridge_approach_east",
-      "x": 5015.0,
-      "y": 4800,
+      "id": "market_west_threshold",
+      "asset": "wwhd_shore_threshold_v2",
+      "x": 3735.66,
+      "y": 4979.275,
       "scale": 1,
       "layer": "structures",
-      "edgeBlend": {
-        "side": "right",
-        "length": 55
-      }
+      "flipX": true
     },
     {
-      "id": "market_deck",
-      "asset": "wwhd_stone_bridge_deck",
-      "x": 4780.0,
-      "y": 4899.1705374917055,
+      "id": "market_east_threshold",
+      "asset": "wwhd_shore_threshold_v2",
+      "x": 5824.34,
+      "y": 4979.275,
+      "scale": 1,
+      "layer": "structures",
+      "flipX": false
+    },
+    {
+      "id": "quay_integrated_bridge",
+      "asset": "wwhd_stone_bridge_integrated_v2",
+      "x": 4600.0,
+      "y": 6300,
       "scale": 1,
       "layer": "structures"
     },
     {
-      "id": "market_near_rail",
-      "asset": "wwhd_stone_bridge_near_rail",
-      "x": 4780.0,
-      "y": 4899.1705374917055,
-      "scale": 1,
-      "layer": "foreground",
-      "crossingId": "market_bridge"
-    },
-    {
-      "id": "quay_west_approach",
-      "asset": "wwhd_stone_bridge_approach_west",
-      "x": 4365.0,
-      "y": 6300,
+      "id": "quay_west_threshold",
+      "asset": "wwhd_shore_threshold_v2",
+      "x": 3555.66,
+      "y": 6479.275,
       "scale": 1,
       "layer": "structures",
-      "edgeBlend": {
-        "side": "left",
-        "length": 55
-      }
+      "flipX": true
     },
     {
-      "id": "quay_east_approach",
-      "asset": "wwhd_stone_bridge_approach_east",
-      "x": 4835.0,
-      "y": 6300,
+      "id": "quay_east_threshold",
+      "asset": "wwhd_shore_threshold_v2",
+      "x": 5644.34,
+      "y": 6479.275,
       "scale": 1,
       "layer": "structures",
-      "edgeBlend": {
-        "side": "right",
-        "length": 55
-      }
-    },
-    {
-      "id": "quay_deck",
-      "asset": "wwhd_stone_bridge_deck",
-      "x": 4600.0,
-      "y": 6399.1705374917055,
-      "scale": 1,
-      "layer": "structures"
-    },
-    {
-      "id": "quay_near_rail",
-      "asset": "wwhd_stone_bridge_near_rail",
-      "x": 4600.0,
-      "y": 6399.1705374917055,
-      "scale": 1,
-      "layer": "foreground",
-      "crossingId": "quay_bridge"
+      "flipX": false
     },
     {
       "id": "town_home_01",
@@ -1346,11 +1301,11 @@
       ]
     },
     {
-      "id": "nature_tree_1",
-      "asset": "wwhd_tree_cedar",
-      "x": 5492,
-      "y": 2852,
-      "scale": 1.0694318095560376,
+      "id": "nature_tree_2",
+      "asset": "wwhd_tree_oak",
+      "x": 5498,
+      "y": 7036,
+      "scale": 0.9550201821973436,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -1361,7 +1316,22 @@
       ]
     },
     {
-      "id": "nature_tree_7",
+      "id": "nature_tree_3",
+      "asset": "wwhd_tree_willow",
+      "x": 6127,
+      "y": 983,
+      "scale": 0.9460754120255099,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_5",
       "asset": "wwhd_tree_oak",
       "x": 343,
       "y": 4569,
@@ -1376,7 +1346,7 @@
       ]
     },
     {
-      "id": "nature_tree_8",
+      "id": "nature_tree_6",
       "asset": "wwhd_tree_willow",
       "x": 5770,
       "y": 666,
@@ -1391,7 +1361,22 @@
       ]
     },
     {
-      "id": "nature_tree_15",
+      "id": "nature_tree_11",
+      "asset": "wwhd_tree_cedar",
+      "x": 5458,
+      "y": 5512,
+      "scale": 1.0540164841339557,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_12",
       "asset": "wwhd_tree_cedar",
       "x": 3167,
       "y": 6855,
@@ -1406,7 +1391,7 @@
       ]
     },
     {
-      "id": "nature_tree_16",
+      "id": "nature_tree_13",
       "asset": "wwhd_tree_apple",
       "x": 4072,
       "y": 1518,
@@ -1421,7 +1406,7 @@
       ]
     },
     {
-      "id": "nature_tree_18",
+      "id": "nature_tree_15",
       "asset": "wwhd_tree_willow",
       "x": 470,
       "y": 4869,
@@ -1436,7 +1421,7 @@
       ]
     },
     {
-      "id": "nature_tree_19",
+      "id": "nature_tree_16",
       "asset": "wwhd_tree_willow",
       "x": 5293,
       "y": 508,
@@ -1451,7 +1436,7 @@
       ]
     },
     {
-      "id": "nature_tree_21",
+      "id": "nature_tree_18",
       "asset": "wwhd_tree_apple",
       "x": 1284,
       "y": 3674,
@@ -1466,7 +1451,22 @@
       ]
     },
     {
-      "id": "nature_tree_31",
+      "id": "nature_tree_26",
+      "asset": "wwhd_tree_willow",
+      "x": 5269,
+      "y": 5770,
+      "scale": 1.0063536142610132,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_27",
       "asset": "wwhd_tree_cedar",
       "x": 6916,
       "y": 693,
@@ -1481,7 +1481,7 @@
       ]
     },
     {
-      "id": "nature_tree_33",
+      "id": "nature_tree_29",
       "asset": "wwhd_tree_willow",
       "x": 8484,
       "y": 4264,
@@ -1496,7 +1496,7 @@
       ]
     },
     {
-      "id": "nature_tree_35",
+      "id": "nature_tree_31",
       "asset": "wwhd_tree_apple",
       "x": 3672,
       "y": 7059,
@@ -1511,7 +1511,7 @@
       ]
     },
     {
-      "id": "nature_tree_36",
+      "id": "nature_tree_32",
       "asset": "wwhd_tree_willow",
       "x": 627,
       "y": 6497,
@@ -1526,7 +1526,22 @@
       ]
     },
     {
-      "id": "nature_tree_41",
+      "id": "nature_tree_35",
+      "asset": "wwhd_tree_oak",
+      "x": 5478,
+      "y": 4430,
+      "scale": 0.8726176076424096,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_36",
       "asset": "wwhd_tree_oak",
       "x": 4301,
       "y": 1942,
@@ -1541,7 +1556,7 @@
       ]
     },
     {
-      "id": "nature_tree_43",
+      "id": "nature_tree_38",
       "asset": "wwhd_tree_cedar",
       "x": 5428,
       "y": 1699,
@@ -1556,7 +1571,7 @@
       ]
     },
     {
-      "id": "nature_tree_50",
+      "id": "nature_tree_45",
       "asset": "wwhd_tree_willow",
       "x": 7381,
       "y": 4268,
@@ -1571,7 +1586,7 @@
       ]
     },
     {
-      "id": "nature_tree_51",
+      "id": "nature_tree_46",
       "asset": "wwhd_tree_oak",
       "x": 1352,
       "y": 6627,
@@ -1586,7 +1601,7 @@
       ]
     },
     {
-      "id": "nature_tree_54",
+      "id": "nature_tree_49",
       "asset": "wwhd_tree_apple",
       "x": 8225,
       "y": 2084,
@@ -1601,7 +1616,7 @@
       ]
     },
     {
-      "id": "nature_tree_56",
+      "id": "nature_tree_51",
       "asset": "wwhd_tree_willow",
       "x": 8232,
       "y": 3269,
@@ -1616,37 +1631,22 @@
       ]
     },
     {
+      "id": "nature_tree_54",
+      "asset": "wwhd_tree_cedar",
+      "x": 4975,
+      "y": 1596,
+      "scale": 1.0141024934793477,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
       "id": "nature_tree_57",
-      "asset": "wwhd_tree_cedar",
-      "x": 5513,
-      "y": 6832,
-      "scale": 1.1176760894516589,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_58",
-      "asset": "wwhd_tree_cedar",
-      "x": 7945,
-      "y": 6114,
-      "scale": 1.1165509811817143,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_62",
       "asset": "wwhd_tree_apple",
       "x": 3230,
       "y": 6142,
@@ -1661,7 +1661,7 @@
       ]
     },
     {
-      "id": "nature_tree_66",
+      "id": "nature_tree_61",
       "asset": "wwhd_tree_cedar",
       "x": 2579,
       "y": 4474,
@@ -1676,7 +1676,7 @@
       ]
     },
     {
-      "id": "nature_tree_71",
+      "id": "nature_tree_66",
       "asset": "wwhd_tree_cedar",
       "x": 3713,
       "y": 2132,
@@ -1691,7 +1691,7 @@
       ]
     },
     {
-      "id": "nature_tree_76",
+      "id": "nature_tree_71",
       "asset": "wwhd_tree_apple",
       "x": 8690,
       "y": 821,
@@ -1706,7 +1706,7 @@
       ]
     },
     {
-      "id": "nature_tree_78",
+      "id": "nature_tree_73",
       "asset": "wwhd_tree_willow",
       "x": 4804,
       "y": 1650,
@@ -1721,7 +1721,7 @@
       ]
     },
     {
-      "id": "nature_tree_80",
+      "id": "nature_tree_75",
       "asset": "wwhd_tree_willow",
       "x": 5552,
       "y": 2206,
@@ -1736,7 +1736,7 @@
       ]
     },
     {
-      "id": "nature_tree_81",
+      "id": "nature_tree_76",
       "asset": "wwhd_tree_cedar",
       "x": 6532,
       "y": 476,
@@ -1751,7 +1751,7 @@
       ]
     },
     {
-      "id": "nature_tree_88",
+      "id": "nature_tree_83",
       "asset": "wwhd_tree_apple",
       "x": 5051,
       "y": 2218,
@@ -1766,52 +1766,7 @@
       ]
     },
     {
-      "id": "nature_tree_91",
-      "asset": "wwhd_tree_willow",
-      "x": 3706,
-      "y": 4941,
-      "scale": 0.8072777952130392,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_92",
-      "asset": "wwhd_tree_cedar",
-      "x": 1521,
-      "y": 4068,
-      "scale": 0.901558718804913,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
       "id": "nature_tree_97",
-      "asset": "wwhd_tree_oak",
-      "x": 3817,
-      "y": 5659,
-      "scale": 0.8112757048974959,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_98",
       "asset": "wwhd_tree_apple",
       "x": 6271,
       "y": 666,
@@ -1826,7 +1781,7 @@
       ]
     },
     {
-      "id": "nature_tree_100",
+      "id": "nature_tree_99",
       "asset": "wwhd_tree_oak",
       "x": 8003,
       "y": 4177,
@@ -1841,7 +1796,7 @@
       ]
     },
     {
-      "id": "nature_tree_101",
+      "id": "nature_tree_100",
       "asset": "wwhd_tree_oak",
       "x": 2639,
       "y": 620,
@@ -1856,7 +1811,7 @@
       ]
     },
     {
-      "id": "nature_tree_103",
+      "id": "nature_tree_102",
       "asset": "wwhd_tree_willow",
       "x": 2535,
       "y": 6138,
@@ -1871,7 +1826,7 @@
       ]
     },
     {
-      "id": "nature_tree_105",
+      "id": "nature_tree_104",
       "asset": "wwhd_tree_oak",
       "x": 344,
       "y": 1550,
@@ -1886,7 +1841,7 @@
       ]
     },
     {
-      "id": "nature_tree_106",
+      "id": "nature_tree_105",
       "asset": "wwhd_tree_apple",
       "x": 1046,
       "y": 6461,
@@ -1901,7 +1856,7 @@
       ]
     },
     {
-      "id": "nature_tree_107",
+      "id": "nature_tree_106",
       "asset": "wwhd_tree_oak",
       "x": 247,
       "y": 7109,
@@ -1916,7 +1871,7 @@
       ]
     },
     {
-      "id": "nature_tree_108",
+      "id": "nature_tree_107",
       "asset": "wwhd_tree_apple",
       "x": 3514,
       "y": 5390,
@@ -1931,7 +1886,7 @@
       ]
     },
     {
-      "id": "nature_tree_110",
+      "id": "nature_tree_109",
       "asset": "wwhd_tree_oak",
       "x": 336,
       "y": 2404,
@@ -1946,7 +1901,7 @@
       ]
     },
     {
-      "id": "nature_tree_117",
+      "id": "nature_tree_116",
       "asset": "wwhd_tree_apple",
       "x": 1342,
       "y": 6852,
@@ -1961,7 +1916,7 @@
       ]
     },
     {
-      "id": "nature_tree_119",
+      "id": "nature_tree_118",
       "asset": "wwhd_tree_cedar",
       "x": 3867,
       "y": 2412,
@@ -1976,26 +1931,11 @@
       ]
     },
     {
-      "id": "nature_tree_121",
+      "id": "nature_tree_120",
       "asset": "wwhd_tree_willow",
       "x": 2579,
       "y": 5549,
       "scale": 0.8707553643690069,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_122",
-      "asset": "wwhd_tree_cedar",
-      "x": 4336,
-      "y": 5356,
-      "scale": 0.9530686699200205,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2201,22 +2141,7 @@
       ]
     },
     {
-      "id": "nature_tree_160",
-      "asset": "wwhd_tree_cedar",
-      "x": 4332,
-      "y": 3822,
-      "scale": 1.004421050219077,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_165",
+      "id": "nature_tree_166",
       "asset": "wwhd_tree_apple",
       "x": 7459,
       "y": 2569,
@@ -2231,7 +2156,7 @@
       ]
     },
     {
-      "id": "nature_tree_167",
+      "id": "nature_tree_168",
       "asset": "wwhd_tree_cedar",
       "x": 1849,
       "y": 7063,
@@ -2246,7 +2171,7 @@
       ]
     },
     {
-      "id": "nature_tree_170",
+      "id": "nature_tree_171",
       "asset": "wwhd_tree_oak",
       "x": 4165,
       "y": 1303,
@@ -2261,7 +2186,7 @@
       ]
     },
     {
-      "id": "nature_tree_172",
+      "id": "nature_tree_173",
       "asset": "wwhd_tree_willow",
       "x": 344,
       "y": 5692,
@@ -2276,7 +2201,7 @@
       ]
     },
     {
-      "id": "nature_tree_175",
+      "id": "nature_tree_176",
       "asset": "wwhd_tree_oak",
       "x": 4273,
       "y": 919,
@@ -2291,7 +2216,7 @@
       ]
     },
     {
-      "id": "nature_tree_178",
+      "id": "nature_tree_179",
       "asset": "wwhd_tree_cedar",
       "x": 1124,
       "y": 7051,
@@ -2306,7 +2231,7 @@
       ]
     },
     {
-      "id": "nature_tree_180",
+      "id": "nature_tree_181",
       "asset": "wwhd_tree_willow",
       "x": 7509,
       "y": 1109,
@@ -2321,7 +2246,7 @@
       ]
     },
     {
-      "id": "nature_tree_181",
+      "id": "nature_tree_182",
       "asset": "wwhd_tree_apple",
       "x": 3814,
       "y": 6917,
@@ -2336,7 +2261,7 @@
       ]
     },
     {
-      "id": "nature_tree_182",
+      "id": "nature_tree_183",
       "asset": "wwhd_tree_willow",
       "x": 3027,
       "y": 5570,
@@ -2351,7 +2276,7 @@
       ]
     },
     {
-      "id": "nature_tree_195",
+      "id": "nature_tree_196",
       "asset": "wwhd_tree_oak",
       "x": 5357,
       "y": 1035,
@@ -2366,7 +2291,7 @@
       ]
     },
     {
-      "id": "nature_tree_196",
+      "id": "nature_tree_197",
       "asset": "wwhd_tree_oak",
       "x": 5217,
       "y": 3614,
@@ -2381,7 +2306,7 @@
       ]
     },
     {
-      "id": "nature_tree_199",
+      "id": "nature_tree_200",
       "asset": "wwhd_tree_oak",
       "x": 8813,
       "y": 5260,
@@ -2396,7 +2321,7 @@
       ]
     },
     {
-      "id": "nature_tree_206",
+      "id": "nature_tree_207",
       "asset": "wwhd_tree_apple",
       "x": 5221,
       "y": 1876,
@@ -2411,7 +2336,7 @@
       ]
     },
     {
-      "id": "nature_tree_208",
+      "id": "nature_tree_209",
       "asset": "wwhd_tree_cedar",
       "x": 5794,
       "y": 488,
@@ -2426,7 +2351,7 @@
       ]
     },
     {
-      "id": "nature_tree_210",
+      "id": "nature_tree_211",
       "asset": "wwhd_tree_willow",
       "x": 2902,
       "y": 5433,
@@ -2441,7 +2366,7 @@
       ]
     },
     {
-      "id": "nature_tree_220",
+      "id": "nature_tree_221",
       "asset": "wwhd_tree_oak",
       "x": 739,
       "y": 477,
@@ -2456,7 +2381,7 @@
       ]
     },
     {
-      "id": "nature_tree_221",
+      "id": "nature_tree_222",
       "asset": "wwhd_tree_oak",
       "x": 4315,
       "y": 2279,
@@ -2471,11 +2396,26 @@
       ]
     },
     {
-      "id": "nature_tree_222",
+      "id": "nature_tree_223",
       "asset": "wwhd_tree_cedar",
       "x": 3359,
       "y": 725,
       "scale": 0.8153019079749626,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_228",
+      "asset": "wwhd_tree_cedar",
+      "x": 7931,
+      "y": 6034,
+      "scale": 0.792867849411925,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2501,11 +2441,26 @@
       ]
     },
     {
-      "id": "nature_tree_233",
-      "asset": "wwhd_tree_cedar",
-      "x": 6793,
-      "y": 883,
-      "scale": 0.8174430292908644,
+      "id": "nature_tree_230",
+      "asset": "wwhd_tree_willow",
+      "x": 4104,
+      "y": 6039,
+      "scale": 1.092851067493161,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_234",
+      "asset": "wwhd_tree_oak",
+      "x": 5039,
+      "y": 1302,
+      "scale": 0.9668845879138397,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2546,11 +2501,11 @@
       ]
     },
     {
-      "id": "nature_tree_246",
-      "asset": "wwhd_tree_cedar",
-      "x": 5502,
-      "y": 3835,
-      "scale": 0.7800033332945386,
+      "id": "nature_tree_247",
+      "asset": "wwhd_tree_oak",
+      "x": 8918,
+      "y": 3041,
+      "scale": 1.0472197313677225,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2561,7 +2516,7 @@
       ]
     },
     {
-      "id": "nature_tree_248",
+      "id": "nature_tree_249",
       "asset": "wwhd_tree_oak",
       "x": 4332,
       "y": 1516,
@@ -2576,7 +2531,7 @@
       ]
     },
     {
-      "id": "nature_tree_249",
+      "id": "nature_tree_250",
       "asset": "wwhd_tree_willow",
       "x": 4243,
       "y": 2663,
@@ -2591,7 +2546,7 @@
       ]
     },
     {
-      "id": "nature_tree_250",
+      "id": "nature_tree_251",
       "asset": "wwhd_tree_cedar",
       "x": 3255,
       "y": 579,
@@ -2606,7 +2561,7 @@
       ]
     },
     {
-      "id": "nature_tree_252",
+      "id": "nature_tree_253",
       "asset": "wwhd_tree_willow",
       "x": 2877,
       "y": 2196,
@@ -2621,7 +2576,7 @@
       ]
     },
     {
-      "id": "nature_tree_253",
+      "id": "nature_tree_254",
       "asset": "wwhd_tree_oak",
       "x": 5123,
       "y": 4426,
@@ -2636,7 +2591,7 @@
       ]
     },
     {
-      "id": "nature_tree_254",
+      "id": "nature_tree_255",
       "asset": "wwhd_tree_apple",
       "x": 3849,
       "y": 458,
@@ -2651,22 +2606,7 @@
       ]
     },
     {
-      "id": "nature_tree_256",
-      "asset": "wwhd_tree_willow",
-      "x": 5959,
-      "y": 4926,
-      "scale": 0.8679028253958724,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_257",
+      "id": "nature_tree_259",
       "asset": "wwhd_tree_willow",
       "x": 7848,
       "y": 2922,
@@ -2681,7 +2621,7 @@
       ]
     },
     {
-      "id": "nature_tree_258",
+      "id": "nature_tree_260",
       "asset": "wwhd_tree_oak",
       "x": 423,
       "y": 7017,
@@ -2696,7 +2636,7 @@
       ]
     },
     {
-      "id": "nature_tree_259",
+      "id": "nature_tree_261",
       "asset": "wwhd_tree_oak",
       "x": 2563,
       "y": 5733,
@@ -2711,11 +2651,11 @@
       ]
     },
     {
-      "id": "nature_tree_265",
-      "asset": "wwhd_tree_oak",
-      "x": 4689,
-      "y": 2837,
-      "scale": 1.077772110474414,
+      "id": "nature_tree_281",
+      "asset": "wwhd_tree_apple",
+      "x": 5456,
+      "y": 5766,
+      "scale": 0.994823836737388,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2726,22 +2666,7 @@
       ]
     },
     {
-      "id": "nature_tree_279",
-      "asset": "wwhd_tree_cedar",
-      "x": 3125,
-      "y": 5338,
-      "scale": 0.8939015184637982,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_282",
+      "id": "nature_tree_285",
       "asset": "wwhd_tree_apple",
       "x": 1162,
       "y": 1022,
@@ -2756,7 +2681,7 @@
       ]
     },
     {
-      "id": "nature_tree_283",
+      "id": "nature_tree_286",
       "asset": "wwhd_tree_willow",
       "x": 5353,
       "y": 6955,
@@ -2771,7 +2696,7 @@
       ]
     },
     {
-      "id": "nature_tree_284",
+      "id": "nature_tree_287",
       "asset": "wwhd_tree_willow",
       "x": 551,
       "y": 866,
@@ -2786,7 +2711,7 @@
       ]
     },
     {
-      "id": "nature_tree_288",
+      "id": "nature_tree_291",
       "asset": "wwhd_tree_apple",
       "x": 1178,
       "y": 5714,
@@ -2801,7 +2726,7 @@
       ]
     },
     {
-      "id": "nature_tree_308",
+      "id": "nature_tree_311",
       "asset": "wwhd_tree_willow",
       "x": 4862,
       "y": 1445,
@@ -2816,22 +2741,7 @@
       ]
     },
     {
-      "id": "nature_tree_314",
-      "asset": "wwhd_tree_cedar",
-      "x": 5772,
-      "y": 4908,
-      "scale": 1.0569401904450548,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_324",
+      "id": "nature_tree_328",
       "asset": "wwhd_tree_cedar",
       "x": 1773,
       "y": 526,
@@ -2846,7 +2756,7 @@
       ]
     },
     {
-      "id": "nature_tree_325",
+      "id": "nature_tree_329",
       "asset": "wwhd_tree_oak",
       "x": 885,
       "y": 5384,
@@ -2861,7 +2771,7 @@
       ]
     },
     {
-      "id": "nature_tree_337",
+      "id": "nature_tree_341",
       "asset": "wwhd_tree_willow",
       "x": 344,
       "y": 3879,
@@ -2876,7 +2786,7 @@
       ]
     },
     {
-      "id": "nature_tree_340",
+      "id": "nature_tree_344",
       "asset": "wwhd_tree_cedar",
       "x": 1104,
       "y": 4981,
@@ -2891,7 +2801,7 @@
       ]
     },
     {
-      "id": "nature_tree_348",
+      "id": "nature_tree_352",
       "asset": "wwhd_tree_oak",
       "x": 1558,
       "y": 5276,
@@ -2906,11 +2816,11 @@
       ]
     },
     {
-      "id": "nature_tree_350",
-      "asset": "wwhd_tree_oak",
-      "x": 5171,
-      "y": 6807,
-      "scale": 0.812989602539536,
+      "id": "nature_tree_357",
+      "asset": "wwhd_tree_willow",
+      "x": 1528,
+      "y": 7029,
+      "scale": 0.8731325408558934,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2921,22 +2831,7 @@
       ]
     },
     {
-      "id": "nature_tree_352",
-      "asset": "wwhd_tree_apple",
-      "x": 6775,
-      "y": 2569,
-      "scale": 0.7815926366164778,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_356",
+      "id": "nature_tree_362",
       "asset": "wwhd_tree_apple",
       "x": 4083,
       "y": 1718,
@@ -2951,22 +2846,7 @@
       ]
     },
     {
-      "id": "nature_tree_364",
-      "asset": "wwhd_tree_cedar",
-      "x": 5335,
-      "y": 4407,
-      "scale": 0.9623832854731195,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_374",
+      "id": "nature_tree_382",
       "asset": "wwhd_tree_cedar",
       "x": 6522,
       "y": 4118,
@@ -2981,7 +2861,7 @@
       ]
     },
     {
-      "id": "nature_tree_383",
+      "id": "nature_tree_391",
       "asset": "wwhd_tree_willow",
       "x": 3235,
       "y": 7128,
@@ -2996,22 +2876,7 @@
       ]
     },
     {
-      "id": "nature_tree_389",
-      "asset": "wwhd_tree_oak",
-      "x": 5128,
-      "y": 1195,
-      "scale": 0.817635546215537,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_393",
+      "id": "nature_tree_402",
       "asset": "wwhd_tree_cedar",
       "x": 4075,
       "y": 601,
@@ -3026,7 +2891,7 @@
       ]
     },
     {
-      "id": "nature_tree_397",
+      "id": "nature_tree_406",
       "asset": "wwhd_tree_cedar",
       "x": 2681,
       "y": 2208,
@@ -3041,7 +2906,7 @@
       ]
     },
     {
-      "id": "nature_tree_399",
+      "id": "nature_tree_408",
       "asset": "wwhd_tree_oak",
       "x": 5256,
       "y": 5521,
@@ -3056,7 +2921,7 @@
       ]
     },
     {
-      "id": "nature_tree_409",
+      "id": "nature_tree_418",
       "asset": "wwhd_tree_cedar",
       "x": 6341,
       "y": 6463,
@@ -3071,7 +2936,7 @@
       ]
     },
     {
-      "id": "nature_tree_413",
+      "id": "nature_tree_422",
       "asset": "wwhd_tree_oak",
       "x": 1910,
       "y": 6770,
@@ -3086,7 +2951,7 @@
       ]
     },
     {
-      "id": "nature_tree_416",
+      "id": "nature_tree_425",
       "asset": "wwhd_tree_apple",
       "x": 8744,
       "y": 2304,
@@ -3101,11 +2966,11 @@
       ]
     },
     {
-      "id": "nature_tree_418",
-      "asset": "wwhd_tree_cedar",
-      "x": 8375,
-      "y": 2987,
-      "scale": 1.1053222458781526,
+      "id": "nature_tree_426",
+      "asset": "wwhd_tree_willow",
+      "x": 5496,
+      "y": 2734,
+      "scale": 0.8915199377612223,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -3116,7 +2981,7 @@
       ]
     },
     {
-      "id": "nature_tree_428",
+      "id": "nature_tree_436",
       "asset": "wwhd_tree_apple",
       "x": 3662,
       "y": 1308,
@@ -3131,7 +2996,7 @@
       ]
     },
     {
-      "id": "nature_tree_435",
+      "id": "nature_tree_443",
       "asset": "wwhd_tree_apple",
       "x": 3453,
       "y": 5706,
@@ -3146,7 +3011,7 @@
       ]
     },
     {
-      "id": "nature_tree_436",
+      "id": "nature_tree_444",
       "asset": "wwhd_tree_oak",
       "x": 469,
       "y": 2144,
@@ -3161,7 +3026,7 @@
       ]
     },
     {
-      "id": "nature_tree_437",
+      "id": "nature_tree_445",
       "asset": "wwhd_tree_cedar",
       "x": 251,
       "y": 5188,
@@ -3176,7 +3041,7 @@
       ]
     },
     {
-      "id": "nature_tree_439",
+      "id": "nature_tree_447",
       "asset": "wwhd_tree_apple",
       "x": 595,
       "y": 7109,
@@ -3191,7 +3056,7 @@
       ]
     },
     {
-      "id": "nature_tree_442",
+      "id": "nature_tree_450",
       "asset": "wwhd_tree_cedar",
       "x": 4618,
       "y": 1667,
@@ -3206,7 +3071,7 @@
       ]
     },
     {
-      "id": "nature_tree_443",
+      "id": "nature_tree_451",
       "asset": "wwhd_tree_willow",
       "x": 1228,
       "y": 651,
@@ -3221,7 +3086,7 @@
       ]
     },
     {
-      "id": "nature_tree_445",
+      "id": "nature_tree_453",
       "asset": "wwhd_tree_cedar",
       "x": 8219,
       "y": 1573,
@@ -3236,7 +3101,7 @@
       ]
     },
     {
-      "id": "nature_tree_447",
+      "id": "nature_tree_455",
       "asset": "wwhd_tree_willow",
       "x": 3296,
       "y": 5285,
@@ -3251,7 +3116,7 @@
       ]
     },
     {
-      "id": "nature_tree_462",
+      "id": "nature_tree_470",
       "asset": "wwhd_tree_oak",
       "x": 531,
       "y": 3310,
@@ -3266,7 +3131,7 @@
       ]
     },
     {
-      "id": "nature_tree_470",
+      "id": "nature_tree_478",
       "asset": "wwhd_tree_apple",
       "x": 248,
       "y": 3614,
@@ -3281,7 +3146,7 @@
       ]
     },
     {
-      "id": "nature_tree_473",
+      "id": "nature_tree_481",
       "asset": "wwhd_tree_apple",
       "x": 1064,
       "y": 688,
@@ -3296,7 +3161,7 @@
       ]
     },
     {
-      "id": "nature_tree_475",
+      "id": "nature_tree_483",
       "asset": "wwhd_tree_willow",
       "x": 3403,
       "y": 2125,
@@ -3311,7 +3176,7 @@
       ]
     },
     {
-      "id": "nature_tree_476",
+      "id": "nature_tree_484",
       "asset": "wwhd_tree_cedar",
       "x": 4861,
       "y": 7139,
@@ -3326,7 +3191,7 @@
       ]
     },
     {
-      "id": "nature_tree_477",
+      "id": "nature_tree_485",
       "asset": "wwhd_tree_willow",
       "x": 8077,
       "y": 1332,
@@ -3341,37 +3206,7 @@
       ]
     },
     {
-      "id": "nature_tree_479",
-      "asset": "wwhd_tree_willow",
-      "x": 4975,
-      "y": 6724,
-      "scale": 0.7989192827692826,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_481",
-      "asset": "wwhd_tree_apple",
-      "x": 3813,
-      "y": 5837,
-      "scale": 0.8535087872001293,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_482",
+      "id": "nature_tree_493",
       "asset": "wwhd_tree_willow",
       "x": 1428,
       "y": 599,
@@ -3386,7 +3221,7 @@
       ]
     },
     {
-      "id": "nature_tree_487",
+      "id": "nature_tree_498",
       "asset": "wwhd_tree_apple",
       "x": 496,
       "y": 1331,
@@ -3401,7 +3236,7 @@
       ]
     },
     {
-      "id": "nature_tree_493",
+      "id": "nature_tree_504",
       "asset": "wwhd_tree_apple",
       "x": 4618,
       "y": 1199,
@@ -3416,7 +3251,7 @@
       ]
     },
     {
-      "id": "nature_tree_497",
+      "id": "nature_tree_508",
       "asset": "wwhd_tree_willow",
       "x": 1117,
       "y": 3179,
@@ -3431,7 +3266,7 @@
       ]
     },
     {
-      "id": "nature_tree_502",
+      "id": "nature_tree_513",
       "asset": "wwhd_tree_willow",
       "x": 2176,
       "y": 4349,
@@ -3446,7 +3281,7 @@
       ]
     },
     {
-      "id": "nature_tree_503",
+      "id": "nature_tree_514",
       "asset": "wwhd_tree_oak",
       "x": 7001,
       "y": 919,
@@ -3461,7 +3296,7 @@
       ]
     },
     {
-      "id": "nature_tree_504",
+      "id": "nature_tree_515",
       "asset": "wwhd_tree_oak",
       "x": 370,
       "y": 4265,
@@ -3476,7 +3311,7 @@
       ]
     },
     {
-      "id": "nature_tree_507",
+      "id": "nature_tree_518",
       "asset": "wwhd_tree_willow",
       "x": 8432,
       "y": 1630,
@@ -3491,7 +3326,7 @@
       ]
     },
     {
-      "id": "nature_tree_509",
+      "id": "nature_tree_520",
       "asset": "wwhd_tree_apple",
       "x": 2958,
       "y": 2575,
@@ -3506,7 +3341,7 @@
       ]
     },
     {
-      "id": "nature_tree_511",
+      "id": "nature_tree_522",
       "asset": "wwhd_tree_willow",
       "x": 3718,
       "y": 1637,
@@ -3521,7 +3356,7 @@
       ]
     },
     {
-      "id": "nature_tree_515",
+      "id": "nature_tree_526",
       "asset": "wwhd_tree_willow",
       "x": 1844,
       "y": 6595,
@@ -3536,7 +3371,7 @@
       ]
     },
     {
-      "id": "nature_tree_520",
+      "id": "nature_tree_531",
       "asset": "wwhd_tree_cedar",
       "x": 3889,
       "y": 1396,
@@ -3551,7 +3386,7 @@
       ]
     },
     {
-      "id": "nature_tree_531",
+      "id": "nature_tree_542",
       "asset": "wwhd_tree_willow",
       "x": 4651,
       "y": 7015,
@@ -3566,7 +3401,7 @@
       ]
     },
     {
-      "id": "nature_tree_538",
+      "id": "nature_tree_549",
       "asset": "wwhd_tree_oak",
       "x": 1168,
       "y": 5541,
@@ -3581,7 +3416,7 @@
       ]
     },
     {
-      "id": "nature_tree_540",
+      "id": "nature_tree_551",
       "asset": "wwhd_tree_cedar",
       "x": 415,
       "y": 665,
@@ -3596,7 +3431,7 @@
       ]
     },
     {
-      "id": "nature_tree_550",
+      "id": "nature_tree_561",
       "asset": "wwhd_tree_willow",
       "x": 8013,
       "y": 2790,
@@ -3611,7 +3446,7 @@
       ]
     },
     {
-      "id": "nature_tree_556",
+      "id": "nature_tree_567",
       "asset": "wwhd_tree_cedar",
       "x": 8494,
       "y": 3306,
@@ -3626,7 +3461,7 @@
       ]
     },
     {
-      "id": "nature_tree_559",
+      "id": "nature_tree_570",
       "asset": "wwhd_tree_willow",
       "x": 1284,
       "y": 6307,
@@ -3641,7 +3476,7 @@
       ]
     },
     {
-      "id": "nature_tree_561",
+      "id": "nature_tree_572",
       "asset": "wwhd_tree_willow",
       "x": 5057,
       "y": 1750,
@@ -3656,7 +3491,7 @@
       ]
     },
     {
-      "id": "nature_tree_568",
+      "id": "nature_tree_579",
       "asset": "wwhd_tree_apple",
       "x": 8883,
       "y": 2534,
@@ -3671,11 +3506,11 @@
       ]
     },
     {
-      "id": "nature_tree_569",
-      "asset": "wwhd_tree_oak",
-      "x": 5293,
-      "y": 3443,
-      "scale": 0.8209064109939009,
+      "id": "nature_tree_581",
+      "asset": "wwhd_tree_willow",
+      "x": 256,
+      "y": 1380,
+      "scale": 0.9622573815517574,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -3686,7 +3521,22 @@
       ]
     },
     {
-      "id": "nature_tree_573",
+      "id": "nature_tree_582",
+      "asset": "wwhd_tree_apple",
+      "x": 707,
+      "y": 4987,
+      "scale": 1.1035631867484605,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_584",
       "asset": "wwhd_tree_apple",
       "x": 6496,
       "y": 827,
@@ -3701,7 +3551,7 @@
       ]
     },
     {
-      "id": "nature_tree_582",
+      "id": "nature_tree_593",
       "asset": "wwhd_tree_oak",
       "x": 1967,
       "y": 5451,
@@ -3716,7 +3566,7 @@
       ]
     },
     {
-      "id": "nature_tree_585",
+      "id": "nature_tree_596",
       "asset": "wwhd_tree_willow",
       "x": 5389,
       "y": 2156,
@@ -3731,7 +3581,7 @@
       ]
     },
     {
-      "id": "nature_tree_586",
+      "id": "nature_tree_597",
       "asset": "wwhd_tree_oak",
       "x": 1412,
       "y": 5105,
@@ -3746,7 +3596,7 @@
       ]
     },
     {
-      "id": "nature_tree_588",
+      "id": "nature_tree_599",
       "asset": "wwhd_tree_oak",
       "x": 8849,
       "y": 5431,
@@ -3761,26 +3611,11 @@
       ]
     },
     {
-      "id": "nature_tree_589",
-      "asset": "wwhd_tree_willow",
-      "x": 3883,
-      "y": 4663,
-      "scale": 1.0797748772030533,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_592",
+      "id": "nature_tree_605",
       "asset": "wwhd_tree_oak",
-      "x": 664,
-      "y": 4918,
-      "scale": 1.0611090140259285,
+      "x": 317,
+      "y": 6846,
+      "scale": 0.8479077790778431,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -3791,7 +3626,7 @@
       ]
     },
     {
-      "id": "nature_tree_595",
+      "id": "nature_tree_606",
       "asset": "wwhd_tree_willow",
       "x": 468,
       "y": 5301,
@@ -3806,7 +3641,7 @@
       ]
     },
     {
-      "id": "nature_tree_605",
+      "id": "nature_tree_616",
       "asset": "wwhd_tree_apple",
       "x": 5438,
       "y": 4010,
@@ -3821,7 +3656,7 @@
       ]
     },
     {
-      "id": "nature_tree_607",
+      "id": "nature_tree_618",
       "asset": "wwhd_tree_cedar",
       "x": 1066,
       "y": 5379,
@@ -3836,7 +3671,7 @@
       ]
     },
     {
-      "id": "nature_tree_609",
+      "id": "nature_tree_620",
       "asset": "wwhd_tree_cedar",
       "x": 273,
       "y": 1961,
@@ -3851,7 +3686,7 @@
       ]
     },
     {
-      "id": "nature_tree_618",
+      "id": "nature_tree_629",
       "asset": "wwhd_tree_apple",
       "x": 5697,
       "y": 2563,
@@ -3866,11 +3701,11 @@
       ]
     },
     {
-      "id": "nature_tree_619",
-      "asset": "wwhd_tree_apple",
-      "x": 3469,
-      "y": 6174,
-      "scale": 0.9942053254208377,
+      "id": "nature_tree_634",
+      "asset": "wwhd_tree_willow",
+      "x": 3993,
+      "y": 2691,
+      "scale": 1.0573782988563587,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -3881,22 +3716,7 @@
       ]
     },
     {
-      "id": "nature_tree_621",
-      "asset": "wwhd_tree_apple",
-      "x": 3838,
-      "y": 4830,
-      "scale": 0.8785126366819259,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_624",
+      "id": "nature_tree_635",
       "asset": "wwhd_tree_cedar",
       "x": 5033,
       "y": 464,
@@ -3911,22 +3731,7 @@
       ]
     },
     {
-      "id": "nature_tree_629",
-      "asset": "wwhd_tree_oak",
-      "x": 3592,
-      "y": 4659,
-      "scale": 1.0774475422329928,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_630",
+      "id": "nature_tree_642",
       "asset": "wwhd_tree_willow",
       "x": 7242,
       "y": 5814,
@@ -3941,7 +3746,7 @@
       ]
     },
     {
-      "id": "nature_tree_634",
+      "id": "nature_tree_646",
       "asset": "wwhd_tree_cedar",
       "x": 1905,
       "y": 5664,
@@ -3956,7 +3761,7 @@
       ]
     },
     {
-      "id": "nature_tree_636",
+      "id": "nature_tree_648",
       "asset": "wwhd_tree_cedar",
       "x": 8501,
       "y": 6172,
@@ -3971,7 +3776,7 @@
       ]
     },
     {
-      "id": "nature_tree_639",
+      "id": "nature_tree_651",
       "asset": "wwhd_tree_apple",
       "x": 7268,
       "y": 5401,
@@ -3986,7 +3791,7 @@
       ]
     },
     {
-      "id": "nature_tree_644",
+      "id": "nature_tree_656",
       "asset": "wwhd_tree_apple",
       "x": 4903,
       "y": 986,
@@ -4001,7 +3806,7 @@
       ]
     },
     {
-      "id": "nature_tree_647",
+      "id": "nature_tree_659",
       "asset": "wwhd_tree_oak",
       "x": 4571,
       "y": 4271,
@@ -4016,7 +3821,7 @@
       ]
     },
     {
-      "id": "nature_tree_649",
+      "id": "nature_tree_661",
       "asset": "wwhd_tree_apple",
       "x": 368,
       "y": 3467,
@@ -4031,7 +3836,7 @@
       ]
     },
     {
-      "id": "nature_tree_655",
+      "id": "nature_tree_667",
       "asset": "wwhd_tree_cedar",
       "x": 853,
       "y": 6531,
@@ -4046,7 +3851,7 @@
       ]
     },
     {
-      "id": "nature_tree_658",
+      "id": "nature_tree_670",
       "asset": "wwhd_tree_apple",
       "x": 4736,
       "y": 2311,
@@ -4061,7 +3866,7 @@
       ]
     },
     {
-      "id": "nature_tree_659",
+      "id": "nature_tree_671",
       "asset": "wwhd_tree_willow",
       "x": 369,
       "y": 1112,
@@ -4076,7 +3881,7 @@
       ]
     },
     {
-      "id": "nature_tree_666",
+      "id": "nature_tree_678",
       "asset": "wwhd_tree_willow",
       "x": 4872,
       "y": 2728,
@@ -4091,7 +3896,7 @@
       ]
     },
     {
-      "id": "nature_tree_667",
+      "id": "nature_tree_679",
       "asset": "wwhd_tree_oak",
       "x": 7688,
       "y": 470,
@@ -4106,7 +3911,7 @@
       ]
     },
     {
-      "id": "nature_tree_672",
+      "id": "nature_tree_684",
       "asset": "wwhd_tree_willow",
       "x": 1244,
       "y": 5185,
@@ -4121,22 +3926,7 @@
       ]
     },
     {
-      "id": "nature_tree_675",
-      "asset": "wwhd_tree_apple",
-      "x": 3988,
-      "y": 5050,
-      "scale": 0.9850318071863213,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_680",
+      "id": "nature_tree_693",
       "asset": "wwhd_tree_oak",
       "x": 3915,
       "y": 1840,
@@ -4151,7 +3941,7 @@
       ]
     },
     {
-      "id": "nature_tree_682",
+      "id": "nature_tree_695",
       "asset": "wwhd_tree_cedar",
       "x": 5544,
       "y": 689,
@@ -4166,7 +3956,7 @@
       ]
     },
     {
-      "id": "nature_tree_685",
+      "id": "nature_tree_698",
       "asset": "wwhd_tree_willow",
       "x": 7117,
       "y": 5575,
@@ -4181,7 +3971,7 @@
       ]
     },
     {
-      "id": "nature_tree_696",
+      "id": "nature_tree_709",
       "asset": "wwhd_tree_oak",
       "x": 514,
       "y": 1545,
@@ -4196,11 +3986,11 @@
       ]
     },
     {
-      "id": "nature_tree_697",
+      "id": "nature_tree_713",
       "asset": "wwhd_tree_willow",
-      "x": 3485,
-      "y": 5063,
-      "scale": 0.987472070730795,
+      "x": 3478,
+      "y": 452,
+      "scale": 1.0792645781112382,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4211,7 +4001,7 @@
       ]
     },
     {
-      "id": "nature_tree_702",
+      "id": "nature_tree_715",
       "asset": "wwhd_tree_willow",
       "x": 390,
       "y": 1771,
@@ -4226,7 +4016,7 @@
       ]
     },
     {
-      "id": "nature_tree_705",
+      "id": "nature_tree_718",
       "asset": "wwhd_tree_oak",
       "x": 4481,
       "y": 4526,
@@ -4241,7 +4031,7 @@
       ]
     },
     {
-      "id": "nature_tree_713",
+      "id": "nature_tree_726",
       "asset": "wwhd_tree_oak",
       "x": 1688,
       "y": 5458,
@@ -4256,7 +4046,7 @@
       ]
     },
     {
-      "id": "nature_tree_716",
+      "id": "nature_tree_729",
       "asset": "wwhd_tree_willow",
       "x": 2851,
       "y": 631,
@@ -4271,7 +4061,7 @@
       ]
     },
     {
-      "id": "nature_tree_717",
+      "id": "nature_tree_730",
       "asset": "wwhd_tree_willow",
       "x": 2377,
       "y": 4406,
@@ -4286,7 +4076,7 @@
       ]
     },
     {
-      "id": "nature_tree_721",
+      "id": "nature_tree_734",
       "asset": "wwhd_tree_oak",
       "x": 8805,
       "y": 1527,
@@ -4301,7 +4091,7 @@
       ]
     },
     {
-      "id": "nature_tree_722",
+      "id": "nature_tree_735",
       "asset": "wwhd_tree_apple",
       "x": 3084,
       "y": 2168,
@@ -4316,7 +4106,7 @@
       ]
     },
     {
-      "id": "nature_tree_731",
+      "id": "nature_tree_744",
       "asset": "wwhd_tree_apple",
       "x": 5720,
       "y": 1612,
@@ -4331,7 +4121,7 @@
       ]
     },
     {
-      "id": "nature_tree_741",
+      "id": "nature_tree_754",
       "asset": "wwhd_tree_oak",
       "x": 8340,
       "y": 2212,
@@ -4346,7 +4136,7 @@
       ]
     },
     {
-      "id": "nature_tree_744",
+      "id": "nature_tree_757",
       "asset": "wwhd_tree_oak",
       "x": 7431,
       "y": 784,
@@ -4361,26 +4151,11 @@
       ]
     },
     {
-      "id": "nature_tree_745",
-      "asset": "wwhd_tree_apple",
-      "x": 6084,
-      "y": 889,
-      "scale": 1.132582282514666,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_752",
+      "id": "nature_tree_765",
       "asset": "wwhd_tree_cedar",
-      "x": 5156,
-      "y": 1372,
-      "scale": 0.8588222094010238,
+      "x": 3160,
+      "y": 5467,
+      "scale": 0.8205416436806621,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4391,11 +4166,11 @@
       ]
     },
     {
-      "id": "nature_tree_753",
+      "id": "nature_tree_766",
       "asset": "wwhd_tree_apple",
-      "x": 3267,
-      "y": 5484,
-      "scale": 0.8141789382799383,
+      "x": 3827,
+      "y": 5495,
+      "scale": 1.1104514165315873,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4406,7 +4181,7 @@
       ]
     },
     {
-      "id": "nature_tree_762",
+      "id": "nature_tree_776",
       "asset": "wwhd_tree_cedar",
       "x": 606,
       "y": 3623,
@@ -4421,7 +4196,7 @@
       ]
     },
     {
-      "id": "nature_tree_763",
+      "id": "nature_tree_777",
       "asset": "wwhd_tree_willow",
       "x": 4356,
       "y": 5859,
@@ -4436,22 +4211,7 @@
       ]
     },
     {
-      "id": "nature_tree_767",
-      "asset": "wwhd_tree_apple",
-      "x": 5959,
-      "y": 4529,
-      "scale": 0.8959877589223514,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_770",
+      "id": "nature_tree_785",
       "asset": "wwhd_tree_apple",
       "x": 2544,
       "y": 2062,
@@ -4466,7 +4226,7 @@
       ]
     },
     {
-      "id": "nature_tree_773",
+      "id": "nature_tree_788",
       "asset": "wwhd_tree_oak",
       "x": 4985,
       "y": 2528,
@@ -4481,22 +4241,7 @@
       ]
     },
     {
-      "id": "nature_tree_774",
-      "asset": "wwhd_tree_willow",
-      "x": 3735,
-      "y": 6220,
-      "scale": 0.9947244443565377,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_778",
+      "id": "nature_tree_794",
       "asset": "wwhd_tree_oak",
       "x": 6309,
       "y": 962,
@@ -4511,11 +4256,11 @@
       ]
     },
     {
-      "id": "nature_tree_780",
-      "asset": "wwhd_tree_apple",
-      "x": 3822,
-      "y": 6625,
-      "scale": 0.8960787252232016,
+      "id": "nature_tree_800",
+      "asset": "wwhd_tree_oak",
+      "x": 7288,
+      "y": 899,
+      "scale": 1.0020383108123476,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4526,7 +4271,22 @@
       ]
     },
     {
-      "id": "nature_tree_789",
+      "id": "nature_tree_801",
+      "asset": "wwhd_tree_apple",
+      "x": 454,
+      "y": 4119,
+      "scale": 0.8064962044361578,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_804",
       "asset": "wwhd_tree_willow",
       "x": 598,
       "y": 6748,
@@ -4541,7 +4301,7 @@
       ]
     },
     {
-      "id": "nature_tree_792",
+      "id": "nature_tree_807",
       "asset": "wwhd_tree_cedar",
       "x": 8590,
       "y": 5032,
@@ -4556,7 +4316,22 @@
       ]
     },
     {
-      "id": "nature_tree_803",
+      "id": "nature_tree_810",
+      "asset": "wwhd_tree_cedar",
+      "x": 3449,
+      "y": 6127,
+      "scale": 0.9528700285802597,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_817",
       "asset": "wwhd_tree_cedar",
       "x": 851,
       "y": 2622,
@@ -4571,7 +4346,7 @@
       ]
     },
     {
-      "id": "nature_tree_806",
+      "id": "nature_tree_820",
       "asset": "wwhd_tree_apple",
       "x": 3568,
       "y": 694,
@@ -4586,7 +4361,7 @@
       ]
     },
     {
-      "id": "nature_tree_814",
+      "id": "nature_tree_828",
       "asset": "wwhd_tree_willow",
       "x": 5472,
       "y": 1986,
@@ -4601,7 +4376,7 @@
       ]
     },
     {
-      "id": "nature_tree_819",
+      "id": "nature_tree_833",
       "asset": "wwhd_tree_cedar",
       "x": 5305,
       "y": 3771,
@@ -4616,7 +4391,7 @@
       ]
     },
     {
-      "id": "nature_tree_821",
+      "id": "nature_tree_835",
       "asset": "wwhd_tree_cedar",
       "x": 8296,
       "y": 6138,
@@ -4631,7 +4406,7 @@
       ]
     },
     {
-      "id": "nature_tree_830",
+      "id": "nature_tree_844",
       "asset": "wwhd_tree_willow",
       "x": 3421,
       "y": 1082,
@@ -4646,7 +4421,7 @@
       ]
     },
     {
-      "id": "nature_tree_834",
+      "id": "nature_tree_848",
       "asset": "wwhd_tree_cedar",
       "x": 692,
       "y": 2746,
@@ -4661,41 +4436,11 @@
       ]
     },
     {
-      "id": "nature_tree_835",
-      "asset": "wwhd_tree_oak",
-      "x": 5548,
-      "y": 6017,
-      "scale": 0.8390838887958626,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_840",
-      "asset": "wwhd_tree_cedar",
-      "x": 5279,
-      "y": 5274,
-      "scale": 1.0647010077038135,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_843",
-      "asset": "wwhd_tree_cedar",
-      "x": 4214,
-      "y": 2859,
-      "scale": 0.8785127767348111,
+      "id": "nature_tree_853",
+      "asset": "wwhd_tree_apple",
+      "x": 8206,
+      "y": 3047,
+      "scale": 0.894426524272001,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4707,10 +4452,10 @@
     },
     {
       "id": "nature_tree_854",
-      "asset": "wwhd_tree_apple",
-      "x": 5693,
-      "y": 3916,
-      "scale": 0.9073332612687507,
+      "asset": "wwhd_tree_willow",
+      "x": 5010,
+      "y": 6928,
+      "scale": 1.0566087148463335,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4721,7 +4466,22 @@
       ]
     },
     {
-      "id": "nature_tree_856",
+      "id": "nature_tree_855",
+      "asset": "wwhd_tree_cedar",
+      "x": 3090,
+      "y": 2437,
+      "scale": 1.0094337638948825,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_871",
       "asset": "wwhd_tree_oak",
       "x": 4575,
       "y": 1861,
@@ -4736,22 +4496,7 @@
       ]
     },
     {
-      "id": "nature_tree_867",
-      "asset": "wwhd_tree_oak",
-      "x": 4367,
-      "y": 6061,
-      "scale": 0.9918213615619176,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_882",
+      "id": "nature_tree_899",
       "asset": "wwhd_tree_apple",
       "x": 2628,
       "y": 3256,
@@ -4766,7 +4511,7 @@
       ]
     },
     {
-      "id": "nature_tree_893",
+      "id": "nature_tree_910",
       "asset": "wwhd_tree_apple",
       "x": 4604,
       "y": 2091,
@@ -4781,7 +4526,7 @@
       ]
     },
     {
-      "id": "nature_tree_900",
+      "id": "nature_tree_917",
       "asset": "wwhd_tree_apple",
       "x": 4274,
       "y": 2439,
@@ -4796,7 +4541,7 @@
       ]
     },
     {
-      "id": "nature_tree_902",
+      "id": "nature_tree_919",
       "asset": "wwhd_tree_oak",
       "x": 4635,
       "y": 2564,
@@ -4811,7 +4556,7 @@
       ]
     },
     {
-      "id": "nature_tree_906",
+      "id": "nature_tree_923",
       "asset": "wwhd_tree_oak",
       "x": 4187,
       "y": 456,
@@ -4826,7 +4571,7 @@
       ]
     },
     {
-      "id": "nature_tree_910",
+      "id": "nature_tree_927",
       "asset": "wwhd_tree_oak",
       "x": 418,
       "y": 5468,
@@ -4841,7 +4586,7 @@
       ]
     },
     {
-      "id": "nature_tree_915",
+      "id": "nature_tree_932",
       "asset": "wwhd_tree_oak",
       "x": 649,
       "y": 2485,
@@ -4856,22 +4601,7 @@
       ]
     },
     {
-      "id": "nature_tree_920",
-      "asset": "wwhd_tree_apple",
-      "x": 5829,
-      "y": 5066,
-      "scale": 1.0698334583151783,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_922",
+      "id": "nature_tree_941",
       "asset": "wwhd_tree_apple",
       "x": 7310,
       "y": 556,
@@ -4886,11 +4616,11 @@
       ]
     },
     {
-      "id": "nature_tree_935",
-      "asset": "wwhd_tree_willow",
-      "x": 439,
-      "y": 4085,
-      "scale": 0.9019091191392614,
+      "id": "nature_tree_960",
+      "asset": "wwhd_tree_apple",
+      "x": 7892,
+      "y": 4666,
+      "scale": 1.0231795086345306,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4901,11 +4631,11 @@
       ]
     },
     {
-      "id": "nature_tree_938",
-      "asset": "wwhd_tree_willow",
-      "x": 4342,
-      "y": 3528,
-      "scale": 0.874698338271328,
+      "id": "nature_tree_962",
+      "asset": "wwhd_tree_oak",
+      "x": 5932,
+      "y": 2698,
+      "scale": 1.0800180889858237,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4916,7 +4646,7 @@
       ]
     },
     {
-      "id": "nature_tree_955",
+      "id": "nature_tree_974",
       "asset": "wwhd_tree_cedar",
       "x": 5806,
       "y": 1460,
@@ -4931,7 +4661,7 @@
       ]
     },
     {
-      "id": "nature_tree_963",
+      "id": "nature_tree_982",
       "asset": "wwhd_tree_oak",
       "x": 7120,
       "y": 6387,
@@ -4946,7 +4676,7 @@
       ]
     },
     {
-      "id": "nature_tree_971",
+      "id": "nature_tree_990",
       "asset": "wwhd_tree_apple",
       "x": 5050,
       "y": 866,
@@ -4961,7 +4691,7 @@
       ]
     },
     {
-      "id": "nature_tree_978",
+      "id": "nature_tree_997",
       "asset": "wwhd_tree_willow",
       "x": 4715,
       "y": 3756,
@@ -4976,7 +4706,7 @@
       ]
     },
     {
-      "id": "nature_tree_988",
+      "id": "nature_tree_1007",
       "asset": "wwhd_tree_cedar",
       "x": 787,
       "y": 6698,
@@ -4991,7 +4721,7 @@
       ]
     },
     {
-      "id": "nature_tree_997",
+      "id": "nature_tree_1016",
       "asset": "wwhd_tree_oak",
       "x": 6436,
       "y": 3663,
@@ -5006,7 +4736,7 @@
       ]
     },
     {
-      "id": "nature_tree_1001",
+      "id": "nature_tree_1020",
       "asset": "wwhd_tree_apple",
       "x": 2227,
       "y": 3947,
@@ -5021,7 +4751,7 @@
       ]
     },
     {
-      "id": "nature_tree_1006",
+      "id": "nature_tree_1025",
       "asset": "wwhd_tree_oak",
       "x": 4516,
       "y": 3826,
@@ -5036,7 +4766,7 @@
       ]
     },
     {
-      "id": "nature_tree_1024",
+      "id": "nature_tree_1043",
       "asset": "wwhd_tree_apple",
       "x": 4180,
       "y": 2074,
@@ -5051,37 +4781,7 @@
       ]
     },
     {
-      "id": "nature_tree_1026",
-      "asset": "wwhd_tree_oak",
-      "x": 3566,
-      "y": 6719,
-      "scale": 0.8615620828486753,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1027",
-      "asset": "wwhd_tree_apple",
-      "x": 7279,
-      "y": 919,
-      "scale": 1.0058398639192996,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1038",
+      "id": "nature_tree_1060",
       "asset": "wwhd_tree_willow",
       "x": 4434,
       "y": 2721,
@@ -5096,7 +4796,7 @@
       ]
     },
     {
-      "id": "nature_tree_1039",
+      "id": "nature_tree_1061",
       "asset": "wwhd_tree_oak",
       "x": 7736,
       "y": 1054,
@@ -5111,7 +4811,7 @@
       ]
     },
     {
-      "id": "nature_tree_1042",
+      "id": "nature_tree_1064",
       "asset": "wwhd_tree_apple",
       "x": 6450,
       "y": 5807,
@@ -5126,7 +4826,7 @@
       ]
     },
     {
-      "id": "nature_tree_1050",
+      "id": "nature_tree_1072",
       "asset": "wwhd_tree_cedar",
       "x": 5438,
       "y": 1460,
@@ -5141,7 +4841,7 @@
       ]
     },
     {
-      "id": "nature_tree_1055",
+      "id": "nature_tree_1077",
       "asset": "wwhd_tree_cedar",
       "x": 7982,
       "y": 4385,
@@ -5156,7 +4856,7 @@
       ]
     },
     {
-      "id": "nature_tree_1061",
+      "id": "nature_tree_1083",
       "asset": "wwhd_tree_oak",
       "x": 6359,
       "y": 7003,
@@ -5171,7 +4871,7 @@
       ]
     },
     {
-      "id": "nature_tree_1063",
+      "id": "nature_tree_1085",
       "asset": "wwhd_tree_oak",
       "x": 4021,
       "y": 1192,
@@ -5186,22 +4886,7 @@
       ]
     },
     {
-      "id": "nature_tree_1076",
-      "asset": "wwhd_tree_willow",
-      "x": 5219,
-      "y": 2898,
-      "scale": 0.8125736739748943,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1082",
+      "id": "nature_tree_1105",
       "asset": "wwhd_tree_apple",
       "x": 8884,
       "y": 3503,
@@ -5216,7 +4901,7 @@
       ]
     },
     {
-      "id": "nature_tree_1088",
+      "id": "nature_tree_1111",
       "asset": "wwhd_tree_cedar",
       "x": 7757,
       "y": 3079,
@@ -5231,7 +4916,7 @@
       ]
     },
     {
-      "id": "nature_tree_1094",
+      "id": "nature_tree_1117",
       "asset": "wwhd_tree_willow",
       "x": 273,
       "y": 2149,
@@ -5246,7 +4931,7 @@
       ]
     },
     {
-      "id": "nature_tree_1103",
+      "id": "nature_tree_1126",
       "asset": "wwhd_tree_willow",
       "x": 5894,
       "y": 911,
@@ -5261,7 +4946,7 @@
       ]
     },
     {
-      "id": "nature_tree_1107",
+      "id": "nature_tree_1130",
       "asset": "wwhd_tree_apple",
       "x": 5060,
       "y": 7113,
@@ -5276,7 +4961,7 @@
       ]
     },
     {
-      "id": "nature_tree_1113",
+      "id": "nature_tree_1136",
       "asset": "wwhd_tree_willow",
       "x": 8573,
       "y": 3082,
@@ -5291,7 +4976,7 @@
       ]
     },
     {
-      "id": "nature_tree_1114",
+      "id": "nature_tree_1137",
       "asset": "wwhd_tree_cedar",
       "x": 3877,
       "y": 3788,
@@ -5306,11 +4991,11 @@
       ]
     },
     {
-      "id": "nature_tree_1116",
-      "asset": "wwhd_tree_apple",
-      "x": 460,
-      "y": 5873,
-      "scale": 0.9972139450518651,
+      "id": "nature_tree_1138",
+      "asset": "wwhd_tree_oak",
+      "x": 3306,
+      "y": 5630,
+      "scale": 1.0183456890930114,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5321,7 +5006,7 @@
       ]
     },
     {
-      "id": "nature_tree_1117",
+      "id": "nature_tree_1141",
       "asset": "wwhd_tree_apple",
       "x": 8002,
       "y": 6296,
@@ -5336,7 +5021,7 @@
       ]
     },
     {
-      "id": "nature_tree_1119",
+      "id": "nature_tree_1143",
       "asset": "wwhd_tree_willow",
       "x": 8894,
       "y": 1939,
@@ -5351,7 +5036,7 @@
       ]
     },
     {
-      "id": "nature_tree_1140",
+      "id": "nature_tree_1164",
       "asset": "wwhd_tree_willow",
       "x": 3526,
       "y": 5875,
@@ -5366,7 +5051,7 @@
       ]
     },
     {
-      "id": "nature_tree_1144",
+      "id": "nature_tree_1168",
       "asset": "wwhd_tree_cedar",
       "x": 999,
       "y": 6863,
@@ -5381,7 +5066,7 @@
       ]
     },
     {
-      "id": "nature_tree_1148",
+      "id": "nature_tree_1172",
       "asset": "wwhd_tree_cedar",
       "x": 244,
       "y": 6152,
@@ -5396,7 +5081,7 @@
       ]
     },
     {
-      "id": "nature_tree_1150",
+      "id": "nature_tree_1174",
       "asset": "wwhd_tree_apple",
       "x": 5660,
       "y": 2063,
@@ -5411,7 +5096,22 @@
       ]
     },
     {
-      "id": "nature_tree_1163",
+      "id": "nature_tree_1179",
+      "asset": "wwhd_tree_apple",
+      "x": 8420,
+      "y": 2908,
+      "scale": 1.0221877023978219,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1186",
       "asset": "wwhd_tree_oak",
       "x": 4654,
       "y": 5714,
@@ -5426,7 +5126,7 @@
       ]
     },
     {
-      "id": "nature_tree_1179",
+      "id": "nature_tree_1202",
       "asset": "wwhd_tree_oak",
       "x": 8677,
       "y": 589,
@@ -5441,7 +5141,7 @@
       ]
     },
     {
-      "id": "nature_tree_1186",
+      "id": "nature_tree_1209",
       "asset": "wwhd_tree_oak",
       "x": 2952,
       "y": 5824,
@@ -5456,7 +5156,7 @@
       ]
     },
     {
-      "id": "nature_tree_1191",
+      "id": "nature_tree_1214",
       "asset": "wwhd_tree_willow",
       "x": 3828,
       "y": 848,
@@ -5471,7 +5171,7 @@
       ]
     },
     {
-      "id": "nature_tree_1192",
+      "id": "nature_tree_1215",
       "asset": "wwhd_tree_willow",
       "x": 1800,
       "y": 903,
@@ -5486,7 +5186,7 @@
       ]
     },
     {
-      "id": "nature_tree_1204",
+      "id": "nature_tree_1227",
       "asset": "wwhd_tree_cedar",
       "x": 1158,
       "y": 6806,
@@ -5501,7 +5201,7 @@
       ]
     },
     {
-      "id": "nature_tree_1205",
+      "id": "nature_tree_1228",
       "asset": "wwhd_tree_oak",
       "x": 3169,
       "y": 5954,
@@ -5516,7 +5216,7 @@
       ]
     },
     {
-      "id": "nature_tree_1210",
+      "id": "nature_tree_1233",
       "asset": "wwhd_tree_cedar",
       "x": 3044,
       "y": 713,
@@ -5531,11 +5231,11 @@
       ]
     },
     {
-      "id": "nature_tree_1213",
-      "asset": "wwhd_tree_cedar",
-      "x": 1526,
-      "y": 6901,
-      "scale": 0.9982731032879855,
+      "id": "nature_tree_1237",
+      "asset": "wwhd_tree_apple",
+      "x": 4688,
+      "y": 5416,
+      "scale": 0.9939085654933448,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5546,11 +5246,11 @@
       ]
     },
     {
-      "id": "nature_tree_1219",
-      "asset": "wwhd_tree_cedar",
-      "x": 939,
-      "y": 6217,
-      "scale": 0.9151406289981674,
+      "id": "nature_tree_1238",
+      "asset": "wwhd_tree_apple",
+      "x": 1076,
+      "y": 6277,
+      "scale": 1.1280183442285836,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5561,7 +5261,7 @@
       ]
     },
     {
-      "id": "nature_tree_1229",
+      "id": "nature_tree_1253",
       "asset": "wwhd_tree_willow",
       "x": 7486,
       "y": 570,
@@ -5576,7 +5276,7 @@
       ]
     },
     {
-      "id": "nature_tree_1233",
+      "id": "nature_tree_1257",
       "asset": "wwhd_tree_oak",
       "x": 2969,
       "y": 6821,
@@ -5591,7 +5291,7 @@
       ]
     },
     {
-      "id": "nature_tree_1236",
+      "id": "nature_tree_1260",
       "asset": "wwhd_tree_cedar",
       "x": 8744,
       "y": 2969,
@@ -5606,7 +5306,7 @@
       ]
     },
     {
-      "id": "nature_tree_1237",
+      "id": "nature_tree_1261",
       "asset": "wwhd_tree_cedar",
       "x": 8903,
       "y": 1113,
@@ -5621,7 +5321,7 @@
       ]
     },
     {
-      "id": "nature_tree_1250",
+      "id": "nature_tree_1274",
       "asset": "wwhd_tree_apple",
       "x": 1683,
       "y": 6542,
@@ -5636,7 +5336,7 @@
       ]
     },
     {
-      "id": "nature_tree_1255",
+      "id": "nature_tree_1279",
       "asset": "wwhd_tree_oak",
       "x": 7110,
       "y": 3401,
@@ -5651,22 +5351,7 @@
       ]
     },
     {
-      "id": "nature_tree_1259",
-      "asset": "wwhd_tree_willow",
-      "x": 3470,
-      "y": 4825,
-      "scale": 1.0687016482874805,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1273",
+      "id": "nature_tree_1298",
       "asset": "wwhd_tree_oak",
       "x": 2080,
       "y": 5271,
@@ -5681,7 +5366,7 @@
       ]
     },
     {
-      "id": "nature_tree_1277",
+      "id": "nature_tree_1302",
       "asset": "wwhd_tree_willow",
       "x": 4457,
       "y": 866,
@@ -5696,7 +5381,7 @@
       ]
     },
     {
-      "id": "nature_tree_1296",
+      "id": "nature_tree_1321",
       "asset": "wwhd_tree_cedar",
       "x": 520,
       "y": 6322,
@@ -5711,7 +5396,7 @@
       ]
     },
     {
-      "id": "nature_tree_1302",
+      "id": "nature_tree_1327",
       "asset": "wwhd_tree_cedar",
       "x": 7201,
       "y": 5238,
@@ -5726,7 +5411,7 @@
       ]
     },
     {
-      "id": "nature_tree_1305",
+      "id": "nature_tree_1330",
       "asset": "wwhd_tree_willow",
       "x": 3225,
       "y": 4753,
@@ -5741,7 +5426,7 @@
       ]
     },
     {
-      "id": "nature_tree_1317",
+      "id": "nature_tree_1342",
       "asset": "wwhd_tree_oak",
       "x": 6520,
       "y": 3286,
@@ -5756,7 +5441,7 @@
       ]
     },
     {
-      "id": "nature_tree_1321",
+      "id": "nature_tree_1346",
       "asset": "wwhd_tree_willow",
       "x": 4853,
       "y": 1868,
@@ -5771,7 +5456,7 @@
       ]
     },
     {
-      "id": "nature_tree_1333",
+      "id": "nature_tree_1358",
       "asset": "wwhd_tree_oak",
       "x": 1987,
       "y": 493,
@@ -5786,7 +5471,7 @@
       ]
     },
     {
-      "id": "nature_tree_1336",
+      "id": "nature_tree_1361",
       "asset": "wwhd_tree_oak",
       "x": 4564,
       "y": 2387,
@@ -5801,7 +5486,7 @@
       ]
     },
     {
-      "id": "nature_tree_1340",
+      "id": "nature_tree_1365",
       "asset": "wwhd_tree_apple",
       "x": 4026,
       "y": 1007,
@@ -5816,7 +5501,7 @@
       ]
     },
     {
-      "id": "nature_tree_1351",
+      "id": "nature_tree_1376",
       "asset": "wwhd_tree_willow",
       "x": 2105,
       "y": 4720,
@@ -5831,7 +5516,22 @@
       ]
     },
     {
-      "id": "nature_tree_1362",
+      "id": "nature_tree_1379",
+      "asset": "wwhd_tree_willow",
+      "x": 5155,
+      "y": 5987,
+      "scale": 0.8013246214759192,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1385",
       "asset": "wwhd_tree_willow",
       "x": 268,
       "y": 3233,
@@ -5846,7 +5546,7 @@
       ]
     },
     {
-      "id": "nature_tree_1366",
+      "id": "nature_tree_1389",
       "asset": "wwhd_tree_oak",
       "x": 2966,
       "y": 5051,
@@ -5861,7 +5561,7 @@
       ]
     },
     {
-      "id": "nature_tree_1376",
+      "id": "nature_tree_1399",
       "asset": "wwhd_tree_cedar",
       "x": 5116,
       "y": 681,
@@ -5876,7 +5576,7 @@
       ]
     },
     {
-      "id": "nature_tree_1381",
+      "id": "nature_tree_1404",
       "asset": "wwhd_tree_oak",
       "x": 7768,
       "y": 6776,
@@ -5891,7 +5591,7 @@
       ]
     },
     {
-      "id": "nature_tree_1393",
+      "id": "nature_tree_1416",
       "asset": "wwhd_tree_oak",
       "x": 7666,
       "y": 733,
@@ -5906,22 +5606,7 @@
       ]
     },
     {
-      "id": "nature_tree_1397",
-      "asset": "wwhd_tree_willow",
-      "x": 8362,
-      "y": 2801,
-      "scale": 0.8202338426846031,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1428",
+      "id": "nature_tree_1452",
       "asset": "wwhd_tree_willow",
       "x": 8774,
       "y": 4895,
@@ -5936,7 +5621,7 @@
       ]
     },
     {
-      "id": "nature_tree_1434",
+      "id": "nature_tree_1458",
       "asset": "wwhd_tree_apple",
       "x": 8628,
       "y": 1114,
@@ -5951,37 +5636,7 @@
       ]
     },
     {
-      "id": "nature_tree_1440",
-      "asset": "wwhd_tree_willow",
-      "x": 4676,
-      "y": 5301,
-      "scale": 1.1240207585376103,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1446",
-      "asset": "wwhd_tree_cedar",
-      "x": 5529,
-      "y": 7133,
-      "scale": 0.8299823523719231,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1455",
+      "id": "nature_tree_1481",
       "asset": "wwhd_tree_apple",
       "x": 3938,
       "y": 1628,
@@ -5996,7 +5651,7 @@
       ]
     },
     {
-      "id": "nature_tree_1474",
+      "id": "nature_tree_1500",
       "asset": "wwhd_tree_willow",
       "x": 1786,
       "y": 3291,
@@ -6011,22 +5666,7 @@
       ]
     },
     {
-      "id": "nature_tree_1477",
-      "asset": "wwhd_tree_oak",
-      "x": 3740,
-      "y": 5111,
-      "scale": 0.9269794307313838,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1488",
+      "id": "nature_tree_1516",
       "asset": "wwhd_tree_apple",
       "x": 6132,
       "y": 2514,
@@ -6041,7 +5681,7 @@
       ]
     },
     {
-      "id": "nature_tree_1489",
+      "id": "nature_tree_1517",
       "asset": "wwhd_tree_oak",
       "x": 1246,
       "y": 486,
@@ -6056,7 +5696,7 @@
       ]
     },
     {
-      "id": "nature_tree_1494",
+      "id": "nature_tree_1522",
       "asset": "wwhd_tree_apple",
       "x": 6506,
       "y": 5309,
@@ -6071,7 +5711,7 @@
       ]
     },
     {
-      "id": "nature_tree_1498",
+      "id": "nature_tree_1526",
       "asset": "wwhd_tree_cedar",
       "x": 5215,
       "y": 4217,
@@ -6086,7 +5726,7 @@
       ]
     },
     {
-      "id": "nature_tree_1507",
+      "id": "nature_tree_1535",
       "asset": "wwhd_tree_oak",
       "x": 4463,
       "y": 7000,
@@ -6101,7 +5741,37 @@
       ]
     },
     {
-      "id": "nature_tree_1522",
+      "id": "nature_tree_1536",
+      "asset": "wwhd_tree_cedar",
+      "x": 4504,
+      "y": 5995,
+      "scale": 1.124872938173691,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1540",
+      "asset": "wwhd_tree_oak",
+      "x": 4349,
+      "y": 5386,
+      "scale": 0.8877275999384033,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1547",
       "asset": "wwhd_tree_apple",
       "x": 490,
       "y": 6148,
@@ -6116,7 +5786,7 @@
       ]
     },
     {
-      "id": "nature_tree_1523",
+      "id": "nature_tree_1548",
       "asset": "wwhd_tree_oak",
       "x": 8883,
       "y": 632,
@@ -6131,7 +5801,7 @@
       ]
     },
     {
-      "id": "nature_tree_1533",
+      "id": "nature_tree_1558",
       "asset": "wwhd_tree_apple",
       "x": 8228,
       "y": 1407,
@@ -6146,7 +5816,7 @@
       ]
     },
     {
-      "id": "nature_tree_1534",
+      "id": "nature_tree_1559",
       "asset": "wwhd_tree_apple",
       "x": 3030,
       "y": 7113,
@@ -6161,7 +5831,7 @@
       ]
     },
     {
-      "id": "nature_tree_1541",
+      "id": "nature_tree_1566",
       "asset": "wwhd_tree_cedar",
       "x": 3246,
       "y": 853,
@@ -6176,22 +5846,7 @@
       ]
     },
     {
-      "id": "nature_tree_1542",
-      "asset": "wwhd_tree_oak",
-      "x": 5425,
-      "y": 6128,
-      "scale": 0.9947194465083868,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1547",
+      "id": "nature_tree_1573",
       "asset": "wwhd_tree_cedar",
       "x": 5736,
       "y": 7133,
@@ -6206,7 +5861,7 @@
       ]
     },
     {
-      "id": "nature_tree_1559",
+      "id": "nature_tree_1585",
       "asset": "wwhd_tree_oak",
       "x": 2344,
       "y": 495,
@@ -6221,22 +5876,7 @@
       ]
     },
     {
-      "id": "nature_tree_1565",
-      "asset": "wwhd_tree_cedar",
-      "x": 3757,
-      "y": 4536,
-      "scale": 1.0085258056573785,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1566",
+      "id": "nature_tree_1593",
       "asset": "wwhd_tree_oak",
       "x": 2214,
       "y": 4164,
@@ -6251,7 +5891,7 @@
       ]
     },
     {
-      "id": "nature_tree_1584",
+      "id": "nature_tree_1611",
       "asset": "wwhd_tree_cedar",
       "x": 8059,
       "y": 1523,
@@ -6266,7 +5906,7 @@
       ]
     },
     {
-      "id": "nature_tree_1592",
+      "id": "nature_tree_1619",
       "asset": "wwhd_tree_apple",
       "x": 268,
       "y": 2575,
@@ -6281,7 +5921,7 @@
       ]
     },
     {
-      "id": "nature_tree_1596",
+      "id": "nature_tree_1623",
       "asset": "wwhd_tree_oak",
       "x": 6151,
       "y": 4666,
@@ -6296,7 +5936,7 @@
       ]
     },
     {
-      "id": "nature_tree_1599",
+      "id": "nature_tree_1626",
       "asset": "wwhd_tree_apple",
       "x": 7881,
       "y": 3584,
@@ -6311,22 +5951,7 @@
       ]
     },
     {
-      "id": "nature_tree_1602",
-      "asset": "wwhd_tree_apple",
-      "x": 5803,
-      "y": 5253,
-      "scale": 1.0563348432999164,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1620",
+      "id": "nature_tree_1648",
       "asset": "wwhd_tree_oak",
       "x": 967,
       "y": 4059,
@@ -6341,7 +5966,7 @@
       ]
     },
     {
-      "id": "nature_tree_1629",
+      "id": "nature_tree_1657",
       "asset": "wwhd_tree_apple",
       "x": 798,
       "y": 7057,
@@ -6356,7 +5981,22 @@
       ]
     },
     {
-      "id": "nature_tree_1642",
+      "id": "nature_tree_1659",
+      "asset": "wwhd_tree_apple",
+      "x": 4327,
+      "y": 6059,
+      "scale": 0.8457189928300576,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1668",
       "asset": "wwhd_tree_cedar",
       "x": 1585,
       "y": 6238,
@@ -6371,7 +6011,7 @@
       ]
     },
     {
-      "id": "nature_tree_1645",
+      "id": "nature_tree_1671",
       "asset": "wwhd_tree_cedar",
       "x": 7910,
       "y": 6576,
@@ -6386,7 +6026,7 @@
       ]
     },
     {
-      "id": "nature_tree_1651",
+      "id": "nature_tree_1677",
       "asset": "wwhd_tree_apple",
       "x": 6199,
       "y": 4835,
@@ -6401,7 +6041,7 @@
       ]
     },
     {
-      "id": "nature_tree_1656",
+      "id": "nature_tree_1682",
       "asset": "wwhd_tree_oak",
       "x": 3581,
       "y": 4310,
@@ -6416,22 +6056,7 @@
       ]
     },
     {
-      "id": "nature_tree_1663",
-      "asset": "wwhd_tree_oak",
-      "x": 7985,
-      "y": 5899,
-      "scale": 1.118028855994147,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1672",
+      "id": "nature_tree_1700",
       "asset": "wwhd_tree_willow",
       "x": 8903,
       "y": 6811,
@@ -6446,7 +6071,7 @@
       ]
     },
     {
-      "id": "nature_tree_1696",
+      "id": "nature_tree_1724",
       "asset": "wwhd_tree_cedar",
       "x": 6389,
       "y": 2504,
@@ -6461,7 +6086,7 @@
       ]
     },
     {
-      "id": "nature_tree_1719",
+      "id": "nature_tree_1747",
       "asset": "wwhd_tree_cedar",
       "x": 7627,
       "y": 2921,
@@ -6476,7 +6101,7 @@
       ]
     },
     {
-      "id": "nature_tree_1726",
+      "id": "nature_tree_1754",
       "asset": "wwhd_tree_cedar",
       "x": 2753,
       "y": 5293,
@@ -6491,7 +6116,7 @@
       ]
     },
     {
-      "id": "nature_tree_1732",
+      "id": "nature_tree_1760",
       "asset": "wwhd_tree_oak",
       "x": 4335,
       "y": 538,
@@ -6506,7 +6131,22 @@
       ]
     },
     {
-      "id": "nature_tree_1742",
+      "id": "nature_tree_1764",
+      "asset": "wwhd_tree_apple",
+      "x": 5839,
+      "y": 6869,
+      "scale": 1.135486456143071,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1769",
       "asset": "wwhd_tree_willow",
       "x": 8720,
       "y": 3403,
@@ -6521,7 +6161,7 @@
       ]
     },
     {
-      "id": "nature_tree_1754",
+      "id": "nature_tree_1781",
       "asset": "wwhd_tree_cedar",
       "x": 960,
       "y": 5197,
@@ -6536,7 +6176,7 @@
       ]
     },
     {
-      "id": "nature_tree_1767",
+      "id": "nature_tree_1794",
       "asset": "wwhd_tree_willow",
       "x": 8238,
       "y": 1784,
@@ -6551,7 +6191,7 @@
       ]
     },
     {
-      "id": "nature_tree_1777",
+      "id": "nature_tree_1804",
       "asset": "wwhd_tree_oak",
       "x": 424,
       "y": 2979,
@@ -6566,7 +6206,7 @@
       ]
     },
     {
-      "id": "nature_tree_1788",
+      "id": "nature_tree_1815",
       "asset": "wwhd_tree_oak",
       "x": 4657,
       "y": 967,
@@ -6581,22 +6221,7 @@
       ]
     },
     {
-      "id": "nature_tree_1811",
-      "asset": "wwhd_tree_apple",
-      "x": 5535,
-      "y": 3533,
-      "scale": 0.9278536756090963,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1851",
+      "id": "nature_tree_1879",
       "asset": "wwhd_tree_apple",
       "x": 3463,
       "y": 880,
@@ -6611,7 +6236,7 @@
       ]
     },
     {
-      "id": "nature_tree_1852",
+      "id": "nature_tree_1880",
       "asset": "wwhd_tree_cedar",
       "x": 8630,
       "y": 5399,
@@ -6626,7 +6251,7 @@
       ]
     },
     {
-      "id": "nature_tree_1855",
+      "id": "nature_tree_1883",
       "asset": "wwhd_tree_willow",
       "x": 5888,
       "y": 2467,
@@ -6641,7 +6266,7 @@
       ]
     },
     {
-      "id": "nature_tree_1859",
+      "id": "nature_tree_1887",
       "asset": "wwhd_tree_cedar",
       "x": 7948,
       "y": 3065,
@@ -6656,7 +6281,7 @@
       ]
     },
     {
-      "id": "nature_tree_1899",
+      "id": "nature_tree_1927",
       "asset": "wwhd_tree_apple",
       "x": 339,
       "y": 866,
@@ -6671,7 +6296,7 @@
       ]
     },
     {
-      "id": "nature_tree_1900",
+      "id": "nature_tree_1928",
       "asset": "wwhd_tree_apple",
       "x": 1123,
       "y": 3405,
@@ -6686,7 +6311,22 @@
       ]
     },
     {
-      "id": "nature_tree_1914",
+      "id": "nature_tree_1929",
+      "asset": "wwhd_tree_apple",
+      "x": 8507,
+      "y": 2735,
+      "scale": 0.9679779222121616,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1941",
       "asset": "wwhd_tree_willow",
       "x": 1803,
       "y": 711,
@@ -6701,7 +6341,7 @@
       ]
     },
     {
-      "id": "nature_tree_1921",
+      "id": "nature_tree_1948",
       "asset": "wwhd_tree_willow",
       "x": 7310,
       "y": 4715,
@@ -6716,7 +6356,7 @@
       ]
     },
     {
-      "id": "nature_tree_1924",
+      "id": "nature_tree_1951",
       "asset": "wwhd_tree_willow",
       "x": 2454,
       "y": 704,
@@ -6731,515 +6371,640 @@
       ]
     },
     {
-      "id": "nature_flowers_1",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4592,
-      "y": 3725,
-      "scale": 1.0816014114510217,
-      "layer": "props"
+      "id": "nature_tree_1973",
+      "asset": "wwhd_tree_apple",
+      "x": 7949,
+      "y": 2389,
+      "scale": 0.818320166505443,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
     },
     {
-      "id": "nature_flowers_2",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3797,
-      "y": 4700,
-      "scale": 0.9495648939950473,
-      "layer": "props"
+      "id": "nature_tree_1988",
+      "asset": "wwhd_tree_oak",
+      "x": 8109,
+      "y": 2342,
+      "scale": 0.8061709512764951,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
     },
     {
-      "id": "nature_flowers_5",
+      "id": "nature_tree_2009",
+      "asset": "wwhd_tree_cedar",
+      "x": 4959,
+      "y": 625,
+      "scale": 1.0459644805131922,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2019",
+      "asset": "wwhd_tree_willow",
+      "x": 4287,
+      "y": 712,
+      "scale": 1.0859189078780411,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2025",
+      "asset": "wwhd_tree_cedar",
+      "x": 6766,
+      "y": 2559,
+      "scale": 0.9059358829032782,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2058",
+      "asset": "wwhd_tree_cedar",
+      "x": 2698,
+      "y": 5954,
+      "scale": 0.8495236642009464,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2069",
+      "asset": "wwhd_tree_willow",
+      "x": 1046,
+      "y": 515,
+      "scale": 0.9013966971614861,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2070",
+      "asset": "wwhd_tree_apple",
+      "x": 7129,
+      "y": 1042,
+      "scale": 0.9319522752217909,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2097",
+      "asset": "wwhd_tree_willow",
+      "x": 486,
+      "y": 2599,
+      "scale": 0.9277362773098954,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2150",
+      "asset": "wwhd_tree_apple",
+      "x": 7160,
+      "y": 6594,
+      "scale": 1.028994317101027,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2164",
+      "asset": "wwhd_tree_oak",
+      "x": 5531,
+      "y": 859,
+      "scale": 0.9929144746464132,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2182",
+      "asset": "wwhd_tree_cedar",
+      "x": 3077,
+      "y": 5316,
+      "scale": 0.958546527792522,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2185",
+      "asset": "wwhd_tree_apple",
+      "x": 5612,
+      "y": 1208,
+      "scale": 0.8396118215087439,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2186",
+      "asset": "wwhd_tree_cedar",
+      "x": 792,
+      "y": 3787,
+      "scale": 0.8173408957592088,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2244",
+      "asset": "wwhd_tree_cedar",
+      "x": 8635,
+      "y": 2604,
+      "scale": 1.1002531943002793,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2248",
+      "asset": "wwhd_tree_oak",
+      "x": 898,
+      "y": 2783,
+      "scale": 0.8836943851700704,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2249",
+      "asset": "wwhd_tree_apple",
+      "x": 3112,
+      "y": 2705,
+      "scale": 0.8320711385000937,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2263",
+      "asset": "wwhd_tree_willow",
+      "x": 6157,
+      "y": 513,
+      "scale": 0.9769165001123046,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2284",
+      "asset": "wwhd_tree_oak",
+      "x": 1096,
+      "y": 863,
+      "scale": 1.1244230330303513,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_flowers_7",
       "asset": "wwhd_nature_wildflowers",
-      "x": 5140,
-      "y": 5847,
-      "scale": 0.7963379027662614,
+      "x": 1200,
+      "y": 6857,
+      "scale": 0.9111547226156753,
       "layer": "props"
     },
     {
       "id": "nature_flowers_8",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3858,
-      "y": 5704,
-      "scale": 1.0256345768965085,
+      "x": 4876,
+      "y": 2478,
+      "scale": 0.8882080131096179,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_9",
-      "asset": "wwhd_nature_shrub",
-      "x": 5684,
-      "y": 937,
-      "scale": 0.827501189690147,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_12",
-      "asset": "wwhd_nature_shrub",
-      "x": 3317,
-      "y": 4566,
-      "scale": 0.735324983361737,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_13",
+      "id": "nature_flowers_11",
       "asset": "wwhd_nature_wildflowers",
-      "x": 5936,
-      "y": 2337,
-      "scale": 1.0386249305595807,
+      "x": 3611,
+      "y": 1133,
+      "scale": 0.7160248591033547,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_16",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 1111,
-      "y": 6337,
-      "scale": 0.8882244206570542,
+      "id": "nature_flowers_15",
+      "asset": "wwhd_nature_shrub",
+      "x": 7753,
+      "y": 3100,
+      "scale": 1.0637310689213963,
       "layer": "props"
     },
     {
       "id": "nature_flowers_17",
       "asset": "wwhd_nature_wildflowers",
-      "x": 4084,
-      "y": 1521,
-      "scale": 0.9277136263948053,
+      "x": 7521,
+      "y": 4681,
+      "scale": 0.7172566235124775,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_19",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 2850,
-      "y": 2714,
-      "scale": 1.0518219039316081,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_22",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4565,
-      "y": 2867,
-      "scale": 1.0526678719169404,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_32",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4002,
-      "y": 1625,
-      "scale": 0.7447997578238663,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_33",
+      "id": "nature_flowers_30",
       "asset": "wwhd_nature_shrub",
-      "x": 6375,
-      "y": 5587,
-      "scale": 0.8255809969229905,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_37",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 2530,
-      "y": 5834,
-      "scale": 0.8907543316861815,
+      "x": 7847,
+      "y": 6699,
+      "scale": 0.8687277259983897,
       "layer": "props"
     },
     {
       "id": "nature_flowers_41",
       "asset": "wwhd_nature_wildflowers",
-      "x": 499,
-      "y": 2117,
-      "scale": 0.7229426855672845,
+      "x": 8591,
+      "y": 793,
+      "scale": 0.8775226793104854,
       "layer": "props"
     },
     {
       "id": "nature_flowers_45",
       "asset": "wwhd_nature_shrub",
-      "x": 2540,
-      "y": 6154,
-      "scale": 0.9512532312556821,
+      "x": 3460,
+      "y": 5245,
+      "scale": 0.8762569768557393,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_47",
+      "id": "nature_flowers_51",
+      "asset": "wwhd_nature_shrub",
+      "x": 2849,
+      "y": 5140,
+      "scale": 0.8019657174876713,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_52",
       "asset": "wwhd_nature_wildflowers",
-      "x": 750,
-      "y": 6250,
-      "scale": 1.0419041415292023,
+      "x": 1399,
+      "y": 6821,
+      "scale": 1.035416130509498,
       "layer": "props"
     },
     {
       "id": "nature_flowers_54",
       "asset": "wwhd_nature_shrub",
-      "x": 3898,
-      "y": 6840,
-      "scale": 0.8861414259532996,
+      "x": 928,
+      "y": 6305,
+      "scale": 0.980471299027912,
       "layer": "props"
     },
     {
       "id": "nature_flowers_55",
       "asset": "wwhd_nature_wildflowers",
-      "x": 4447,
-      "y": 912,
-      "scale": 0.865993409901186,
+      "x": 1328,
+      "y": 5442,
+      "scale": 0.9375055686795382,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_57",
+      "id": "nature_flowers_60",
       "asset": "wwhd_nature_shrub",
-      "x": 4239,
-      "y": 1602,
-      "scale": 0.8035141540513899,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_59",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3460,
-      "y": 6197,
-      "scale": 0.8507036480443115,
+      "x": 2944,
+      "y": 5752,
+      "scale": 0.8496724091193126,
       "layer": "props"
     },
     {
       "id": "nature_flowers_62",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3902,
-      "y": 5750,
-      "scale": 0.9225587301139407,
+      "x": 4337,
+      "y": 1893,
+      "scale": 0.8287717574321647,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_64",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 7870,
+      "y": 5949,
+      "scale": 0.7845306427380103,
       "layer": "props"
     },
     {
       "id": "nature_flowers_68",
       "asset": "wwhd_nature_wildflowers",
-      "x": 5493,
-      "y": 1091,
-      "scale": 0.8745614575433398,
+      "x": 1773,
+      "y": 3244,
+      "scale": 0.8301832071530895,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_71",
+      "id": "nature_flowers_73",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3825,
-      "y": 1429,
-      "scale": 0.7333308042363009,
+      "x": 5056,
+      "y": 908,
+      "scale": 0.9270215142263627,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_72",
-      "asset": "wwhd_nature_shrub",
-      "x": 4920,
-      "y": 1774,
-      "scale": 0.7850820478582664,
+      "id": "nature_flowers_74",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 2315,
+      "y": 4692,
+      "scale": 1.0461131419021328,
       "layer": "props"
     },
     {
       "id": "nature_flowers_75",
       "asset": "wwhd_nature_shrub",
-      "x": 3969,
-      "y": 6734,
-      "scale": 0.7207009538495305,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_78",
-      "asset": "wwhd_nature_shrub",
-      "x": 3223,
-      "y": 6162,
-      "scale": 0.8561882903560678,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_81",
-      "asset": "wwhd_nature_shrub",
-      "x": 4573,
-      "y": 2656,
-      "scale": 0.7579468000143584,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_82",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5542,
-      "y": 1284,
-      "scale": 0.8101500858706565,
+      "x": 4379,
+      "y": 1922,
+      "scale": 1.0549994066895483,
       "layer": "props"
     },
     {
       "id": "nature_flowers_83",
       "asset": "wwhd_nature_wildflowers",
-      "x": 7400,
-      "y": 4729,
-      "scale": 0.7729844642492757,
+      "x": 3990,
+      "y": 1410,
+      "scale": 0.8876031878666286,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_84",
+      "id": "nature_flowers_87",
       "asset": "wwhd_nature_shrub",
-      "x": 2265,
-      "y": 4448,
-      "scale": 1.0408894914792495,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_86",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3409,
-      "y": 4472,
-      "scale": 1.0970317740209397,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_88",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4969,
-      "y": 2232,
-      "scale": 0.9792066245628444,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_89",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5717,
-      "y": 6945,
-      "scale": 0.9459305739785795,
+      "x": 4255,
+      "y": 2299,
+      "scale": 0.9448395674341109,
       "layer": "props"
     },
     {
       "id": "nature_flowers_91",
       "asset": "wwhd_nature_wildflowers",
-      "x": 6671,
-      "y": 1118,
-      "scale": 0.7845507938139618,
+      "x": 3186,
+      "y": 5692,
+      "scale": 0.8709886537373409,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_92",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 5045,
+      "y": 1635,
+      "scale": 1.0795020788477199,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_94",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 5533,
+      "y": 655,
+      "scale": 0.9280808774269173,
       "layer": "props"
     },
     {
       "id": "nature_flowers_95",
       "asset": "wwhd_nature_wildflowers",
-      "x": 422,
-      "y": 4347,
-      "scale": 0.8650466189322102,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_97",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 1206,
-      "y": 715,
-      "scale": 1.0987214338256692,
+      "x": 2058,
+      "y": 6906,
+      "scale": 0.9718177458710859,
       "layer": "props"
     },
     {
       "id": "nature_flowers_101",
       "asset": "wwhd_nature_wildflowers",
-      "x": 5164,
-      "y": 2515,
-      "scale": 0.9302349934038283,
+      "x": 3486,
+      "y": 2072,
+      "scale": 0.7913385943616932,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_102",
+      "id": "nature_flowers_105",
       "asset": "wwhd_nature_shrub",
-      "x": 5498,
-      "y": 1959,
-      "scale": 0.9022526592931219,
+      "x": 4791,
+      "y": 1844,
+      "scale": 0.7813551293002472,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_104",
+      "id": "nature_flowers_110",
       "asset": "wwhd_nature_wildflowers",
-      "x": 496,
-      "y": 2832,
-      "scale": 1.050964400562657,
+      "x": 4782,
+      "y": 995,
+      "scale": 0.7854431449780639,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_107",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4032,
-      "y": 2687,
-      "scale": 0.9129893110325361,
+      "id": "nature_flowers_111",
+      "asset": "wwhd_nature_shrub",
+      "x": 2907,
+      "y": 2506,
+      "scale": 0.824190884916486,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_109",
+      "id": "nature_flowers_116",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3300,
-      "y": 744,
-      "scale": 0.7070433633207183,
+      "x": 8412,
+      "y": 1961,
+      "scale": 0.9902650563771243,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_115",
+      "id": "nature_flowers_118",
       "asset": "wwhd_nature_wildflowers",
-      "x": 4590,
-      "y": 950,
-      "scale": 0.8188899614808464,
+      "x": 2634,
+      "y": 874,
+      "scale": 0.7680472296214587,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_121",
+      "id": "nature_flowers_119",
       "asset": "wwhd_nature_wildflowers",
-      "x": 1223,
-      "y": 6201,
-      "scale": 0.9447720826120237,
+      "x": 3123,
+      "y": 5997,
+      "scale": 0.797113005728718,
       "layer": "props"
     },
     {
       "id": "nature_flowers_123",
       "asset": "wwhd_nature_shrub",
-      "x": 7123,
-      "y": 3465,
-      "scale": 0.910003423053733,
+      "x": 6501,
+      "y": 660,
+      "scale": 1.0255420586391193,
       "layer": "props"
     },
     {
       "id": "nature_flowers_125",
       "asset": "wwhd_nature_wildflowers",
-      "x": 1959,
-      "y": 5636,
-      "scale": 0.7373135266373413,
+      "x": 4410,
+      "y": 2311,
+      "scale": 0.8484451799702587,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_126",
-      "asset": "wwhd_nature_shrub",
-      "x": 527,
-      "y": 5153,
-      "scale": 0.7745465409496132,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_130",
+      "id": "nature_flowers_127",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3346,
-      "y": 5997,
-      "scale": 0.8164656233856734,
+      "x": 5729,
+      "y": 1382,
+      "scale": 0.7112013115479248,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_133",
+      "id": "nature_flowers_136",
       "asset": "wwhd_nature_wildflowers",
-      "x": 2385,
-      "y": 4454,
-      "scale": 1.0059788671205154,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_137",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4377,
-      "y": 6047,
-      "scale": 0.8682084786610141,
+      "x": 3906,
+      "y": 3781,
+      "scale": 0.7167568947350633,
       "layer": "props"
     },
     {
       "id": "nature_flowers_138",
       "asset": "wwhd_nature_shrub",
-      "x": 1966,
-      "y": 5616,
-      "scale": 0.8616591462164329,
+      "x": 7930,
+      "y": 3057,
+      "scale": 0.7939773099695109,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_139",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 6318,
-      "y": 6533,
-      "scale": 1.0535224643316206,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_140",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4768,
-      "y": 6857,
-      "scale": 1.0788262619571747,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_143",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 6108,
-      "y": 2552,
-      "scale": 0.8206411357910631,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_144",
+      "id": "nature_flowers_141",
       "asset": "wwhd_nature_shrub",
-      "x": 581,
-      "y": 6795,
-      "scale": 0.8847837941591017,
+      "x": 3724,
+      "y": 4290,
+      "scale": 0.9012291077408887,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_149",
+      "id": "nature_flowers_142",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3004,
-      "y": 5425,
-      "scale": 1.00242439874815,
+      "x": 3461,
+      "y": 2087,
+      "scale": 1.0925237034688335,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_153",
+      "id": "nature_flowers_145",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 468,
+      "y": 6511,
+      "scale": 0.7038926463672699,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_151",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 1813,
+      "y": 3436,
+      "scale": 0.9578929663722792,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_152",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 3377,
+      "y": 5161,
+      "scale": 1.0892832077447603,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_156",
       "asset": "wwhd_nature_shrub",
-      "x": 1280,
-      "y": 3578,
-      "scale": 1.0768064011715885,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_154",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3455,
-      "y": 5992,
-      "scale": 1.0821399237871068,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_157",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 2798,
-      "y": 5465,
-      "scale": 1.0160943285118995,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_158",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 7272,
-      "y": 4466,
-      "scale": 0.7875797480442271,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_160",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5350,
-      "y": 6998,
-      "scale": 0.8493077830363039,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_161",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 8217,
-      "y": 1620,
-      "scale": 0.749285787331499,
+      "x": 736,
+      "y": 5400,
+      "scale": 0.8270866141368214,
       "layer": "props"
     },
     {
       "id": "nature_flowers_166",
       "asset": "wwhd_nature_wildflowers",
-      "x": 4126,
-      "y": 739,
-      "scale": 0.828558967598255,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_167",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 1022,
-      "y": 6686,
-      "scale": 0.8909105361670037,
+      "x": 3367,
+      "y": 761,
+      "scale": 1.0361383813884086,
       "layer": "props"
     },
     {
@@ -7319,6 +7084,14 @@
       "asset": "wwhd_shoreline_rocks",
       "x": 6930,
       "y": 2590,
+      "scale": 1,
+      "layer": "props"
+    },
+    {
+      "id": "lake_bank_10",
+      "asset": "wwhd_nature_riverplants",
+      "x": 6708,
+      "y": 2578,
       "scale": 1,
       "layer": "props"
     },
@@ -7571,22 +7344,6 @@
       "layer": "props"
     },
     {
-      "id": "river_bank_5_-1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 4715,
-      "y": 2850,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
-      "id": "river_bank_5_1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 5285,
-      "y": 2850,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
       "id": "river_bank_9_-1",
       "asset": "wwhd_shoreline_rocks",
       "x": 4753,
@@ -7635,22 +7392,6 @@
       "layer": "props"
     },
     {
-      "id": "river_bank_14_-1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 4648,
-      "y": 5287,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
-      "id": "river_bank_14_1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 5218,
-      "y": 5287,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
       "id": "river_bank_15_-1",
       "asset": "wwhd_shoreline_rocks",
       "x": 4745,
@@ -7675,10 +7416,10 @@
       "layer": "props"
     },
     {
-      "id": "river_bank_19_-1",
+      "id": "river_bank_16_1",
       "asset": "wwhd_nature_riverplants",
-      "x": 4076,
-      "y": 6672,
+      "x": 5155,
+      "y": 5892,
       "scale": 0.9,
       "layer": "props"
     },
@@ -7731,42 +7472,10 @@
       "layer": "props"
     },
     {
-      "id": "lane_plant_0_18_-1",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4554,
-      "y": 2986,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_0_31_-1",
-      "asset": "wwhd_nature_shrub",
-      "x": 5211,
-      "y": 2983,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_1_31_-1",
-      "asset": "wwhd_nature_shrub",
-      "x": 5092,
-      "y": 4583,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_2_5_-1",
-      "asset": "wwhd_nature_shrub",
-      "x": 3953,
-      "y": 6135,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
       "id": "lane_plant_2_5_1",
       "asset": "wwhd_nature_shrub",
-      "x": 3933,
-      "y": 6585,
+      "x": 3423,
+      "y": 6714,
       "scale": 0.8,
       "layer": "props"
     },
@@ -7819,114 +7528,66 @@
       "layer": "props"
     },
     {
-      "id": "lane_plant_4_70_-1",
-      "asset": "wwhd_nature_shrub",
-      "x": 4483,
-      "y": 4550,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_5_5_-1",
-      "asset": "wwhd_nature_shrub",
-      "x": 4385,
-      "y": 3481,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
       "id": "lane_plant_5_18_-1",
       "asset": "wwhd_nature_wildflowers",
-      "x": 4307,
-      "y": 3947,
+      "x": 4357,
+      "y": 4000,
+      "scale": 0.8,
+      "layer": "props"
+    },
+    {
+      "id": "lane_plant_5_31_1",
+      "asset": "wwhd_nature_shrub",
+      "x": 3393,
+      "y": 5128,
       "scale": 0.8,
       "layer": "props"
     },
     {
       "id": "lane_plant_5_44_-1",
       "asset": "wwhd_nature_shrub",
-      "x": 4327,
-      "y": 5743,
+      "x": 4068,
+      "y": 5977,
       "scale": 0.8,
       "layer": "props"
     },
     {
       "id": "lane_plant_5_44_1",
       "asset": "wwhd_nature_shrub",
-      "x": 3898,
-      "y": 5861,
+      "x": 3683,
+      "y": 5754,
       "scale": 0.8,
       "layer": "props"
     },
     {
       "id": "lane_plant_5_57_-1",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3113,
-      "y": 6789,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_6_18_-1",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4233,
-      "y": 2990,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_6_18_1",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4432,
-      "y": 3449,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_7_5_1",
-      "asset": "wwhd_nature_shrub",
-      "x": 5536,
-      "y": 3549,
+      "x": 2879,
+      "y": 6842,
       "scale": 0.8,
       "layer": "props"
     },
     {
       "id": "lane_plant_7_18_1",
       "asset": "wwhd_nature_wildflowers",
-      "x": 5643,
-      "y": 3994,
+      "x": 5415,
+      "y": 3692,
       "scale": 0.8,
       "layer": "props"
     },
     {
-      "id": "lane_plant_7_44_-1",
+      "id": "lane_plant_7_31_1",
       "asset": "wwhd_nature_shrub",
-      "x": 5601,
-      "y": 5984,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_7_44_1",
-      "asset": "wwhd_nature_shrub",
-      "x": 5267,
-      "y": 5675,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_7_57_1",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5681,
-      "y": 6874,
+      "x": 5602,
+      "y": 4332,
       "scale": 0.8,
       "layer": "props"
     },
     {
       "id": "lane_plant_8_18_-1",
       "asset": "wwhd_nature_wildflowers",
-      "x": 7492,
-      "y": 2977,
+      "x": 7475,
+      "y": 2976,
       "scale": 0.8,
       "layer": "props"
     },
@@ -7965,24 +7626,16 @@
     {
       "id": "lane_plant_8_83_-1",
       "asset": "wwhd_nature_shrub",
-      "x": 7165,
-      "y": 7278,
+      "x": 7142,
+      "y": 7272,
       "scale": 0.8,
       "layer": "props"
     },
     {
       "id": "lane_plant_8_83_1",
       "asset": "wwhd_nature_shrub",
-      "x": 7259,
-      "y": 6832,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_8_96_1",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5675,
-      "y": 6275,
+      "x": 7239,
+      "y": 6827,
       "scale": 0.8,
       "layer": "props"
     },
@@ -8007,14 +7660,6 @@
       "asset": "wwhd_nature_wildflowers",
       "x": 7257,
       "y": 4113,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
-      "id": "lane_plant_11_5_1",
-      "asset": "wwhd_nature_shrub",
-      "x": 5825,
-      "y": 5929,
       "scale": 0.8,
       "layer": "props"
     },
@@ -8077,8 +7722,8 @@
     {
       "id": "street_lamp_0_0",
       "asset": "wwhd_lamp",
-      "x": 4175,
-      "y": 3364,
+      "x": 3727,
+      "y": 3288,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8091,8 +7736,8 @@
     {
       "id": "street_lamp_0_50",
       "asset": "wwhd_lamp",
-      "x": 5664,
-      "y": 3394,
+      "x": 6142,
+      "y": 3288,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8105,8 +7750,8 @@
     {
       "id": "street_lamp_1_0",
       "asset": "wwhd_lamp",
-      "x": 4056,
-      "y": 4964,
+      "x": 3576,
+      "y": 5088,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8119,8 +7764,8 @@
     {
       "id": "street_lamp_1_50",
       "asset": "wwhd_lamp",
-      "x": 5546,
-      "y": 4994,
+      "x": 5992,
+      "y": 5088,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8133,8 +7778,8 @@
     {
       "id": "street_lamp_2_50",
       "asset": "wwhd_lamp",
-      "x": 5366,
-      "y": 6494,
+      "x": 5812,
+      "y": 6588,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8189,8 +7834,8 @@
     {
       "id": "street_lamp_4_75",
       "asset": "wwhd_lamp",
-      "x": 4182,
-      "y": 4709,
+      "x": 3909,
+      "y": 4739,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8203,8 +7848,22 @@
     {
       "id": "street_lamp_5_25",
       "asset": "wwhd_lamp",
-      "x": 4092,
-      "y": 4478,
+      "x": 3728,
+      "y": 4486,
+      "scale": 1,
+      "layer": "props",
+      "collide": [
+        -8,
+        -8,
+        16,
+        12
+      ]
+    },
+    {
+      "id": "street_lamp_5_50",
+      "asset": "wwhd_lamp",
+      "x": 3338,
+      "y": 6399,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8217,22 +7876,8 @@
     {
       "id": "street_lamp_6_0",
       "asset": "wwhd_lamp",
-      "x": 3336,
-      "y": 3678,
-      "scale": 1,
-      "layer": "props",
-      "collide": [
-        -8,
-        -8,
-        16,
-        12
-      ]
-    },
-    {
-      "id": "street_lamp_7_0",
-      "asset": "wwhd_lamp",
-      "x": 5354,
-      "y": 3289,
+      "x": 3334,
+      "y": 3679,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8245,8 +7890,8 @@
     {
       "id": "street_lamp_7_25",
       "asset": "wwhd_lamp",
-      "x": 5448,
-      "y": 4412,
+      "x": 5608,
+      "y": 3990,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8259,8 +7904,8 @@
     {
       "id": "street_lamp_7_50",
       "asset": "wwhd_lamp",
-      "x": 5013,
-      "y": 6329,
+      "x": 5540,
+      "y": 5485,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8315,36 +7960,8 @@
     {
       "id": "street_lamp_8_100",
       "asset": "wwhd_lamp",
-      "x": 5160,
-      "y": 6197,
-      "scale": 1,
-      "layer": "props",
-      "collide": [
-        -8,
-        -8,
-        16,
-        12
-      ]
-    },
-    {
-      "id": "street_lamp_9_0",
-      "asset": "wwhd_lamp",
-      "x": 5746,
-      "y": 4294,
-      "scale": 1,
-      "layer": "props",
-      "collide": [
-        -8,
-        -8,
-        16,
-        12
-      ]
-    },
-    {
-      "id": "street_lamp_11_0",
-      "asset": "wwhd_lamp",
-      "x": 5586,
-      "y": 5587,
+      "x": 5853,
+      "y": 6382,
       "scale": 1,
       "layer": "props",
       "collide": [
@@ -8835,633 +8452,633 @@
       "id": "north_crossing",
       "points": [
         [
-          4178.8,
-          3256.0
+          3737.1,
+          3179.3
         ],
         [
-          4188.0,
-          3256.3
+          3745.8,
+          3180.1
         ],
         [
-          4198.9,
-          3257.0
+          3754.2,
+          3182.1
         ],
         [
-          4211.5,
-          3257.9
+          3763.4,
+          3184.9
         ],
         [
-          4225.7,
-          3258.9
+          3774.0,
+          3187.9
         ],
         [
-          4241.6,
-          3259.8
+          3787.0,
+          3190.5
         ],
         [
-          4259.1,
-          3260.4
+          3803.2,
+          3192.2
         ],
         [
-          4278.1,
-          3260.5
+          3823.5,
+          3192.5
         ],
         [
-          4298.7,
-          3260.0
+          3848.7,
+          3190.7
         ],
         [
-          4320.8,
-          3258.7
+          3879.6,
+          3186.5
+        ],
+        [
+          3917.1,
+          3179.3
+        ],
+        [
+          3962.1,
+          3167.8
+        ],
+        [
+          4014.3,
+          3152.0
+        ],
+        [
+          4072.5,
+          3133.0
+        ],
+        [
+          4135.7,
+          3111.9
+        ],
+        [
+          4202.7,
+          3089.6
+        ],
+        [
+          4272.6,
+          3067.4
         ],
         [
           4344.3,
-          3256.5
+          3046.3
         ],
         [
-          4369.3,
-          3252.9
+          4416.6,
+          3027.2
         ],
         [
-          4395.9,
-          3247.9
+          4488.5,
+          3011.5
         ],
         [
-          4424.1,
-          3241.9
+          4559.0,
+          3000.0
         ],
         [
-          4453.8,
-          3235.3
+          4629.8,
+          2991.9
         ],
         [
-          4485.0,
-          3228.3
+          4703.0,
+          2985.7
         ],
         [
-          4517.8,
-          3221.3
+          4778.1,
+          2981.2
         ],
         [
-          4552.1,
-          3214.6
+          4854.4,
+          2978.5
         ],
         [
-          4587.8,
-          3208.6
+          4931.3,
+          2977.6
         ],
         [
-          4625.1,
-          3203.6
+          5008.3,
+          2978.5
         ],
         [
-          4663.8,
-          3200.0
+          5084.7,
+          2981.2
         ],
         [
-          4705.2,
-          3197.3
+          5159.9,
+          2985.7
         ],
         [
-          4749.7,
-          3195.0
+          5233.3,
+          2991.9
         ],
         [
-          4796.7,
-          3193.1
+          5304.4,
+          3000.0
         ],
         [
-          4845.4,
-          3191.8
+          5375.2,
+          3011.5
         ],
         [
-          4895.2,
-          3191.1
+          5447.6,
+          3027.2
         ],
         [
-          4945.2,
-          3191.1
+          5520.5,
+          3046.3
         ],
         [
-          4994.8,
-          3191.9
+          5592.8,
+          3067.4
         ],
         [
-          5043.3,
-          3193.6
+          5663.4,
+          3089.6
         ],
         [
-          5089.9,
-          3196.3
+          5731.2,
+          3111.9
         ],
         [
-          5133.8,
-          3200.0
+          5795.0,
+          3133.0
         ],
         [
-          5176.5,
-          3205.5
+          5853.8,
+          3152.0
         ],
         [
-          5219.1,
-          3213.1
+          5906.4,
+          3167.8
         ],
         [
-          5261.5,
-          3222.2
+          5951.8,
+          3179.3
         ],
         [
-          5303.0,
-          3232.4
+          5989.5,
+          3186.5
         ],
         [
-          5343.4,
-          3243.0
+          6020.6,
+          3190.7
         ],
         [
-          5382.2,
-          3253.7
+          6045.8,
+          3192.5
         ],
         [
-          5418.9,
-          3263.9
+          6066.1,
+          3192.2
         ],
         [
-          5453.1,
-          3273.0
+          6082.2,
+          3190.5
         ],
         [
-          5484.5,
-          3280.6
+          6095.2,
+          3187.9
         ],
         [
-          5512.5,
-          3286.1
+          6105.7,
+          3184.9
         ],
         [
-          5537.2,
-          3289.5
+          6114.8,
+          3182.1
         ],
         [
-          5559.0,
-          3291.6
+          6123.2,
+          3180.1
         ],
         [
-          5578.1,
-          3292.4
-        ],
-        [
-          5594.8,
-          3292.2
-        ],
-        [
-          5609.4,
-          3291.4
-        ],
-        [
-          5622.0,
-          3290.2
-        ],
-        [
-          5633.0,
-          3288.7
-        ],
-        [
-          5642.7,
-          3287.4
-        ],
-        [
-          5651.2,
-          3286.4
-        ],
-        [
-          5658.849912126538,
-          3286
+          6131.777984934087,
+          3179.275
         ]
       ],
-      "width": 160,
+      "width": 162,
       "kind": "lane"
     },
     {
       "id": "market_crossing",
       "points": [
         [
-          4060.0,
-          4856.0
+          3586.5,
+          4979.3
         ],
         [
-          4069.2,
-          4856.3
+          3595.1,
+          4980.1
         ],
         [
-          4080.0,
-          4857.0
+          3603.6,
+          4982.1
         ],
         [
-          4092.6,
-          4857.9
+          3612.7,
+          4984.9
         ],
         [
-          4106.9,
-          4858.9
+          3623.3,
+          4987.9
         ],
         [
-          4122.8,
-          4859.8
+          3636.3,
+          4990.5
         ],
         [
-          4140.2,
-          4860.4
+          3652.6,
+          4992.2
         ],
         [
-          4159.3,
-          4860.5
+          3672.8,
+          4992.5
         ],
         [
-          4179.8,
-          4860.0
+          3698.0,
+          4990.7
         ],
         [
-          4201.9,
-          4858.7
+          3728.9,
+          4986.5
         ],
         [
-          4225.4,
-          4856.5
+          3766.5,
+          4979.3
         ],
         [
-          4250.5,
-          4852.9
+          3811.5,
+          4967.8
         ],
         [
-          4277.1,
-          4847.9
+          3863.6,
+          4952.0
         ],
         [
-          4305.2,
-          4841.9
+          3921.8,
+          4933.0
         ],
         [
-          4335.0,
-          4835.3
+          3985.0,
+          4911.9
         ],
         [
-          4366.2,
-          4828.3
+          4052.1,
+          4889.6
         ],
         [
-          4398.9,
-          4821.3
+          4122.0,
+          4867.4
         ],
         [
-          4433.2,
-          4814.6
+          4193.6,
+          4846.3
         ],
         [
-          4469.0,
-          4808.6
+          4265.9,
+          4827.2
         ],
         [
-          4506.3,
-          4803.6
+          4337.9,
+          4811.5
         ],
         [
-          4545.0,
+          4408.3,
           4800.0
         ],
         [
-          4586.3,
-          4797.3
-        ],
-        [
-          4630.8,
-          4795.0
-        ],
-        [
-          4677.8,
-          4793.1
-        ],
-        [
-          4726.6,
-          4791.8
-        ],
-        [
-          4776.3,
-          4791.1
-        ],
-        [
-          4826.4,
-          4791.1
-        ],
-        [
-          4876.0,
+          4479.1,
           4791.9
         ],
         [
-          4924.4,
-          4793.6
+          4552.3,
+          4785.7
         ],
         [
-          4971.0,
-          4796.3
+          4627.4,
+          4781.2
         ],
         [
-          5015.0,
+          4703.7,
+          4778.5
+        ],
+        [
+          4780.7,
+          4777.6
+        ],
+        [
+          4857.6,
+          4778.5
+        ],
+        [
+          4934.0,
+          4781.2
+        ],
+        [
+          5009.2,
+          4785.7
+        ],
+        [
+          5082.7,
+          4791.9
+        ],
+        [
+          5153.7,
           4800.0
         ],
         [
-          5057.6,
-          4805.5
+          5224.5,
+          4811.5
         ],
         [
-          5100.3,
-          4813.1
+          5296.9,
+          4827.2
         ],
         [
-          5142.6,
-          4822.2
+          5369.8,
+          4846.3
         ],
         [
-          5184.2,
-          4832.4
+          5442.2,
+          4867.4
         ],
         [
-          5224.6,
-          4843.0
+          5512.7,
+          4889.6
         ],
         [
-          5263.3,
-          4853.7
+          5580.5,
+          4911.9
         ],
         [
-          5300.0,
-          4863.9
+          5644.3,
+          4933.0
         ],
         [
-          5334.3,
-          4873.0
+          5703.1,
+          4952.0
         ],
         [
-          5365.6,
-          4880.6
+          5755.7,
+          4967.8
         ],
         [
-          5393.7,
-          4886.1
+          5801.1,
+          4979.3
         ],
         [
-          5418.4,
-          4889.5
+          5838.9,
+          4986.5
         ],
         [
-          5440.2,
-          4891.6
+          5869.9,
+          4990.7
         ],
         [
-          5459.3,
-          4892.4
+          5895.1,
+          4992.5
         ],
         [
-          5476.0,
-          4892.2
+          5915.4,
+          4992.2
         ],
         [
-          5490.5,
-          4891.4
+          5931.6,
+          4990.5
         ],
         [
-          5503.2,
-          4890.2
+          5944.5,
+          4987.9
         ],
         [
-          5514.2,
-          4888.7
+          5955.1,
+          4984.9
         ],
         [
-          5523.8,
-          4887.4
+          5964.1,
+          4982.1
         ],
         [
-          5532.3,
-          4886.4
+          5972.5,
+          4980.1
         ],
         [
-          5540.0,
-          4886
+          5981.11,
+          4979.275
         ]
       ],
-      "width": 160,
+      "width": 162,
       "kind": "lane"
     },
     {
       "id": "quay_crossing",
       "points": [
         [
-          3880.0,
-          6356.0
+          3406.5,
+          6479.3
         ],
         [
-          3889.2,
-          6356.3
+          3415.1,
+          6480.1
         ],
         [
-          3900.0,
-          6357.0
+          3423.6,
+          6482.1
         ],
         [
-          3912.6,
-          6357.9
+          3432.7,
+          6484.9
         ],
         [
-          3926.9,
-          6358.9
+          3443.3,
+          6487.9
         ],
         [
-          3942.8,
-          6359.8
+          3456.3,
+          6490.5
         ],
         [
-          3960.2,
-          6360.4
+          3472.6,
+          6492.2
         ],
         [
-          3979.3,
-          6360.5
+          3492.8,
+          6492.5
         ],
         [
-          3999.8,
-          6360.0
+          3518.0,
+          6490.7
         ],
         [
-          4021.9,
-          6358.7
+          3548.9,
+          6486.5
         ],
         [
-          4045.4,
-          6356.5
+          3586.5,
+          6479.3
         ],
         [
-          4070.5,
-          6352.9
+          3631.5,
+          6467.8
         ],
         [
-          4097.1,
-          6347.9
+          3683.6,
+          6452.0
         ],
         [
-          4125.2,
-          6341.9
+          3741.8,
+          6433.0
         ],
         [
-          4155.0,
-          6335.3
+          3805.0,
+          6411.9
         ],
         [
-          4186.2,
-          6328.3
+          3872.1,
+          6389.6
         ],
         [
-          4218.9,
-          6321.3
+          3942.0,
+          6367.4
         ],
         [
-          4253.2,
-          6314.6
+          4013.6,
+          6346.3
         ],
         [
-          4289.0,
-          6308.6
+          4085.9,
+          6327.2
         ],
         [
-          4326.3,
-          6303.6
+          4157.9,
+          6311.5
         ],
         [
-          4365.0,
+          4228.3,
           6300.0
         ],
         [
-          4406.3,
-          6297.3
-        ],
-        [
-          4450.8,
-          6295.0
-        ],
-        [
-          4497.8,
-          6293.1
-        ],
-        [
-          4546.6,
-          6291.8
-        ],
-        [
-          4596.3,
-          6291.1
-        ],
-        [
-          4646.4,
-          6291.1
-        ],
-        [
-          4696.0,
+          4299.1,
           6291.9
         ],
         [
-          4744.4,
-          6293.6
+          4372.3,
+          6285.7
         ],
         [
-          4791.0,
-          6296.3
+          4447.4,
+          6281.2
         ],
         [
-          4835.0,
+          4523.7,
+          6278.5
+        ],
+        [
+          4600.7,
+          6277.6
+        ],
+        [
+          4677.6,
+          6278.5
+        ],
+        [
+          4754.0,
+          6281.2
+        ],
+        [
+          4829.2,
+          6285.7
+        ],
+        [
+          4902.7,
+          6291.9
+        ],
+        [
+          4973.7,
           6300.0
         ],
         [
-          4877.6,
-          6305.5
+          5044.5,
+          6311.5
         ],
         [
-          4920.3,
-          6313.1
+          5116.9,
+          6327.2
         ],
         [
-          4962.6,
-          6322.2
+          5189.8,
+          6346.3
         ],
         [
-          5004.2,
-          6332.4
+          5262.2,
+          6367.4
         ],
         [
-          5044.6,
-          6343.0
+          5332.7,
+          6389.6
         ],
         [
-          5083.3,
-          6353.7
+          5400.5,
+          6411.9
         ],
         [
-          5120.0,
-          6363.9
+          5464.3,
+          6433.0
         ],
         [
-          5154.3,
-          6373.0
+          5523.1,
+          6452.0
         ],
         [
-          5185.6,
-          6380.6
+          5575.7,
+          6467.8
         ],
         [
-          5213.7,
-          6386.1
+          5621.1,
+          6479.3
         ],
         [
-          5238.4,
-          6389.5
+          5658.9,
+          6486.5
         ],
         [
-          5260.2,
-          6391.6
+          5689.9,
+          6490.7
         ],
         [
-          5279.3,
-          6392.4
+          5715.1,
+          6492.5
         ],
         [
-          5296.0,
-          6392.2
+          5735.4,
+          6492.2
         ],
         [
-          5310.5,
-          6391.4
+          5751.6,
+          6490.5
         ],
         [
-          5323.2,
-          6390.2
+          5764.5,
+          6487.9
         ],
         [
-          5334.2,
-          6388.7
+          5775.1,
+          6484.9
         ],
         [
-          5343.8,
-          6387.4
+          5784.1,
+          6482.1
         ],
         [
-          5352.3,
-          6386.4
+          5792.5,
+          6480.1
         ],
         [
-          5360.0,
-          6386
+          5801.11,
+          6479.275
         ]
       ],
-      "width": 160,
+      "width": 162,
       "kind": "lane"
     },
     {
@@ -10083,84 +9700,84 @@
           4100.0
         ],
         [
-          3952.1,
-          4130.5
+          3955.1,
+          4129.7
         ],
         [
-          4001.2,
-          4174.8
+          4012.0,
+          4171.9
         ],
         [
-          4047.2,
-          4229.8
+          4068.5,
+          4224.2
         ],
         [
-          4090.0,
-          4292.4
+          4122.4,
+          4283.8
         ],
         [
-          4129.4,
-          4359.4
+          4171.5,
+          4348.2
         ],
         [
-          4165.2,
-          4427.6
+          4213.7,
+          4414.7
         ],
         [
-          4197.3,
-          4493.9
+          4246.9,
+          4480.7
         ],
         [
-          4225.6,
-          4555.2
+          4268.7,
+          4543.7
         ],
         [
-          4249.9,
-          4608.3
+          4277.2,
+          4601.0
         ],
         [
           4270.0,
           4650.0
         ],
         [
-          4284.3,
-          4681.9
+          4241.2,
+          4693.3
         ],
         [
-          4292.2,
-          4708.0
+          4189.7,
+          4735.2
         ],
         [
-          4294.6,
-          4729.1
+          4120.7,
+          4775.4
         ],
         [
-          4292.9,
-          4746.0
+          4039.5,
+          4813.4
         ],
         [
-          4288.1,
-          4759.4
+          3951.1,
+          4849.0
         ],
         [
-          4281.5,
-          4770.0
+          3860.9,
+          4881.9
         ],
         [
-          4274.2,
-          4778.6
+          3774.1,
+          4911.6
         ],
         [
-          4267.4,
-          4786.0
+          3695.9,
+          4938.0
         ],
         [
-          4262.3,
-          4792.9
+          3631.4,
+          4960.7
         ],
         [
-          4260.0,
-          4800
+          3586.0,
+          4979.275
         ]
       ],
       "width": 180,
@@ -10170,284 +9787,284 @@
       "id": "west_riverwalk",
       "points": [
         [
-          4378.8,
-          3200.0
+          3736.7,
+          3179.3
         ],
         [
-          4361.0,
-          3216.5
+          3759.9,
+          3197.1
         ],
         [
-          4336.5,
-          3236.0
+          3791.9,
+          3218.4
         ],
         [
-          4306.9,
-          3258.5
+          3830.4,
+          3243.1
         ],
         [
-          4274.0,
-          3284.0
+          3873.3,
+          3271.1
         ],
         [
-          4239.4,
-          3312.5
+          3918.3,
+          3302.1
         ],
         [
-          4204.8,
-          3344.0
+          3963.4,
+          3336.2
         ],
         [
-          4171.9,
-          3378.5
+          4006.3,
+          3373.2
         ],
         [
-          4142.4,
-          3416.0
+          4044.8,
+          3412.8
         ],
         [
-          4117.8,
-          3456.5
+          4076.7,
+          3455.2
         ],
         [
           4100.0,
           3500.0
         ],
         [
-          4088.0,
+          4117.0,
           3547.4
         ],
         [
-          4079.6,
-          3599.2
+          4131.5,
+          3597.7
         ],
         [
-          4074.5,
-          3654.8
+          4142.9,
+          3650.7
         ],
         [
-          4072.2,
-          3713.6
+          4150.8,
+          3706.5
         ],
         [
-          4072.6,
-          3775.0
+          4154.8,
+          3765.1
         ],
         [
-          4075.1,
-          3838.4
+          4154.4,
+          3826.5
         ],
         [
-          4079.5,
-          3903.2
+          4149.2,
+          3890.7
         ],
         [
-          4085.3,
-          3968.8
+          4138.7,
+          3957.7
         ],
         [
-          4092.3,
-          4034.6
+          4122.5,
+          4027.4
         ],
         [
           4100.0,
           4100.0
         ],
         [
-          4111.2,
-          4166.2
+          4065.0,
+          4178.5
         ],
         [
-          4127.7,
-          4234.4
+          4014.4,
+          4264.5
         ],
         [
-          4147.9,
-          4304.2
+          3952.8,
+          4356.1
         ],
         [
-          4170.2,
-          4375.2
+          3884.5,
+          4451.2
         ],
         [
-          4193.1,
-          4446.9
+          3814.0,
+          4547.7
         ],
         [
-          4215.0,
-          4518.8
+          3745.9,
+          4643.6
         ],
         [
-          4234.2,
-          4590.5
+          3684.5,
+          4736.7
         ],
         [
-          4249.1,
-          4661.6
+          3634.4,
+          4825.1
         ],
         [
-          4258.3,
-          4731.6
+          3600.1,
+          4906.6
         ],
         [
-          4260.0,
-          4800.0
+          3586.0,
+          4979.3
         ],
         [
-          4252.9,
-          4866.1
+          3597.8,
+          5040.4
         ],
         [
-          4237.8,
-          4930.0
+          3633.9,
+          5090.6
         ],
         [
-          4216.6,
-          4992.4
+          3688.2,
+          5132.9
         ],
         [
-          4191.1,
-          5054.0
+          3754.4,
+          5170.2
         ],
         [
-          4163.1,
-          5115.6
+          3826.1,
+          5205.3
         ],
         [
-          4134.5,
-          5178.0
+          3897.2,
+          5241.1
         ],
         [
-          4107.0,
-          5241.9
+          3961.4,
+          5280.6
         ],
         [
-          4082.6,
-          5308.0
+          4012.5,
+          5326.6
         ],
         [
-          4062.9,
-          5377.1
+          4044.1,
+          5382.1
         ],
         [
           4050.0,
           5450.0
         ],
         [
-          4049.6,
-          5529.4
+          4030.8,
+          5534.4
         ],
         [
-          4063.2,
-          5616.0
+          3993.1,
+          5634.6
         ],
         [
-          4085.8,
-          5707.6
+          3940.2,
+          5746.3
         ],
         [
-          4112.4,
-          5802.0
+          3875.2,
+          5865.1
         ],
         [
-          4138.1,
-          5896.9
+          3801.1,
+          5986.5
         ],
         [
-          4158.0,
-          5990.0
+          3721.2,
+          6106.2
         ],
         [
-          4167.1,
-          6079.1
+          3638.7,
+          6219.7
         ],
         [
-          4160.4,
-          6162.0
+          3556.5,
+          6322.6
         ],
         [
-          4133.0,
-          6236.4
+          3477.9,
+          6410.6
         ],
         [
-          4080.0,
-          6300.0
+          3406.0,
+          6479.3
         ],
         [
-          3994.7,
-          6354.8
+          3336.5,
+          6529.8
         ],
         [
-          3878.6,
-          6404.0
+          3263.9,
+          6567.5
         ],
         [
-          3738.8,
-          6447.8
+          3189.1,
+          6593.9
         ],
         [
-          3582.5,
-          6486.0
+          3113.4,
+          6610.8
         ],
         [
-          3416.9,
-          6518.8
+          3037.8,
+          6619.6
         ],
         [
-          3249.1,
-          6546.0
+          2963.3,
+          6622.0
         ],
         [
-          3086.4,
-          6567.8
+          2891.3,
+          6619.7
         ],
         [
-          2935.8,
-          6584.0
+          2822.6,
+          6614.1
         ],
         [
-          2804.7,
-          6594.8
+          2758.5,
+          6607.0
         ],
         [
           2700.0,
           6600.0
         ],
         [
-          2618.5,
-          6596.1
+          2645.8,
+          6588.9
         ],
         [
-          2550.9,
-          6581.2
+          2594.0,
+          6569.7
         ],
         [
-          2495.4,
-          6557.6
+          2544.9,
+          6544.4
         ],
         [
-          2450.2,
-          6527.6
+          2498.8,
+          6514.7
         ],
         [
-          2413.8,
-          6493.8
+          2455.9,
+          6482.5
         ],
         [
-          2384.2,
-          6458.4
+          2416.5,
+          6449.8
         ],
         [
-          2359.7,
-          6423.9
+          2381.0,
+          6418.3
         ],
         [
-          2338.7,
-          6392.8
+          2349.5,
+          6389.9
         ],
         [
-          2319.4,
-          6367.4
+          2322.4,
+          6366.5
         ],
         [
           2300,
@@ -10465,84 +10082,84 @@
           3550.0
         ],
         [
-          3343.1,
-          3537.9
+          3346.0,
+          3538.0
         ],
         [
-          3400.3,
-          3522.0
+          3410.6,
+          3522.3
         ],
         [
-          3468.7,
-          3503.1
+          3488.9,
+          3503.8
         ],
         [
-          3545.0,
-          3482.0
+          3575.8,
+          3483.0
         ],
         [
-          3626.3,
-          3459.4
+          3666.5,
+          3460.7
         ],
         [
-          3709.5,
-          3436.0
+          3755.8,
+          3437.5
         ],
         [
-          3791.6,
-          3412.6
+          3838.8,
+          3414.1
         ],
         [
-          3869.4,
-          3390.0
+          3910.5,
+          3391.3
         ],
         [
-          3939.9,
-          3368.9
+          3965.9,
+          3369.7
         ],
         [
           4000.0,
           3350.0
         ],
         [
-          4052.6,
-          3332.3
+          4011.5,
+          3331.0
         ],
         [
-          4102.4,
-          3314.4
+          4004.8,
+          3311.2
         ],
         [
-          4149.2,
-          3296.6
+          3983.5,
+          3291.3
         ],
         [
-          4192.8,
-          3279.2
+          3951.4,
+          3271.4
         ],
         [
-          4233.2,
-          3262.5
+          3912.1,
+          3252.1
         ],
         [
-          4270.0,
-          3246.8
+          3869.3,
+          3233.9
         ],
         [
-          4303.2,
-          3232.4
+          3826.7,
+          3217.0
         ],
         [
-          4332.5,
-          3219.6
+          3787.9,
+          3202.0
         ],
         [
-          4357.8,
-          3208.7
+          3756.7,
+          3189.3
         ],
         [
-          4378.849912126538,
-          3200
+          3736.667984934087,
+          3179.275
         ]
       ],
       "width": 210,
@@ -10552,244 +10169,284 @@
       "id": "east_riverwalk",
       "points": [
         [
-          5418.8,
-          3200.0
+          6131.7,
+          3179.3
         ],
         [
-          5450.1,
-          3222.9
+          6104.3,
+          3191.8
         ],
         [
-          5493.6,
-          3251.2
+          6066.9,
+          3207.2
         ],
         [
-          5546.1,
-          3284.3
+          6021.9,
+          3225.2
         ],
         [
-          5604.6,
-          3321.6
+          5971.8,
+          3245.5
         ],
         [
-          5665.7,
-          3362.5
+          5919.0,
+          3267.8
         ],
         [
-          5726.3,
-          3406.4
+          5865.9,
+          3291.8
         ],
         [
-          5783.2,
-          3452.7
+          5815.0,
+          3317.3
         ],
         [
-          5833.3,
-          3500.8
+          5768.8,
+          3344.0
         ],
         [
-          5873.3,
-          3550.1
+          5729.7,
+          3371.7
         ],
         [
-          5900.0,
-          3600.0
+          5700.0,
+          3400.0
         ],
         [
-          5915.3,
-          3651.9
+          5678.6,
+          3429.3
         ],
         [
-          5923.6,
-          3707.2
+          5662.4,
+          3460.1
         ],
         [
-          5925.3,
-          3765.3
+          5650.6,
+          3492.3
         ],
         [
-          5921.0,
-          3825.6
+          5642.9,
+          3525.9
         ],
         [
-          5911.3,
-          3887.5
+          5638.6,
+          3560.7
         ],
         [
-          5896.7,
-          3950.4
+          5637.3,
+          3596.6
         ],
         [
-          5877.7,
-          4013.7
+          5638.3,
+          3633.6
         ],
         [
-          5854.9,
-          4076.8
+          5641.1,
+          3671.5
         ],
         [
-          5828.8,
-          4139.1
+          5645.2,
+          3710.4
+        ],
+        [
+          5650.0,
+          3750.0
+        ],
+        [
+          5656.8,
+          3789.5
+        ],
+        [
+          5666.7,
+          3828.3
+        ],
+        [
+          5679.3,
+          3867.3
+        ],
+        [
+          5694.1,
+          3907.0
+        ],
+        [
+          5710.6,
+          3948.2
+        ],
+        [
+          5728.2,
+          3991.5
+        ],
+        [
+          5746.4,
+          4037.6
+        ],
+        [
+          5764.8,
+          4087.3
+        ],
+        [
+          5782.8,
+          4141.2
         ],
         [
           5800.0,
           4200.0
         ],
         [
-          5762.4,
-          4259.6
+          5819.1,
+          4265.8
         ],
         [
-          5712.0,
-          4318.4
+          5842.4,
+          4338.9
         ],
         [
-          5652.6,
-          4376.9
+          5868.1,
+          4417.7
         ],
         [
-          5588.0,
-          4435.2
+          5894.7,
+          4500.4
         ],
         [
-          5521.9,
-          4493.8
+          5920.6,
+          4585.2
         ],
         [
-          5458.0,
-          4552.8
+          5944.0,
+          4670.4
         ],
         [
-          5400.1,
-          4612.6
+          5963.4,
+          4754.1
         ],
         [
-          5352.0,
-          4673.6
+          5977.1,
+          4834.7
         ],
         [
-          5317.4,
-          4735.9
+          5983.5,
+          4910.3
         ],
         [
-          5300.0,
-          4800.0
+          5981.0,
+          4979.3
         ],
         [
-          5304.5,
-          4865.5
+          5966.5,
+          5039.8
         ],
         [
-          5329.7,
-          4932.0
+          5939.9,
+          5092.6
         ],
         [
-          5370.2,
-          4999.5
+          5904.1,
+          5140.1
         ],
         [
-          5421.0,
-          5068.0
+          5862.3,
+          5184.2
         ],
         [
-          5476.9,
-          5137.5
+          5817.4,
+          5227.1
         ],
         [
-          5532.6,
-          5208.0
+          5772.3,
+          5271.1
         ],
         [
-          5582.9,
-          5279.5
+          5730.0,
+          5318.2
         ],
         [
-          5622.7,
-          5352.0
+          5693.5,
+          5370.6
         ],
         [
-          5646.8,
-          5425.5
+          5665.9,
+          5430.5
         ],
         [
           5650.0,
           5500.0
         ],
         [
-          5626.3,
-          5577.5
+          5645.4,
+          5582.5
         ],
         [
-          5577.8,
-          5659.2
+          5648.6,
+          5677.8
         ],
         [
-          5511.3,
-          5743.7
+          5658.4,
+          5782.4
         ],
         [
-          5433.7,
-          5829.6
+          5673.4,
+          5892.7
         ],
         [
-          5351.9,
-          5915.6
+          5692.4,
+          6005.3
         ],
         [
-          5272.7,
-          6000.4
+          5714.0,
+          6116.6
         ],
         [
-          5203.1,
-          6082.6
+          5737.0,
+          6223.1
         ],
         [
-          5149.8,
-          6160.8
+          5760.0,
+          6321.4
         ],
         [
-          5119.9,
-          6233.7
+          5781.8,
+          6408.0
         ],
         [
-          5120.0,
-          6300.0
+          5801.0,
+          6479.3
         ],
         [
-          5154.9,
-          6361.2
+          5819.9,
+          6536.3
         ],
         [
-          5219.8,
-          6419.6
+          5840.9,
+          6583.1
         ],
         [
-          5308.1,
-          6474.9
+          5863.4,
+          6621.1
         ],
         [
-          5412.7,
-          6526.8
+          5886.7,
+          6651.6
         ],
         [
-          5526.9,
-          6575.0
+          5909.9,
+          6675.8
         ],
         [
-          5643.7,
-          6619.2
+          5932.4,
+          6695.2
         ],
         [
-          5756.3,
-          6659.1
+          5953.4,
+          6711.0
         ],
         [
-          5857.8,
-          6694.4
+          5972.2,
+          6724.5
         ],
         [
-          5941.3,
-          6724.8
+          5987.9,
+          6737.1
         ],
         [
           6000,
@@ -10803,84 +10460,84 @@
       "id": "east_loop",
       "points": [
         [
-          5418.8,
-          3200.0
+          6131.7,
+          3179.3
         ],
         [
-          5482.9,
-          3188.7
+          6150.1,
+          3169.3
         ],
         [
-          5564.8,
-          3172.0
+          6169.3,
+          3154.4
         ],
         [
-          5661.6,
-          3151.5
+          6190.5,
+          3136.1
         ],
         [
-          5770.2,
-          3128.8
+          6215.0,
+          3115.9
         ],
         [
-          5887.5,
-          3105.6
+          6244.0,
+          3095.3
         ],
         [
-          6010.7,
-          3083.6
+          6278.7,
+          3075.8
         ],
         [
-          6136.5,
-          3064.4
+          6320.4,
+          3059.0
         ],
         [
-          6262.1,
-          3049.6
+          6370.4,
+          3046.4
         ],
         [
-          6384.2,
-          3040.9
+          6429.9,
+          3039.6
         ],
         [
           6500.0,
           3040.0
         ],
         [
-          6612.8,
-          3045.6
+          6583.9,
+          3046.5
         ],
         [
-          6727.5,
-          3055.4
+          6681.9,
+          3056.8
         ],
         [
-          6843.7,
-          3069.3
+          6791.3,
+          3070.8
         ],
         [
-          6960.8,
-          3087.1
+          6909.5,
+          3088.6
         ],
         [
-          7078.2,
-          3108.8
+          7033.6,
+          3110.0
         ],
         [
-          7195.3,
-          3134.1
+          7161.1,
+          3135.1
         ],
         [
-          7311.7,
-          3163.0
+          7289.2,
+          3163.6
         ],
         [
-          7426.6,
-          3195.4
+          7415.2,
+          3195.7
         ],
         [
-          7539.6,
-          3231.1
+          7536.3,
+          3231.2
         ],
         [
           7650.0,
@@ -11127,84 +10784,84 @@
           7090.0
         ],
         [
-          7401.7,
-          7084.2
+          7398.6,
+          7083.4
         ],
         [
-          7306.1,
-          7072.4
+          7295.2,
+          7069.5
         ],
         [
-          7212.0,
-          7055.1
+          7190.5,
+          7049.4
         ],
         [
-          7118.2,
-          7032.8
+          7085.6,
+          7024.2
         ],
         [
-          7023.8,
-          7006.2
+          6981.2,
+          6995.0
         ],
         [
-          6927.4,
-          6976.0
+          6878.3,
+          6963.1
         ],
         [
-          6827.9,
-          6942.7
+          6777.9,
+          6929.5
         ],
         [
-          6724.3,
-          6906.8
+          6680.7,
+          6895.3
         ],
         [
-          6615.4,
-          6869.0
+          6587.8,
+          6861.8
         ],
         [
           6500.0,
           6830.0
         ],
         [
-          6371.2,
-          6785.5
+          6414.8,
+          6797.0
         ],
         [
-          6226.2,
-          6732.8
+          6329.8,
+          6760.0
         ],
         [
-          6070.5,
-          6674.2
+          6246.2,
+          6720.4
         ],
         [
-          5909.1,
-          6612.0
+          6165.2,
+          6679.4
         ],
         [
-          5747.5,
-          6548.8
+          6088.0,
+          6638.4
         ],
         [
-          5590.9,
-          6486.8
+          6015.8,
+          6598.7
         ],
         [
-          5444.5,
-          6428.6
+          5949.8,
+          6561.6
         ],
         [
-          5313.8,
-          6376.4
+          5891.2,
+          6528.4
         ],
         [
-          5203.8,
-          6332.8
+          5841.2,
+          6500.6
         ],
         [
-          5120.0,
-          6300
+          5801.0,
+          6479.275
         ]
       ],
       "width": 165,
@@ -11647,84 +11304,84 @@
       "id": "lake_mansion_trail",
       "points": [
         [
-          5418.8,
-          3200.0
+          6131.7,
+          3179.3
         ],
         [
-          5463.0,
-          3171.2
+          6130.2,
+          3151.8
         ],
         [
-          5516.8,
-          3131.6
+          6121.3,
+          3114.0
         ],
         [
-          5579.4,
-          3083.9
+          6108.3,
+          3068.5
         ],
         [
-          5650.2,
-          3030.8
+          6095.0,
+          3017.9
         ],
         [
-          5728.2,
-          2975.0
+          6084.6,
+          2964.6
         ],
         [
-          5812.7,
-          2919.2
+          6080.7,
+          2911.4
         ],
         [
-          5902.9,
-          2866.1
+          6086.8,
+          2860.8
         ],
         [
-          5998.1,
-          2818.4
+          6106.4,
+          2815.2
         ],
         [
-          6097.4,
-          2778.8
+          6143.0,
+          2777.5
         ],
         [
           6200.0,
           2750.0
         ],
         [
-          6310.3,
-          2733.8
+          6281.5,
+          2734.6
         ],
         [
-          6431.6,
-          2728.4
+          6386.0,
+          2729.7
         ],
         [
-          6561.3,
-          2731.1
+          6508.9,
+          2732.6
         ],
         [
-          6697.0,
-          2739.2
+          6645.7,
+          2740.7
         ],
         [
-          6836.3,
-          2750.0
+          6791.8,
+          2751.3
         ],
         [
-          6976.7,
-          2760.8
+          6942.5,
+          2761.8
         ],
         [
-          7115.7,
-          2768.9
+          7093.3,
+          2769.6
         ],
         [
-          7250.9,
-          2771.6
+          7239.5,
+          2771.9
         ],
         [
-          7379.8,
-          2766.2
+          7376.6,
+          2766.3
         ],
         [
           7500.0,
@@ -13092,84 +12749,84 @@
           3590.0
         ],
         [
+          6071.3,
+          3593.7
+        ],
+        [
+          6071.5,
+          3597.7
+        ],
+        [
+          6071.8,
+          3602.3
+        ],
+        [
+          6072.1,
+          3607.6
+        ],
+        [
+          6072.3,
+          3613.6
+        ],
+        [
+          6072.5,
+          3620.6
+        ],
+        [
+          6072.5,
+          3628.5
+        ],
+        [
+          6072.3,
+          3637.7
+        ],
+        [
           6071.9,
-          3594.3
-        ],
-        [
-          6073.6,
-          3599.9
-        ],
-        [
-          6075.9,
-          3606.6
-        ],
-        [
-          6078.3,
-          3614.1
-        ],
-        [
-          6080.5,
-          3622.0
-        ],
-        [
-          6081.9,
-          3630.3
-        ],
-        [
-          6082.1,
-          3638.5
-        ],
-        [
-          6080.7,
-          3646.3
-        ],
-        [
-          6077.2,
-          3653.6
+          3648.1
         ],
         [
           6071.2,
           3660.0
         ],
         [
-          6061.8,
-          3665.9
+          6070.2,
+          3674.5
         ],
         [
-          6048.8,
-          3671.7
+          6068.7,
+          3692.2
         ],
         [
-          6033.2,
-          3677.3
+          6066.9,
+          3712.2
         ],
         [
-          6015.7,
-          3682.8
+          6064.9,
+          3733.6
         ],
         [
-          5997.4,
-          3688.0
+          6062.8,
+          3755.5
         ],
         [
-          5979.1,
-          3692.8
+          6060.7,
+          3777.1
         ],
         [
-          5961.7,
-          3697.2
+          6058.7,
+          3797.5
         ],
         [
-          5946.0,
-          3701.1
+          6057.0,
+          3815.7
         ],
         [
-          5933.0,
-          3704.5
+          6055.5,
+          3830.9
         ],
         [
-          5923.6,
-          3707.2
+          6054.4,
+          3842.3
         ]
       ],
       "width": 90,
@@ -14184,84 +13841,84 @@
           6450.0
         ],
         [
-          5980.3,
-          6454.1
+          5980.1,
+          6454.3
         ],
         [
-          5981.1,
-          6459.2
+          5980.5,
+          6460.0
+        ],
+        [
+          5981.0,
+          6466.7
+        ],
+        [
+          5981.4,
+          6474.3
+        ],
+        [
+          5981.9,
+          6482.4
         ],
         [
           5982.2,
-          6465.2
+          6490.7
         ],
         [
-          5983.4,
-          6471.9
+          5982.2,
+          6498.9
         ],
         [
-          5984.4,
-          6479.2
+          5981.9,
+          6506.7
         ],
         [
-          5985.1,
-          6487.1
-        ],
-        [
-          5985.2,
-          6495.2
-        ],
-        [
-          5984.5,
-          6503.5
-        ],
-        [
-          5982.9,
-          6511.8
+          5981.2,
+          6513.8
         ],
         [
           5980.0,
           6520.0
         ],
         [
-          5975.5,
-          6528.7
+          5978.1,
+          6525.5
         ],
         [
-          5969.2,
-          6538.5
+          5975.4,
+          6530.8
         ],
         [
-          5961.7,
-          6548.9
+          5972.2,
+          6535.9
         ],
         [
-          5953.3,
-          6559.6
+          5968.6,
+          6540.7
         ],
         [
-          5944.6,
-          6570.4
+          5964.9,
+          6545.2
         ],
         [
-          5935.8,
-          6580.8
+          5961.2,
+          6549.3
         ],
         [
-          5927.4,
-          6590.5
+          5957.6,
+          6553.1
         ],
         [
-          5919.9,
-          6599.1
+          5954.4,
+          6556.4
         ],
         [
-          5913.6,
-          6606.4
+          5951.7,
+          6559.3
         ],
         [
-          5909.1,
-          6612.0
+          5949.8,
+          6561.6
         ]
       ],
       "width": 90,
@@ -14275,84 +13932,84 @@
           6630.0
         ],
         [
-          6770.2,
-          6633.5
-        ],
-        [
-          6770.7,
-          6637.3
+          6770.4,
+          6633.6
         ],
         [
           6771.4,
-          6641.5
+          6637.5
         ],
         [
-          6772.2,
-          6646.4
+          6772.8,
+          6641.9
         ],
         [
-          6772.9,
-          6652.1
+          6774.3,
+          6646.9
         ],
         [
-          6773.3,
-          6658.8
+          6775.6,
+          6652.8
         ],
         [
-          6773.4,
-          6666.7
+          6776.4,
+          6659.6
         ],
         [
-          6772.9,
-          6676.1
+          6776.6,
+          6667.6
         ],
         [
-          6771.9,
-          6687.1
+          6775.7,
+          6676.9
+        ],
+        [
+          6773.6,
+          6687.6
         ],
         [
           6770.0,
           6700.0
         ],
         [
-          6767.1,
-          6716.1
+          6764.3,
+          6715.3
         ],
         [
-          6763.1,
-          6735.9
+          6756.4,
+          6734.2
         ],
         [
-          6758.2,
-          6758.5
+          6747.0,
+          6755.5
         ],
         [
-          6752.8,
-          6782.8
+          6736.4,
+          6778.5
         ],
         [
-          6747.1,
-          6807.8
+          6725.4,
+          6802.0
         ],
         [
-          6741.5,
-          6832.4
+          6714.3,
+          6825.2
         ],
         [
-          6736.1,
-          6855.7
+          6703.7,
+          6847.1
         ],
         [
-          6731.2,
-          6876.5
+          6694.3,
+          6866.7
         ],
         [
-          6727.2,
-          6893.9
+          6686.4,
+          6883.1
         ],
         [
-          6724.3,
-          6906.8
+          6680.7,
+          6895.3
         ]
       ],
       "width": 90,
@@ -15458,84 +15115,84 @@
           2700.0
         ],
         [
-          3549.2,
-          2702.5
+          3546.5,
+          2702.6
         ],
         [
-          3557.2,
-          2703.8
+          3547.8,
+          2704.1
         ],
         [
-          3567.6,
-          2704.5
+          3549.1,
+          2705.2
         ],
         [
-          3578.8,
-          2705.7
+          3550.6,
+          2706.7
         ],
         [
-          3589.4,
-          2708.1
+          3552.7,
+          2709.4
         ],
         [
-          3597.8,
-          2712.7
+          3555.6,
+          2714.2
         ],
         [
-          3602.6,
-          2720.3
+          3559.5,
+          2721.9
         ],
         [
-          3602.2,
-          2731.8
+          3564.7,
+          2733.2
         ],
         [
-          3595.2,
-          2748.1
+          3571.4,
+          2748.9
         ],
         [
           3580.0,
           2770.0
         ],
         [
-          3553.9,
-          2800.4
+          3591.4,
+          2799.0
         ],
         [
-          3516.9,
-          2839.8
+          3606.1,
+          2836.7
         ],
         [
-          3471.6,
-          2886.1
+          3623.0,
+          2880.7
         ],
         [
-          3420.8,
-          2936.7
+          3641.4,
+          2928.9
         ],
         [
-          3367.2,
-          2989.4
+          3660.5,
+          2979.0
         ],
         [
-          3313.4,
-          3041.7
+          3679.4,
+          3028.7
         ],
         [
-          3262.0,
-          3091.3
+          3697.4,
+          3075.9
         ],
         [
-          3215.9,
-          3135.8
+          3713.4,
+          3118.2
         ],
         [
-          3177.7,
-          3172.8
+          3726.8,
+          3153.4
         ],
         [
-          3150.0,
-          3200.0
+          3736.667984934087,
+          3179.275
         ]
       ],
       "width": 110,
@@ -16273,296 +15930,380 @@
   ],
   "blockers": [
     {
-      "id": "north_north_rail",
-      "x": 4641.349912126538,
-      "y": 3099,
-      "w": 515,
-      "h": 8
-    },
-    {
-      "id": "north_south_rail",
-      "x": 4599.349912126538,
-      "y": 3299.1705374917055,
-      "w": 599,
-      "h": 8
-    },
-    {
-      "id": "north_ramp_edge_wwhd_stone_bridge_approach_west0",
+      "id": "north_far_rail_0",
       "points": [
         [
-          4654.932153334235,
-          3100.877239548772
+          3923.0771316990845,
+          3097.4535454648353
         ],
         [
-          4357.673526924149,
-          3160.3289648307896
+          4541.197131699084,
+          2901.5135454648353
         ],
         [
-          4357.673526924149,
-          3168.3289648307896
+          4530.318838169091,
+          2867.196454535165
         ],
         [
-          4654.932153334235,
-          3108.877239548772
+          3912.1988381690903,
+          3063.136454535165
         ]
       ]
     },
     {
-      "id": "north_ramp_edge_wwhd_stone_bridge_approach_west1",
+      "id": "north_far_rail_1",
       "points": [
         [
-          4672.76767091884,
-          3291.122760451228
+          4535.757984934087,
+          2902.355
         ],
         [
-          4330.920250547241,
-          3344.629313205043
+          5318.507984934087,
+          2902.355
         ],
         [
-          4330.920250547241,
-          3352.629313205043
+          5318.507984934087,
+          2866.355
         ],
         [
-          4672.76767091884,
-          3299.122760451228
+          4535.757984934087,
+          2866.355
         ]
       ]
     },
     {
-      "id": "north_ramp_edge_wwhd_stone_bridge_approach_east0",
+      "id": "north_far_rail_2",
       "points": [
         [
-          5144.721084749535,
-          3100.877239548772
+          5313.171933935278,
+          2901.545885949773
         ],
         [
-          5488.974884477788,
-          3176.9754479097546
+          5944.421933935278,
+          3097.485885949773
         ],
         [
-          5488.974884477788,
-          3184.9754479097546
+          5955.094035932897,
+          3063.104114050227
         ],
         [
-          5144.721084749535,
-          3108.877239548772
+          5323.844035932897,
+          2867.164114050227
         ]
       ]
     },
     {
-      "id": "north_ramp_edge_wwhd_stone_bridge_approach_east1",
+      "id": "north_near_rail_0",
       "points": [
         [
-          5122.97873950354,
-          3291.122760451228
+          3883.3217167478024,
+          3295.790281113977
         ],
         [
-          5536.083299177443,
-          3387.1514519543716
+          4519.621716747803,
+          3148.330281113977
         ],
         [
-          5536.083299177443,
-          3395.1514519543716
+          4511.494253120372,
+          3113.259718886023
         ],
         [
-          5122.97873950354,
-          3299.122760451228
+          3875.194253120372,
+          3260.719718886023
         ]
       ]
     },
     {
-      "id": "market_north_rail",
-      "x": 4522.5,
-      "y": 4699,
-      "w": 515,
-      "h": 8
-    },
-    {
-      "id": "market_south_rail",
-      "x": 4480.5,
-      "y": 4899.1705374917055,
-      "w": 599,
-      "h": 8
-    },
-    {
-      "id": "market_ramp_edge_wwhd_stone_bridge_approach_west0",
+      "id": "north_near_rail_1",
       "points": [
         [
-          4536.082241207698,
-          4700.877239548772
+          4515.5579849340875,
+          3148.795
         ],
         [
-          4238.823614797611,
-          4760.32896483079
+          5348.8079849340875,
+          3148.795
         ],
         [
-          4238.823614797611,
-          4768.32896483079
+          5348.8079849340875,
+          3112.795
         ],
         [
-          4536.082241207698,
-          4708.877239548772
+          4515.5579849340875,
+          3112.795
         ]
       ]
     },
     {
-      "id": "market_ramp_edge_wwhd_stone_bridge_approach_west1",
+      "id": "north_near_rail_2",
       "points": [
         [
-          4553.917758792302,
-          4891.122760451228
+          5344.744253120372,
+          3148.330281113977
         ],
         [
-          4212.070338420704,
-          4944.629313205043
+          5981.044253120373,
+          3295.790281113977
         ],
         [
-          4212.070338420704,
-          4952.629313205043
+          5989.171716747803,
+          3260.719718886023
         ],
         [
-          4553.917758792302,
-          4899.122760451228
+          5352.871716747803,
+          3113.259718886023
         ]
       ]
     },
     {
-      "id": "market_ramp_edge_wwhd_stone_bridge_approach_east0",
+      "id": "market_far_rail_0",
       "points": [
         [
-          5025.871172622998,
-          4700.877239548772
+          3772.4091467649973,
+          4897.453545464836
         ],
         [
-          5370.12497235125,
-          4776.975447909755
+          4390.529146764997,
+          4701.513545464835
         ],
         [
-          5370.12497235125,
-          4784.975447909755
+          4379.6508532350035,
+          4667.196454535164
         ],
         [
-          5025.871172622998,
-          4708.877239548772
+          3761.530853235003,
+          4863.136454535164
         ]
       ]
     },
     {
-      "id": "market_ramp_edge_wwhd_stone_bridge_approach_east1",
+      "id": "market_far_rail_1",
       "points": [
         [
-          5004.128827377002,
-          4891.122760451228
+          4385.09,
+          4702.355
         ],
         [
-          5417.233387050906,
-          4987.151451954372
+          5167.84,
+          4702.355
         ],
         [
-          5417.233387050906,
-          4995.151451954372
+          5167.84,
+          4666.355
         ],
         [
-          5004.128827377002,
-          4899.122760451228
+          4385.09,
+          4666.355
         ]
       ]
     },
     {
-      "id": "quay_north_rail",
-      "x": 4342.5,
-      "y": 6199,
-      "w": 515,
-      "h": 8
-    },
-    {
-      "id": "quay_south_rail",
-      "x": 4300.5,
-      "y": 6399.1705374917055,
-      "w": 599,
-      "h": 8
-    },
-    {
-      "id": "quay_ramp_edge_wwhd_stone_bridge_approach_west0",
+      "id": "market_far_rail_2",
       "points": [
         [
-          4356.082241207698,
-          6200.877239548772
+          5162.50394900119,
+          4701.545885949773
         ],
         [
-          4058.8236147976113,
-          6260.32896483079
+          5793.75394900119,
+          4897.485885949774
         ],
         [
-          4058.8236147976113,
-          6268.32896483079
+          5804.42605099881,
+          4863.104114050227
         ],
         [
-          4356.082241207698,
-          6208.877239548772
+          5173.17605099881,
+          4667.164114050226
         ]
       ]
     },
     {
-      "id": "quay_ramp_edge_wwhd_stone_bridge_approach_west1",
+      "id": "market_near_rail_0",
       "points": [
         [
-          4373.917758792302,
-          6391.122760451228
+          3732.6537318137152,
+          5095.7902811139775
         ],
         [
-          4032.0703384207036,
-          6444.629313205043
+          4368.953731813715,
+          4948.330281113977
         ],
         [
-          4032.0703384207036,
-          6452.629313205043
+          4360.826268186285,
+          4913.259718886023
         ],
         [
-          4373.917758792302,
-          6399.122760451228
+          3724.526268186285,
+          5060.719718886023
         ]
       ]
     },
     {
-      "id": "quay_ramp_edge_wwhd_stone_bridge_approach_east0",
+      "id": "market_near_rail_1",
       "points": [
         [
-          4845.871172622998,
-          6200.877239548772
+          4364.89,
+          4948.795
         ],
         [
-          5190.12497235125,
-          6276.975447909755
+          5198.14,
+          4948.795
         ],
         [
-          5190.12497235125,
-          6284.975447909755
+          5198.14,
+          4912.795
         ],
         [
-          4845.871172622998,
-          6208.877239548772
+          4364.89,
+          4912.795
         ]
       ]
     },
     {
-      "id": "quay_ramp_edge_wwhd_stone_bridge_approach_east1",
+      "id": "market_near_rail_2",
       "points": [
         [
-          4824.128827377002,
-          6391.122760451228
+          5194.076268186285,
+          4948.330281113977
         ],
         [
-          5237.233387050906,
-          6487.151451954372
+          5830.376268186285,
+          5095.7902811139775
         ],
         [
-          5237.233387050906,
-          6495.151451954372
+          5838.503731813716,
+          5060.719718886023
         ],
         [
-          4824.128827377002,
-          6399.122760451228
+          5202.203731813715,
+          4913.259718886023
+        ]
+      ]
+    },
+    {
+      "id": "quay_far_rail_0",
+      "points": [
+        [
+          3592.4091467649973,
+          6397.453545464836
+        ],
+        [
+          4210.529146764997,
+          6201.513545464835
+        ],
+        [
+          4199.6508532350035,
+          6167.196454535164
+        ],
+        [
+          3581.530853235003,
+          6363.136454535164
+        ]
+      ]
+    },
+    {
+      "id": "quay_far_rail_1",
+      "points": [
+        [
+          4205.09,
+          6202.355
+        ],
+        [
+          4987.84,
+          6202.355
+        ],
+        [
+          4987.84,
+          6166.355
+        ],
+        [
+          4205.09,
+          6166.355
+        ]
+      ]
+    },
+    {
+      "id": "quay_far_rail_2",
+      "points": [
+        [
+          4982.50394900119,
+          6201.545885949773
+        ],
+        [
+          5613.75394900119,
+          6397.485885949774
+        ],
+        [
+          5624.42605099881,
+          6363.104114050227
+        ],
+        [
+          4993.17605099881,
+          6167.164114050226
+        ]
+      ]
+    },
+    {
+      "id": "quay_near_rail_0",
+      "points": [
+        [
+          3552.6537318137152,
+          6595.7902811139775
+        ],
+        [
+          4188.953731813715,
+          6448.330281113977
+        ],
+        [
+          4180.826268186285,
+          6413.259718886023
+        ],
+        [
+          3544.526268186285,
+          6560.719718886023
+        ]
+      ]
+    },
+    {
+      "id": "quay_near_rail_1",
+      "points": [
+        [
+          4184.89,
+          6448.795
+        ],
+        [
+          5018.14,
+          6448.795
+        ],
+        [
+          5018.14,
+          6412.795
+        ],
+        [
+          4184.89,
+          6412.795
+        ]
+      ]
+    },
+    {
+      "id": "quay_near_rail_2",
+      "points": [
+        [
+          5014.076268186285,
+          6448.330281113977
+        ],
+        [
+          5650.376268186285,
+          6595.7902811139775
+        ],
+        [
+          5658.503731813716,
+          6560.719718886023
+        ],
+        [
+          5022.203731813715,
+          6413.259718886023
         ]
       ]
     },
@@ -18134,69 +17875,129 @@
     "crossings": [
       {
         "id": "north_bridge",
+        "origin": [
+          4930.667984934087,
+          3000
+        ],
         "points": [
           [
-            4658.849912126538,
-            3117
+            3924.707984934087,
+            3098.475
           ],
           [
-            5138.849912126538,
-            3117
+            4558.987984934087,
+            2896.475
           ],
           [
-            5180.849912126538,
-            3283
+            5304.367984934087,
+            2896.475
           ],
           [
-            4616.849912126538,
-            3283
+            5944.707984934087,
+            3098.475
+          ],
+          [
+            5958.847984934087,
+            3260.075
+          ],
+          [
+            5304.367984934087,
+            3103.525
+          ],
+          [
+            4558.987984934087,
+            3103.525
+          ],
+          [
+            3909.557984934087,
+            3260.075
           ]
         ],
-        "assembly": "stone_bridge_v1"
+        "assembly": "stone_bridge_integrated_v2"
       },
       {
         "id": "market_bridge",
+        "origin": [
+          4780.0,
+          4800
+        ],
         "points": [
           [
-            4540.0,
-            4717
+            3774.04,
+            4898.475
           ],
           [
-            5020.0,
-            4717
+            4408.32,
+            4696.475
           ],
           [
-            5062.0,
-            4883
+            5153.7,
+            4696.475
           ],
           [
-            4498.0,
-            4883
+            5794.04,
+            4898.475
+          ],
+          [
+            5808.18,
+            5060.075
+          ],
+          [
+            5153.7,
+            4903.525
+          ],
+          [
+            4408.32,
+            4903.525
+          ],
+          [
+            3758.89,
+            5060.075
           ]
         ],
-        "assembly": "stone_bridge_v1"
+        "assembly": "stone_bridge_integrated_v2"
       },
       {
         "id": "quay_bridge",
+        "origin": [
+          4600.0,
+          6300
+        ],
         "points": [
           [
-            4360.0,
-            6217
+            3594.04,
+            6398.475
           ],
           [
-            4840.0,
-            6217
+            4228.32,
+            6196.475
           ],
           [
-            4882.0,
-            6383
+            4973.7,
+            6196.475
           ],
           [
-            4318.0,
-            6383
+            5614.04,
+            6398.475
+          ],
+          [
+            5628.18,
+            6560.075
+          ],
+          [
+            4973.7,
+            6403.525
+          ],
+          [
+            4228.32,
+            6403.525
+          ],
+          [
+            3578.89,
+            6560.075
           ]
         ],
-        "assembly": "stone_bridge_v1"
+        "assembly": "stone_bridge_integrated_v2"
       }
     ]
   },
@@ -18410,8 +18211,8 @@
     },
     {
       "id": "bridge",
-      "x": 4280.0,
-      "y": 4800,
+      "x": 3680.0,
+      "y": 4977.5,
       "face": "up"
     },
     {

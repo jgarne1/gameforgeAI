@@ -113,3 +113,5 @@ Still pending: lake catch gameplay, mansion quest, playground children/activity 
 - Side-facing walking clarification: arms animate, legs mostly hold the same pose.
 
 September 29 side-walk update: main player now uses opposite foot contacts and passing poses in both horizontal directions. Browser-tested left/right crossing; 50 targeted checks pass. Slight generated body-shape variation remains; NPC/outfit animation matching is still open.
+
+Bridge correction: replaced all three separate bridge/ramp assemblies with complete integrated originals and narrow stone-to-cobble thresholds. Rerouted banks to flat toes, moved north crossing away from home09 and cleared ramp canopy overlap. 51 targeted checks pass; visual appearance remains subject to player review.

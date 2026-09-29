@@ -53,3 +53,5 @@ The blueprint gives district bounds, landmark approaches, 24 preserved player-ho
 - Sustained NPC route checks and local multi-client presence/chat checks on the expanded scene.
 - Browser inspection at normal and close zoom of stair-wall joins, foreground occlusion, door approaches and pet peeks.
 - Saved editor overrides and home decoration survive the default-scene replacement. Do not overwrite persistent saved data without migration.
+
+Current bridge revision: stone_bridge_integrated_v2 replaces the v1 separate apron/rail assembly. Complete bridge is one editor asset with built-in ramps. Use its measured floorPolygonLocal, centerlineLocal, railLinesLocal and thresholdAssembly offsets. Full footprint about2165 units; central depth207, toe162. North bridge center y3000 avoids home09. Both banks approach flat toes, and full artwork/canopy footprint remains clear. Flat thresholds add no collision or water permission; west uses flipX. Legacy packs stay available for existing saved scenes but must not be stacked with this bridge.

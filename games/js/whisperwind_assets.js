@@ -9,7 +9,7 @@
   }
   function draw(ctx,image,asset,object={},time=0){
     const {r,w,h,ox,oy}=metrics(image,asset,object);
-    ctx.save();ctx.translate(object.x||0,object.y||0);ctx.rotate(object.rotation||0);
+    ctx.save();ctx.translate(object.x||0,object.y||0);ctx.rotate(object.rotation||0);if(object.flipX)ctx.scale(-1,1);
     ctx.imageSmoothingEnabled=false;
     const x=-w*ox,y=-h*oy;
     if(object.sway){

@@ -6,7 +6,7 @@ DIR=ROOT/'public/assets/worlds'
 baseline=ROOT/'docs/design/archive/whisperwind_waterfront_v1.json'
 old=json.loads((baseline if baseline.exists() else DIR/'whisperwind_hd_waterfront.json').read_text(encoding='utf-8-sig'))
 cat={a['id']:a for a in json.loads((DIR/'world_asset_catalog.json').read_text())['assets']}
-approaches=json.loads((ROOT/'public/assets/whisperwind_hd/stone_bridge_approaches_v1/metadata.json').read_text(encoding='utf-8'))['assets']
+bridge=json.loads((ROOT/'public/assets/whisperwind_hd/stone_bridge_integrated_v2/metadata.json').read_text(encoding='utf-8'))
 sc={k:copy.deepcopy(old[k]) for k in ['playerPack','time','lighting','groundSkin','groundMaterial','waterMaterial']}
 sc.update(id='whisperwind_hd_expanded',townId='whisperwind_hd_waterfront',name='Whisperwind · River and Lanterns',layoutVersion=2,previewOnly=True,size={'w':9200,'h':7400},spawn={'x':3300,'y':3700,'face':'up'},objects=[],hotspots=[],paths=[],plazas=[],blockers=[],collisions=[],npcs=[],ambient=[],groundPatches=[],paint={'terraces':[],'groundDabs':[]},terrain={'water':[],'crossings':[]},walkable=[{'id':'town','points':[[180,250],[8980,250],[8980,7250],[180,7250]]}])
 sc['layers']=[{'id':id,'label':id.title(),'visible':True} for id in ['terrain','structures','buildings','props','canopy','foreground','gameplay']]
@@ -33,30 +33,31 @@ def riverx(y):
  for (x1,y1),(x2,y2) in zip(center,center[1:]):
   if y1<=y<=y2:return x1+(x2-x1)*(y-y1)/(y2-y1)
  return center[-1][0]
-for name,y in [('north',3200),('market',4800),('quay',6300)]:
+for name,y in [('north',3000),('market',4800),('quay',6300)]:
  x=riverx(y)
- origin_y=y+99.17053749170537
- sc['terrain']['crossings'].append({'id':name+'_bridge','points':[[x-240,y-83],[x+240,y-83],[x+282,y+83],[x-282,y+83]],'assembly':'stone_bridge_v1'})
- for side,yy,width in [('north',y-101,515),('south',origin_y,599)]:sc['blockers'].append({'id':name+'_'+side+'_rail','x':x-width/2,'y':yy,'w':width,'h':8})
- for a in approaches:
-  dx,dy=a['headPositionRelativeToBridgeFloorCenterOrigin'];obj(name+'_'+a['id'].split('_')[-1]+'_approach',a['id'],x+dx,y+dy,layer='structures',edgeBlend={'side':'left' if dx<0 else 'right','length':55})
-  floor=[[x+dx+px,y+dy+py] for px,py in a['floorPolygonLocal']]
-  for i,j in [(0,3),(1,2)]:
-   p,q=floor[i],floor[j];sc['blockers'].append({'id':name+'_ramp_edge_'+a['id']+str(i),'points':[[p[0],p[1]-4],[q[0],q[1]-4],[q[0],q[1]+4],[p[0],p[1]+4]]})
- obj(name+'_deck','wwhd_stone_bridge_deck',x,origin_y,layer='structures')
- obj(name+'_near_rail','wwhd_stone_bridge_near_rail',x,origin_y,layer='foreground',crossingId=name+'_bridge')
- road(name+'_crossing',[(x-720,y+56),(x-554.553,y+56.479),(x-235,y),(x+235,y),(x+613.679,y+86.063),(x+760,y+86)],160)
+ assembly=bridge['assembly']
+ sc['terrain']['crossings'].append({'id':name+'_bridge','origin':[x,y],'points':[[x+px,y+py] for px,py in assembly['floorPolygonLocal']],'assembly':'stone_bridge_integrated_v2'})
+ obj(name+'_integrated_bridge',bridge['assets'][0]['id'],x,y,layer='structures')
+ for side in ['west','east']:
+  dx,dy=bridge['thresholdAssembly'][side+'PositionLocal']
+  obj(name+'_'+side+'_threshold','wwhd_shore_threshold_v2',x+dx,y+dy,layer='structures',flipX=side=='west')
+ for rail in assembly['railLinesLocal']:
+  for i,(p,q) in enumerate(zip(rail['points'],rail['points'][1:])):
+   dx,dy=q[0]-p[0],q[1]-p[1];length=math.hypot(dx,dy);nx,ny=-dy/length*18,dx/length*18
+   sc['blockers'].append({'id':name+'_'+rail['side']+'_rail_'+str(i),'points':[[x+p[0]+nx,y+p[1]+ny],[x+q[0]+nx,y+q[1]+ny],[x+q[0]-nx,y+q[1]-ny],[x+p[0]-nx,y+p[1]-ny]]})
+ line=[[x+px,y+py] for px,py in assembly['centerlineLocal']]
+ road(name+'_crossing',[[line[0][0]-180,line[0][1]],*line,[line[-1][0]+180,line[-1][1]]],162)
 sc['plazas']=[{'id':'commonlight','points':ellipse(3300,3550,650,490),'center':[3300,3550],'radius':315}]
 road('western_spine',[(1700,1100),(1850,1650),(1800,2200),(2350,2800),(3150,3200),(3300,3550),(3200,4200),(2700,4950),(2300,5650),(2300,6350)],200)
-road('market_loop',[(3300,3550),(2200,3700),(1250,4000),(1350,4650),(2200,5000),(3200,4200),(3900,4100),(4270,4650),(riverx(4800)-520,4800)],180)
-road('west_riverwalk',[(riverx(3200)-520,3200),(4100,3500),(4100,4100),(riverx(4800)-520,4800),(4050,5450),(riverx(6300)-520,6300),(2700,6600),(2300,6350)],155)
-road('north_connection',[(3300,3550),(4000,3350),(riverx(3200)-520,3200)],210)
-road('east_riverwalk',[(riverx(3200)+520,3200),(5900,3600),(5800,4200),(riverx(4800)+520,4800),(5650,5500),(riverx(6300)+520,6300),(6000,6750)],165)
-road('east_loop',[(riverx(3200)+520,3200),(6500,3040),(7650,3270),(8680,3850),(8600,4550),(8220,5150),(8720,6000),(8500,6880),(7500,7090),(6500,6830),(riverx(6300)+520,6300)],165)
+road('market_loop',[(3300,3550),(2200,3700),(1250,4000),(1350,4650),(2200,5000),(3200,4200),(3900,4100),(4270,4650),(riverx(4800)-1194,4979.275)],180)
+road('west_riverwalk',[(riverx(3000)-1194,3179.275),(4100,3500),(4100,4100),(riverx(4800)-1194,4979.275),(4050,5450),(riverx(6300)-1194,6479.275),(2700,6600),(2300,6350)],155)
+road('north_connection',[(3300,3550),(4000,3350),(riverx(3000)-1194,3179.275)],210)
+road('east_riverwalk',[(riverx(3000)+1201,3179.275),(5700,3400),(5650,3750),(5800,4200),(riverx(4800)+1201,4979.275),(5650,5500),(riverx(6300)+1201,6479.275),(6000,6750)],165)
+road('east_loop',[(riverx(3000)+1201,3179.275),(6500,3040),(7650,3270),(8680,3850),(8600,4550),(8220,5150),(8720,6000),(8500,6880),(7500,7090),(6500,6830),(riverx(6300)+1201,6479.275)],165)
 road('east_middle',[(5800,4200),(6600,4650),(7450,5000),(8420,4870)],160)
 road('east_home_lane',[(5880,3830),(6650,3880),(7420,3900),(8280,3900),(8560,3700)],140)
 road('east_south',[(5650,5500),(6410,6000),(7500,6000),(8220,5150)],160)
-road('lake_mansion_trail',[(riverx(3200)+520,3200),(6200,2750),(7500,2750),(8500,2300),(8640,1550),(8220,1120)],120)
+road('lake_mansion_trail',[(riverx(3000)+1201,3179.275),(6200,2750),(7500,2750),(8500,2300),(8640,1550),(8220,1120)],120)
 road('orchard_loop',[(1700,1100),(1000,1300),(650,1900),(1050,2550),(1850,2570),(2350,2800)],135)
 road('upper_home_lane',[(600,1150),(1300,1260),(2150,1190),(2950,1250),(3540,1550),(3150,1780),(2300,1800),(1850,1650)],135)
 home_positions=[(800,1030),(1480,1110),(2180,980),(2900,1100),(800,1610),(1440,1740),(2360,1590),(3050,1670), (6100,3560),(6820,3420),(7500,3600),(8300,3950),(6250,4400),(6980,4600),(7690,4460),(8270,4850), (6100,5520),(6830,5640),(7560,5480),(8270,5860),(6010,6420),(6800,6600),(7550,6460),(8300,6700)]
@@ -152,10 +153,12 @@ def distseg(x,y,a,b):
  dx=b[0]-a[0];dy=b[1]-a[1];t=max(0,min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy or 1)));return math.hypot(x-a[0]-t*dx,y-a[1]-t*dy)
 buildings=[o for o in sc['objects'] if o['layer']=='buildings']
 def clearplant(x,y):
+ # Keep tree trunks and their overhanging crowns off the complete ramp footprint.
+ if any(abs(x-riverx(cy))<1130 and cy-240<y<cy+580 for cy in [3000,4800,6300]):return False
  if any(inside((x,y),w['points']) for w in sc['terrain']['water']):return False
  if any(inside((x,y),p['points']) for p in sc['groundPatches']+sc['plazas']+sc['terrain']['crossings']):return False
  if any(abs(x-o['x'])<cat[o['asset']]['displaySize']['w']*(o.get('scale',1))/2+80 and -cat[o['asset']]['displaySize']['h']*o.get('scale',1)-80<y-o['y']<200 for o in buildings):return False
- if any(abs(x-riverx(cy))<350 and cy-100<y<cy+400 for cy in [3200,4800,6300]):return False
+ if any(abs(x-riverx(cy))<350 and cy-100<y<cy+400 for cy in [3000,4800,6300]):return False
  if any(math.hypot(x-h['x'],y-h['y'])<160 for h in sc['hotspots']):return False
  if any(distseg(x,y,a,b)<p['width']/2+105 for p in sc['paths'] for a,b in zip(p['points'],p['points'][1:])):return False
  if any(abs(x-n['x'])<290 and abs(y-n['y'])<220 for n in sc['npcs']):return False
@@ -194,7 +197,7 @@ for i,p in enumerate(sc['paths']):
   obj('street_lamp_'+str(i)+'_'+str(j),'wwhd_lamp',round(x),round(y),collide=[-8,-8,16,12])
 sc['districts']=[{'id':id,'name':name,'bounds':bounds} for id,name,bounds in [('lantern','Lantern Hill',[400,400,3400,1500]),('orchard','Orchard Gardens',[500,1900,1900,900]),('commonlight','Commonlight Square',[2600,3000,1500,1200]),('market','Market Lanes',[600,3100,2300,2000]),('lake','Orchard Lake',[5600,850,3100,2150]),('eastbank','Eastbank Homes',[5700,3200,3100,1800]),('southgardens','South Gardens',[5500,5300,3300,1700]),('quay','Fishing Quay',[1700,5800,2500,1300])]]
 sc['guidePlaces']=[{'name':name,'x':x,'y':y} for name,x,y in [('Commonlight Square',3300,3700),('Orchard Playground',1760,2590),('Lantern Hill',1800,1650),('River Tackle',2075,6280),('Lake Shore',7100,2730),('Old Mansion',8150,1130),('North Bridge',riverx(3200)-500,3200),('Market Bridge',riverx(4800)-500,4800),('Quay Bridge',riverx(6300)-500,6300)]]
-sc['spawnPoints']=[{'id':id,'x':x,'y':y,'face':'up'} for id,x,y in [('playground',1760,2650),('lake',7100,2730),('mansion',8150,1200),('bridge',riverx(4800)-500,4800),('hill',1800,2000)]]
+sc['spawnPoints']=[{'id':id,'x':x,'y':y,'face':'up'} for id,x,y in [('playground',1760,2650),('lake',7100,2730),('mansion',8150,1200),('bridge',riverx(4800)-1100,4977.5),('hill',1800,2000)]]
 for id,(x,y) in landmarks.items():
  name={'lantern_inn':'inn','echo_hall':'echo_hall','pet_center':'pet_center','fishing_shop':'fishing_shop','bakery':'market','tavern':'tavern'}.get(id)
  if name:
