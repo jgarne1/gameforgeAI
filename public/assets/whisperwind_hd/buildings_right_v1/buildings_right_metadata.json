@@ -1,0 +1,372 @@
+{
+  "orientation": "door-bearing facade faces screen-right; approach diagonally down-right",
+  "status": "review candidates; gameplay placement/collision untested",
+  "measurementMethod": "alpha>=128 bounds +8px padding; doorway points visually estimated and checked in scale preview",
+  "assets": [
+    {
+      "id": "wwhd_cottage_right",
+      "file": "cottage_right_source.png",
+      "name": "Right-facing cottage",
+      "size": [
+        1351,
+        1164
+      ],
+      "sourceRect": {
+        "x": 188,
+        "y": 102,
+        "w": 989,
+        "h": 974
+      },
+      "solidBounds": [
+        196,
+        110,
+        973,
+        958
+      ],
+      "displaySize": {
+        "w": 365.92,
+        "h": 360.37
+      },
+      "solidDisplaySize": {
+        "w": 360,
+        "h": 354.45
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9917864476386037
+      },
+      "sourcePlacementAnchor": [
+        682.5,
+        1068
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.3699897225077081,
+      "door": {
+        "thresholdSource": [
+          940,
+          955
+        ],
+        "normalizedToSourceRect": [
+          0.7603640040444893,
+          0.8757700205338809
+        ],
+        "thresholdOffsetWorld": [
+          95.272,
+          -41.809
+        ],
+        "approachOffsetWorld": [
+          167.272,
+          22.191
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.5932591614713296,
+      "solidCanvasGutters": [
+        196,
+        110,
+        182,
+        96
+      ],
+      "sha256": "b913b66bf9490a5c91383118ff605785eff490db70682c4c0f9a34a15abc0209"
+    },
+    {
+      "id": "wwhd_family_house_right",
+      "file": "family_house_right_source.png",
+      "name": "Right-facing family house",
+      "size": [
+        1286,
+        1223
+      ],
+      "sourceRect": {
+        "x": 98,
+        "y": 73,
+        "w": 1092,
+        "h": 1038
+      },
+      "solidBounds": [
+        106,
+        81,
+        1076,
+        1022
+      ],
+      "displaySize": {
+        "w": 405.948,
+        "h": 385.874
+      },
+      "solidDisplaySize": {
+        "w": 400,
+        "h": 379.926
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9922928709055877
+      },
+      "sourcePlacementAnchor": [
+        644.0,
+        1103
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.37174721189591076,
+      "door": {
+        "thresholdSource": [
+          925,
+          960
+        ],
+        "normalizedToSourceRect": [
+          0.7573260073260073,
+          0.8545279383429673
+        ],
+        "thresholdOffsetWorld": [
+          104.461,
+          -53.16
+        ],
+        "approachOffsetWorld": [
+          176.461,
+          10.84
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.50872214641863,
+      "solidCanvasGutters": [
+        106,
+        81,
+        104,
+        120
+      ],
+      "sha256": "037de1a885d9c2a9aafe745ef536fe318819b11e90086539a67d2e721945ef5a"
+    },
+    {
+      "id": "wwhd_apartment_inn_right",
+      "file": "apartment_inn_right_source.png",
+      "name": "Right-facing apartment / inn",
+      "size": [
+        1222,
+        1287
+      ],
+      "sourceRect": {
+        "x": 98,
+        "y": 101,
+        "w": 1046,
+        "h": 1042
+      },
+      "solidBounds": [
+        106,
+        109,
+        1030,
+        1026
+      ],
+      "displaySize": {
+        "w": 385.903,
+        "h": 384.427
+      },
+      "solidDisplaySize": {
+        "w": 380,
+        "h": 378.524
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9923224568138196
+      },
+      "sourcePlacementAnchor": [
+        621.0,
+        1135
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.36893203883495146,
+      "door": {
+        "thresholdSource": [
+          867,
+          998
+        ],
+        "normalizedToSourceRect": [
+          0.7351816443594646,
+          0.8608445297504799
+        ],
+        "thresholdOffsetWorld": [
+          90.757,
+          -50.544
+        ],
+        "approachOffsetWorld": [
+          162.757,
+          13.456
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.5322251852530085,
+      "solidCanvasGutters": [
+        106,
+        109,
+        86,
+        152
+      ],
+      "sha256": "163def77e15ae801e2345fbe0e1b552de426ad204a6ed3c12cbb1d0ab500b7f7"
+    },
+    {
+      "id": "wwhd_fishing_shop_right",
+      "file": "fishing_shop_right_source.png",
+      "name": "Right-facing fishing shop",
+      "size": [
+        1316,
+        1195
+      ],
+      "sourceRect": {
+        "x": 82,
+        "y": 46,
+        "w": 1209,
+        "h": 1066
+      },
+      "solidBounds": [
+        90,
+        54,
+        1193,
+        1050
+      ],
+      "displaySize": {
+        "w": 435.767,
+        "h": 384.225
+      },
+      "solidDisplaySize": {
+        "w": 430,
+        "h": 378.458
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9924953095684803
+      },
+      "sourcePlacementAnchor": [
+        686.5,
+        1104
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.36043587594300086,
+      "door": {
+        "thresholdSource": [
+          980,
+          990
+        ],
+        "normalizedToSourceRect": [
+          0.7427626137303557,
+          0.8855534709193246
+        ],
+        "thresholdOffsetWorld": [
+          105.788,
+          -41.09
+        ],
+        "approachOffsetWorld": [
+          177.788,
+          22.91
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.4339268227543844,
+      "solidCanvasGutters": [
+        90,
+        54,
+        33,
+        91
+      ],
+      "sha256": "cebeb77369849c9a319c3ee58af8c807fc73cfda2567cd8961d4d19fce7e5312"
+    },
+    {
+      "id": "wwhd_tavern_right",
+      "file": "tavern_right_source.png",
+      "name": "Right-facing tavern",
+      "size": [
+        1279,
+        1230
+      ],
+      "sourceRect": {
+        "x": 93,
+        "y": 61,
+        "w": 1139,
+        "h": 1115
+      },
+      "solidBounds": [
+        101,
+        69,
+        1123,
+        1099
+      ],
+      "displaySize": {
+        "w": 527.409,
+        "h": 516.296
+      },
+      "solidDisplaySize": {
+        "w": 520,
+        "h": 508.887
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9928251121076234
+      },
+      "sourcePlacementAnchor": [
+        662.5,
+        1168
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.4630454140694568,
+      "door": {
+        "thresholdSource": [
+          900,
+          1035
+        ],
+        "normalizedToSourceRect": [
+          0.7085162423178226,
+          0.873542600896861
+        ],
+        "thresholdOffsetWorld": [
+          109.973,
+          -61.585
+        ],
+        "approachOffsetWorld": [
+          181.973,
+          2.415
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.45165493875423507,
+      "solidCanvasGutters": [
+        101,
+        69,
+        55,
+        62
+      ],
+      "sha256": "9c998a2fef6d7c122434105d8c23097305c41bb0dd295a240f9c49e13d305e69"
+    }
+  ]
+}
