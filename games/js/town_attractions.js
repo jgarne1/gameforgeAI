@@ -55,11 +55,12 @@ function drawCoasterGround(c,ride,stationImage){
   const s=ride.station;
   if(stationImage&&ride.stationSprite){const art=ride.stationSprite;c.drawImage(stationImage,art.x,art.y,art.w,art.h);}
   else{pill(c,s.x-205,s.y-52,430,170,'#70523a','#d9af6d');for(let i=0;i<7;i++)stroke(c,[[s.x-188+i*65,s.y-50],[s.x-188+i*65,s.y+116]],'rgba(34,25,21,.22)',3);pill(c,s.x-185,s.y+95,390,20,'#312c24','#ebc980');}
-  title(c,'LANTERN RUN',s.x+8,s.y+177,30);
+  title(c,'LANTERN RUN',s.x+8,s.y+340,30);
   // The image carries the queue roof and railing; the ground marks remain walkable.
   const q=ride.queue;
   if(!stationImage){pill(c,q.x,q.y,q.w,q.h,'rgba(172,134,80,.55)','#c5a270');for(let i=1;i<4;i++)stroke(c,[[q.x+18,q.y+i*q.h/4],[q.x+q.w-20,q.y+i*q.h/4]],'#744b32',7);}
   title(c,'QUEUE',q.x+q.w/2,q.y+q.h+43,23);
+  const b=ride.boarding;c.fillStyle='rgba(250,212,120,.35)';c.beginPath();c.ellipse(b.x,b.y,35,18,0,0,Math.PI*2);c.fill();c.strokeStyle='#e8cb88';c.lineWidth=3;c.stroke();title(c,'BOARD',b.x,b.y+58,20);
   // A shallow stone grotto masks the cart briefly at the far turn.
   c.restore();
 }
@@ -125,6 +126,6 @@ function drawCart(c,pos,occupants,drawRider,cartImage){
 }
 
 function drawGround(c,scene,stationImage){const a=scene?.attractions;if(!a)return;if(a.coaster)drawCoasterGround(c,a.coaster,stationImage);if(a.zoo)drawZooGround(c,a.zoo);}
-function drawDynamic(c,scene,now,occupants,drawRider,animalImage,cartImage,tunnelImage){const a=scene?.attractions;if(!a)return;if(a.zoo)for(const pen of a.zoo.pens||[])drawAnimal(c,pen,now,a.zoo.sprite,animalImage);if(a.coaster){drawCart(c,coasterAt(scene,now),occupants,drawRider,cartImage);const t=a.coaster.tunnel;if(t&&tunnelImage)c.drawImage(tunnelImage,t.x-t.w*.76,t.y-t.h*.51,t.w,t.h);}}
+function drawDynamic(c,scene,now,occupants,drawRider,animalImage,cartImage,tunnelImage){const a=scene?.attractions;if(!a)return;if(a.zoo)for(const pen of a.zoo.pens||[])drawAnimal(c,pen,now,a.zoo.sprite,animalImage);if(a.coaster){drawCart(c,coasterAt(scene,now),occupants,drawRider,cartImage);const t=a.coaster.tunnel;if(t&&tunnelImage)c.drawImage(tunnelImage,t.x-t.w/2,t.y-t.h*.51,t.w,t.h);}}
 window.TownAttractions={coasterAt,drawGround,drawDynamic};
 })();
