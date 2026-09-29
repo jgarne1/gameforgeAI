@@ -62,6 +62,7 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
    else if(invites.length&&!claim.device_id)db.prepare('UPDATE invite_claims SET device_id=? WHERE token=?').run(device,token);
    const prior=db.prepare('SELECT name FROM people WHERE user_id=?').get(userId);
    db.prepare('INSERT INTO people(user_id,name,last_seen) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET name=excluded.name,last_seen=excluded.last_seen').run(userId,name,now());
+   peers.set(device,{name,last:now(),userId});
    if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,roomSecret:secret,people:people(),chats:chats(userId)});}
    if(req.method==='POST'&&url.pathname==='/chats'){
     const body=JSON.parse((await read(req,8192)).toString()),ids=[...new Set([userId,...(Array.isArray(body.members)?body.members:[])])];
@@ -120,3 +121,4 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
 if(require.main===module&&process.env.BACKEND_URL){require('./proxy.cjs').createProxy(process.env.BACKEND_URL).listen(Number(process.env.PORT||45831),'0.0.0.0');}
 else if(require.main===module){const server=createRelay({secret:process.env.ROOM_SECRET,invites:(process.env.INVITE_CODES||'').split(',').map(s=>s.trim()).filter(Boolean),dir:process.env.DATA_DIR||path.join(__dirname,'data')});server.listen(Number(process.env.PORT||45831),'0.0.0.0',()=>console.log('FamilyWire relay listening'));}
 module.exports={createRelay};
+
