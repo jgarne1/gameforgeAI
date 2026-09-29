@@ -8,6 +8,21 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const manifest=JSON.parse(read('public/assets/whisperwind_hd/v1/manifest.json'));
 const catalog=JSON.parse(read('public/assets/worlds/world_asset_catalog.json')).assets;
 
+test('large terrain tiles only the viewport without shifting world texture alignment',()=>{
+ const context=vm.createContext({window:{}});vm.runInContext(read('games/js/whisperwind_assets.js'),context);
+ const calls=[],ctx={canvas:{width:800,height:600},getTransform:()=>({a:1,b:0,c:0,d:1,e:-3100,f:-2200}),save(){},restore(){},beginPath(){},rect(){},clip(){},drawImage(...args){calls.push(args)}};
+ context.window.WhisperwindAssets.tile(ctx,{width:256,height:256},{tileSize:256},0,0,9200,7400);
+ assert.equal(calls.length,12);for(const a of calls){assert.equal(a[5]%256,0);assert.equal(a[6]%256,0);assert.ok(a[5]<3900&&a[5]+256>3100);assert.ok(a[6]<2800&&a[6]+256>2200);}
+});
+test('minimap caches streets without reallocating at fractional display density and keeps dots moving',()=>{
+ let allocations=0,writes=0,width=0,height=0;const dots=[];
+ const paint=()=>({setTransform(){},fillRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},clearRect(){},drawImage(){},arc(x,y){dots.push([x,y]);},fill(){}});
+ const m={get width(){return width;},set width(v){writes++;width=Math.trunc(v);},get height(){return height;},set height(v){writes++;height=Math.trunc(v);},getContext:paint};
+ const ctx=vm.createContext({window:{},devicePixelRatio:1.25,document:{createElement(){allocations++;return {getContext:paint};}}});
+ vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.test={E,drawMini};'),ctx);
+ const api=ctx.window.test;api.E.mini=m;api.E.scene={size:{w:1000,h:1000},paths:[{points:[[10,10],[900,900]],width:100}],hotspots:[]};api.E.player.x=100;api.E.player.y=100;api.drawMini();api.E.player.x=200;api.drawMini();assert.equal(allocations,1);assert.equal(writes,2);assert.deepEqual(dots,[[19.8,14.499999999999998],[39.6,14.499999999999998]]);
+});
+
 test('atlas sources and every registered rectangle are valid PNG pixel bounds',()=>{
   for(const a of manifest.assets){
     assert.deepEqual(catalog.find(c=>c.id===a.id),a);
@@ -33,7 +48,7 @@ test('shared renderer selects a single atlas rectangle at its world anchor',()=>
 test('waterfront doorway round-trip is reachable and water cannot be walked into',()=>{
   const context=vm.createContext({window:{},document:{}});
   vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,canStand};'),context);
-  const api=context.window.test,shore=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json')),
+  const api=context.window.test,shore=JSON.parse(read('docs/design/archive/whisperwind_waterfront_v1.json')),
     inside=JSON.parse(read('public/assets/worlds/whisperwind_hd_tavern.json'));
   api.E.scene=shore;
   assert.equal(api.canStand(575,845),true);assert.equal(api.canStand(600,700),false);
@@ -52,7 +67,7 @@ function motionRuntime(){
   vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};',
     'window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,update,drawPackShadow,drawPackCharacter};'),context);
   const api=context.window.test;api.E.pack=manifest;
-  api.E.scene=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json'));
+  api.E.scene=JSON.parse(read('docs/design/archive/whisperwind_waterfront_v1.json'));
   api.E.player.x=1000;api.E.player.y=1100;
   return {api,draws};
 }
@@ -61,8 +76,8 @@ test('walking pace is frame-rate independent and release has no coasting',()=>{
   for(const fps of [30,60]){
     const {api}=motionRuntime();api.E.keys.d=true;
     for(let i=0;i<fps;i++)api.update(1/fps);
-    assert.ok(Math.abs(api.E.player.x-1144)<.001);
-    assert.ok(Math.abs(api.E.player.walkDistance-144)<.001);
+    assert.ok(Math.abs(api.E.player.x-1170)<.001);
+    assert.ok(Math.abs(api.E.player.walkDistance-170)<.001);
     const x=api.E.player.x,d=api.E.player.walkDistance;
     api.E.keys.d=false;api.update(1/fps);
     assert.equal(api.E.player.x,x);assert.equal(api.E.player.walkDistance,d);
@@ -90,4 +105,3 @@ test('contact shadow overlaps the sole and walk frames follow traveled distance'
     assert.ok(r.y>=334&&r.y+r.h<=638,'no clipped boot or previous-row fragment');
   }
 });
-

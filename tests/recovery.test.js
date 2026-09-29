@@ -59,6 +59,13 @@ test('composer retains polygon boundaries through import and save preparation',(
   assert.equal(context.S.scene.blockers[0].x,undefined);
 });
 
+test('composer preserves wall blockers alongside equipment collisions',()=>{
+ const html=source('games/world_composer.html'),extract=name=>html.slice(html.indexOf('function '+name+'('),html.indexOf('\n',html.indexOf('function '+name+'(')));
+ const context=vm.createContext({S:{scene:{blockers:[{id:'wall',x:10,y:20,w:300,h:60}],collisions:[{id:'post',x:500,y:200,w:16,h:18}]},zoneVisible:{}},renderZones(){}});
+ vm.runInContext(extract('normalizeScene')+'\n'+extract('syncDerivedZones')+'\nnormalizeScene();syncDerivedZones();',context);
+ assert.deepEqual(Array.from(context.S.scene.blockers,b=>b.id),['wall','post']);
+});
+
 test('first animation frame cannot produce a negative time step',()=>{
   const code=source('games/js/shadow_woods_engine.js');
   const loop=code.slice(code.indexOf('  function loop(now)'),code.indexOf('  function updateExplore'));

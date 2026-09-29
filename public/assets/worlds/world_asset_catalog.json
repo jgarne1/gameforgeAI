@@ -2563,6 +2563,583 @@
         "playground",
         "static"
       ]
+    },
+    {
+      "id": "wwhd_nature_wildflowers",
+      "name": "Meadow wildflowers",
+      "category": "props",
+      "src": "/assets/whisperwind_hd/nature_details_v1/wildflowers_source.png",
+      "sourceRect": {
+        "x": 19,
+        "y": 110,
+        "w": 1228,
+        "h": 1005
+      },
+      "displaySize": {
+        "w": 125,
+        "h": 102.3
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      },
+      "tags": [
+        "whisperwind",
+        "nature",
+        "alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_nature_shrub",
+      "name": "Berry and blossom shrub",
+      "category": "props",
+      "src": "/assets/whisperwind_hd/nature_details_v1/shrub_source.png",
+      "sourceRect": {
+        "x": 54,
+        "y": 285,
+        "w": 1176,
+        "h": 694
+      },
+      "displaySize": {
+        "w": 145,
+        "h": 85.57
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      },
+      "tags": [
+        "whisperwind",
+        "nature",
+        "alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_nature_riverplants",
+      "name": "Fern and cattail bank plants",
+      "category": "props",
+      "src": "/assets/whisperwind_hd/nature_details_v1/riverplants_source.png",
+      "sourceRect": {
+        "x": 109,
+        "y": 72,
+        "w": 1050,
+        "h": 1114
+      },
+      "displaySize": {
+        "w": 105,
+        "h": 111.4
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      },
+      "tags": [
+        "whisperwind",
+        "nature",
+        "alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_stone_bridge_deck",
+      "sourceRect": {
+        "x": 7,
+        "y": 49,
+        "w": 1523,
+        "h": 898
+      },
+      "displaySize": {
+        "w": 616.4764432647644,
+        "h": 363.49037823490374
+      },
+      "placeOrigin": {
+        "x": 0.49967170059093896,
+        "y": 0.6581291759465479
+      },
+      "name": "Stone Bridge Deck",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/stone_bridge_v1/stone_deck_source.png",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_stone_bridge_near_rail",
+      "sourceRect": {
+        "x": 14,
+        "y": 464,
+        "w": 1508,
+        "h": 135
+      },
+      "displaySize": {
+        "w": 616.5415549597856,
+        "h": 55.19436997319035
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9407407407407408
+      },
+      "name": "Stone Bridge Near Rail",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/stone_bridge_v1/stone_rail_source.png",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_stone_bridge_landing",
+      "sourceRect": {
+        "x": 25,
+        "y": 92,
+        "w": 1487,
+        "h": 804
+      },
+      "displaySize": {
+        "w": 404.3507817811013,
+        "h": 218.6267845003399
+      },
+      "placeOrigin": {
+        "x": 0.4996637525218561,
+        "y": 0.4639303482587065
+      },
+      "name": "Stone Bridge Landing",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/stone_bridge_v1/stone_landing_source.png",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_terrace_wall_straight",
+      "sourceRect": {
+        "x": 52,
+        "y": 192,
+        "w": 2067,
+        "h": 338
+      },
+      "displaySize": {
+        "w": 641.9254658385092,
+        "h": 104.96894409937887
+      },
+      "placeOrigin": {
+        "x": 0.0038703434929850023,
+        "y": 0.9763313609467456
+      },
+      "name": "Terrace Wall Straight",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/terrace_kit_v1/wall_straight_source.png",
+      "tags": [
+        "whisperwind",
+        "terrace",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_terrace_wall_outer_corner",
+      "sourceRect": {
+        "x": 26,
+        "y": 325,
+        "w": 1205,
+        "h": 619
+      },
+      "displaySize": {
+        "w": 401.66666666666663,
+        "h": 206.33333333333331
+      },
+      "placeOrigin": {
+        "x": 0.6970954356846473,
+        "y": 0.9870759289176091
+      },
+      "name": "Terrace Wall Outer Corner",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/terrace_kit_v1/wall_outer_corner_source.png",
+      "tags": [
+        "whisperwind",
+        "terrace",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_terrace_wall_end",
+      "sourceRect": {
+        "x": 88,
+        "y": 347,
+        "w": 1218,
+        "h": 475
+      },
+      "displaySize": {
+        "w": 265.359477124183,
+        "h": 103.48583877995644
+      },
+      "placeOrigin": {
+        "x": 0.006568144499178982,
+        "y": 0.9831578947368421
+      },
+      "name": "Terrace Wall End",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/terrace_kit_v1/wall_endcap_source.png",
+      "tags": [
+        "whisperwind",
+        "terrace",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_terrace_stairs",
+      "sourceRect": {
+        "x": 37,
+        "y": 29,
+        "w": 1180,
+        "h": 1131
+      },
+      "displaySize": {
+        "w": 419.92882562277583,
+        "h": 402.491103202847
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.946949602122016
+      },
+      "name": "Terrace Stairs",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/terrace_kit_v1/stairs_source.png",
+      "tags": [
+        "whisperwind",
+        "terrace",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_terrace_landing",
+      "sourceRect": {
+        "x": 25,
+        "y": 92,
+        "w": 1487,
+        "h": 804
+      },
+      "displaySize": {
+        "w": 272.9367777022434,
+        "h": 147.57307953772943
+      },
+      "placeOrigin": {
+        "x": 0.4996637525218561,
+        "y": 0.4639303482587065
+      },
+      "name": "Terrace Landing",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/terrace_kit_v1/landing_source.png",
+      "tags": [
+        "whisperwind",
+        "terrace",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_terrace_ramp",
+      "sourceRect": {
+        "x": 85,
+        "y": 73,
+        "w": 1100,
+        "h": 1117
+      },
+      "displaySize": {
+        "w": 605.0,
+        "h": 614.35
+      },
+      "placeOrigin": {
+        "x": 0.49272727272727274,
+        "y": 0.964189794091316
+      },
+      "name": "Terrace Ramp",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/terrace_kit_v1/ramp_source.png",
+      "tags": [
+        "whisperwind",
+        "terrace",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_foundation",
+      "sourceRect": {
+        "x": 94,
+        "y": 144,
+        "w": 1341,
+        "h": 767
+      },
+      "displaySize": {
+        "w": 425.0716981132075,
+        "h": 243.12452830188678
+      },
+      "placeOrigin": {
+        "x": 0.6010439970171514,
+        "y": 0.9895697522816167
+      },
+      "name": "Construction Foundation",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/foundation_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_timber_frame",
+      "sourceRect": {
+        "x": 93,
+        "y": 36,
+        "w": 1311,
+        "h": 945
+      },
+      "displaySize": {
+        "w": 425.1891891891892,
+        "h": 306.4864864864865
+      },
+      "placeOrigin": {
+        "x": 0.6155606407322655,
+        "y": 0.9915343915343915
+      },
+      "name": "Construction Timber Frame",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/timber_frame_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_roof_frame",
+      "sourceRect": {
+        "x": 159,
+        "y": 2,
+        "w": 1219,
+        "h": 982
+      },
+      "displaySize": {
+        "w": 433.8813559322034,
+        "h": 349.52542372881356
+      },
+      "placeOrigin": {
+        "x": 0.6078753076292043,
+        "y": 0.9918533604887984
+      },
+      "name": "Construction Roof Frame",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/roof_frame_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_scaffold",
+      "sourceRect": {
+        "x": 37,
+        "y": 35,
+        "w": 1204,
+        "h": 1111
+      },
+      "displaySize": {
+        "w": 182.42424242424244,
+        "h": 168.33333333333334
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9927992799279928
+      },
+      "name": "Construction Scaffold",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/scaffold_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_lumber",
+      "sourceRect": {
+        "x": 80,
+        "y": 105,
+        "w": 1478,
+        "h": 814
+      },
+      "displaySize": {
+        "w": 101.09439124487004,
+        "h": 55.677154582763336
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9901719901719902
+      },
+      "name": "Construction Lumber",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/lumber_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_stone_stack",
+      "sourceRect": {
+        "x": 164,
+        "y": 111,
+        "w": 1228,
+        "h": 839
+      },
+      "displaySize": {
+        "w": 91.18811881188118,
+        "h": 62.3019801980198
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9904648390941597
+      },
+      "name": "Construction Stone Stack",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/stone_stack_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_wheelbarrow",
+      "sourceRect": {
+        "x": 39,
+        "y": 134,
+        "w": 1218,
+        "h": 985
+      },
+      "displaySize": {
+        "w": 91.19800332778702,
+        "h": 73.75207986688852
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9918781725888325
+      },
+      "name": "Construction Wheelbarrow",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/wheelbarrow_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_workbench",
+      "sourceRect": {
+        "x": 66,
+        "y": 90,
+        "w": 1281,
+        "h": 989
+      },
+      "displaySize": {
+        "w": 131.64426877470356,
+        "h": 101.63636363636364
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9919110212335692
+      },
+      "name": "Construction Workbench",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/workbench_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_construction_work_fence",
+      "sourceRect": {
+        "x": 103,
+        "y": 74,
+        "w": 1928,
+        "h": 584
+      },
+      "displaySize": {
+        "w": 161.3389121338912,
+        "h": 48.87029288702929
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9863013698630136
+      },
+      "name": "Construction Work Fence",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/construction_kit_v1/work_fence_source.png",
+      "tags": [
+        "whisperwind",
+        "construction",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_stone_bridge_approach_west",
+      "sourceRect": {
+        "x": 35,
+        "y": 193,
+        "w": 1201,
+        "h": 893
+      },
+      "displaySize": {
+        "w": 357.0076103185136,
+        "h": 265.45195338420706
+      },
+      "placeOrigin": {
+        "x": 0.9450457951706911,
+        "y": 0.3661814109742441
+      },
+      "name": "Stone Bridge Approach West",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/stone_bridge_approaches_v1/west_source.png",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "ramp",
+        "measured-alpha-original"
+      ]
+    },
+    {
+      "id": "wwhd_stone_bridge_approach_east",
+      "sourceRect": {
+        "x": 54,
+        "y": 231,
+        "w": 1179,
+        "h": 828
+      },
+      "displaySize": {
+        "w": 427.23708408379946,
+        "h": 300.04436439472937
+      },
+      "placeOrigin": {
+        "x": 0.04749787955894826,
+        "y": 0.3278985507246377
+      },
+      "name": "Stone Bridge Approach East",
+      "category": "structures",
+      "src": "/assets/whisperwind_hd/stone_bridge_approaches_v1/east_source.png",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "ramp",
+        "measured-alpha-original"
+      ]
     }
   ]
 }

@@ -14,17 +14,20 @@ function step(n,dt,canStand){
 function route(start,end,canStand,size,grid=40){
   const key=(x,y)=>x+','+y,w=Math.ceil(size.w/grid),h=Math.ceil(size.h/grid);
   const from=[Math.round(start.x/grid),Math.round(start.y/grid)],to=[Math.round(end.x/grid),Math.round(end.y/grid)];
-  const open=[from],seen=new Map([[key(...from),{cost:0}]]),closed=new Set();let found=false;
+  const open=[],seen=new Map([[key(...from),{cost:0}]]),closed=new Set();let found=false;
+  // A heap avoids sorting the entire frontier on every step in the larger town.
+  function push(node,cost){const entry={node,priority:cost+Math.abs(node[0]-to[0])+Math.abs(node[1]-to[1])};open.push(entry);let i=open.length-1;while(i){const p=(i-1)>>1;if(open[p].priority<=entry.priority)break;open[i]=open[p];i=p;}open[i]=entry;}
+  function pop(){const first=open[0],last=open.pop();if(open.length){let i=0;while(true){let child=i*2+1;if(child>=open.length)break;if(child+1<open.length&&open[child+1].priority<open[child].priority)child++;if(open[child].priority>=last.priority)break;open[i]=open[child];i=child;}open[i]=last;}return first.node;}
+  push(from,0);
   const clear=(ax,ay,bx,by)=>{const d=Math.hypot(bx-ax,by-ay),steps=Math.max(1,Math.ceil(d/8));for(let i=1;i<=steps;i++)if(!canStand(ax+(bx-ax)*i/steps,ay+(by-ay)*i/steps))return false;return true;};
   if(!canStand(end.x,end.y))return [];
   if(clear(start.x,start.y,end.x,end.y))return [end];
   for(let count=0;open.length&&count<16000;count++){
-    open.sort((a,b)=>(seen.get(key(...a)).cost+Math.abs(a[0]-to[0])+Math.abs(a[1]-to[1]))-(seen.get(key(...b)).cost+Math.abs(b[0]-to[0])+Math.abs(b[1]-to[1])));
-    const a=open.shift(),ak=key(...a);if(closed.has(ak))continue;closed.add(ak);
+    const a=pop(),ak=key(...a);if(closed.has(ak))continue;closed.add(ak);
     if(a[0]===to[0]&&a[1]===to[1]){found=true;break;}
     for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){
       const b=[a[0]+dx,a[1]+dy],bk=key(...b);if(b[0]<1||b[1]<1||b[0]>=w||b[1]>=h||closed.has(bk)||!clear(a[0]*grid,a[1]*grid,b[0]*grid,b[1]*grid))continue;
-      const cost=seen.get(ak).cost+1;if(!seen.has(bk)||seen.get(bk).cost>cost){seen.set(bk,{cost,parent:a});open.push(b);}
+      const cost=seen.get(ak).cost+1;if(!seen.has(bk)||seen.get(bk).cost>cost){seen.set(bk,{cost,parent:a});push(b,cost);}
     }
   }
   if(!found)return [];

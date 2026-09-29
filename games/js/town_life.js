@@ -7,7 +7,7 @@ async function prepare(E,sc){
   if(!E.guidePlaces)E.guidePlaces=(await json('/assets/worlds/whisperwind_hd_waterfront.json')).guidePlaces;
   E.npcSkins=await json('/api/town/npc-skins').catch(()=>({skins:{}}));
   for(const n of sc.npcs||[])n.skinId=E.npcSkins.overrides?.[sc.id+':'+n.id]||n.skinId;
-  if(sc.id==='whisperwind_hd_waterfront'){E.townHomes=(await json('/api/town/homes')).plots;E.guidePlaces=sc.guidePlaces;for(const o of sc.objects||[])if(o.plotId)o._defaultAsset=o.asset;}
+  if(sc.id==='whisperwind_hd_waterfront'||sc.townId==='whisperwind_hd_waterfront'){E.townHomes=(await json('/api/town/homes')).plots;E.guidePlaces=sc.guidePlaces;for(const o of sc.objects||[])if(o.plotId)o._defaultAsset=o.asset;}
   if(sc.home?.canEdit){const b=$('#townDecorate');if(b)b.hidden=false;}else if($('#townDecorate'))$('#townDecorate').hidden=true;
 }
 function tools(E,a){
@@ -68,6 +68,7 @@ function exterior(E,o){
 }
 function drawAmbient(c,E,time){
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for(const n of E.scene.npcs||[]){if(!n.chatter?.length||E.conversing===n||Math.hypot(n.x-E.player.x,n.y-E.player.y)>500||(time+(n.chatterOffset||0))%24>3.5)continue;const text=n.chatter[Math.floor(time/24)%n.chatter.length];c.save();c.font='12px system-ui';c.textAlign='center';const w=Math.min(280,c.measureText(text).width+20);c.fillStyle='rgba(20,29,20,.92)';c.fillRect(n.x-w/2,n.y-112,w,25);c.fillStyle='#f1edcd';c.fillText(text,n.x,n.y-95,w-12);c.restore();}
   for(const o of E.scene.objects||[]){
     if(!o.plotId||Math.hypot(o.x-E.player.x,o.y-E.player.y)>650||E.near?.plotId===o.plotId)continue;
     const p=E.townHomes?.find(p=>p.id===o.plotId);if(!p)continue;
@@ -88,10 +89,11 @@ function drawAmbient(c,E,time){
     if(a.type==='windowPet'){
       const skin=E.npcSkins?.pets?.[a.pet],im=skin&&E.assets[skin.src];if(!im)continue;
       const phase=reduced?3:(time+(a.offset||0))%9;
+      if(!reduced&&(phase<1.5||phase>=6))continue;
       const frame=phase<1.5?0:phase<2?1:phase<4.5?2:phase<5.5?3:0;
       // The puppy springs into view, settles on its paws, then drops behind the opening.
       // The cat rises more quietly and blinks while looking out.
-      const rise=reduced?0:phase>=1.5&&phase<2?-(2-phase)*28:phase>=2&&phase<2.6?Math.sin((phase-2)/.6*Math.PI)*(a.pet==='dog'?8:2):phase>=5.5&&phase<6?-(phase-5.5)*35:0;
+      const rise=reduced?0:phase<2?-(2-phase)/.5*a.h*1.3:phase<2.6?Math.sin((phase-2)/.6*Math.PI)*(a.pet==='dog'?8:2):phase>=5.5?-(phase-5.5)/.5*a.h*1.3:0;
       const r=skin.frames[frame];
       c.save();c.beginPath();c.rect(a.x-a.w/2,a.y-a.h,a.w,a.h);c.clip();WhisperwindAssets.draw(c,im,{sourceRect:r,displaySize:{w:a.w,h:a.w*r.h/r.w},placeOrigin:{x:.5,y:1}},{x:a.x,y:a.y-rise});c.restore();
     }

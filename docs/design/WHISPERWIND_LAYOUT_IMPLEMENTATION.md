@@ -1,6 +1,14 @@
 # Whisperwind concept-to-town implementation plan
 
-Target: approved expanded concept v2. Blueprint: WHISPERWIND_LAYOUT_BLUEPRINT.json. This is the construction plan, not a completed live-town replacement.
+Target: approved expanded concept v2. The first implementation now ships as the default waterfront scene, with a separate expanded preview. Blueprint: WHISPERWIND_LAYOUT_BLUEPRINT.json; final coordinates are in the scene, authored by scripts/build_whisperwind_expanded.py.
+
+## Implemented layout pass
+
+The 9,200 × 7,400 map preserves 24 player plot IDs and adds six NPC residences. Curved lanes connect a large civic square, orchard playground, fishing quay, eastern neighborhoods, lake shore and mansion approach. Three measured stone bridges cross the river. Two matching 100-unit wall/stair assemblies include landings and side collisions. Flowers, shrubs and bank plants complement 360 trees. Eight adult residents follow bounded routines and show brief nearby chatter. A timber house frame, tools, supplies and open work fences mark the builders' future address; it is unavailable for purchase.
+
+The dog peeks from the upstairs window and both pets retreat behind their window clips. Home interiors retain visible exit markers and Return to Town. Tests verify every entrance/landmark route, bridge water restrictions, stair connections, NPC routines and eight owned-home interior exits. Existing saved admin layouts remain authoritative and are not erased by this release.
+
+Still future work: actual construction progression, new shop/casino gameplay, lake fishing catches, children and jump-rope activities, public front/back interior passages, and genuine overlapping tunnel/upper walking surfaces. The terrace artwork communicates elevation; navigation remains one walking surface.
 
 ## Size and housing
 
@@ -26,7 +34,7 @@ The blueprint gives district bounds, landmark approaches, 24 preserved player-ho
 ## Immediate fixes and phased build
 
 - Home return: visible floor exit marker and an always-available Return to Town action in interiors; return outside the correct home. Test sizes, furniture and direct interior loads.
-- Dog/cat: verify asset window coordinates, mask retreat behind frame, keep door opening independent. This bug remains open.
+- Dog/cat: upstairs dog placement and clipped retreat implemented; review animation during the next player walkthrough.
 - First layout: district ground/water footprint, wide connected route loops and all ownership-preserving entrances. Preserve current scene as an archive; test a preview scene before switching the default.
 - Crossing assemblies: integrate measured bridge/deck/abutment/rail art; verify each bridge approach and reject water shortcuts.
 - Terraces: build matching walls, corners, stairs and landings as assemblies; add tunnels only after layering/navigation support is valid.

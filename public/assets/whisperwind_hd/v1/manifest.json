@@ -2039,9 +2039,9 @@
       }
     },
     "motion": {
-      "speed": 144,
-      "interiorSpeed": 128,
-      "cycleDistance": 72,
+      "speed": 170,
+      "interiorSpeed": 144,
+      "cycleDistance": 64,
       "shadow": {
         "y": 1,
         "rx": 11,
@@ -2068,4 +2068,3 @@
     "note": "PNG sources unchanged; alpha bounds recorded in metadata. Buildings cleaned through imagegen to separate window pets."
   }
 }
-

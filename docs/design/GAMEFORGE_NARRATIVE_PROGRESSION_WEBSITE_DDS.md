@@ -127,6 +127,20 @@ At Bellweather he discovers that saving his childhood town cannot return his chi
 
 ## 4. Town identities and geography
 
+### Fishing-led RPG direction — owner clarification, 2026-09-29
+
+GameForge is a slow fishing and fish-collecting RPG with a persistent home and community. Fish discoveries are the main reason to travel; the Anchor mystery connects the places without overwhelming ordinary fishing, companion care and town life. Give the player time to settle, revisit neighbors and enjoy a quiet catch between story beats. Avoid constant combat, urgent timers and compulsory daily chores.
+
+The world comprises authored town hubs, connected overworld routes/fields, waterways and caves. Each region needs a memorable fishing habitat, fish collection entries, a local story and a safe route home. Transitions have visible entrances and working return links. A quiet field and pond outside Whisperwind is the proposed first new exploration area after this town pass; it is a local outskirts scene, not premature access to the Sunny Meadows campaign. Later meadow paths connect Sunny Meadows, forest trails connect Riverbend, and cave entrances lead to underground pools. Do not present these planned scenes as shipped.
+
+Use the existing shared fish ledger/catalog and inventory rather than a second collection system. Ordinary regional species provide steady progress; optional rare fish offer long-term discovery. Required story catches are deterministic or have an assisted route, so random rarity, weather, seasonal windows and other players never block the campaign. New fishing locations must use validated catch sessions before granting fish, rewards or collection completion.
+
+The baseline encounter design is simple and readable: the player chooses a small set of actions such as attack, defend, item or retreat; their selected active pet automatically chooses a bounded support action. Species may change flavor or help style—guarding, healing or distracting—without making a rare pet mandatory. Show what the companion did and why. Snapshot the same account's active pet at encounter start; the server validates encounter results and shared rewards. Pet assistance is planned, not a claim that current battles already implement it.
+
+Keep encounters brief and spaced apart. Offer safe retreat, free recovery and an assisted/non-combat route for required story challenges. Pets cannot permanently die or be lost through these encounters. Combat supports exploration and protecting places; it does not replace fishing with a battle grind or make every fishing trip dangerous.
+
+Next area sequence: complete and polish Whisperwind → local field/pond vertical slice with return travel and a few collection species → connected meadow/forest routes → a small cave and pool → additional towns following the existing campaign gates. Build and test one complete returnable region at a time.
+
 The campaign route is Whisperwind → Sunny Meadows → Shadow Woods/Riverbend/Crystal Cave → Ember Hollow → Tidehaven → Ironvale → Bellweather → World Forge. Return travel to unlocked safe hubs is free. Routes are authored connections, not distances players must infer from a map.
 
 | Region | Identity and ordinary life | Landmarks and visual/audio direction | Local conflict and enduring change |
@@ -765,4 +779,3 @@ Town design expansion, 2026-09-28: added Whisperwind settlement history, named d
 ### Implementation status at publication
 
 All new main campaign quests, new Chronicle/Council pages, capability director, and new transactional receipt contracts are **planned**. Existing world, pet, inventory, marketplace, housing, table-game, and administrative infrastructure is **observed in source**, with integration gaps detailed in the audit. No gameplay implementation, production mode switch, balance edit, or save migration is included in this documentation commit.
-
