@@ -115,3 +115,5 @@ Still pending: lake catch gameplay, mansion quest, playground children/activity 
 September 29 side-walk update: main player now uses opposite foot contacts and passing poses in both horizontal directions. Browser-tested left/right crossing; 50 targeted checks pass. Slight generated body-shape variation remains; NPC/outfit animation matching is still open.
 
 Bridge correction: replaced all three separate bridge/ramp assemblies with complete integrated originals and narrow stone-to-cobble thresholds. Rerouted banks to flat toes, moved north crossing away from home09 and cleared ramp canopy overlap. 51 targeted checks pass; visual appearance remains subject to player review.
+
+September 29 shore seam review: user found the v2 thin gravel border pasted onto bridge toe. V3 embeds small warm cobbles into both ramp ends and removes all six external threshold instances. Await normal-player visual acceptance after deployment.
