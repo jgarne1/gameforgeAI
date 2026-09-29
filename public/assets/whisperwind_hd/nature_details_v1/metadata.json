@@ -1,0 +1,108 @@
+{
+  "id": "nature_details_v1",
+  "assets": [
+    {
+      "id": "wwhd_nature_wildflowers",
+      "name": "Meadow wildflowers",
+      "category": "props",
+      "src": "/assets/whisperwind_hd/nature_details_v1/wildflowers_source.png",
+      "sourceRect": {
+        "x": 19,
+        "y": 110,
+        "w": 1228,
+        "h": 1005
+      },
+      "displaySize": {
+        "w": 125,
+        "h": 102.3
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      },
+      "tags": [
+        "whisperwind",
+        "nature",
+        "alpha-original"
+      ],
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "bf1187d9c6f499b7eb0ef7a687fa39bd110315ed1b028f27fdf2c07b0b8baf4e"
+    },
+    {
+      "id": "wwhd_nature_shrub",
+      "name": "Berry and blossom shrub",
+      "category": "props",
+      "src": "/assets/whisperwind_hd/nature_details_v1/shrub_source.png",
+      "sourceRect": {
+        "x": 54,
+        "y": 285,
+        "w": 1176,
+        "h": 694
+      },
+      "displaySize": {
+        "w": 145,
+        "h": 85.57
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      },
+      "tags": [
+        "whisperwind",
+        "nature",
+        "alpha-original"
+      ],
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "27b14288f7ed01c19b02cd37b073003361cec81cc86a445000a1a054e8028328"
+    },
+    {
+      "id": "wwhd_nature_riverplants",
+      "name": "Fern and cattail bank plants",
+      "category": "props",
+      "src": "/assets/whisperwind_hd/nature_details_v1/riverplants_source.png",
+      "sourceRect": {
+        "x": 109,
+        "y": 72,
+        "w": 1050,
+        "h": 1114
+      },
+      "displaySize": {
+        "w": 105,
+        "h": 111.4
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 1
+      },
+      "tags": [
+        "whisperwind",
+        "nature",
+        "alpha-original"
+      ],
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "502e416e9fd2f643f5ccdcbd5035b47249e99d6946ac42ad616b4148033a7400"
+    }
+  ],
+  "notes": "Immutable generated sources. Rectangles measured from alpha>8 with an8pixel margin. Bottom-center ground anchors. No pixel editing, exact palettes or procedural tint."
+}

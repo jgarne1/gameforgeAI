@@ -57,7 +57,7 @@ test('estate expansion preserves existing ownership and is idempotent',()=>{
   const data={neighborhoods:[{id:'whisperwind_01',plots:[{id:'plot_01',owner:'Existing',decoration:{old:true}}]}]};H.expandEstate(data);H.expandEstate(data);
   assert.equal(data.neighborhoods[0].plots.length,25);assert.equal(data.neighborhoods[0].plots[0].owner,'Existing');assert.deepEqual(data.neighborhoods[0].plots[0].decoration,{old:true});
 });
-function world(){const ctx=vm.createContext({window:{},document:{}});vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,canStand};'),ctx);const sc=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json'));ctx.window.test.E.scene=sc;return {sc,canStand:ctx.window.test.canStand};}
+function world(){const ctx=vm.createContext({window:{},document:{}});vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,canStand};'),ctx);const sc=JSON.parse(read('docs/design/archive/whisperwind_waterfront_v1.json'));ctx.window.test.E.scene=sc;return {sc,canStand:ctx.window.test.canStand};}
 
 test('playground gate and equipment approaches stay reachable while supports block',()=>{
  const {sc,canStand}=world();

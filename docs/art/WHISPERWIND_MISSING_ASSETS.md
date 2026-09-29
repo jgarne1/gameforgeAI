@@ -2,6 +2,12 @@
 
 Reference: Whisperwind-Layered-Town-Concept-v2.png. This is a concept inventory, not a claim that its features are implemented. Checked the shipped world asset catalog and the asset task output folder.
 
+## September 29 integration update
+
+Registered and placed: nature_details_v1 (wildflowers, shrub, river plants), stone_bridge_v1 (deck, front rail, landing), terrace_kit_v1 (wall, outer corner, endcap, stairs and landing), construction_kit_v1 (timber frame, scaffold, lumber, stone, wheelbarrow, workbench and fence). Alternative construction foundation/roof stages and terrace ramp are editor choices, not automatic gameplay states. The inconsistent inner-corner draft is excluded. Playground slide, jungle gym, swings, sand and open gate are integrated. Right-facing tavern, fishing shop and inn now appear in the layout; roof variants for those originals still need separate art.
+
+Every pack retains original alpha PNGs, measured source rectangles/anchors, exact prompt files and metadata. Full overlapping tunnel surfaces, split worker occlusion, child activity animation and future waterfront/storefront variants remain production work.
+
 ## Already available — reuse
 
 - Cottage, apartment, bakery, pet center, fishing shop, tavern and old mansion.

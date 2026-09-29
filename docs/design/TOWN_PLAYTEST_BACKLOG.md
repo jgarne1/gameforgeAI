@@ -1,5 +1,9 @@
 # Town playtest notes
 
+## September 29 completed layout pass
+
+Expanded default town with curved routes, three river crossings, connected wall/stair landings, large square, accessible playground/lake/mansion, varied home placement, flowers and construction scenery. Preserved 24 player addresses; six separate NPC homes and eight roaming residents. Dog moved upstairs with clipped retreat; both interior return mechanisms remain available. Historical observations below are retained; true tunnels, children/playground activities and future shop/construction gameplay remain open.
+
 ## Next batch — observations being collected
 
 - The dog animation looks awkward against the Pet Center's open doorway. Try moving it to the upstairs window, or having it peek around one side of the door. Leave the current animation in place until this batch is addressed.
