@@ -24,6 +24,10 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
  if(migrateNames)db.exec("UPDATE chats SET custom_name=1 WHERE id!='family' AND name!='Private chat' AND instr(name,' & ')=0");
  db.exec("UPDATE chats SET owner_id=(SELECT user_id FROM chat_members WHERE chat_id=chats.id ORDER BY rowid LIMIT 1) WHERE id!='family' AND owner_id IS NULL");
  db.exec('CREATE TABLE IF NOT EXISTS invite_claims (token TEXT PRIMARY KEY,user_id TEXT NOT NULL,device_id TEXT)');
+ db.exec('CREATE TABLE IF NOT EXISTS chat_reads (chat_id TEXT NOT NULL,user_id TEXT NOT NULL,last_seq INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(chat_id,user_id))');
+ if(!db.prepare("SELECT value FROM metadata WHERE key='chat_reads_initialized'").get()){
+  db.exec("INSERT OR IGNORE INTO chat_reads(chat_id,user_id,last_seq) SELECT 'family',p.user_id,COALESCE((SELECT MAX(seq) FROM messages WHERE chat_id='family' AND mutation_target IS NULL),0) FROM people p; INSERT OR IGNORE INTO chat_reads(chat_id,user_id,last_seq) SELECT cm.chat_id,cm.user_id,COALESCE((SELECT MAX(seq) FROM messages WHERE chat_id=cm.chat_id AND mutation_target IS NULL),0) FROM chat_members cm; INSERT INTO metadata(key,value) VALUES ('chat_reads_initialized','1')");
+ }
  for(const [token,user] of members){db.prepare('INSERT OR IGNORE INTO invite_claims(token,user_id) VALUES (?,?)').run(token,user);members.set(token,db.prepare('SELECT user_id FROM invite_claims WHERE token=?').get(token).user_id);}
  const allowedIds=new Set(members.values());
  const peers=new Map(), waiting=new Set();
@@ -32,9 +36,9 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
  const online=()=>[...new Map([...peers.entries()].filter(([,p])=>now()-p.last<65000&&allowedIds.has(p.userId)).map(([device,p])=>[p.userId,{device,name:p.name,userId:p.userId}])).values()];
  const people=()=>{const active=new Set(online().map(p=>p.userId));return db.prepare('SELECT user_id, name, last_seen FROM people ORDER BY name COLLATE NOCASE').all().filter(p=>allowedIds.has(p.user_id)).map(p=>({userId:p.user_id,name:p.name,lastSeen:p.last_seen,online:active.has(p.user_id)}));};
  const member=(chat,user)=>chat==='family'?{after_seq:0}:db.prepare('SELECT after_seq,moderator FROM chat_members WHERE chat_id=? AND user_id=?').get(chat,user);
- const chats=user=>db.prepare('SELECT * FROM chats ORDER BY rowid').all().filter(c=>member(c.id,user)).map(c=>({...c,canManage:c.id!=='family'&&(c.owner_id===user||!!member(c.id,user).moderator),moderators:db.prepare('SELECT user_id FROM chat_members WHERE chat_id=? AND moderator=1').all(c.id).map(p=>p.user_id),latest:db.prepare('SELECT seq,user_id FROM messages WHERE chat_id=? AND seq>? AND received_at>? ORDER BY seq DESC LIMIT 1').get(c.id,member(c.id,user).after_seq,now()-RETENTION_MS)||null,members:c.id==='family'?people().map(p=>p.userId):db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(c.id).map(p=>p.user_id).filter(id=>allowedIds.has(id))}));
+ const chats=user=>db.prepare('SELECT * FROM chats ORDER BY rowid').all().filter(c=>member(c.id,user)).map(c=>{const after=member(c.id,user).after_seq,readSeq=db.prepare('SELECT last_seq FROM chat_reads WHERE chat_id=? AND user_id=?').get(c.id,user)?.last_seq||0;return {...c,canManage:c.id!=='family'&&(c.owner_id===user||!!member(c.id,user).moderator),moderators:db.prepare('SELECT user_id FROM chat_members WHERE chat_id=? AND moderator=1').all(c.id).map(p=>p.user_id),latest:db.prepare('SELECT seq,user_id,received_at FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL ORDER BY seq DESC LIMIT 1').get(c.id,after,now()-RETENTION_MS)||null,unread:db.prepare('SELECT COUNT(*) AS n FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL AND deleted=0 AND user_id!=?').get(c.id,Math.max(after,readSeq),now()-RETENTION_MS,user).n,members:c.id==='family'?people().map(p=>p.userId):db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(c.id).map(p=>p.user_id).filter(id=>allowedIds.has(id))};});
  function prune(){const cutoff=now()-RETENTION_MS;db.prepare('DELETE FROM messages WHERE received_at <= ?').run(cutoff);db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
-  for(const c of db.prepare('SELECT id FROM chats WHERE ended_at <= ?').all(cutoff)){for(const f of db.prepare('SELECT id FROM file_chats WHERE chat_id=?').all(c.id))fs.rmSync(path.join(dir,'files',f.id),{force:true});db.prepare('DELETE FROM file_chats WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM messages WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_members WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chats WHERE id=?').run(c.id);}
+  for(const c of db.prepare('SELECT id FROM chats WHERE ended_at <= ?').all(cutoff)){for(const f of db.prepare('SELECT id FROM file_chats WHERE chat_id=?').all(c.id))fs.rmSync(path.join(dir,'files',f.id),{force:true});db.prepare('DELETE FROM file_chats WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM messages WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_members WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_reads WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chats WHERE id=?').run(c.id);}
   for(const name of fs.readdirSync(path.join(dir,'files'))){const file=path.join(dir,'files',name);if(fs.statSync(file).mtimeMs<=cutoff)fs.unlinkSync(file);}
   for(const [id,p] of peers)if(now()-p.last>=65000)peers.delete(id);
  }
@@ -74,11 +78,18 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
     if(operation==='rename'){if(typeof body.name!=='string'||!body.name.trim()||body.name.length>64)return finish(res,400,{error:'Name must be 1–64 characters'});db.prepare('UPDATE chats SET name=?,custom_name=1 WHERE id=?').run(body.name.trim(),id);}
     if(operation==='add'){if(!allowedIds.has(body.userId)||typeof body.shareHistory!=='boolean')return finish(res,400,{error:'Invalid member or history choice'});const seq=body.shareHistory?0:db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM messages').get().seq;db.prepare('INSERT OR IGNORE INTO chat_members(chat_id,user_id,after_seq) VALUES (?,?,?)').run(id,body.userId,seq);}
     if(operation==='moderator'){if(c.owner_id!==userId)return finish(res,403,{error:'Only the chat owner can assign moderators'});if(body.userId===c.owner_id||!member(id,body.userId)||typeof body.enabled!=='boolean')return finish(res,400,{error:'Invalid moderator'});db.prepare('UPDATE chat_members SET moderator=? WHERE chat_id=? AND user_id=?').run(body.enabled?1:0,id,body.userId);}
-    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);}
+    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);db.prepare('DELETE FROM chat_reads WHERE chat_id=? AND user_id=?').run(id,body.userId);}
     if(operation==='end')db.prepare('UPDATE chats SET ended_at=? WHERE id=?').run(now(),id);wake();return finish(res,200,{chats:chats(userId)});
    }
    const chat=req.headers['x-chat']||'family',membership=member(chat,userId),conversation=db.prepare('SELECT * FROM chats WHERE id=?').get(chat);
    if(!conversation||!membership)return finish(res,403,{error:'Chat access denied'});
+   if(req.method==='POST'&&url.pathname==='/read'){
+    const body=JSON.parse((await read(req,128)).toString());if(!Number.isSafeInteger(body.seq)||body.seq<0)return finish(res,400,{error:'Invalid read position'});
+    const latest=db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM messages WHERE chat_id=? AND mutation_target IS NULL').get(chat).seq;
+    const seq=Math.max(membership.after_seq,Math.min(body.seq,latest));
+    db.prepare('INSERT INTO chat_reads(chat_id,user_id,last_seq) VALUES (?,?,?) ON CONFLICT(chat_id,user_id) DO UPDATE SET last_seq=MAX(last_seq,excluded.last_seq)').run(chat,userId,seq);
+    wake();return finish(res,200,{chats:chats(userId)});
+   }
    if(conversation.ended_at&&(req.method==='POST'||req.method==='PUT'))return finish(res,409,{error:'Chat has ended'});
    if(req.method==='GET'&&url.pathname==='/events') {
     let after=Number(url.searchParams.get('after')||0);if(!Number.isSafeInteger(after)||after<0)return finish(res,400,{error:'Invalid cursor'});
@@ -121,4 +132,3 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
 if(require.main===module&&process.env.BACKEND_URL){require('./proxy.cjs').createProxy(process.env.BACKEND_URL).listen(Number(process.env.PORT||45831),'0.0.0.0');}
 else if(require.main===module){const server=createRelay({secret:process.env.ROOM_SECRET,invites:(process.env.INVITE_CODES||'').split(',').map(s=>s.trim()).filter(Boolean),dir:process.env.DATA_DIR||path.join(__dirname,'data')});server.listen(Number(process.env.PORT||45831),'0.0.0.0',()=>console.log('FamilyWire relay listening'));}
 module.exports={createRelay};
-
