@@ -194,6 +194,43 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
   button,input{font-size:15px;}
 }
 
+/* Put game discovery first; room controls become the next step. */
+.brandBadge{background:#2563eb;color:#fff}
+.primary{background:#2563eb}
+.gameRail{grid-template-rows:minmax(0,1fr);height:auto;min-height:0}
+#scrollUp,#scrollDown{display:none}
+.gameSearch{width:100%;margin-top:10px;padding:9px 11px;border-radius:10px;border:1px solid #42556d;background:#0d1d30;color:#fff;font:inherit;font-size:13px;outline:none}
+.gameSearch:focus{border-color:#38bdf8;box-shadow:0 0 0 2px #38bdf833}
+.gameSearch::placeholder{color:#9cb0c5}
+.panelHead p{line-height:1.35}
+.gameCard{min-height:82px;background:#142438;border-color:#33485e}
+.gameCard.unlocked{background:#173449;border-color:#3486a2}
+.gameCard.locked{opacity:.82;background:#142438;border-color:#2b4055}
+.gameActionHint{display:none}
+.main{grid-template-columns:minmax(245px,290px) minmax(0,1fr) minmax(180px,220px)}
+.header{background:#102035;box-shadow:none}
+.panel{background:#0d1b2c;box-shadow:none}
+.guestBrowse .launcher{grid-template-rows:58px minmax(0,1fr)}
+.guestBrowse .main{grid-template-columns:1fr}
+.guestBrowse .roomTop,.guestBrowse .tablePanel,.guestBrowse .players,.guestBrowse .chatPanel{display:none}
+.guestBrowse .gameGroup{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));align-content:start}
+.guestBrowse .gameGroupTitle{grid-column:1/-1}
+.guestBrowse .gameCard.locked{opacity:1}
+.guestBrowse .gameCard.locked .gameName,.guestBrowse .gameCard.locked .gameMeta{color:inherit}
+.guestBrowse .lockLine{display:none}
+.guestLogin{display:none;margin-top:10px;padding:8px 12px;border-radius:10px}
+.guestBrowse .guestLogin{display:inline-block}
+@media(max-width:1050px){.main{grid-template-columns:minmax(220px,275px) minmax(0,1fr)}.players{display:none}}
+@media(max-width:640px){
+  .main{grid-template-columns:1fr}
+  .games{max-height:380px}
+  .gameRail{height:275px;grid-template-rows:minmax(0,1fr)}
+  .gameCard{min-height:74px}
+  .guestBrowse .launcher{grid-template-rows:auto minmax(0,1fr)}
+  .guestBrowse .games{max-height:none}
+  .guestBrowse .gameRail{height:auto}
+  .guestBrowse .gameGroup{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -201,7 +238,7 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
   <header class="header">
     <div class="brand">
       <div class="brandBadge">GF</div>
-      <div><h1>GameForge Table</h1><span id="hostLabel">Creating private room...</span></div>
+      <div><h1>Game library</h1><span id="hostLabel">Choose a game to set up your table.</span></div>
     </div>
     <div class="roomTop">
       <div class="roomCode">Room Code: <b id="roomCodeText">----</b></div>
@@ -217,7 +254,7 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
 
   <main class="main">
     <section class="panel games">
-      <div class="panelHead"><h2>Games</h2><p>Hostable games appear here. Locked games are greyed out until you own the matching game item.</p></div>
+      <div class="panelHead"><h2>1 · Choose a game</h2><p id="gameLibraryHint">Browse everything here. Sign in to set up a table.</p><button class="primary guestLogin" id="guestLogin">Log in to play</button><input class="gameSearch" id="gameSearch" type="search" placeholder="Search games" aria-label="Search games"></div>
       <div class="gameRail">
         <button class="arrowBtn" id="scrollUp">⌃</button>
         <div class="gameList" id="gameList"></div>
@@ -227,8 +264,8 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
 
     <section class="panel tablePanel">
       <div class="tableTitle">
-        <h2 id="selectedTitle">Gaming Table</h2>
-        <p id="selectedSub">Choose a game on the left. The table is private until the host makes it public.</p>
+        <h2 id="selectedTitle">2 · Your table</h2>
+        <p id="selectedSub">Choose a game, take a seat, then start playing.</p>
       </div>
       <div class="tableStage" id="tableStage">
         <div class="felt"><div><b>Awaiting game selection</b><span>Pick a hostable game from the left rail. Players can sit once seats appear.</span></div></div>
@@ -242,7 +279,7 @@ button:disabled{cursor:not-allowed;opacity:.42;transform:none}
     </section>
 
     <section class="panel players">
-      <div class="panelHead"><h2>Players</h2><p>Everyone currently in this room.</p></div>
+      <div class="panelHead"><h2>Players</h2><p>People at this table.</p></div>
       <div class="playersList" id="playersList"></div>
     </section>
   </main>
@@ -260,6 +297,8 @@ const EXCLUDED_GAME_IDS=new Set(['petworld','petbattle','market','inventory','la
 const MASTER_KEYS=new Set(['master_game_key','gameforge_master_key','all_games_key']);
 const GAME_ICONS={petbattle:'⚔️',tictactoe:'✕',connect4:'●',battleship:'⌖',battleship2:'⌖',hangman:'?',trouble:'★',uno:'◑',gofish:'🐟',yahtzee:'⚂',chess:'♞',othello:'◐',mancala:'●',squares:'□',miner:'⛏',shadowtrace:'◈',doomlike:'✦',pixelquest:'◆'};
 let me=localStorage.getItem('gf_user')||'';
+document.body.classList.toggle('guestBrowse',!me);
+if(me)document.getElementById('gameLibraryHint').textContent='Choose an unlocked game to host. Friends can join without owning it.';
 let admin=localStorage.getItem('gf_admin')==='true';
 let socket=null;
 let room=null;
@@ -538,6 +577,7 @@ function makeGameCard(g,unlocked){
       )+
     '</div>';
   b.onclick=()=>{
+    if(!me){try{parent.openLoginModal();}catch(err){}return;}
     selectedGameId=g.id;
     if(!unlocked){drawGames();drawTable('You need '+required+' before you can host '+(g.name||g.id)+'.');return;}
     if(!room){log('Room is not ready yet.');return;}
@@ -560,12 +600,13 @@ function appendGameGroup(list,title,items,unlocked){
 }
 function drawGames(){
   const list=el('gameList');list.innerHTML='';
-  const all=normalizedGames();
+  const query=el('gameSearch').value.trim().toLowerCase();
+  const all=normalizedGames().filter(g=>(g.name||g.id||'').toLowerCase().includes(query));
   const unlocked=all.filter(g=>canHostGame(g.id));
   const locked=all.filter(g=>!canHostGame(g.id));
   appendGameGroup(list,'Unlocked Games',unlocked,true);
-  appendGameGroup(list,'Locked Games',locked,false);
-  if(!list.innerHTML)list.innerHTML='<div class="muted" style="padding:12px">No table games found.</div>';
+  appendGameGroup(list,me?'Locked Games':'All Games',locked,false);
+  if(!list.innerHTML)list.innerHTML='<div class="muted" style="padding:12px">No games match your search.</div>';
 }
 function drawPlayers(){
   const box=el('playersList');box.innerHTML='';
@@ -580,7 +621,7 @@ function drawPlayers(){
 function seatClass(i,total){if(total<=1)return 'seat0';if(total===2)return i===0?'seat0':'seat2';if(total===3)return ['seat0','seat1','seat2'][i]||'seat3';if(total===4)return 'seat'+i;return 'seat'+i;}
 function drawTable(note){
   let g=(room&&room.selectedGame)||games.find(x=>x.id===selectedGameId);
-  el('selectedTitle').innerText=g?g.name:'Gaming Table';
+  el('selectedTitle').innerText=g?g.name:'2 · Your table';
   el('selectedSub').innerText=g?(playerText(g)+' · '+playerCount()+' in room · '+(canHostGame(g.id)?'You can host this game':'Locked for hosting')):'Choose a game on the left. '+playerCount()+' in room.';
   let stage=el('tableStage');stage.innerHTML='<div class="felt"><div><b>'+(g?esc(g.name):'Awaiting game selection')+'</b><span>'+(g?'Choose a seat when the host selects this game. Guests can play without owning the game item.':'Pick a hostable game from the left rail. Players can sit once seats appear.')+'</span></div></div>';
   if(room&&room.selectedGame&&Array.isArray(room.seats)){
@@ -698,6 +739,8 @@ window.addEventListener('message',e=>{
 
 el('scrollUp').onclick=()=>el('gameList').scrollBy({top:-180,behavior:'smooth'});
 el('scrollDown').onclick=()=>el('gameList').scrollBy({top:180,behavior:'smooth'});
+el('gameSearch').addEventListener('input',drawGames);
+el('guestLogin').onclick=()=>{try{parent.openLoginModal();}catch(err){}};
 el('copyBtn').onclick=async()=>{if(!room)return;try{await navigator.clipboard.writeText(room.id);log('Room code copied.');}catch(e){log('Room code: '+room.id);}};
 el('joinBtn').onclick=joinRoomByCode;
 el('joinCode').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoomByCode();});

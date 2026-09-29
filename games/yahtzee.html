@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Yahtzee</title>
 <style>
 :root{
@@ -1011,5 +1012,35 @@ if(document.readyState==='loading'){
 })();
 </script>
 
+<style id="yahtzeeViewportFit">
+  body{display:flex;flex-direction:column;height:100dvh;min-height:0;overflow:hidden}
+  #gfStandardHud{position:relative;inset:auto;order:-1;flex:0 0 auto;margin:8px 12px 0;box-shadow:none}
+  .wrap{flex:1 1 auto;height:auto;min-height:0;padding:8px 12px 12px;grid-template-rows:auto auto minmax(0,1fr);gap:7px}
+  .top{justify-content:flex-end;padding:5px 10px;box-shadow:none}
+  .top h2{display:none}
+  .status{padding:6px 10px;box-shadow:none}
+  #status{font-size:16px}
+  .mainPanel{min-width:0;min-height:0;grid-template-columns:minmax(0,1fr) minmax(300px,43%);gap:8px;padding:8px;box-shadow:none}
+  .tablePanel,.scorePanel{min-width:0;padding:8px;border-radius:13px}
+  .tablePanel{grid-template-rows:auto minmax(0,1fr) auto;gap:6px}
+  .tableCenter{min-height:0;gap:8px}
+  #diceArea{width:100%;min-height:110px;padding:8px;gap:clamp(4px,1vw,10px)}
+  .die{width:clamp(38px,5vw,72px);height:clamp(38px,5vw,72px);padding:8px}
+  .pip{width:clamp(6px,1vw,11px);height:clamp(6px,1vw,11px)}
+  .scorePanel{overflow:auto}
+  .scorePanel th,.scorePanel td{padding:5px}
+  @media(max-width:920px){
+    body{height:auto;min-height:100dvh;overflow-y:auto}
+    .wrap{flex:none;grid-template-rows:auto auto auto}
+    .mainPanel{grid-template-columns:1fr}
+    .tablePanel{min-height:300px}
+    .scorePanel{overflow-x:auto}
+  }
+  @media(max-height:620px) and (min-width:921px){
+    body{height:auto;min-height:100dvh;overflow-y:auto}
+    .wrap{flex:none;grid-template-rows:auto auto auto}
+    .mainPanel{min-height:450px}
+  }
+</style>
 </body>
 </html>
