@@ -102,12 +102,23 @@ def coaster_track(knots,steps=14):
   for n in range(steps):
    t=n/steps
    out.append(dict(zip(('x','y','z'),[round(.5*(2*b[k]+(-a[k]+c[k])*t+(2*a[k]-5*b[k]+4*c[k]-d[k])*t*t+(-a[k]+3*b[k]-3*c[k]+d[k])*t*t*t),1) for k in range(3)])))
- return out+[out[0].copy()]
+ # The east crest makes one complete elevated ring before continuing along
+ # the lake-facing descent. Keep it in the sampled course so cart and rails agree.
+ ring_start=4*steps
+ anchor=out[ring_start]
+ ring=[]
+ for n in range(1,41):
+  angle=math.pi/2-2*math.pi*n/40
+  ring.append({'x':round(anchor['x']+175*math.cos(angle),1),
+               'y':round(anchor['y']-175+175*math.sin(angle),1),
+               'z':round(anchor['z']+210*math.sin(math.pi*n/40)**2,1)})
+ return out[:ring_start+1]+ring+out[ring_start+1:]+[out[0].copy()]
 
 sc['attractions']={
  'coaster':{'id':'lantern_run','name':'Lantern Run','station':{'x':4170,'y':1400},'stationSprite':{'src':'/assets/whisperwind_hd/fairground_v1/lantern_run_station.png','x':3650,'y':1045,'w':720,'h':475},'queue':{'x':3790,'y':1350,'w':270,'h':225},
             'boarding':{'x':4005,'y':1550},'exit':{'x':3970,'y':1640},'dwellSeconds':8,'travelSeconds':23,
-            'tunnel':{'x':4740,'y':405,'rx':155,'ry':92},
+            'cartSprite':{'src':'/assets/whisperwind_hd/fairground_v2/lantern_cart.png','w':160,'h':108},
+            'tunnel':{'x':4740,'y':405,'rx':190,'ry':120,'sprite':'/assets/whisperwind_hd/fairground_v2/grotto_side.png','w':650,'h':340},
             'track':coaster_track([(x+250,y-170,z) for x,y,z in [(3920,1570,20),(4320,1580,30),(4820,1590,95),(5210,1380,210),(5240,1050,260),(5010,730,170),(4490,660,85),(3990,800,105),(3700,1080,175),(3710,1440,40)]])},
  'zoo':{'id':'wildlife_garden','sprite':{'src':'/assets/whisperwind_hd/fairground_v1/wildlife_animals.png','sourceRects':{'deer':[55,10,460,875],'capybara':[610,15,600,850],'owl':[1250,15,450,850]}},'pens':[
    {'id':'deer_meadow','name':'Deer Meadow','animal':'deer','x':350,'y':6350,'w':420,'h':460,'seed':1},

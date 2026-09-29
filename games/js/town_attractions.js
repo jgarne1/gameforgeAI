@@ -10,12 +10,17 @@ function coasterAt(scene, now){
   const cycle=dwell+travel,phase=((now/1000)%cycle+cycle)%cycle;
   const docked=phase<dwell,t=docked?0:(phase-dwell)/travel;
   const points=ride.track;
-  let length=ride._trackLength;
-  if(!length){length=0;for(let i=1;i<points.length;i++)length+=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y);ride._trackLength=length;}
+  let length=ride._travelWeights;
+  if(!length){length=0;ride._segments=[];for(let i=1;i<points.length;i++){
+    const a=points[i-1],b=points[i],distance=Math.hypot(b.x-a.x,b.y-a.y),slope=(b.z-a.z)/Math.max(1,distance);
+    const brake=i>points.length*.9?.48:1;
+    const speed=(slope>.025?.58:slope<-.025?1.7:1)*brake;
+    const weight=distance/speed;ride._segments.push(weight);length+=weight;
+  }ride._travelWeights=length;}
   let remaining=t*length,p=points[0],q=points[1]||p;
   for(let i=1;i<points.length;i++){
-    p=points[i-1];q=points[i];const segment=Math.hypot(q.x-p.x,q.y-p.y);
-    if(remaining<=segment||i===points.length-1){const a=segment?Math.max(0,Math.min(1,remaining/segment)):0;return {x:p.x+(q.x-p.x)*a,y:p.y+(q.y-p.y)*a,z:p.z+(q.z-p.z)*a,angle:Math.atan2(q.y-p.y,q.x-p.x),docked,waitSeconds:docked?0:cycle-phase,progress:t,ride};}
+    p=points[i-1];q=points[i];const segment=ride._segments[i-1];
+    if(remaining<=segment||i===points.length-1){const a=segment?Math.max(0,Math.min(1,remaining/segment)):0;return {x:p.x+(q.x-p.x)*a,y:p.y+(q.y-p.y)*a,z:p.z+(q.z-p.z)*a,angle:Math.atan2((q.y-q.z)-(p.y-p.z),q.x-p.x),docked,waitSeconds:docked?0:cycle-phase,progress:t,ride};}
     remaining-=segment;
   }
   return null;
@@ -36,16 +41,16 @@ function drawCoasterGround(c,ride,stationImage){
     stroke(c,[[p.x-10,p.y-p.z+12],[p.x+10,p.y-p.z+12]],'#9a7550',5);
   }
   const elevated=points.map(p=>[p.x,p.y-p.z]);
-  stroke(c,elevated,'rgba(13,28,20,.38)',58);
-  stroke(c,elevated,'#6b402e',44);
-  stroke(c,elevated,'#ad784c',35);
+  stroke(c,elevated,'rgba(13,28,20,.34)',43);
+  stroke(c,elevated,'#563a29',34);
+  stroke(c,elevated,'#aa7747',26);
   for(let i=0;i<points.length;i+=2){const p=points[i],a=points[Math.max(0,i-1)],b=points[Math.min(points.length-1,i+1)];const dx=b.x-a.x,dy=(b.y-b.z)-(a.y-a.z),len=Math.hypot(dx,dy)||1,nx=-dy/len*23,ny=dx/len*23;
-    stroke(c,[[p.x-nx,p.y-p.z-ny],[p.x+nx,p.y-p.z+ny]],'#d2a66c',7);
+    stroke(c,[[p.x-nx*.72,p.y-p.z-ny*.72],[p.x+nx*.72,p.y-p.z+ny*.72]],'#d2a66c',5);
   }
   stroke(c,elevated,'#483127',5);
   for(const side of [-1,1]){
     const rail=points.map((p,i)=>{const a=points[Math.max(0,i-1)],b=points[Math.min(points.length-1,i+1)],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;return [p.x-dy/len*side*17,p.y-p.z+dx/len*side*17];});
-    stroke(c,rail,'#e9bb74',6);
+    stroke(c,rail,'#d9b67e',4);
   }
   const s=ride.station;
   if(stationImage&&ride.stationSprite){const art=ride.stationSprite;c.drawImage(stationImage,art.x,art.y,art.w,art.h);}
@@ -56,8 +61,6 @@ function drawCoasterGround(c,ride,stationImage){
   if(!stationImage){pill(c,q.x,q.y,q.w,q.h,'rgba(172,134,80,.55)','#c5a270');for(let i=1;i<4;i++)stroke(c,[[q.x+18,q.y+i*q.h/4],[q.x+q.w-20,q.y+i*q.h/4]],'#744b32',7);}
   title(c,'QUEUE',q.x+q.w/2,q.y+q.h+43,23);
   // A shallow stone grotto masks the cart briefly at the far turn.
-  const tunnel=ride.tunnel;
-  if(tunnel){c.fillStyle='#263c32';c.beginPath();c.ellipse(tunnel.x,tunnel.y,tunnel.rx,tunnel.ry,0,0,Math.PI*2);c.fill();c.strokeStyle='#a1a095';c.lineWidth=20;c.stroke();c.fillStyle='#0b191a';c.beginPath();c.ellipse(tunnel.x,tunnel.y+12,tunnel.rx*.68,tunnel.ry*.7,0,0,Math.PI*2);c.fill();}
   c.restore();
 }
 
@@ -68,8 +71,8 @@ function drawZooGround(c,zoo){
     pill(c,x,y,w,h,pen.ground||'rgba(108,128,69,.23)','#aa956c');
     for(let i=0;i<12;i++){const gx=x+30+(i*83)%(w-60),gy=y+35+(i*137)%(h-70);c.fillStyle=i%3?'rgba(24,69,28,.24)':'rgba(231,197,114,.20)';c.beginPath();c.ellipse(gx,gy,17,7,i,0,Math.PI*2);c.fill();}
     c.lineCap='round';
-    for(const side of [-1,1])stroke(c,[[x,y+(side<0?0:h)],[x+w,y+(side<0?0:h)]],'#5c392a',13);
-    for(const side of [-1,1])stroke(c,[[x+(side<0?0:w),y],[x+(side<0?0:w),y+h]],'#5c392a',13);
+    for(const side of [-1,1])for(const inset of [0,17])stroke(c,[[x,y+(side<0?inset:h-inset)],[x+w,y+(side<0?inset:h-inset)]],inset?'#c6975e':'#5c392a',inset?5:9);
+    for(const side of [-1,1])for(const inset of [0,17])stroke(c,[[x+(side<0?inset:w-inset),y],[x+(side<0?inset:w-inset),y+h]],inset?'#c6975e':'#5c392a',inset?5:9);
     for(let px=x;px<=x+w;px+=75){pill(c,px-8,y-8,16,21,'#ca9a64','#573a28');pill(c,px-8,y+h-10,16,21,'#ca9a64','#573a28');}
     for(let py=y+70;py<y+h;py+=70){pill(c,x-8,py-8,16,21,'#ca9a64','#573a28');pill(c,x+w-8,py-8,16,21,'#ca9a64','#573a28');}
     pill(c,x+w/2-100,y+h+12,200,42,'#2d493a','#cda36b');title(c,pen.name,x+w/2,y+h+42,22);
@@ -79,9 +82,12 @@ function drawZooGround(c,zoo){
 }
 
 function drawAnimal(c,pen,now,sprite,image){
-  const x=pen.x+pen.w*.5+Math.sin(now*.00035+(pen.seed||0))*pen.w*.18;
-  const y=pen.y+pen.h*.45+Math.sin(now*.00051+(pen.seed||0))*pen.h*.13;
-  c.save();c.translate(x,y);c.scale(Math.sin(now*.00035+(pen.seed||0))>0?-1:1,1);
+  const phase=now*.001+(pen.seed||0),wander=pen.animal==='deer'?.18:pen.animal==='capybara'?.055:.025;
+  const x=pen.x+pen.w*.5+Math.sin(phase*.35)*pen.w*wander;
+  const y=pen.y+pen.h*.45+Math.sin(phase*.51)*pen.h*wander*.65;
+  const step=Math.sin(phase*(pen.animal==='deer'?5:2.4));
+  const hop=pen.animal==='owl'?Math.pow(Math.max(0,Math.sin(phase*1.4)),8)*11:0;
+  c.save();c.translate(x,y+Math.abs(step)*(pen.animal==='deer'?3:1)-hop);c.scale(Math.cos(phase*.35)>0?-1:1,1+Math.sin(phase*1.7)*.014);c.rotate((pen.animal==='owl'?.045:.018)*Math.sin(phase*1.2));
   c.fillStyle='rgba(13,26,17,.27)';c.beginPath();c.ellipse(0,10,55,13,0,0,Math.PI*2);c.fill();
   const rect=sprite?.sourceRects?.[pen.animal];
   if(image&&rect){const [sx,sy,sw,sh]=rect;const size={deer:[100,145],capybara:[145,120],owl:[105,125]}[pen.animal]||[110,120];c.drawImage(image,sx,sy,sw,sh,-size[0]/2,-size[1]+12,size[0],size[1]);c.restore();return;}
@@ -105,22 +111,20 @@ function drawAnimal(c,pen,now,sprite,image){
   c.restore();
 }
 
-function drawCart(c,pos,occupants,drawRider){
+function drawCart(c,pos,occupants,drawRider,cartImage){
   if(!pos)return;
   const tunnel=pos.ride.tunnel;
-  if(tunnel&&Math.hypot(pos.x-tunnel.x,pos.y-pos.z-tunnel.y)<tunnel.rx*.52)return;
-  c.save();c.translate(pos.x,pos.y-pos.z);c.rotate(pos.angle*.28);
+  if(tunnel&&Math.abs(pos.x-tunnel.x)<tunnel.rx*.85&&Math.abs(pos.y-pos.z-tunnel.y)<tunnel.ry*.8)return;
+  c.save();c.translate(pos.x,pos.y-pos.z);c.rotate(pos.angle);
   c.fillStyle='rgba(0,0,0,.26)';c.beginPath();c.ellipse(8,28,68,15,0,0,Math.PI*2);c.fill();
-  pill(c,-65,-37,130,74,'#8c3c35','#efbd70');
-  pill(c,-53,-28,106,45,'#382c30','#c9995f');
-  if(drawRider){c.save();c.translate(0,5);c.scale(.58,.58);drawRider(c);c.restore();}
-  pill(c,-60,12,120,27,'#ad5b3d','#f3cb7e');
-  for(const x of [-42,42]){c.fillStyle='#272626';c.beginPath();c.arc(x,43,12,0,Math.PI*2);c.fill();c.fillStyle='#caa76d';c.beginPath();c.arc(x,43,5,0,Math.PI*2);c.fill();}
+  if(cartImage){const spec=pos.ride.cartSprite;c.drawImage(cartImage,-spec.w/2,-spec.h/2,spec.w,spec.h);}
+  else{pill(c,-65,-37,130,74,'#8c3c35','#efbd70');pill(c,-53,-28,106,45,'#382c30','#c9995f');pill(c,-60,12,120,27,'#ad5b3d','#f3cb7e');}
+  if(drawRider){c.save();c.rotate(-pos.angle);c.translate(-8,-12);c.scale(.46,.46);drawRider(c);c.restore();}
   c.restore();
   if(occupants?.length){c.save();title(c,occupants.join(' · '),pos.x,pos.y-pos.z-95,18);c.restore();}
 }
 
 function drawGround(c,scene,stationImage){const a=scene?.attractions;if(!a)return;if(a.coaster)drawCoasterGround(c,a.coaster,stationImage);if(a.zoo)drawZooGround(c,a.zoo);}
-function drawDynamic(c,scene,now,occupants,drawRider,animalImage){const a=scene?.attractions;if(!a)return;if(a.zoo)for(const pen of a.zoo.pens||[])drawAnimal(c,pen,now,a.zoo.sprite,animalImage);if(a.coaster)drawCart(c,coasterAt(scene,now),occupants,drawRider);}
+function drawDynamic(c,scene,now,occupants,drawRider,animalImage,cartImage,tunnelImage){const a=scene?.attractions;if(!a)return;if(a.zoo)for(const pen of a.zoo.pens||[])drawAnimal(c,pen,now,a.zoo.sprite,animalImage);if(a.coaster){drawCart(c,coasterAt(scene,now),occupants,drawRider,cartImage);const t=a.coaster.tunnel;if(t&&tunnelImage)c.drawImage(tunnelImage,t.x-t.w*.76,t.y-t.h*.51,t.w,t.h);}}
 window.TownAttractions={coasterAt,drawGround,drawDynamic};
 })();

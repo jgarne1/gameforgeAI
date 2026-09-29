@@ -26,6 +26,9 @@ test('Lantern Run pauses for boarding and returns to the same station',()=>{
  assert.equal(waiting.docked,true);assert.equal(moving.docked,false);assert.equal(returned.docked,true);
  assert.ok(moving.z>20,'course gains elevation');assert.equal(waiting.x,returned.x);assert.equal(waiting.y,returned.y);
  assert.ok(ride.track.length>100);assert.equal(ride.track[0].x,ride.track.at(-1).x);assert.equal(ride.track[0].y,ride.track.at(-1).y);
+ assert.ok(Math.max(...ride.track.map(p=>p.z))>450,'the course reaches its loop crest');
+ const speeds=ride._segments.map((weight,i)=>Math.hypot(ride.track[i+1].x-ride.track[i].x,ride.track[i+1].y-ride.track[i].y)/weight).filter(Number.isFinite);
+ assert.ok(Math.max(...speeds)>Math.min(...speeds)*2,'climb, drop and braking use distinct travel speeds');
 });
 test('crossing decks allow walking over water while rail and open river block',()=>{
  const {sc,canStand}=world();assert.equal(sc.terrain.crossings.length,3);
