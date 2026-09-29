@@ -64,6 +64,82 @@
       "layer": "structures"
     },
     {
+      "id": "deer_meadow_shrub_0",
+      "asset": "wwhd_nature_shrub",
+      "x": 405,
+      "y": 6450,
+      "scale": 0.75,
+      "layer": "props"
+    },
+    {
+      "id": "deer_meadow_shrub_1",
+      "asset": "wwhd_nature_shrub",
+      "x": 715,
+      "y": 6600,
+      "scale": 0.75,
+      "layer": "props"
+    },
+    {
+      "id": "capybara_pool_shrub_0",
+      "asset": "wwhd_nature_shrub",
+      "x": 1010,
+      "y": 6450,
+      "scale": 0.75,
+      "layer": "props"
+    },
+    {
+      "id": "capybara_pool_shrub_1",
+      "asset": "wwhd_nature_shrub",
+      "x": 1320,
+      "y": 6600,
+      "scale": 0.75,
+      "layer": "props"
+    },
+    {
+      "id": "owl_grove_shrub_0",
+      "asset": "wwhd_nature_shrub",
+      "x": 1495,
+      "y": 6450,
+      "scale": 0.75,
+      "layer": "props"
+    },
+    {
+      "id": "owl_grove_shrub_1",
+      "asset": "wwhd_nature_shrub",
+      "x": 1805,
+      "y": 6600,
+      "scale": 0.75,
+      "layer": "props"
+    },
+    {
+      "id": "fair_stall_0",
+      "asset": "wwhd_stall",
+      "x": 4490,
+      "y": 2260,
+      "scale": 1,
+      "layer": "props",
+      "collide": [
+        -70,
+        -60,
+        140,
+        55
+      ]
+    },
+    {
+      "id": "fair_stall_1",
+      "asset": "wwhd_stall",
+      "x": 4960,
+      "y": 2360,
+      "scale": 1,
+      "layer": "props",
+      "collide": [
+        -70,
+        -60,
+        140,
+        55
+      ]
+    },
+    {
       "id": "town_home_01",
       "asset": "wwhd_cottage",
       "x": 800,
@@ -1337,71 +1413,11 @@
       ]
     },
     {
-      "id": "nature_tree_13",
-      "asset": "wwhd_tree_apple",
-      "x": 4072,
-      "y": 1518,
-      "scale": 0.8010351693242619,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_15",
-      "asset": "wwhd_tree_willow",
-      "x": 470,
-      "y": 4869,
-      "scale": 0.8108714019212919,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_16",
-      "asset": "wwhd_tree_willow",
-      "x": 5293,
-      "y": 508,
-      "scale": 0.8440470316919911,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_19",
+      "id": "nature_tree_14",
       "asset": "wwhd_tree_cedar",
-      "x": 3803,
-      "y": 1391,
-      "scale": 1.0020617884251288,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_21",
-      "asset": "wwhd_tree_willow",
-      "x": 4630,
-      "y": 3911,
-      "scale": 0.8501794332906243,
+      "x": 3200,
+      "y": 928,
+      "scale": 0.9541067067166528,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -1413,6 +1429,21 @@
     },
     {
       "id": "nature_tree_24",
+      "asset": "wwhd_tree_willow",
+      "x": 8228,
+      "y": 2645,
+      "scale": 1.1012737871947276,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_28",
       "asset": "wwhd_tree_willow",
       "x": 5269,
       "y": 5770,
@@ -1427,7 +1458,7 @@
       ]
     },
     {
-      "id": "nature_tree_25",
+      "id": "nature_tree_29",
       "asset": "wwhd_tree_cedar",
       "x": 6916,
       "y": 693,
@@ -1442,7 +1473,7 @@
       ]
     },
     {
-      "id": "nature_tree_28",
+      "id": "nature_tree_32",
       "asset": "wwhd_tree_oak",
       "x": 7614,
       "y": 1077,
@@ -1457,22 +1488,7 @@
       ]
     },
     {
-      "id": "nature_tree_30",
-      "asset": "wwhd_tree_willow",
-      "x": 627,
-      "y": 6497,
-      "scale": 0.8657649251394354,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_32",
+      "id": "nature_tree_37",
       "asset": "wwhd_tree_cedar",
       "x": 7679,
       "y": 3807,
@@ -1487,37 +1503,7 @@
       ]
     },
     {
-      "id": "nature_tree_33",
-      "asset": "wwhd_tree_apple",
-      "x": 4455,
-      "y": 2480,
-      "scale": 0.8183503563738933,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_36",
-      "asset": "wwhd_tree_cedar",
-      "x": 2738,
-      "y": 5293,
-      "scale": 0.8124999292662239,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_43",
+      "id": "nature_tree_50",
       "asset": "wwhd_tree_willow",
       "x": 7381,
       "y": 4268,
@@ -1532,11 +1518,11 @@
       ]
     },
     {
-      "id": "nature_tree_44",
-      "asset": "wwhd_tree_oak",
-      "x": 1352,
-      "y": 6627,
-      "scale": 1.0701985979707114,
+      "id": "nature_tree_53",
+      "asset": "wwhd_tree_cedar",
+      "x": 2443,
+      "y": 4679,
+      "scale": 1.0533719281480036,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -1547,7 +1533,7 @@
       ]
     },
     {
-      "id": "nature_tree_47",
+      "id": "nature_tree_54",
       "asset": "wwhd_tree_apple",
       "x": 8225,
       "y": 2084,
@@ -1562,22 +1548,7 @@
       ]
     },
     {
-      "id": "nature_tree_52",
-      "asset": "wwhd_tree_cedar",
-      "x": 4975,
-      "y": 1596,
-      "scale": 1.0141024934793477,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_55",
+      "id": "nature_tree_63",
       "asset": "wwhd_tree_apple",
       "x": 3230,
       "y": 6142,
@@ -1592,7 +1563,7 @@
       ]
     },
     {
-      "id": "nature_tree_59",
+      "id": "nature_tree_67",
       "asset": "wwhd_tree_cedar",
       "x": 2579,
       "y": 4474,
@@ -1607,7 +1578,7 @@
       ]
     },
     {
-      "id": "nature_tree_63",
+      "id": "nature_tree_71",
       "asset": "wwhd_tree_apple",
       "x": 8071,
       "y": 2745,
@@ -1622,7 +1593,7 @@
       ]
     },
     {
-      "id": "nature_tree_68",
+      "id": "nature_tree_76",
       "asset": "wwhd_tree_apple",
       "x": 8690,
       "y": 821,
@@ -1637,11 +1608,11 @@
       ]
     },
     {
-      "id": "nature_tree_70",
-      "asset": "wwhd_tree_willow",
-      "x": 4804,
-      "y": 1650,
-      "scale": 0.8832634113822274,
+      "id": "nature_tree_80",
+      "asset": "wwhd_tree_cedar",
+      "x": 3027,
+      "y": 703,
+      "scale": 0.9938230998404819,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -1652,22 +1623,7 @@
       ]
     },
     {
-      "id": "nature_tree_72",
-      "asset": "wwhd_tree_willow",
-      "x": 5552,
-      "y": 2206,
-      "scale": 1.0625226580848361,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_73",
+      "id": "nature_tree_84",
       "asset": "wwhd_tree_cedar",
       "x": 6532,
       "y": 476,
@@ -1682,22 +1638,7 @@
       ]
     },
     {
-      "id": "nature_tree_80",
-      "asset": "wwhd_tree_apple",
-      "x": 5051,
-      "y": 2218,
-      "scale": 0.8213804082160685,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_88",
+      "id": "nature_tree_101",
       "asset": "wwhd_tree_oak",
       "x": 4249,
       "y": 3736,
@@ -1712,22 +1653,7 @@
       ]
     },
     {
-      "id": "nature_tree_89",
-      "asset": "wwhd_tree_apple",
-      "x": 1488,
-      "y": 6994,
-      "scale": 0.8448834198609961,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_91",
+      "id": "nature_tree_106",
       "asset": "wwhd_tree_apple",
       "x": 6271,
       "y": 666,
@@ -1742,7 +1668,7 @@
       ]
     },
     {
-      "id": "nature_tree_92",
+      "id": "nature_tree_107",
       "asset": "wwhd_tree_willow",
       "x": 4067,
       "y": 5794,
@@ -1757,7 +1683,7 @@
       ]
     },
     {
-      "id": "nature_tree_94",
+      "id": "nature_tree_109",
       "asset": "wwhd_tree_oak",
       "x": 2639,
       "y": 620,
@@ -1772,7 +1698,7 @@
       ]
     },
     {
-      "id": "nature_tree_96",
+      "id": "nature_tree_111",
       "asset": "wwhd_tree_willow",
       "x": 2535,
       "y": 6138,
@@ -1787,7 +1713,7 @@
       ]
     },
     {
-      "id": "nature_tree_98",
+      "id": "nature_tree_113",
       "asset": "wwhd_tree_oak",
       "x": 344,
       "y": 1550,
@@ -1802,11 +1728,11 @@
       ]
     },
     {
-      "id": "nature_tree_99",
+      "id": "nature_tree_117",
       "asset": "wwhd_tree_apple",
-      "x": 1046,
-      "y": 6461,
-      "scale": 1.056921312173254,
+      "x": 414,
+      "y": 4768,
+      "scale": 0.997113622892278,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -1817,37 +1743,7 @@
       ]
     },
     {
-      "id": "nature_tree_100",
-      "asset": "wwhd_tree_oak",
-      "x": 247,
-      "y": 7109,
-      "scale": 0.9697885947649669,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_102",
-      "asset": "wwhd_tree_apple",
-      "x": 8543,
-      "y": 5671,
-      "scale": 0.7845616355212229,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_104",
+      "id": "nature_tree_120",
       "asset": "wwhd_tree_oak",
       "x": 336,
       "y": 2404,
@@ -1862,7 +1758,7 @@
       ]
     },
     {
-      "id": "nature_tree_105",
+      "id": "nature_tree_121",
       "asset": "wwhd_tree_apple",
       "x": 5875,
       "y": 5821,
@@ -1877,11 +1773,11 @@
       ]
     },
     {
-      "id": "nature_tree_110",
-      "asset": "wwhd_tree_apple",
-      "x": 1342,
-      "y": 6852,
-      "scale": 1.0731396527688608,
+      "id": "nature_tree_127",
+      "asset": "wwhd_tree_willow",
+      "x": 3534,
+      "y": 7120,
+      "scale": 0.9528472317753656,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -1892,22 +1788,7 @@
       ]
     },
     {
-      "id": "nature_tree_112",
-      "asset": "wwhd_tree_cedar",
-      "x": 3867,
-      "y": 2412,
-      "scale": 1.0969832738916623,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_114",
+      "id": "nature_tree_131",
       "asset": "wwhd_tree_willow",
       "x": 2579,
       "y": 5549,
@@ -1922,22 +1803,7 @@
       ]
     },
     {
-      "id": "nature_tree_119",
-      "asset": "wwhd_tree_willow",
-      "x": 5607,
-      "y": 1452,
-      "scale": 0.8737594367892761,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_122",
+      "id": "nature_tree_140",
       "asset": "wwhd_tree_oak",
       "x": 6182,
       "y": 7113,
@@ -1952,7 +1818,7 @@
       ]
     },
     {
-      "id": "nature_tree_123",
+      "id": "nature_tree_141",
       "asset": "wwhd_tree_apple",
       "x": 8822,
       "y": 2786,
@@ -1967,22 +1833,7 @@
       ]
     },
     {
-      "id": "nature_tree_126",
-      "asset": "wwhd_tree_oak",
-      "x": 4020,
-      "y": 2235,
-      "scale": 0.9860409609434456,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_137",
+      "id": "nature_tree_156",
       "asset": "wwhd_tree_willow",
       "x": 7209,
       "y": 2526,
@@ -1997,11 +1848,11 @@
       ]
     },
     {
-      "id": "nature_tree_139",
-      "asset": "wwhd_tree_oak",
-      "x": 3848,
-      "y": 1035,
-      "scale": 1.1244193898156998,
+      "id": "nature_tree_159",
+      "asset": "wwhd_tree_apple",
+      "x": 2269,
+      "y": 4550,
+      "scale": 0.9168872813807226,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2012,7 +1863,7 @@
       ]
     },
     {
-      "id": "nature_tree_144",
+      "id": "nature_tree_163",
       "asset": "wwhd_tree_oak",
       "x": 4201,
       "y": 3904,
@@ -2027,7 +1878,7 @@
       ]
     },
     {
-      "id": "nature_tree_148",
+      "id": "nature_tree_167",
       "asset": "wwhd_tree_oak",
       "x": 3141,
       "y": 4992,
@@ -2042,7 +1893,7 @@
       ]
     },
     {
-      "id": "nature_tree_149",
+      "id": "nature_tree_168",
       "asset": "wwhd_tree_oak",
       "x": 740,
       "y": 3974,
@@ -2057,11 +1908,11 @@
       ]
     },
     {
-      "id": "nature_tree_151",
-      "asset": "wwhd_tree_oak",
-      "x": 3698,
-      "y": 1119,
-      "scale": 0.8535518249618873,
+      "id": "nature_tree_175",
+      "asset": "wwhd_tree_apple",
+      "x": 250,
+      "y": 2864,
+      "scale": 1.0605175820599984,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2072,22 +1923,7 @@
       ]
     },
     {
-      "id": "nature_tree_154",
-      "asset": "wwhd_tree_oak",
-      "x": 1869,
-      "y": 7096,
-      "scale": 0.8861152809744895,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_161",
+      "id": "nature_tree_182",
       "asset": "wwhd_tree_willow",
       "x": 704,
       "y": 2240,
@@ -2102,26 +1938,11 @@
       ]
     },
     {
-      "id": "nature_tree_169",
-      "asset": "wwhd_tree_oak",
-      "x": 4165,
-      "y": 1303,
-      "scale": 0.9137997166385652,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_171",
+      "id": "nature_tree_191",
       "asset": "wwhd_tree_willow",
-      "x": 344,
-      "y": 5692,
-      "scale": 0.9016643293973623,
+      "x": 432,
+      "y": 3494,
+      "scale": 0.8250619563631052,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2132,11 +1953,11 @@
       ]
     },
     {
-      "id": "nature_tree_174",
+      "id": "nature_tree_196",
       "asset": "wwhd_tree_oak",
-      "x": 4273,
-      "y": 919,
-      "scale": 0.7859976904312788,
+      "x": 1085,
+      "y": 586,
+      "scale": 0.9219776984266401,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2147,7 +1968,7 @@
       ]
     },
     {
-      "id": "nature_tree_176",
+      "id": "nature_tree_197",
       "asset": "wwhd_tree_oak",
       "x": 3919,
       "y": 5517,
@@ -2162,7 +1983,7 @@
       ]
     },
     {
-      "id": "nature_tree_180",
+      "id": "nature_tree_201",
       "asset": "wwhd_tree_apple",
       "x": 3814,
       "y": 6917,
@@ -2177,7 +1998,7 @@
       ]
     },
     {
-      "id": "nature_tree_181",
+      "id": "nature_tree_202",
       "asset": "wwhd_tree_willow",
       "x": 3027,
       "y": 5570,
@@ -2192,7 +2013,7 @@
       ]
     },
     {
-      "id": "nature_tree_185",
+      "id": "nature_tree_206",
       "asset": "wwhd_tree_willow",
       "x": 2882,
       "y": 4447,
@@ -2207,11 +2028,11 @@
       ]
     },
     {
-      "id": "nature_tree_192",
-      "asset": "wwhd_tree_oak",
-      "x": 5357,
-      "y": 1035,
-      "scale": 1.1228694691650223,
+      "id": "nature_tree_214",
+      "asset": "wwhd_tree_cedar",
+      "x": 446,
+      "y": 2086,
+      "scale": 0.919048881683771,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2222,22 +2043,7 @@
       ]
     },
     {
-      "id": "nature_tree_193",
-      "asset": "wwhd_tree_oak",
-      "x": 5217,
-      "y": 3614,
-      "scale": 1.0191031598936189,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_198",
+      "id": "nature_tree_220",
       "asset": "wwhd_tree_cedar",
       "x": 5478,
       "y": 2753,
@@ -2252,11 +2058,11 @@
       ]
     },
     {
-      "id": "nature_tree_203",
-      "asset": "wwhd_tree_apple",
-      "x": 5221,
-      "y": 1876,
-      "scale": 0.8903826599393834,
+      "id": "nature_tree_228",
+      "asset": "wwhd_tree_oak",
+      "x": 425,
+      "y": 3227,
+      "scale": 1.0822611107507107,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2267,22 +2073,7 @@
       ]
     },
     {
-      "id": "nature_tree_205",
-      "asset": "wwhd_tree_cedar",
-      "x": 5794,
-      "y": 488,
-      "scale": 1.110677371824646,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_207",
+      "id": "nature_tree_231",
       "asset": "wwhd_tree_willow",
       "x": 2902,
       "y": 5433,
@@ -2297,7 +2088,7 @@
       ]
     },
     {
-      "id": "nature_tree_215",
+      "id": "nature_tree_239",
       "asset": "wwhd_tree_willow",
       "x": 5905,
       "y": 4305,
@@ -2312,7 +2103,7 @@
       ]
     },
     {
-      "id": "nature_tree_216",
+      "id": "nature_tree_240",
       "asset": "wwhd_tree_oak",
       "x": 739,
       "y": 477,
@@ -2327,11 +2118,11 @@
       ]
     },
     {
-      "id": "nature_tree_217",
-      "asset": "wwhd_tree_oak",
-      "x": 4315,
-      "y": 2279,
-      "scale": 1.0395354784731752,
+      "id": "nature_tree_242",
+      "asset": "wwhd_tree_apple",
+      "x": 8600,
+      "y": 522,
+      "scale": 0.7921040643788009,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2342,11 +2133,11 @@
       ]
     },
     {
-      "id": "nature_tree_218",
+      "id": "nature_tree_255",
       "asset": "wwhd_tree_cedar",
-      "x": 3359,
-      "y": 725,
-      "scale": 0.8153019079749626,
+      "x": 6793,
+      "y": 883,
+      "scale": 0.8174430292908644,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2357,52 +2148,7 @@
       ]
     },
     {
-      "id": "nature_tree_225",
-      "asset": "wwhd_tree_oak",
-      "x": 5304,
-      "y": 1267,
-      "scale": 0.9565357027376953,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_226",
-      "asset": "wwhd_tree_willow",
-      "x": 4104,
-      "y": 6039,
-      "scale": 1.092851067493161,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_230",
-      "asset": "wwhd_tree_oak",
-      "x": 5039,
-      "y": 1302,
-      "scale": 0.9668845879138397,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_233",
+      "id": "nature_tree_259",
       "asset": "wwhd_tree_oak",
       "x": 3221,
       "y": 1153,
@@ -2417,7 +2163,7 @@
       ]
     },
     {
-      "id": "nature_tree_241",
+      "id": "nature_tree_267",
       "asset": "wwhd_tree_oak",
       "x": 3234,
       "y": 2346,
@@ -2432,7 +2178,7 @@
       ]
     },
     {
-      "id": "nature_tree_242",
+      "id": "nature_tree_268",
       "asset": "wwhd_tree_cedar",
       "x": 5502,
       "y": 3835,
@@ -2447,71 +2193,11 @@
       ]
     },
     {
-      "id": "nature_tree_244",
-      "asset": "wwhd_tree_oak",
-      "x": 4332,
-      "y": 1516,
-      "scale": 1.1062732869022815,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_245",
-      "asset": "wwhd_tree_willow",
-      "x": 4243,
-      "y": 2663,
-      "scale": 1.119243126209409,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_246",
-      "asset": "wwhd_tree_cedar",
-      "x": 3255,
-      "y": 579,
-      "scale": 1.0684073220753922,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_249",
-      "asset": "wwhd_tree_cedar",
-      "x": 6486,
-      "y": 5860,
-      "scale": 0.9547375529575904,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_252",
+      "id": "nature_tree_272",
       "asset": "wwhd_tree_apple",
-      "x": 3849,
-      "y": 458,
-      "scale": 1.0744595789111404,
+      "x": 4666,
+      "y": 3607,
+      "scale": 0.7856831070971956,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2522,7 +2208,22 @@
       ]
     },
     {
-      "id": "nature_tree_256",
+      "id": "nature_tree_277",
+      "asset": "wwhd_tree_oak",
+      "x": 5123,
+      "y": 4426,
+      "scale": 0.9325495982919034,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_282",
       "asset": "wwhd_tree_willow",
       "x": 7848,
       "y": 2922,
@@ -2537,11 +2238,11 @@
       ]
     },
     {
-      "id": "nature_tree_257",
+      "id": "nature_tree_286",
       "asset": "wwhd_tree_oak",
-      "x": 423,
-      "y": 7017,
-      "scale": 0.8643997097951657,
+      "x": 514,
+      "y": 2571,
+      "scale": 0.9825324662109951,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2552,22 +2253,7 @@
       ]
     },
     {
-      "id": "nature_tree_258",
-      "asset": "wwhd_tree_oak",
-      "x": 2563,
-      "y": 5733,
-      "scale": 0.8732081422320321,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_269",
+      "id": "nature_tree_296",
       "asset": "wwhd_tree_cedar",
       "x": 7382,
       "y": 1049,
@@ -2582,7 +2268,7 @@
       ]
     },
     {
-      "id": "nature_tree_276",
+      "id": "nature_tree_303",
       "asset": "wwhd_tree_cedar",
       "x": 4042,
       "y": 3777,
@@ -2597,7 +2283,7 @@
       ]
     },
     {
-      "id": "nature_tree_277",
+      "id": "nature_tree_304",
       "asset": "wwhd_tree_cedar",
       "x": 3125,
       "y": 5338,
@@ -2612,11 +2298,11 @@
       ]
     },
     {
-      "id": "nature_tree_279",
-      "asset": "wwhd_tree_oak",
-      "x": 3448,
-      "y": 1352,
-      "scale": 0.8051408007251991,
+      "id": "nature_tree_307",
+      "asset": "wwhd_tree_apple",
+      "x": 1162,
+      "y": 1022,
+      "scale": 0.8671676447635239,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2627,11 +2313,11 @@
       ]
     },
     {
-      "id": "nature_tree_282",
-      "asset": "wwhd_tree_oak",
-      "x": 7317,
-      "y": 543,
-      "scale": 0.798321452144055,
+      "id": "nature_tree_308",
+      "asset": "wwhd_tree_willow",
+      "x": 5353,
+      "y": 6955,
+      "scale": 0.7841258908400557,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2642,7 +2328,22 @@
       ]
     },
     {
-      "id": "nature_tree_287",
+      "id": "nature_tree_309",
+      "asset": "wwhd_tree_willow",
+      "x": 551,
+      "y": 866,
+      "scale": 0.9512195887416421,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_313",
       "asset": "wwhd_tree_apple",
       "x": 1178,
       "y": 5714,
@@ -2657,11 +2358,11 @@
       ]
     },
     {
-      "id": "nature_tree_307",
-      "asset": "wwhd_tree_willow",
-      "x": 4862,
-      "y": 1445,
-      "scale": 0.7809448068424866,
+      "id": "nature_tree_334",
+      "asset": "wwhd_tree_cedar",
+      "x": 7846,
+      "y": 471,
+      "scale": 1.059992428557556,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2672,7 +2373,7 @@
       ]
     },
     {
-      "id": "nature_tree_324",
+      "id": "nature_tree_349",
       "asset": "wwhd_tree_cedar",
       "x": 1773,
       "y": 526,
@@ -2687,7 +2388,7 @@
       ]
     },
     {
-      "id": "nature_tree_325",
+      "id": "nature_tree_350",
       "asset": "wwhd_tree_oak",
       "x": 885,
       "y": 5384,
@@ -2702,7 +2403,7 @@
       ]
     },
     {
-      "id": "nature_tree_337",
+      "id": "nature_tree_362",
       "asset": "wwhd_tree_willow",
       "x": 344,
       "y": 3879,
@@ -2717,7 +2418,7 @@
       ]
     },
     {
-      "id": "nature_tree_338",
+      "id": "nature_tree_363",
       "asset": "wwhd_tree_cedar",
       "x": 2736,
       "y": 3134,
@@ -2732,7 +2433,7 @@
       ]
     },
     {
-      "id": "nature_tree_340",
+      "id": "nature_tree_365",
       "asset": "wwhd_tree_willow",
       "x": 3857,
       "y": 5688,
@@ -2747,7 +2448,7 @@
       ]
     },
     {
-      "id": "nature_tree_346",
+      "id": "nature_tree_371",
       "asset": "wwhd_tree_oak",
       "x": 1558,
       "y": 5276,
@@ -2762,11 +2463,11 @@
       ]
     },
     {
-      "id": "nature_tree_357",
-      "asset": "wwhd_tree_apple",
-      "x": 4083,
-      "y": 1718,
-      "scale": 1.0050138228805536,
+      "id": "nature_tree_378",
+      "asset": "wwhd_tree_cedar",
+      "x": 3383,
+      "y": 486,
+      "scale": 1.134627731010045,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2777,7 +2478,7 @@
       ]
     },
     {
-      "id": "nature_tree_365",
+      "id": "nature_tree_390",
       "asset": "wwhd_tree_cedar",
       "x": 5335,
       "y": 4407,
@@ -2792,7 +2493,7 @@
       ]
     },
     {
-      "id": "nature_tree_366",
+      "id": "nature_tree_391",
       "asset": "wwhd_tree_oak",
       "x": 7821,
       "y": 3413,
@@ -2807,7 +2508,7 @@
       ]
     },
     {
-      "id": "nature_tree_377",
+      "id": "nature_tree_402",
       "asset": "wwhd_tree_willow",
       "x": 1971,
       "y": 4846,
@@ -2822,7 +2523,7 @@
       ]
     },
     {
-      "id": "nature_tree_383",
+      "id": "nature_tree_408",
       "asset": "wwhd_tree_willow",
       "x": 3235,
       "y": 7128,
@@ -2837,7 +2538,7 @@
       ]
     },
     {
-      "id": "nature_tree_384",
+      "id": "nature_tree_409",
       "asset": "wwhd_tree_willow",
       "x": 8540,
       "y": 5008,
@@ -2852,22 +2553,7 @@
       ]
     },
     {
-      "id": "nature_tree_393",
-      "asset": "wwhd_tree_cedar",
-      "x": 4075,
-      "y": 601,
-      "scale": 0.8797004952306003,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_394",
+      "id": "nature_tree_420",
       "asset": "wwhd_tree_cedar",
       "x": 921,
       "y": 2573,
@@ -2882,7 +2568,7 @@
       ]
     },
     {
-      "id": "nature_tree_396",
+      "id": "nature_tree_422",
       "asset": "wwhd_tree_cedar",
       "x": 2681,
       "y": 2208,
@@ -2897,7 +2583,7 @@
       ]
     },
     {
-      "id": "nature_tree_398",
+      "id": "nature_tree_424",
       "asset": "wwhd_tree_oak",
       "x": 5256,
       "y": 5521,
@@ -2912,22 +2598,7 @@
       ]
     },
     {
-      "id": "nature_tree_402",
-      "asset": "wwhd_tree_willow",
-      "x": 484,
-      "y": 751,
-      "scale": 0.9647582046893876,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_407",
+      "id": "nature_tree_434",
       "asset": "wwhd_tree_cedar",
       "x": 6341,
       "y": 6463,
@@ -2942,26 +2613,11 @@
       ]
     },
     {
-      "id": "nature_tree_411",
-      "asset": "wwhd_tree_oak",
-      "x": 1910,
-      "y": 6770,
-      "scale": 0.8335587434440708,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_413",
+      "id": "nature_tree_442",
       "asset": "wwhd_tree_apple",
-      "x": 2389,
-      "y": 4677,
-      "scale": 0.8546081886327141,
+      "x": 8744,
+      "y": 2304,
+      "scale": 1.0684783175632486,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -2972,7 +2628,37 @@
       ]
     },
     {
-      "id": "nature_tree_439",
+      "id": "nature_tree_444",
+      "asset": "wwhd_tree_cedar",
+      "x": 8375,
+      "y": 2987,
+      "scale": 1.1053222458781526,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_460",
+      "asset": "wwhd_tree_willow",
+      "x": 271,
+      "y": 6965,
+      "scale": 0.9269220778793723,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_466",
       "asset": "wwhd_tree_cedar",
       "x": 6718,
       "y": 455,
@@ -2987,67 +2673,7 @@
       ]
     },
     {
-      "id": "nature_tree_441",
-      "asset": "wwhd_tree_apple",
-      "x": 595,
-      "y": 7109,
-      "scale": 0.8568189110639604,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_444",
-      "asset": "wwhd_tree_cedar",
-      "x": 4618,
-      "y": 1667,
-      "scale": 1.0098169128057832,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_445",
-      "asset": "wwhd_tree_willow",
-      "x": 1228,
-      "y": 651,
-      "scale": 1.0663141988173115,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_447",
-      "asset": "wwhd_tree_cedar",
-      "x": 8219,
-      "y": 1573,
-      "scale": 0.8172697931119618,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_449",
+      "id": "nature_tree_481",
       "asset": "wwhd_tree_willow",
       "x": 3296,
       "y": 5285,
@@ -3062,22 +2688,7 @@
       ]
     },
     {
-      "id": "nature_tree_464",
-      "asset": "wwhd_tree_oak",
-      "x": 531,
-      "y": 3310,
-      "scale": 0.7926385631635695,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_472",
+      "id": "nature_tree_505",
       "asset": "wwhd_tree_apple",
       "x": 248,
       "y": 3614,
@@ -3092,22 +2703,7 @@
       ]
     },
     {
-      "id": "nature_tree_475",
-      "asset": "wwhd_tree_apple",
-      "x": 1064,
-      "y": 688,
-      "scale": 0.8703047860955883,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_477",
+      "id": "nature_tree_512",
       "asset": "wwhd_tree_willow",
       "x": 3403,
       "y": 2125,
@@ -3122,7 +2718,7 @@
       ]
     },
     {
-      "id": "nature_tree_478",
+      "id": "nature_tree_513",
       "asset": "wwhd_tree_cedar",
       "x": 4861,
       "y": 7139,
@@ -3137,7 +2733,7 @@
       ]
     },
     {
-      "id": "nature_tree_479",
+      "id": "nature_tree_514",
       "asset": "wwhd_tree_willow",
       "x": 8077,
       "y": 1332,
@@ -3152,22 +2748,7 @@
       ]
     },
     {
-      "id": "nature_tree_485",
-      "asset": "wwhd_tree_apple",
-      "x": 3782,
-      "y": 2122,
-      "scale": 1.0459190188076604,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_486",
+      "id": "nature_tree_522",
       "asset": "wwhd_tree_willow",
       "x": 1428,
       "y": 599,
@@ -3182,22 +2763,7 @@
       ]
     },
     {
-      "id": "nature_tree_498",
-      "asset": "wwhd_tree_apple",
-      "x": 4618,
-      "y": 1199,
-      "scale": 1.05124547336083,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_502",
+      "id": "nature_tree_540",
       "asset": "wwhd_tree_willow",
       "x": 1117,
       "y": 3179,
@@ -3212,7 +2778,7 @@
       ]
     },
     {
-      "id": "nature_tree_507",
+      "id": "nature_tree_545",
       "asset": "wwhd_tree_willow",
       "x": 2176,
       "y": 4349,
@@ -3227,7 +2793,7 @@
       ]
     },
     {
-      "id": "nature_tree_508",
+      "id": "nature_tree_546",
       "asset": "wwhd_tree_oak",
       "x": 7001,
       "y": 919,
@@ -3242,7 +2808,7 @@
       ]
     },
     {
-      "id": "nature_tree_509",
+      "id": "nature_tree_547",
       "asset": "wwhd_tree_oak",
       "x": 370,
       "y": 4265,
@@ -3257,52 +2823,7 @@
       ]
     },
     {
-      "id": "nature_tree_520",
-      "asset": "wwhd_tree_willow",
-      "x": 3718,
-      "y": 1637,
-      "scale": 0.8234152356842822,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_524",
-      "asset": "wwhd_tree_willow",
-      "x": 1844,
-      "y": 6595,
-      "scale": 1.1240942008483956,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_530",
-      "asset": "wwhd_tree_apple",
-      "x": 5334,
-      "y": 6907,
-      "scale": 0.943407568651948,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_533",
+      "id": "nature_tree_576",
       "asset": "wwhd_tree_willow",
       "x": 7989,
       "y": 3894,
@@ -3317,7 +2838,7 @@
       ]
     },
     {
-      "id": "nature_tree_534",
+      "id": "nature_tree_577",
       "asset": "wwhd_tree_apple",
       "x": 744,
       "y": 2455,
@@ -3332,7 +2853,7 @@
       ]
     },
     {
-      "id": "nature_tree_537",
+      "id": "nature_tree_580",
       "asset": "wwhd_tree_willow",
       "x": 4651,
       "y": 7015,
@@ -3347,7 +2868,7 @@
       ]
     },
     {
-      "id": "nature_tree_544",
+      "id": "nature_tree_587",
       "asset": "wwhd_tree_oak",
       "x": 1168,
       "y": 5541,
@@ -3362,7 +2883,7 @@
       ]
     },
     {
-      "id": "nature_tree_545",
+      "id": "nature_tree_588",
       "asset": "wwhd_tree_oak",
       "x": 8351,
       "y": 1754,
@@ -3377,7 +2898,7 @@
       ]
     },
     {
-      "id": "nature_tree_546",
+      "id": "nature_tree_589",
       "asset": "wwhd_tree_cedar",
       "x": 670,
       "y": 4951,
@@ -3392,7 +2913,7 @@
       ]
     },
     {
-      "id": "nature_tree_557",
+      "id": "nature_tree_600",
       "asset": "wwhd_tree_apple",
       "x": 7709,
       "y": 733,
@@ -3407,7 +2928,22 @@
       ]
     },
     {
-      "id": "nature_tree_565",
+      "id": "nature_tree_604",
+      "asset": "wwhd_tree_apple",
+      "x": 3263,
+      "y": 703,
+      "scale": 1.0256057341499876,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_607",
       "asset": "wwhd_tree_apple",
       "x": 4466,
       "y": 3990,
@@ -3422,11 +2958,11 @@
       ]
     },
     {
-      "id": "nature_tree_569",
+      "id": "nature_tree_609",
       "asset": "wwhd_tree_willow",
-      "x": 5057,
-      "y": 1750,
-      "scale": 1.0396983392172996,
+      "x": 2861,
+      "y": 5231,
+      "scale": 0.9289759727258924,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -3437,7 +2973,22 @@
       ]
     },
     {
-      "id": "nature_tree_576",
+      "id": "nature_tree_611",
+      "asset": "wwhd_tree_cedar",
+      "x": 8209,
+      "y": 1442,
+      "scale": 0.8319974057327839,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_616",
       "asset": "wwhd_tree_apple",
       "x": 8883,
       "y": 2534,
@@ -3452,7 +3003,7 @@
       ]
     },
     {
-      "id": "nature_tree_578",
+      "id": "nature_tree_618",
       "asset": "wwhd_tree_willow",
       "x": 256,
       "y": 1380,
@@ -3467,7 +3018,7 @@
       ]
     },
     {
-      "id": "nature_tree_582",
+      "id": "nature_tree_622",
       "asset": "wwhd_tree_apple",
       "x": 6496,
       "y": 827,
@@ -3482,22 +3033,7 @@
       ]
     },
     {
-      "id": "nature_tree_595",
-      "asset": "wwhd_tree_willow",
-      "x": 5389,
-      "y": 2156,
-      "scale": 1.0300304688379196,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_596",
+      "id": "nature_tree_638",
       "asset": "wwhd_tree_oak",
       "x": 1412,
       "y": 5105,
@@ -3512,7 +3048,7 @@
       ]
     },
     {
-      "id": "nature_tree_597",
+      "id": "nature_tree_639",
       "asset": "wwhd_tree_oak",
       "x": 3767,
       "y": 7139,
@@ -3527,22 +3063,7 @@
       ]
     },
     {
-      "id": "nature_tree_603",
-      "asset": "wwhd_tree_oak",
-      "x": 317,
-      "y": 6846,
-      "scale": 0.8479077790778431,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_604",
+      "id": "nature_tree_648",
       "asset": "wwhd_tree_willow",
       "x": 468,
       "y": 5301,
@@ -3557,7 +3078,7 @@
       ]
     },
     {
-      "id": "nature_tree_614",
+      "id": "nature_tree_658",
       "asset": "wwhd_tree_apple",
       "x": 5438,
       "y": 4010,
@@ -3572,7 +3093,7 @@
       ]
     },
     {
-      "id": "nature_tree_616",
+      "id": "nature_tree_660",
       "asset": "wwhd_tree_cedar",
       "x": 1066,
       "y": 5379,
@@ -3587,7 +3108,7 @@
       ]
     },
     {
-      "id": "nature_tree_618",
+      "id": "nature_tree_662",
       "asset": "wwhd_tree_cedar",
       "x": 273,
       "y": 1961,
@@ -3602,7 +3123,7 @@
       ]
     },
     {
-      "id": "nature_tree_627",
+      "id": "nature_tree_671",
       "asset": "wwhd_tree_apple",
       "x": 5697,
       "y": 2563,
@@ -3617,37 +3138,7 @@
       ]
     },
     {
-      "id": "nature_tree_632",
-      "asset": "wwhd_tree_willow",
-      "x": 3993,
-      "y": 2691,
-      "scale": 1.0573782988563587,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_633",
-      "asset": "wwhd_tree_cedar",
-      "x": 5033,
-      "y": 464,
-      "scale": 1.0378012923392932,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_654",
+      "id": "nature_tree_702",
       "asset": "wwhd_tree_willow",
       "x": 1128,
       "y": 4942,
@@ -3662,22 +3153,7 @@
       ]
     },
     {
-      "id": "nature_tree_658",
-      "asset": "wwhd_tree_apple",
-      "x": 4903,
-      "y": 986,
-      "scale": 1.1092951004313756,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_661",
+      "id": "nature_tree_710",
       "asset": "wwhd_tree_oak",
       "x": 4571,
       "y": 4271,
@@ -3692,52 +3168,7 @@
       ]
     },
     {
-      "id": "nature_tree_663",
-      "asset": "wwhd_tree_apple",
-      "x": 368,
-      "y": 3467,
-      "scale": 1.0987250860258904,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_669",
-      "asset": "wwhd_tree_cedar",
-      "x": 853,
-      "y": 6531,
-      "scale": 0.9532317195598339,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_672",
-      "asset": "wwhd_tree_apple",
-      "x": 4736,
-      "y": 2311,
-      "scale": 0.8136096257567907,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_673",
+      "id": "nature_tree_725",
       "asset": "wwhd_tree_willow",
       "x": 369,
       "y": 1112,
@@ -3752,7 +3183,7 @@
       ]
     },
     {
-      "id": "nature_tree_680",
+      "id": "nature_tree_732",
       "asset": "wwhd_tree_willow",
       "x": 4872,
       "y": 2728,
@@ -3767,22 +3198,7 @@
       ]
     },
     {
-      "id": "nature_tree_681",
-      "asset": "wwhd_tree_oak",
-      "x": 7688,
-      "y": 470,
-      "scale": 0.7873847398778684,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_682",
+      "id": "nature_tree_735",
       "asset": "wwhd_tree_oak",
       "x": 3904,
       "y": 5970,
@@ -3797,7 +3213,7 @@
       ]
     },
     {
-      "id": "nature_tree_685",
+      "id": "nature_tree_738",
       "asset": "wwhd_tree_willow",
       "x": 1244,
       "y": 5185,
@@ -3812,41 +3228,11 @@
       ]
     },
     {
-      "id": "nature_tree_689",
-      "asset": "wwhd_tree_apple",
-      "x": 8703,
-      "y": 2268,
-      "scale": 0.9460773638095704,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_691",
-      "asset": "wwhd_tree_willow",
-      "x": 7837,
-      "y": 5525,
-      "scale": 0.9080522370394757,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_692",
+      "id": "nature_tree_756",
       "asset": "wwhd_tree_oak",
-      "x": 3020,
-      "y": 5972,
-      "scale": 0.9096866368274891,
+      "x": 6526,
+      "y": 5709,
+      "scale": 1.1148756554400272,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -3857,52 +3243,7 @@
       ]
     },
     {
-      "id": "nature_tree_694",
-      "asset": "wwhd_tree_cedar",
-      "x": 5544,
-      "y": 689,
-      "scale": 0.794268224115637,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_695",
-      "asset": "wwhd_tree_cedar",
-      "x": 4449,
-      "y": 1887,
-      "scale": 1.0881329057607037,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_713",
-      "asset": "wwhd_tree_willow",
-      "x": 3478,
-      "y": 452,
-      "scale": 1.0792645781112382,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_715",
+      "id": "nature_tree_774",
       "asset": "wwhd_tree_willow",
       "x": 390,
       "y": 1771,
@@ -3917,7 +3258,7 @@
       ]
     },
     {
-      "id": "nature_tree_718",
+      "id": "nature_tree_777",
       "asset": "wwhd_tree_oak",
       "x": 4481,
       "y": 4526,
@@ -3932,7 +3273,7 @@
       ]
     },
     {
-      "id": "nature_tree_727",
+      "id": "nature_tree_786",
       "asset": "wwhd_tree_oak",
       "x": 8667,
       "y": 1267,
@@ -3947,7 +3288,7 @@
       ]
     },
     {
-      "id": "nature_tree_731",
+      "id": "nature_tree_790",
       "asset": "wwhd_tree_apple",
       "x": 6361,
       "y": 1137,
@@ -3962,7 +3303,7 @@
       ]
     },
     {
-      "id": "nature_tree_735",
+      "id": "nature_tree_794",
       "asset": "wwhd_tree_oak",
       "x": 8805,
       "y": 1527,
@@ -3977,7 +3318,7 @@
       ]
     },
     {
-      "id": "nature_tree_737",
+      "id": "nature_tree_796",
       "asset": "wwhd_tree_apple",
       "x": 8827,
       "y": 1759,
@@ -3992,7 +3333,7 @@
       ]
     },
     {
-      "id": "nature_tree_740",
+      "id": "nature_tree_799",
       "asset": "wwhd_tree_apple",
       "x": 7715,
       "y": 1235,
@@ -4007,7 +3348,7 @@
       ]
     },
     {
-      "id": "nature_tree_742",
+      "id": "nature_tree_801",
       "asset": "wwhd_tree_cedar",
       "x": 6153,
       "y": 5882,
@@ -4022,11 +3363,26 @@
       ]
     },
     {
-      "id": "nature_tree_756",
+      "id": "nature_tree_814",
+      "asset": "wwhd_tree_cedar",
+      "x": 1246,
+      "y": 6100,
+      "scale": 0.7878305618898555,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_816",
       "asset": "wwhd_tree_oak",
-      "x": 4464,
-      "y": 628,
-      "scale": 0.8621672331651984,
+      "x": 7431,
+      "y": 784,
+      "scale": 0.9790257168980203,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4037,37 +3393,7 @@
       ]
     },
     {
-      "id": "nature_tree_760",
-      "asset": "wwhd_tree_cedar",
-      "x": 6412,
-      "y": 5602,
-      "scale": 0.7992994662132841,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_761",
-      "asset": "wwhd_tree_cedar",
-      "x": 4018,
-      "y": 4367,
-      "scale": 0.9406206888282311,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_768",
+      "id": "nature_tree_827",
       "asset": "wwhd_tree_apple",
       "x": 3267,
       "y": 5484,
@@ -4082,26 +3408,11 @@
       ]
     },
     {
-      "id": "nature_tree_775",
-      "asset": "wwhd_tree_willow",
-      "x": 490,
-      "y": 2046,
-      "scale": 0.8789889407758383,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_776",
+      "id": "nature_tree_836",
       "asset": "wwhd_tree_cedar",
-      "x": 6586,
-      "y": 2878,
-      "scale": 1.1216640642117244,
+      "x": 606,
+      "y": 3623,
+      "scale": 1.0034577993450675,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4112,10 +3423,10 @@
       ]
     },
     {
-      "id": "nature_tree_777",
+      "id": "nature_tree_837",
       "asset": "wwhd_tree_willow",
-      "x": 8762,
-      "y": 7024,
+      "x": 4356,
+      "y": 5859,
       "scale": 0.9327129391275673,
       "layer": "props",
       "sway": true,
@@ -4127,22 +3438,7 @@
       ]
     },
     {
-      "id": "nature_tree_779",
-      "asset": "wwhd_tree_willow",
-      "x": 3866,
-      "y": 1928,
-      "scale": 0.8761997715060895,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_784",
+      "id": "nature_tree_845",
       "asset": "wwhd_tree_apple",
       "x": 2544,
       "y": 2062,
@@ -4157,22 +3453,7 @@
       ]
     },
     {
-      "id": "nature_tree_787",
-      "asset": "wwhd_tree_oak",
-      "x": 4985,
-      "y": 2528,
-      "scale": 1.10600386327564,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_793",
+      "id": "nature_tree_855",
       "asset": "wwhd_tree_oak",
       "x": 6309,
       "y": 962,
@@ -4187,7 +3468,7 @@
       ]
     },
     {
-      "id": "nature_tree_798",
+      "id": "nature_tree_860",
       "asset": "wwhd_tree_willow",
       "x": 5546,
       "y": 3591,
@@ -4202,22 +3483,7 @@
       ]
     },
     {
-      "id": "nature_tree_804",
-      "asset": "wwhd_tree_willow",
-      "x": 598,
-      "y": 6748,
-      "scale": 0.7841489453914818,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_816",
+      "id": "nature_tree_879",
       "asset": "wwhd_tree_cedar",
       "x": 1418,
       "y": 4593,
@@ -4232,11 +3498,11 @@
       ]
     },
     {
-      "id": "nature_tree_822",
+      "id": "nature_tree_886",
       "asset": "wwhd_tree_apple",
-      "x": 3568,
-      "y": 694,
-      "scale": 1.0982484036767537,
+      "x": 2632,
+      "y": 5936,
+      "scale": 0.9904900419629878,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4247,22 +3513,7 @@
       ]
     },
     {
-      "id": "nature_tree_828",
-      "asset": "wwhd_tree_oak",
-      "x": 3468,
-      "y": 1573,
-      "scale": 0.9596649205309342,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_834",
+      "id": "nature_tree_899",
       "asset": "wwhd_tree_cedar",
       "x": 5305,
       "y": 3771,
@@ -4277,7 +3528,7 @@
       ]
     },
     {
-      "id": "nature_tree_840",
+      "id": "nature_tree_905",
       "asset": "wwhd_tree_willow",
       "x": 2289,
       "y": 4829,
@@ -4292,22 +3543,7 @@
       ]
     },
     {
-      "id": "nature_tree_845",
-      "asset": "wwhd_tree_willow",
-      "x": 3421,
-      "y": 1082,
-      "scale": 0.8867437718330919,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_849",
+      "id": "nature_tree_916",
       "asset": "wwhd_tree_cedar",
       "x": 692,
       "y": 2746,
@@ -4322,7 +3558,7 @@
       ]
     },
     {
-      "id": "nature_tree_854",
+      "id": "nature_tree_921",
       "asset": "wwhd_tree_apple",
       "x": 8206,
       "y": 3047,
@@ -4337,7 +3573,7 @@
       ]
     },
     {
-      "id": "nature_tree_855",
+      "id": "nature_tree_922",
       "asset": "wwhd_tree_willow",
       "x": 5010,
       "y": 6928,
@@ -4352,7 +3588,7 @@
       ]
     },
     {
-      "id": "nature_tree_866",
+      "id": "nature_tree_933",
       "asset": "wwhd_tree_willow",
       "x": 6493,
       "y": 3701,
@@ -4367,7 +3603,7 @@
       ]
     },
     {
-      "id": "nature_tree_867",
+      "id": "nature_tree_934",
       "asset": "wwhd_tree_cedar",
       "x": 5801,
       "y": 1122,
@@ -4382,7 +3618,22 @@
       ]
     },
     {
-      "id": "nature_tree_887",
+      "id": "nature_tree_945",
+      "asset": "wwhd_tree_willow",
+      "x": 5178,
+      "y": 3613,
+      "scale": 0.8484519038995262,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_953",
       "asset": "wwhd_tree_oak",
       "x": 6440,
       "y": 6619,
@@ -4397,7 +3648,7 @@
       ]
     },
     {
-      "id": "nature_tree_899",
+      "id": "nature_tree_965",
       "asset": "wwhd_tree_willow",
       "x": 2708,
       "y": 1504,
@@ -4412,7 +3663,7 @@
       ]
     },
     {
-      "id": "nature_tree_906",
+      "id": "nature_tree_972",
       "asset": "wwhd_tree_oak",
       "x": 3541,
       "y": 4236,
@@ -4427,11 +3678,11 @@
       ]
     },
     {
-      "id": "nature_tree_907",
-      "asset": "wwhd_tree_apple",
-      "x": 4604,
-      "y": 2091,
-      "scale": 0.8280295215683654,
+      "id": "nature_tree_986",
+      "asset": "wwhd_tree_willow",
+      "x": 900,
+      "y": 3900,
+      "scale": 1.123835363777651,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4442,52 +3693,7 @@
       ]
     },
     {
-      "id": "nature_tree_914",
-      "asset": "wwhd_tree_apple",
-      "x": 4274,
-      "y": 2439,
-      "scale": 1.0055350004898544,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_916",
-      "asset": "wwhd_tree_oak",
-      "x": 4635,
-      "y": 2564,
-      "scale": 0.9316525657188692,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_920",
-      "asset": "wwhd_tree_oak",
-      "x": 4187,
-      "y": 456,
-      "scale": 1.1377829315215204,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_923",
+      "id": "nature_tree_994",
       "asset": "wwhd_tree_oak",
       "x": 2853,
       "y": 574,
@@ -4502,22 +3708,7 @@
       ]
     },
     {
-      "id": "nature_tree_927",
-      "asset": "wwhd_tree_oak",
-      "x": 1221,
-      "y": 7064,
-      "scale": 1.0759010692844566,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_929",
+      "id": "nature_tree_1001",
       "asset": "wwhd_tree_apple",
       "x": 2242,
       "y": 4195,
@@ -4532,11 +3723,11 @@
       ]
     },
     {
-      "id": "nature_tree_930",
-      "asset": "wwhd_tree_willow",
-      "x": 1793,
-      "y": 6360,
-      "scale": 0.911483149062041,
+      "id": "nature_tree_1010",
+      "asset": "wwhd_tree_apple",
+      "x": 7310,
+      "y": 556,
+      "scale": 0.9853502172640479,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4547,7 +3738,7 @@
       ]
     },
     {
-      "id": "nature_tree_951",
+      "id": "nature_tree_1023",
       "asset": "wwhd_tree_willow",
       "x": 439,
       "y": 4085,
@@ -4562,7 +3753,7 @@
       ]
     },
     {
-      "id": "nature_tree_952",
+      "id": "nature_tree_1024",
       "asset": "wwhd_tree_apple",
       "x": 516,
       "y": 5507,
@@ -4577,11 +3768,11 @@
       ]
     },
     {
-      "id": "nature_tree_956",
+      "id": "nature_tree_1030",
       "asset": "wwhd_tree_oak",
-      "x": 1381,
-      "y": 6217,
-      "scale": 1.0214105630299264,
+      "x": 5932,
+      "y": 2698,
+      "scale": 1.0800180889858237,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4592,22 +3783,7 @@
       ]
     },
     {
-      "id": "nature_tree_957",
-      "asset": "wwhd_tree_cedar",
-      "x": 4736,
-      "y": 948,
-      "scale": 0.827012035498007,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_968",
+      "id": "nature_tree_1042",
       "asset": "wwhd_tree_cedar",
       "x": 5806,
       "y": 1460,
@@ -4622,11 +3798,11 @@
       ]
     },
     {
-      "id": "nature_tree_985",
+      "id": "nature_tree_1051",
       "asset": "wwhd_tree_apple",
-      "x": 5050,
-      "y": 866,
-      "scale": 0.9768856181875892,
+      "x": 1157,
+      "y": 5936,
+      "scale": 1.1171819094695163,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4637,11 +3813,11 @@
       ]
     },
     {
-      "id": "nature_tree_992",
-      "asset": "wwhd_tree_willow",
-      "x": 4715,
-      "y": 3756,
-      "scale": 1.0153294531854125,
+      "id": "nature_tree_1056",
+      "asset": "wwhd_tree_apple",
+      "x": 3377,
+      "y": 952,
+      "scale": 0.7902748659316642,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4652,11 +3828,11 @@
       ]
     },
     {
-      "id": "nature_tree_1002",
+      "id": "nature_tree_1066",
       "asset": "wwhd_tree_cedar",
-      "x": 787,
-      "y": 6698,
-      "scale": 0.9571243643191726,
+      "x": 7660,
+      "y": 5805,
+      "scale": 0.8524149082911183,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4667,71 +3843,11 @@
       ]
     },
     {
-      "id": "nature_tree_1004",
-      "asset": "wwhd_tree_apple",
-      "x": 1646,
-      "y": 6913,
-      "scale": 1.0874056460756798,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1041",
-      "asset": "wwhd_tree_apple",
-      "x": 4180,
-      "y": 2074,
-      "scale": 0.865740846697331,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1046",
-      "asset": "wwhd_tree_apple",
-      "x": 1179,
-      "y": 6202,
-      "scale": 1.0058398639192996,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1057",
-      "asset": "wwhd_tree_willow",
-      "x": 4434,
-      "y": 2721,
-      "scale": 0.8493895623703088,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1072",
+      "id": "nature_tree_1076",
       "asset": "wwhd_tree_cedar",
-      "x": 5438,
-      "y": 1460,
-      "scale": 0.9860545730755107,
+      "x": 5574,
+      "y": 4480,
+      "scale": 0.9591816380794305,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4742,7 +3858,22 @@
       ]
     },
     {
-      "id": "nature_tree_1077",
+      "id": "nature_tree_1096",
+      "asset": "wwhd_tree_oak",
+      "x": 4516,
+      "y": 3826,
+      "scale": 0.8393510465720139,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1154",
       "asset": "wwhd_tree_cedar",
       "x": 7982,
       "y": 4385,
@@ -4757,22 +3888,7 @@
       ]
     },
     {
-      "id": "nature_tree_1086",
-      "asset": "wwhd_tree_oak",
-      "x": 4021,
-      "y": 1192,
-      "scale": 0.9907825155647714,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1120",
+      "id": "nature_tree_1198",
       "asset": "wwhd_tree_willow",
       "x": 273,
       "y": 2149,
@@ -4787,7 +3903,7 @@
       ]
     },
     {
-      "id": "nature_tree_1129",
+      "id": "nature_tree_1207",
       "asset": "wwhd_tree_willow",
       "x": 5894,
       "y": 911,
@@ -4802,11 +3918,11 @@
       ]
     },
     {
-      "id": "nature_tree_1132",
-      "asset": "wwhd_tree_cedar",
-      "x": 4400,
-      "y": 6013,
-      "scale": 1.0728401904199802,
+      "id": "nature_tree_1211",
+      "asset": "wwhd_tree_apple",
+      "x": 5060,
+      "y": 7113,
+      "scale": 1.0286166324575898,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4817,7 +3933,7 @@
       ]
     },
     {
-      "id": "nature_tree_1135",
+      "id": "nature_tree_1214",
       "asset": "wwhd_tree_willow",
       "x": 2169,
       "y": 4020,
@@ -4832,7 +3948,7 @@
       ]
     },
     {
-      "id": "nature_tree_1137",
+      "id": "nature_tree_1216",
       "asset": "wwhd_tree_willow",
       "x": 8573,
       "y": 3082,
@@ -4847,7 +3963,7 @@
       ]
     },
     {
-      "id": "nature_tree_1139",
+      "id": "nature_tree_1218",
       "asset": "wwhd_tree_apple",
       "x": 5062,
       "y": 6056,
@@ -4862,7 +3978,7 @@
       ]
     },
     {
-      "id": "nature_tree_1140",
+      "id": "nature_tree_1219",
       "asset": "wwhd_tree_cedar",
       "x": 8826,
       "y": 1937,
@@ -4877,11 +3993,11 @@
       ]
     },
     {
-      "id": "nature_tree_1170",
-      "asset": "wwhd_tree_cedar",
-      "x": 999,
-      "y": 6863,
-      "scale": 0.9964355389793773,
+      "id": "nature_tree_1224",
+      "asset": "wwhd_tree_oak",
+      "x": 4777,
+      "y": 3985,
+      "scale": 0.9013796911158375,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4892,7 +4008,7 @@
       ]
     },
     {
-      "id": "nature_tree_1174",
+      "id": "nature_tree_1254",
       "asset": "wwhd_tree_cedar",
       "x": 244,
       "y": 6152,
@@ -4907,7 +4023,7 @@
       ]
     },
     {
-      "id": "nature_tree_1176",
+      "id": "nature_tree_1256",
       "asset": "wwhd_tree_apple",
       "x": 5660,
       "y": 2063,
@@ -4922,22 +4038,7 @@
       ]
     },
     {
-      "id": "nature_tree_1181",
-      "asset": "wwhd_tree_apple",
-      "x": 8420,
-      "y": 2908,
-      "scale": 1.0221877023978219,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1188",
+      "id": "nature_tree_1269",
       "asset": "wwhd_tree_oak",
       "x": 4654,
       "y": 5714,
@@ -4952,11 +4053,11 @@
       ]
     },
     {
-      "id": "nature_tree_1204",
+      "id": "nature_tree_1293",
       "asset": "wwhd_tree_oak",
-      "x": 8677,
-      "y": 589,
-      "scale": 1.0498096378793014,
+      "x": 2952,
+      "y": 5824,
+      "scale": 0.8259697011055506,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -4967,22 +4068,7 @@
       ]
     },
     {
-      "id": "nature_tree_1217",
-      "asset": "wwhd_tree_willow",
-      "x": 3828,
-      "y": 848,
-      "scale": 1.1272884045031977,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1218",
+      "id": "nature_tree_1300",
       "asset": "wwhd_tree_willow",
       "x": 1800,
       "y": 903,
@@ -4997,11 +4083,11 @@
       ]
     },
     {
-      "id": "nature_tree_1230",
-      "asset": "wwhd_tree_cedar",
-      "x": 1158,
-      "y": 6806,
-      "scale": 0.971873415225295,
+      "id": "nature_tree_1314",
+      "asset": "wwhd_tree_apple",
+      "x": 929,
+      "y": 4883,
+      "scale": 1.021892546443324,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5012,22 +4098,7 @@
       ]
     },
     {
-      "id": "nature_tree_1237",
-      "asset": "wwhd_tree_cedar",
-      "x": 3044,
-      "y": 713,
-      "scale": 1.058802525931525,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1241",
+      "id": "nature_tree_1325",
       "asset": "wwhd_tree_apple",
       "x": 4688,
       "y": 5416,
@@ -5042,22 +4113,7 @@
       ]
     },
     {
-      "id": "nature_tree_1247",
-      "asset": "wwhd_tree_cedar",
-      "x": 939,
-      "y": 6217,
-      "scale": 0.9151406289981674,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1251",
+      "id": "nature_tree_1336",
       "asset": "wwhd_tree_apple",
       "x": 2822,
       "y": 745,
@@ -5072,7 +4128,7 @@
       ]
     },
     {
-      "id": "nature_tree_1255",
+      "id": "nature_tree_1340",
       "asset": "wwhd_tree_willow",
       "x": 7486,
       "y": 570,
@@ -5087,7 +4143,7 @@
       ]
     },
     {
-      "id": "nature_tree_1259",
+      "id": "nature_tree_1344",
       "asset": "wwhd_tree_oak",
       "x": 2969,
       "y": 6821,
@@ -5102,7 +4158,7 @@
       ]
     },
     {
-      "id": "nature_tree_1262",
+      "id": "nature_tree_1347",
       "asset": "wwhd_tree_cedar",
       "x": 8744,
       "y": 2969,
@@ -5117,7 +4173,7 @@
       ]
     },
     {
-      "id": "nature_tree_1263",
+      "id": "nature_tree_1348",
       "asset": "wwhd_tree_cedar",
       "x": 8903,
       "y": 1113,
@@ -5132,7 +4188,7 @@
       ]
     },
     {
-      "id": "nature_tree_1269",
+      "id": "nature_tree_1354",
       "asset": "wwhd_tree_oak",
       "x": 4297,
       "y": 4424,
@@ -5147,22 +4203,7 @@
       ]
     },
     {
-      "id": "nature_tree_1273",
-      "asset": "wwhd_tree_apple",
-      "x": 1683,
-      "y": 6542,
-      "scale": 1.1245249539883841,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1274",
+      "id": "nature_tree_1360",
       "asset": "wwhd_tree_oak",
       "x": 916,
       "y": 2745,
@@ -5177,7 +4218,7 @@
       ]
     },
     {
-      "id": "nature_tree_1276",
+      "id": "nature_tree_1362",
       "asset": "wwhd_tree_oak",
       "x": 7110,
       "y": 3401,
@@ -5192,11 +4233,11 @@
       ]
     },
     {
-      "id": "nature_tree_1301",
-      "asset": "wwhd_tree_willow",
-      "x": 4457,
-      "y": 866,
-      "scale": 1.0917077380751767,
+      "id": "nature_tree_1375",
+      "asset": "wwhd_tree_apple",
+      "x": 626,
+      "y": 2066,
+      "scale": 1.0890613752406577,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5207,11 +4248,26 @@
       ]
     },
     {
-      "id": "nature_tree_1320",
+      "id": "nature_tree_1378",
+      "asset": "wwhd_tree_oak",
+      "x": 457,
+      "y": 5761,
+      "scale": 0.8993128257608617,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1418",
       "asset": "wwhd_tree_cedar",
-      "x": 520,
-      "y": 6322,
-      "scale": 0.993257654628493,
+      "x": 7666,
+      "y": 546,
+      "scale": 0.8157322524960557,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5222,37 +4278,7 @@
       ]
     },
     {
-      "id": "nature_tree_1332",
-      "asset": "wwhd_tree_cedar",
-      "x": 4867,
-      "y": 1263,
-      "scale": 1.128336068580341,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1347",
-      "asset": "wwhd_tree_willow",
-      "x": 4853,
-      "y": 1868,
-      "scale": 1.075087466930543,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1359",
+      "id": "nature_tree_1447",
       "asset": "wwhd_tree_oak",
       "x": 1987,
       "y": 493,
@@ -5267,26 +4293,11 @@
       ]
     },
     {
-      "id": "nature_tree_1364",
-      "asset": "wwhd_tree_oak",
-      "x": 247,
-      "y": 2775,
-      "scale": 0.8058374611419855,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1365",
+      "id": "nature_tree_1456",
       "asset": "wwhd_tree_apple",
-      "x": 4026,
-      "y": 1007,
-      "scale": 1.0762541629712379,
+      "x": 4174,
+      "y": 6013,
+      "scale": 0.9833795095500338,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5297,7 +4308,7 @@
       ]
     },
     {
-      "id": "nature_tree_1370",
+      "id": "nature_tree_1459",
       "asset": "wwhd_tree_oak",
       "x": 7977,
       "y": 3512,
@@ -5312,7 +4323,7 @@
       ]
     },
     {
-      "id": "nature_tree_1374",
+      "id": "nature_tree_1463",
       "asset": "wwhd_tree_oak",
       "x": 7489,
       "y": 2492,
@@ -5327,22 +4338,7 @@
       ]
     },
     {
-      "id": "nature_tree_1386",
-      "asset": "wwhd_tree_willow",
-      "x": 268,
-      "y": 3233,
-      "scale": 1.0213458771288038,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1390",
+      "id": "nature_tree_1480",
       "asset": "wwhd_tree_oak",
       "x": 2966,
       "y": 5051,
@@ -5357,22 +4353,7 @@
       ]
     },
     {
-      "id": "nature_tree_1400",
-      "asset": "wwhd_tree_cedar",
-      "x": 5116,
-      "y": 681,
-      "scale": 0.968533655330396,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1405",
+      "id": "nature_tree_1496",
       "asset": "wwhd_tree_oak",
       "x": 7768,
       "y": 6776,
@@ -5387,7 +4368,7 @@
       ]
     },
     {
-      "id": "nature_tree_1410",
+      "id": "nature_tree_1501",
       "asset": "wwhd_tree_willow",
       "x": 8684,
       "y": 2104,
@@ -5402,11 +4383,11 @@
       ]
     },
     {
-      "id": "nature_tree_1419",
+      "id": "nature_tree_1511",
       "asset": "wwhd_tree_willow",
-      "x": 5164,
-      "y": 4502,
-      "scale": 0.8833258793331031,
+      "x": 8362,
+      "y": 2801,
+      "scale": 0.8202338426846031,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5417,11 +4398,11 @@
       ]
     },
     {
-      "id": "nature_tree_1459",
-      "asset": "wwhd_tree_apple",
-      "x": 3211,
-      "y": 5787,
-      "scale": 0.9221031072318759,
+      "id": "nature_tree_1547",
+      "asset": "wwhd_tree_oak",
+      "x": 274,
+      "y": 5728,
+      "scale": 1.0733075957322493,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5432,52 +4413,7 @@
       ]
     },
     {
-      "id": "nature_tree_1481",
-      "asset": "wwhd_tree_apple",
-      "x": 3938,
-      "y": 1628,
-      "scale": 1.1074653998904482,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1489",
-      "asset": "wwhd_tree_cedar",
-      "x": 4562,
-      "y": 2331,
-      "scale": 0.874764440914477,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1495",
-      "asset": "wwhd_tree_apple",
-      "x": 2970,
-      "y": 5747,
-      "scale": 1.082492539391829,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1497",
+      "id": "nature_tree_1591",
       "asset": "wwhd_tree_willow",
       "x": 1786,
       "y": 3291,
@@ -5492,7 +4428,7 @@
       ]
     },
     {
-      "id": "nature_tree_1513",
+      "id": "nature_tree_1607",
       "asset": "wwhd_tree_apple",
       "x": 6132,
       "y": 2514,
@@ -5507,7 +4443,7 @@
       ]
     },
     {
-      "id": "nature_tree_1514",
+      "id": "nature_tree_1608",
       "asset": "wwhd_tree_oak",
       "x": 1246,
       "y": 486,
@@ -5522,22 +4458,7 @@
       ]
     },
     {
-      "id": "nature_tree_1515",
-      "asset": "wwhd_tree_cedar",
-      "x": 3566,
-      "y": 2161,
-      "scale": 0.8204651805439598,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1518",
+      "id": "nature_tree_1613",
       "asset": "wwhd_tree_apple",
       "x": 6506,
       "y": 5309,
@@ -5552,7 +4473,7 @@
       ]
     },
     {
-      "id": "nature_tree_1522",
+      "id": "nature_tree_1617",
       "asset": "wwhd_tree_cedar",
       "x": 5215,
       "y": 4217,
@@ -5567,11 +4488,11 @@
       ]
     },
     {
-      "id": "nature_tree_1531",
-      "asset": "wwhd_tree_oak",
-      "x": 4463,
-      "y": 7000,
-      "scale": 0.7953785694881671,
+      "id": "nature_tree_1625",
+      "asset": "wwhd_tree_cedar",
+      "x": 1327,
+      "y": 749,
+      "scale": 1.0678795196742072,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5582,7 +4503,22 @@
       ]
     },
     {
-      "id": "nature_tree_1537",
+      "id": "nature_tree_1627",
+      "asset": "wwhd_tree_cedar",
+      "x": 4504,
+      "y": 5995,
+      "scale": 1.124872938173691,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1631",
       "asset": "wwhd_tree_oak",
       "x": 4349,
       "y": 5386,
@@ -5597,7 +4533,7 @@
       ]
     },
     {
-      "id": "nature_tree_1544",
+      "id": "nature_tree_1638",
       "asset": "wwhd_tree_apple",
       "x": 490,
       "y": 6148,
@@ -5612,7 +4548,7 @@
       ]
     },
     {
-      "id": "nature_tree_1545",
+      "id": "nature_tree_1639",
       "asset": "wwhd_tree_oak",
       "x": 8883,
       "y": 632,
@@ -5627,7 +4563,7 @@
       ]
     },
     {
-      "id": "nature_tree_1546",
+      "id": "nature_tree_1640",
       "asset": "wwhd_tree_willow",
       "x": 2921,
       "y": 3103,
@@ -5642,22 +4578,7 @@
       ]
     },
     {
-      "id": "nature_tree_1553",
-      "asset": "wwhd_tree_apple",
-      "x": 8228,
-      "y": 1407,
-      "scale": 0.7817808661048699,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1554",
+      "id": "nature_tree_1650",
       "asset": "wwhd_tree_apple",
       "x": 3030,
       "y": 7113,
@@ -5672,22 +4593,7 @@
       ]
     },
     {
-      "id": "nature_tree_1561",
-      "asset": "wwhd_tree_cedar",
-      "x": 3246,
-      "y": 853,
-      "scale": 0.996712240490126,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1568",
+      "id": "nature_tree_1665",
       "asset": "wwhd_tree_cedar",
       "x": 5736,
       "y": 7133,
@@ -5702,7 +4608,7 @@
       ]
     },
     {
-      "id": "nature_tree_1580",
+      "id": "nature_tree_1677",
       "asset": "wwhd_tree_oak",
       "x": 2344,
       "y": 495,
@@ -5717,22 +4623,7 @@
       ]
     },
     {
-      "id": "nature_tree_1584",
-      "asset": "wwhd_tree_oak",
-      "x": 3615,
-      "y": 1453,
-      "scale": 0.7812806496837033,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1588",
+      "id": "nature_tree_1686",
       "asset": "wwhd_tree_oak",
       "x": 8646,
       "y": 1025,
@@ -5747,22 +4638,7 @@
       ]
     },
     {
-      "id": "nature_tree_1596",
-      "asset": "wwhd_tree_apple",
-      "x": 5433,
-      "y": 1681,
-      "scale": 1.079749134845144,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1604",
+      "id": "nature_tree_1703",
       "asset": "wwhd_tree_cedar",
       "x": 8059,
       "y": 1523,
@@ -5777,7 +4653,7 @@
       ]
     },
     {
-      "id": "nature_tree_1612",
+      "id": "nature_tree_1711",
       "asset": "wwhd_tree_apple",
       "x": 268,
       "y": 2575,
@@ -5792,7 +4668,7 @@
       ]
     },
     {
-      "id": "nature_tree_1621",
+      "id": "nature_tree_1720",
       "asset": "wwhd_tree_cedar",
       "x": 3326,
       "y": 6667,
@@ -5807,7 +4683,7 @@
       ]
     },
     {
-      "id": "nature_tree_1642",
+      "id": "nature_tree_1741",
       "asset": "wwhd_tree_oak",
       "x": 967,
       "y": 4059,
@@ -5822,26 +4698,11 @@
       ]
     },
     {
-      "id": "nature_tree_1651",
-      "asset": "wwhd_tree_apple",
-      "x": 798,
-      "y": 7057,
-      "scale": 0.8140128866021396,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1664",
+      "id": "nature_tree_1742",
       "asset": "wwhd_tree_cedar",
-      "x": 1585,
-      "y": 6238,
-      "scale": 1.0693647241323303,
+      "x": 4481,
+      "y": 7016,
+      "scale": 1.0009000773009658,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5852,7 +4713,22 @@
       ]
     },
     {
-      "id": "nature_tree_1667",
+      "id": "nature_tree_1765",
+      "asset": "wwhd_tree_cedar",
+      "x": 7357,
+      "y": 2923,
+      "scale": 0.8886691795680935,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_1766",
       "asset": "wwhd_tree_cedar",
       "x": 7910,
       "y": 6576,
@@ -5867,7 +4743,7 @@
       ]
     },
     {
-      "id": "nature_tree_1674",
+      "id": "nature_tree_1773",
       "asset": "wwhd_tree_cedar",
       "x": 4127,
       "y": 4139,
@@ -5882,7 +4758,7 @@
       ]
     },
     {
-      "id": "nature_tree_1686",
+      "id": "nature_tree_1785",
       "asset": "wwhd_tree_oak",
       "x": 7985,
       "y": 5899,
@@ -5897,7 +4773,7 @@
       ]
     },
     {
-      "id": "nature_tree_1695",
+      "id": "nature_tree_1794",
       "asset": "wwhd_tree_willow",
       "x": 8903,
       "y": 6811,
@@ -5912,7 +4788,7 @@
       ]
     },
     {
-      "id": "nature_tree_1719",
+      "id": "nature_tree_1818",
       "asset": "wwhd_tree_cedar",
       "x": 6389,
       "y": 2504,
@@ -5927,7 +4803,7 @@
       ]
     },
     {
-      "id": "nature_tree_1742",
+      "id": "nature_tree_1841",
       "asset": "wwhd_tree_cedar",
       "x": 7627,
       "y": 2921,
@@ -5942,7 +4818,7 @@
       ]
     },
     {
-      "id": "nature_tree_1762",
+      "id": "nature_tree_1861",
       "asset": "wwhd_tree_apple",
       "x": 5839,
       "y": 6869,
@@ -5957,7 +4833,7 @@
       ]
     },
     {
-      "id": "nature_tree_1780",
+      "id": "nature_tree_1879",
       "asset": "wwhd_tree_cedar",
       "x": 960,
       "y": 5197,
@@ -5972,7 +4848,7 @@
       ]
     },
     {
-      "id": "nature_tree_1804",
+      "id": "nature_tree_1903",
       "asset": "wwhd_tree_oak",
       "x": 424,
       "y": 2979,
@@ -5987,11 +4863,11 @@
       ]
     },
     {
-      "id": "nature_tree_1821",
-      "asset": "wwhd_tree_apple",
-      "x": 4644,
-      "y": 1835,
-      "scale": 1.0362406166708535,
+      "id": "nature_tree_1906",
+      "asset": "wwhd_tree_willow",
+      "x": 362,
+      "y": 5576,
+      "scale": 1.1290792844278945,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -6002,7 +4878,7 @@
       ]
     },
     {
-      "id": "nature_tree_1828",
+      "id": "nature_tree_1927",
       "asset": "wwhd_tree_cedar",
       "x": 7842,
       "y": 4754,
@@ -6017,26 +4893,11 @@
       ]
     },
     {
-      "id": "nature_tree_1842",
-      "asset": "wwhd_tree_oak",
-      "x": 7295,
-      "y": 772,
-      "scale": 0.9173545595845334,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1861",
+      "id": "nature_tree_1965",
       "asset": "wwhd_tree_cedar",
-      "x": 453,
-      "y": 3674,
-      "scale": 0.9294958493267861,
+      "x": 6644,
+      "y": 2973,
+      "scale": 0.863163177790884,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -6047,11 +4908,11 @@
       ]
     },
     {
-      "id": "nature_tree_1876",
-      "asset": "wwhd_tree_apple",
-      "x": 3463,
-      "y": 880,
-      "scale": 1.0117535164515643,
+      "id": "nature_tree_1978",
+      "asset": "wwhd_tree_willow",
+      "x": 3362,
+      "y": 5723,
+      "scale": 0.9643572528474378,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -6062,7 +4923,7 @@
       ]
     },
     {
-      "id": "nature_tree_1881",
+      "id": "nature_tree_1982",
       "asset": "wwhd_tree_willow",
       "x": 5888,
       "y": 2467,
@@ -6077,7 +4938,7 @@
       ]
     },
     {
-      "id": "nature_tree_1926",
+      "id": "nature_tree_2027",
       "asset": "wwhd_tree_apple",
       "x": 339,
       "y": 866,
@@ -6092,37 +4953,7 @@
       ]
     },
     {
-      "id": "nature_tree_1928",
-      "asset": "wwhd_tree_apple",
-      "x": 3569,
-      "y": 7043,
-      "scale": 0.9616699038479095,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1929",
-      "asset": "wwhd_tree_oak",
-      "x": 2659,
-      "y": 4727,
-      "scale": 0.8529206435081067,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_1940",
+      "id": "nature_tree_2044",
       "asset": "wwhd_tree_willow",
       "x": 1803,
       "y": 711,
@@ -6137,7 +4968,7 @@
       ]
     },
     {
-      "id": "nature_tree_1947",
+      "id": "nature_tree_2051",
       "asset": "wwhd_tree_willow",
       "x": 7310,
       "y": 4715,
@@ -6152,7 +4983,7 @@
       ]
     },
     {
-      "id": "nature_tree_1950",
+      "id": "nature_tree_2054",
       "asset": "wwhd_tree_willow",
       "x": 2454,
       "y": 704,
@@ -6167,7 +4998,7 @@
       ]
     },
     {
-      "id": "nature_tree_1963",
+      "id": "nature_tree_2067",
       "asset": "wwhd_tree_willow",
       "x": 5462,
       "y": 4274,
@@ -6182,11 +5013,11 @@
       ]
     },
     {
-      "id": "nature_tree_2004",
+      "id": "nature_tree_2105",
       "asset": "wwhd_tree_oak",
-      "x": 697,
-      "y": 3657,
-      "scale": 1.0295940738067682,
+      "x": 8346,
+      "y": 1567,
+      "scale": 0.8444912858355672,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -6197,22 +5028,7 @@
       ]
     },
     {
-      "id": "nature_tree_2007",
-      "asset": "wwhd_tree_cedar",
-      "x": 4959,
-      "y": 625,
-      "scale": 1.0459644805131922,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2011",
+      "id": "nature_tree_2117",
       "asset": "wwhd_tree_apple",
       "x": 8843,
       "y": 3126,
@@ -6227,11 +5043,11 @@
       ]
     },
     {
-      "id": "nature_tree_2015",
-      "asset": "wwhd_tree_willow",
-      "x": 4287,
-      "y": 712,
-      "scale": 1.0859189078780411,
+      "id": "nature_tree_2190",
+      "asset": "wwhd_tree_oak",
+      "x": 3140,
+      "y": 544,
+      "scale": 0.9801468114595708,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -6242,67 +5058,7 @@
       ]
     },
     {
-      "id": "nature_tree_2056",
-      "asset": "wwhd_tree_cedar",
-      "x": 2698,
-      "y": 5954,
-      "scale": 0.8495236642009464,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2067",
-      "asset": "wwhd_tree_willow",
-      "x": 1046,
-      "y": 515,
-      "scale": 0.9013966971614861,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2068",
-      "asset": "wwhd_tree_apple",
-      "x": 7129,
-      "y": 1042,
-      "scale": 0.9319522752217909,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2095",
-      "asset": "wwhd_tree_willow",
-      "x": 486,
-      "y": 2599,
-      "scale": 0.9277362773098954,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2097",
+      "id": "nature_tree_2208",
       "asset": "wwhd_tree_oak",
       "x": 8150,
       "y": 2274,
@@ -6317,7 +5073,37 @@
       ]
     },
     {
-      "id": "nature_tree_2129",
+      "id": "nature_tree_2209",
+      "asset": "wwhd_tree_apple",
+      "x": 367,
+      "y": 4953,
+      "scale": 0.9208644438616055,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2227",
+      "asset": "wwhd_tree_oak",
+      "x": 7884,
+      "y": 5461,
+      "scale": 1.0458514746499634,
+      "layer": "props",
+      "sway": true,
+      "collide": [
+        -16,
+        -16,
+        32,
+        22
+      ]
+    },
+    {
+      "id": "nature_tree_2238",
       "asset": "wwhd_tree_willow",
       "x": 8635,
       "y": 3283,
@@ -6332,7 +5118,7 @@
       ]
     },
     {
-      "id": "nature_tree_2130",
+      "id": "nature_tree_2239",
       "asset": "wwhd_tree_apple",
       "x": 1120,
       "y": 3378,
@@ -6347,210 +5133,191 @@
       ]
     },
     {
-      "id": "nature_tree_2159",
-      "asset": "wwhd_tree_oak",
-      "x": 5531,
-      "y": 859,
-      "scale": 0.9929144746464132,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2168",
-      "asset": "wwhd_tree_oak",
-      "x": 1155,
-      "y": 1030,
-      "scale": 1.0147745762579294,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2180",
-      "asset": "wwhd_tree_apple",
-      "x": 5612,
-      "y": 1208,
-      "scale": 0.8396118215087439,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2224",
-      "asset": "wwhd_tree_cedar",
-      "x": 4163,
-      "y": 5558,
-      "scale": 1.1389582059697771,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2231",
-      "asset": "wwhd_tree_cedar",
-      "x": 4385,
-      "y": 457,
-      "scale": 0.8299539856395688,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2238",
-      "asset": "wwhd_tree_cedar",
-      "x": 8635,
-      "y": 2604,
-      "scale": 1.1002531943002793,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2247",
-      "asset": "wwhd_tree_cedar",
-      "x": 428,
-      "y": 5907,
-      "scale": 1.099517252932666,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2254",
-      "asset": "wwhd_tree_oak",
-      "x": 7231,
-      "y": 5886,
-      "scale": 1.0148967868606067,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2259",
-      "asset": "wwhd_tree_willow",
-      "x": 6157,
-      "y": 513,
-      "scale": 0.9769165001123046,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2278",
-      "asset": "wwhd_tree_oak",
-      "x": 5708,
-      "y": 1750,
-      "scale": 0.9301305557698736,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2287",
-      "asset": "wwhd_tree_cedar",
-      "x": 2799,
-      "y": 6628,
-      "scale": 0.9353083514369933,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2292",
-      "asset": "wwhd_tree_oak",
-      "x": 5925,
-      "y": 4136,
-      "scale": 0.8748819934061022,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
-    },
-    {
-      "id": "nature_tree_2298",
-      "asset": "wwhd_tree_cedar",
-      "x": 1040,
-      "y": 6657,
-      "scale": 0.8603658042057396,
-      "layer": "props",
-      "sway": true,
-      "collide": [
-        -16,
-        -16,
-        32,
-        22
-      ]
+      "id": "nature_flowers_0",
+      "asset": "wwhd_nature_shrub",
+      "x": 8172,
+      "y": 1855,
+      "scale": 0.7642777103578261,
+      "layer": "props"
     },
     {
       "id": "nature_flowers_1",
       "asset": "wwhd_nature_wildflowers",
-      "x": 3611,
-      "y": 1133,
-      "scale": 0.7160248591033547,
+      "x": 2854,
+      "y": 3172,
+      "scale": 0.9805564727716376,
       "layer": "props"
     },
     {
-      "id": "nature_flowers_8",
+      "id": "nature_flowers_7",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 4214,
+      "y": 5653,
+      "scale": 0.9995140510489546,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_25",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 2157,
+      "y": 4773,
+      "scale": 1.0017821872931125,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_26",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 3280,
+      "y": 746,
+      "scale": 0.9935631019414852,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_30",
+      "asset": "wwhd_nature_shrub",
+      "x": 6441,
+      "y": 3367,
+      "scale": 0.8382547238264699,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_33",
+      "asset": "wwhd_nature_shrub",
+      "x": 4323,
+      "y": 5758,
+      "scale": 0.9699793061485823,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_34",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 6420,
+      "y": 928,
+      "scale": 0.8940387219062472,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_38",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 8113,
+      "y": 1591,
+      "scale": 0.8005027741004694,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_47",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 2443,
+      "y": 2160,
+      "scale": 0.9720720852019027,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_50",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 6344,
+      "y": 2956,
+      "scale": 0.775223953871574,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_56",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 6678,
+      "y": 744,
+      "scale": 0.9664940722703931,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_58",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 1218,
+      "y": 5512,
+      "scale": 0.9738905712130119,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_61",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 4021,
+      "y": 4201,
+      "scale": 0.8706958290578735,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_63",
+      "asset": "wwhd_nature_shrub",
+      "x": 7141,
+      "y": 3549,
+      "scale": 0.7330920951025048,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_66",
+      "asset": "wwhd_nature_shrub",
+      "x": 6317,
+      "y": 713,
+      "scale": 0.8908943132966467,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_69",
+      "asset": "wwhd_nature_shrub",
+      "x": 5170,
+      "y": 4478,
+      "scale": 0.9541549594541892,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_76",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 7820,
+      "y": 3666,
+      "scale": 1.0917192646476228,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_89",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 2569,
+      "y": 6896,
+      "scale": 0.7734906280251286,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_93",
+      "asset": "wwhd_nature_shrub",
+      "x": 2959,
+      "y": 6828,
+      "scale": 0.9134891787806191,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_96",
+      "asset": "wwhd_nature_shrub",
+      "x": 1873,
+      "y": 874,
+      "scale": 0.8779376475409553,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_97",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 3195,
+      "y": 5470,
+      "scale": 0.9697258914688363,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_98",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 822,
+      "y": 5105,
+      "scale": 0.8388072861732485,
+      "layer": "props"
+    },
+    {
+      "id": "nature_flowers_119",
       "asset": "wwhd_nature_wildflowers",
       "x": 1106,
       "y": 666,
@@ -6558,7 +5325,7 @@
       "layer": "props"
     },
     {
-      "id": "nature_flowers_20",
+      "id": "nature_flowers_131",
       "asset": "wwhd_nature_wildflowers",
       "x": 7847,
       "y": 6699,
@@ -6566,7 +5333,7 @@
       "layer": "props"
     },
     {
-      "id": "nature_flowers_31",
+      "id": "nature_flowers_142",
       "asset": "wwhd_nature_wildflowers",
       "x": 8591,
       "y": 793,
@@ -6574,7 +5341,7 @@
       "layer": "props"
     },
     {
-      "id": "nature_flowers_42",
+      "id": "nature_flowers_153",
       "asset": "wwhd_nature_shrub",
       "x": 2849,
       "y": 5140,
@@ -6582,31 +5349,7 @@
       "layer": "props"
     },
     {
-      "id": "nature_flowers_43",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 1399,
-      "y": 6821,
-      "scale": 1.035416130509498,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_45",
-      "asset": "wwhd_nature_shrub",
-      "x": 928,
-      "y": 6305,
-      "scale": 0.980471299027912,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_46",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 1328,
-      "y": 5442,
-      "scale": 0.9375055686795382,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_51",
+      "id": "nature_flowers_162",
       "asset": "wwhd_nature_shrub",
       "x": 2944,
       "y": 5752,
@@ -6614,251 +5357,11 @@
       "layer": "props"
     },
     {
-      "id": "nature_flowers_53",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4337,
-      "y": 1893,
-      "scale": 0.8287717574321647,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_55",
+      "id": "nature_flowers_166",
       "asset": "wwhd_nature_wildflowers",
       "x": 7870,
       "y": 5949,
       "scale": 0.7845306427380103,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_59",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 1773,
-      "y": 3244,
-      "scale": 0.8301832071530895,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_64",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5056,
-      "y": 908,
-      "scale": 0.9270215142263627,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_65",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 2315,
-      "y": 4692,
-      "scale": 1.0461131419021328,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_66",
-      "asset": "wwhd_nature_shrub",
-      "x": 4379,
-      "y": 1922,
-      "scale": 1.0549994066895483,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_74",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3990,
-      "y": 1410,
-      "scale": 0.8876031878666286,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_77",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4068,
-      "y": 4358,
-      "scale": 0.7941301643252628,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_83",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3186,
-      "y": 5692,
-      "scale": 0.8709886537373409,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_84",
-      "asset": "wwhd_nature_shrub",
-      "x": 5045,
-      "y": 1635,
-      "scale": 1.0795020788477199,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_86",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5533,
-      "y": 655,
-      "scale": 0.9280808774269173,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_87",
-      "asset": "wwhd_nature_shrub",
-      "x": 2058,
-      "y": 6906,
-      "scale": 0.9718177458710859,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_93",
-      "asset": "wwhd_nature_shrub",
-      "x": 3486,
-      "y": 2072,
-      "scale": 0.7913385943616932,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_97",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 4791,
-      "y": 1844,
-      "scale": 0.7813551293002472,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_102",
-      "asset": "wwhd_nature_shrub",
-      "x": 4782,
-      "y": 995,
-      "scale": 0.7854431449780639,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_104",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5486,
-      "y": 891,
-      "scale": 0.9610395695056068,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_106",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3262,
-      "y": 6680,
-      "scale": 0.909928012732308,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_110",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 2634,
-      "y": 874,
-      "scale": 0.7680472296214587,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_111",
-      "asset": "wwhd_nature_shrub",
-      "x": 3123,
-      "y": 5997,
-      "scale": 0.797113005728718,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_115",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 6501,
-      "y": 660,
-      "scale": 1.0255420586391193,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_117",
-      "asset": "wwhd_nature_shrub",
-      "x": 4410,
-      "y": 2311,
-      "scale": 0.8484451799702587,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_119",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5729,
-      "y": 1382,
-      "scale": 0.7112013115479248,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_129",
-      "asset": "wwhd_nature_shrub",
-      "x": 1086,
-      "y": 6973,
-      "scale": 0.9137232452283162,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_137",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3461,
-      "y": 2087,
-      "scale": 1.0925237034688335,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_140",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 468,
-      "y": 6511,
-      "scale": 0.7038926463672699,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_146",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 1813,
-      "y": 3436,
-      "scale": 0.9578929663722792,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_147",
-      "asset": "wwhd_nature_shrub",
-      "x": 3377,
-      "y": 5161,
-      "scale": 1.0892832077447603,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_151",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 736,
-      "y": 5400,
-      "scale": 0.8270866141368214,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_161",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 3367,
-      "y": 761,
-      "scale": 1.0361383813884086,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_167",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5431,
-      "y": 1076,
-      "scale": 1.0432165570251546,
-      "layer": "props"
-    },
-    {
-      "id": "nature_flowers_169",
-      "asset": "wwhd_nature_wildflowers",
-      "x": 5023,
-      "y": 1712,
-      "scale": 1.0033613091132652,
       "layer": "props"
     },
     {
@@ -6954,14 +5457,6 @@
       "asset": "wwhd_nature_riverplants",
       "x": 5669,
       "y": 1954,
-      "scale": 1,
-      "layer": "props"
-    },
-    {
-      "id": "lake_bank_18",
-      "asset": "wwhd_shoreline_rocks",
-      "x": 5650,
-      "y": 1820,
       "scale": 1,
       "layer": "props"
     },
@@ -7102,22 +5597,6 @@
       "layer": "props"
     },
     {
-      "id": "river_bank_1_-1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 5650,
-      "y": 2168,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
-      "id": "river_bank_2_-1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 5384,
-      "y": 2336,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
       "id": "river_bank_2_1",
       "asset": "wwhd_nature_riverplants",
       "x": 5954,
@@ -7126,34 +5605,10 @@
       "layer": "props"
     },
     {
-      "id": "river_bank_3_-1",
-      "asset": "wwhd_shoreline_rocks",
-      "x": 5178,
-      "y": 2500,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
       "id": "river_bank_3_1",
       "asset": "wwhd_shoreline_rocks",
       "x": 5688,
       "y": 2500,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
-      "id": "river_bank_4_-1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 4918,
-      "y": 2666,
-      "scale": 0.9,
-      "layer": "props"
-    },
-    {
-      "id": "river_bank_4_1",
-      "asset": "wwhd_nature_riverplants",
-      "x": 5458,
-      "y": 2666,
       "scale": 0.9,
       "layer": "props"
     },
@@ -7398,14 +5853,6 @@
       "layer": "props"
     },
     {
-      "id": "lane_plant_9_31_1",
-      "asset": "wwhd_nature_shrub",
-      "x": 2095,
-      "y": 6603,
-      "scale": 0.8,
-      "layer": "props"
-    },
-    {
       "id": "lane_plant_10_5_-1",
       "asset": "wwhd_nature_shrub",
       "x": 2601,
@@ -7622,10 +6069,18 @@
       "layer": "props"
     },
     {
-      "id": "lane_plant_65_5_1",
+      "id": "lane_plant_26_5_-1",
       "asset": "wwhd_nature_shrub",
-      "x": 2112,
-      "y": 6687,
+      "x": 2049,
+      "y": 7226,
+      "scale": 0.8,
+      "layer": "props"
+    },
+    {
+      "id": "lane_plant_26_18_-1",
+      "asset": "wwhd_nature_wildflowers",
+      "x": 1144,
+      "y": 7242,
       "scale": 0.8,
       "layer": "props"
     },
@@ -7922,9 +6377,110 @@
         16,
         12
       ]
+    },
+    {
+      "id": "street_lamp_24_0",
+      "asset": "wwhd_lamp",
+      "x": 3311,
+      "y": 1590,
+      "scale": 1,
+      "layer": "props",
+      "collide": [
+        -8,
+        -8,
+        16,
+        12
+      ]
+    },
+    {
+      "id": "street_lamp_24_25",
+      "asset": "wwhd_lamp",
+      "x": 4198,
+      "y": 2135,
+      "scale": 1,
+      "layer": "props",
+      "collide": [
+        -8,
+        -8,
+        16,
+        12
+      ]
+    },
+    {
+      "id": "street_lamp_24_50",
+      "asset": "wwhd_lamp",
+      "x": 4714,
+      "y": 2396,
+      "scale": 1,
+      "layer": "props",
+      "collide": [
+        -8,
+        -8,
+        16,
+        12
+      ]
+    },
+    {
+      "id": "street_lamp_26_25",
+      "asset": "wwhd_lamp",
+      "x": 598,
+      "y": 6914,
+      "scale": 1,
+      "layer": "props",
+      "collide": [
+        -8,
+        -8,
+        16,
+        12
+      ]
     }
   ],
   "hotspots": [
+    {
+      "id": "lantern_run_board",
+      "x": 4005,
+      "y": 1550,
+      "label": "Board Lantern Run",
+      "r": 120,
+      "message": "The cart waits at the station before each circuit.",
+      "type": "coaster"
+    },
+    {
+      "id": "fairground_board",
+      "x": 4380,
+      "y": 2110,
+      "label": "Fairground Chronicle",
+      "r": 85,
+      "message": "The river festival is growing. The Lantern Run is open; this green is kept clear for more rides and stalls.",
+      "type": "message"
+    },
+    {
+      "id": "deer_meadow_sign",
+      "x": 560.0,
+      "y": 6905,
+      "label": "Deer Meadow",
+      "r": 85,
+      "message": "The deer is cared for at Whisperwind's little wildlife garden.",
+      "type": "message"
+    },
+    {
+      "id": "capybara_pool_sign",
+      "x": 1165.0,
+      "y": 6905,
+      "label": "Capybara Pool",
+      "r": 85,
+      "message": "The capybara is cared for at Whisperwind's little wildlife garden.",
+      "type": "message"
+    },
+    {
+      "id": "owl_grove_sign",
+      "x": 1650.0,
+      "y": 6905,
+      "label": "Owl Grove",
+      "r": 85,
+      "message": "The owl is cared for at Whisperwind's little wildlife garden.",
+      "type": "message"
+    },
     {
       "id": "door_town_home_01",
       "type": "home",
@@ -12713,6 +11269,530 @@
       "kind": "lane"
     },
     {
+      "id": "fairground_promenade",
+      "points": [
+        [
+          3300.0,
+          1480.0
+        ],
+        [
+          3378.0,
+          1472.2
+        ],
+        [
+          3456.0,
+          1464.4
+        ],
+        [
+          3534.0,
+          1456.6
+        ],
+        [
+          3567.0,
+          1454.1
+        ],
+        [
+          3600.0,
+          1453.3
+        ],
+        [
+          3633.0,
+          1454.1
+        ],
+        [
+          3666.0,
+          1456.6
+        ],
+        [
+          3750.0,
+          1465.0
+        ],
+        [
+          3834.0,
+          1473.4
+        ],
+        [
+          3866.2,
+          1478.7
+        ],
+        [
+          3896.9,
+          1488.2
+        ],
+        [
+          3926.0,
+          1501.7
+        ],
+        [
+          3953.5,
+          1519.2
+        ],
+        [
+          4013.7,
+          1563.3
+        ],
+        [
+          4073.8,
+          1607.5
+        ],
+        [
+          4134.0,
+          1651.6
+        ],
+        [
+          4164.0,
+          1677.8
+        ],
+        [
+          4188.1,
+          1707.8
+        ],
+        [
+          4206.3,
+          1741.8
+        ],
+        [
+          4218.5,
+          1779.7
+        ],
+        [
+          4233.8,
+          1845.2
+        ],
+        [
+          4249.0,
+          1910.7
+        ],
+        [
+          4264.2,
+          1976.1
+        ],
+        [
+          4279.4,
+          2041.6
+        ],
+        [
+          4294.1,
+          2080.7
+        ],
+        [
+          4317.5,
+          2109.7
+        ],
+        [
+          4349.6,
+          2128.6
+        ],
+        [
+          4390.5,
+          2137.3
+        ],
+        [
+          4471.4,
+          2143.8
+        ],
+        [
+          4552.3,
+          2150.4
+        ],
+        [
+          4633.2,
+          2156.9
+        ],
+        [
+          4714.1,
+          2163.5
+        ],
+        [
+          4795.0,
+          2170.0
+        ],
+        [
+          4875.9,
+          2176.5
+        ],
+        [
+          4956.8,
+          2183.1
+        ],
+        [
+          5037.7,
+          2189.6
+        ],
+        [
+          5118.6,
+          2196.2
+        ],
+        [
+          5199.5,
+          2202.7
+        ],
+        [
+          5234.2,
+          2208.6
+        ],
+        [
+          5247.6,
+          2219.2
+        ],
+        [
+          5239.7,
+          2234.3
+        ],
+        [
+          5210.7,
+          2254.1
+        ],
+        [
+          5147.1,
+          2289.4
+        ],
+        [
+          5083.6,
+          2324.7
+        ],
+        [
+          5020.0,
+          2360.0
+        ],
+        [
+          4956.4,
+          2395.3
+        ],
+        [
+          4892.9,
+          2430.6
+        ],
+        [
+          4829.3,
+          2465.9
+        ],
+        [
+          4789.0,
+          2485.8
+        ],
+        [
+          4747.3,
+          2501.4
+        ],
+        [
+          4704.2,
+          2512.6
+        ],
+        [
+          4659.8,
+          2519.6
+        ],
+        [
+          4576.1,
+          2528.4
+        ],
+        [
+          4492.4,
+          2537.3
+        ],
+        [
+          4408.7,
+          2546.1
+        ],
+        [
+          4325.0,
+          2555.0
+        ],
+        [
+          4241.3,
+          2563.9
+        ],
+        [
+          4157.6,
+          2572.7
+        ],
+        [
+          4073.9,
+          2581.6
+        ],
+        [
+          3990.2,
+          2590.4
+        ],
+        [
+          3945.4,
+          2596.3
+        ],
+        [
+          3900.9,
+          2604.5
+        ],
+        [
+          3857.0,
+          2614.8
+        ],
+        [
+          3813.5,
+          2627.4
+        ],
+        [
+          3740.1,
+          2650.6
+        ],
+        [
+          3666.8,
+          2673.9
+        ],
+        [
+          3593.4,
+          2697.1
+        ],
+        [
+          3520.1,
+          2720.3
+        ],
+        [
+          3446.7,
+          2743.5
+        ],
+        [
+          3373.4,
+          2766.8
+        ],
+        [
+          3300,
+          2790
+        ]
+      ],
+      "width": 165,
+      "kind": "lane"
+    },
+    {
+      "id": "fairground_shortcut",
+      "points": [
+        [
+          4200.0,
+          1700.0
+        ],
+        [
+          4260.1,
+          1745.6
+        ],
+        [
+          4320.2,
+          1791.2
+        ],
+        [
+          4380.3,
+          1836.8
+        ],
+        [
+          4440.4,
+          1882.3
+        ],
+        [
+          4459.5,
+          1901.7
+        ],
+        [
+          4467.1,
+          1922.1
+        ],
+        [
+          4463.4,
+          1943.6
+        ],
+        [
+          4448.2,
+          1966.2
+        ],
+        [
+          4398.8,
+          2020.8
+        ],
+        [
+          4349.4,
+          2075.4
+        ],
+        [
+          4300,
+          2130
+        ]
+      ],
+      "width": 115,
+      "kind": "lane"
+    },
+    {
+      "id": "zoo_walk",
+      "points": [
+        [
+          2350.0,
+          6950.0
+        ],
+        [
+          2282.8,
+          6961.2
+        ],
+        [
+          2215.6,
+          6972.4
+        ],
+        [
+          2148.5,
+          6983.6
+        ],
+        [
+          2081.3,
+          6994.8
+        ],
+        [
+          2014.1,
+          7006.0
+        ],
+        [
+          1972.0,
+          7012.1
+        ],
+        [
+          1929.7,
+          7016.5
+        ],
+        [
+          1887.3,
+          7019.1
+        ],
+        [
+          1844.8,
+          7020.0
+        ],
+        [
+          1766.9,
+          7020.0
+        ],
+        [
+          1689.1,
+          7020.0
+        ],
+        [
+          1611.3,
+          7020.0
+        ],
+        [
+          1533.5,
+          7020.0
+        ],
+        [
+          1455.6,
+          7020.0
+        ],
+        [
+          1377.8,
+          7020.0
+        ],
+        [
+          1300.0,
+          7020.0
+        ],
+        [
+          1222.0,
+          7020.0
+        ],
+        [
+          1144.0,
+          7020.0
+        ],
+        [
+          1066.0,
+          7020.0
+        ],
+        [
+          988.0,
+          7020.0
+        ],
+        [
+          910.0,
+          7020.0
+        ],
+        [
+          832.0,
+          7020.0
+        ],
+        [
+          754.0,
+          7020.0
+        ],
+        [
+          676.0,
+          7020.0
+        ],
+        [
+          598.0,
+          7020.0
+        ],
+        [
+          520,
+          7020
+        ]
+      ],
+      "width": 155,
+      "kind": "lane"
+    },
+    {
+      "id": "zoo_quay_access",
+      "points": [
+        [
+          2300.0,
+          6350.0
+        ],
+        [
+          2256.7,
+          6418.0
+        ],
+        [
+          2213.5,
+          6486.0
+        ],
+        [
+          2170.2,
+          6554.0
+        ],
+        [
+          2126.9,
+          6622.0
+        ],
+        [
+          2108.9,
+          6651.3
+        ],
+        [
+          2091.9,
+          6681.1
+        ],
+        [
+          2075.8,
+          6711.4
+        ],
+        [
+          2060.7,
+          6742.2
+        ],
+        [
+          2028.0,
+          6811.7
+        ],
+        [
+          1995.4,
+          6881.1
+        ],
+        [
+          1962.7,
+          6950.6
+        ],
+        [
+          1930,
+          7020
+        ]
+      ],
+      "width": 125,
+      "kind": "lane"
+    },
+    {
       "id": "home_approach_1",
       "points": [
         [
@@ -13921,95 +13001,59 @@
         ],
         [
           830.0,
-          5986.8
+          6000.0
+        ],
+        [
+          830.2,
+          6078.5
+        ],
+        [
+          830.3,
+          6156.9
+        ],
+        [
+          830.5,
+          6235.4
+        ],
+        [
+          830.6,
+          6313.8
         ],
         [
           830.8,
-          5992.6
+          6392.3
         ],
         [
-          833.3,
-          5996.8
+          830.9,
+          6470.8
         ],
         [
-          837.4,
-          5999.4
+          831.1,
+          6549.2
         ],
         [
-          843.2,
-          6000.3
+          831.2,
+          6627.7
         ],
         [
-          924.1,
-          6002.4
+          831.4,
+          6706.2
         ],
         [
-          1005.1,
-          6004.5
+          831.5,
+          6784.6
         ],
         [
-          1086.0,
-          6006.5
+          831.7,
+          6863.1
         ],
         [
-          1166.9,
-          6008.6
+          831.8,
+          6941.5
         ],
         [
-          1247.9,
-          6010.6
-        ],
-        [
-          1328.8,
-          6012.7
-        ],
-        [
-          1409.7,
-          6014.7
-        ],
-        [
-          1490.7,
-          6016.8
-        ],
-        [
-          1571.6,
-          6018.9
-        ],
-        [
-          1652.5,
-          6020.9
-        ],
-        [
-          1733.5,
-          6023.0
-        ],
-        [
-          1814.4,
-          6025.0
-        ],
-        [
-          1895.3,
-          6027.1
-        ],
-        [
-          1976.3,
-          6029.2
-        ],
-        [
-          2057.2,
-          6031.2
-        ],
-        [
-          2138.1,
-          6033.3
-        ],
-        [
-          2219.1,
-          6035.3
-        ],
-        [
-          2300.0,
-          6037.4
+          832.0,
+          7020.0
         ]
       ],
       "width": 100,
@@ -14275,35 +13319,27 @@
         ],
         [
           3574.6,
-          2761.6
+          2761.1
         ],
         [
           3573.9,
-          2767.2
+          2765.3
         ],
         [
-          3570.1,
-          2771.4
+          3570.0,
+          2767.1
         ],
         [
-          3563.3,
-          2774.2
+          3563.1,
+          2766.6
         ],
         [
-          3496.0,
-          2791.4
+          3504.9,
+          2755.1
         ],
         [
-          3428.7,
-          2808.5
-        ],
-        [
-          3361.4,
-          2825.7
-        ],
-        [
-          3294.1,
-          2842.8
+          3446.7,
+          2743.5
         ]
       ],
       "width": 110,
@@ -15183,6 +14219,104 @@
       ]
     },
     {
+      "id": "deer_meadow_fence_18",
+      "x": 341,
+      "y": 6341,
+      "w": 18,
+      "h": 478
+    },
+    {
+      "id": "deer_meadow_fence_19",
+      "x": 761,
+      "y": 6341,
+      "w": 18,
+      "h": 478
+    },
+    {
+      "id": "deer_meadow_fence_20",
+      "x": 350,
+      "y": 6341,
+      "w": 420,
+      "h": 18
+    },
+    {
+      "id": "deer_meadow_fence_21",
+      "x": 350,
+      "y": 6801,
+      "w": 420,
+      "h": 18
+    },
+    {
+      "id": "capybara_pool_fence_22",
+      "x": 946,
+      "y": 6341,
+      "w": 18,
+      "h": 478
+    },
+    {
+      "id": "capybara_pool_fence_23",
+      "x": 1366,
+      "y": 6341,
+      "w": 18,
+      "h": 478
+    },
+    {
+      "id": "capybara_pool_fence_24",
+      "x": 955,
+      "y": 6341,
+      "w": 420,
+      "h": 18
+    },
+    {
+      "id": "capybara_pool_fence_25",
+      "x": 955,
+      "y": 6801,
+      "w": 420,
+      "h": 18
+    },
+    {
+      "id": "owl_grove_fence_26",
+      "x": 1431,
+      "y": 6341,
+      "w": 18,
+      "h": 478
+    },
+    {
+      "id": "owl_grove_fence_27",
+      "x": 1851,
+      "y": 6341,
+      "w": 18,
+      "h": 478
+    },
+    {
+      "id": "owl_grove_fence_28",
+      "x": 1440,
+      "y": 6341,
+      "w": 420,
+      "h": 18
+    },
+    {
+      "id": "owl_grove_fence_29",
+      "x": 1440,
+      "y": 6801,
+      "w": 420,
+      "h": 18
+    },
+    {
+      "id": "queue_rail_3780",
+      "x": 3780,
+      "y": 1340,
+      "w": 12,
+      "h": 245
+    },
+    {
+      "id": "queue_rail_4052",
+      "x": 4052,
+      "y": 1340,
+      "w": 12,
+      "h": 245
+    },
+    {
       "id": "lantern_face_550",
       "x": 550,
       "y": 1824,
@@ -15333,6 +14467,55 @@
     }
   ],
   "collisions": [
+    {
+      "id": "coaster_support_3870",
+      "x": 3855,
+      "y": 1245,
+      "w": 30,
+      "h": 30
+    },
+    {
+      "id": "coaster_support_4280",
+      "x": 4265,
+      "y": 725,
+      "w": 30,
+      "h": 30
+    },
+    {
+      "id": "coaster_support_4930",
+      "x": 4915,
+      "y": 545,
+      "w": 30,
+      "h": 30
+    },
+    {
+      "id": "coaster_support_5430",
+      "x": 5415,
+      "y": 815,
+      "w": 30,
+      "h": 30
+    },
+    {
+      "id": "coaster_support_5450",
+      "x": 5435,
+      "y": 1265,
+      "w": 30,
+      "h": 30
+    },
+    {
+      "id": "coaster_support_5010",
+      "x": 4995,
+      "y": 1415,
+      "w": 30,
+      "h": 30
+    },
+    {
+      "id": "coaster_ticket_booth",
+      "x": 3665,
+      "y": 1330,
+      "w": 135,
+      "h": 175
+    },
     {
       "id": "park_support_0",
       "x": 1420,
@@ -16936,6 +16119,810 @@
       "visible": true
     }
   ],
+  "attractions": {
+    "coaster": {
+      "id": "lantern_run",
+      "name": "Lantern Run",
+      "station": {
+        "x": 4170,
+        "y": 1400
+      },
+      "stationSprite": {
+        "src": "/assets/whisperwind_hd/fairground_v1/lantern_run_station.png",
+        "x": 3650,
+        "y": 1045,
+        "w": 720,
+        "h": 475
+      },
+      "queue": {
+        "x": 3790,
+        "y": 1350,
+        "w": 270,
+        "h": 225
+      },
+      "boarding": {
+        "x": 4005,
+        "y": 1550
+      },
+      "exit": {
+        "x": 3970,
+        "y": 1640
+      },
+      "dwellSeconds": 8,
+      "travelSeconds": 23,
+      "tunnel": {
+        "x": 4740,
+        "y": 405,
+        "rx": 155,
+        "ry": 92
+      },
+      "track": [
+        {
+          "x": 4170.0,
+          "y": 1400.0,
+          "z": 20.0
+        },
+        {
+          "x": 4192.5,
+          "y": 1404.4,
+          "z": 19.7
+        },
+        {
+          "x": 4216.3,
+          "y": 1407.7,
+          "z": 19.4
+        },
+        {
+          "x": 4241.3,
+          "y": 1410.1,
+          "z": 19.2
+        },
+        {
+          "x": 4267.5,
+          "y": 1411.6,
+          "z": 19.1
+        },
+        {
+          "x": 4294.7,
+          "y": 1412.4,
+          "z": 19.1
+        },
+        {
+          "x": 4322.9,
+          "y": 1412.7,
+          "z": 19.3
+        },
+        {
+          "x": 4351.9,
+          "y": 1412.5,
+          "z": 19.7
+        },
+        {
+          "x": 4381.6,
+          "y": 1412.0,
+          "z": 20.3
+        },
+        {
+          "x": 4412.0,
+          "y": 1411.3,
+          "z": 21.1
+        },
+        {
+          "x": 4442.9,
+          "y": 1410.6,
+          "z": 22.3
+        },
+        {
+          "x": 4474.2,
+          "y": 1410.0,
+          "z": 23.7
+        },
+        {
+          "x": 4505.9,
+          "y": 1409.6,
+          "z": 25.4
+        },
+        {
+          "x": 4537.9,
+          "y": 1409.6,
+          "z": 27.5
+        },
+        {
+          "x": 4570.0,
+          "y": 1410.0,
+          "z": 30.0
+        },
+        {
+          "x": 4602.9,
+          "y": 1411.2,
+          "z": 32.8
+        },
+        {
+          "x": 4637.1,
+          "y": 1413.4,
+          "z": 36.0
+        },
+        {
+          "x": 4672.5,
+          "y": 1416.1,
+          "z": 39.4
+        },
+        {
+          "x": 4708.8,
+          "y": 1419.3,
+          "z": 43.1
+        },
+        {
+          "x": 4745.7,
+          "y": 1422.6,
+          "z": 47.1
+        },
+        {
+          "x": 4783.1,
+          "y": 1425.8,
+          "z": 51.4
+        },
+        {
+          "x": 4820.6,
+          "y": 1428.8,
+          "z": 55.9
+        },
+        {
+          "x": 4858.2,
+          "y": 1431.1,
+          "z": 60.8
+        },
+        {
+          "x": 4895.4,
+          "y": 1432.7,
+          "z": 65.8
+        },
+        {
+          "x": 4932.2,
+          "y": 1433.2,
+          "z": 71.2
+        },
+        {
+          "x": 4968.3,
+          "y": 1432.4,
+          "z": 76.8
+        },
+        {
+          "x": 5003.5,
+          "y": 1430.1,
+          "z": 82.6
+        },
+        {
+          "x": 5037.4,
+          "y": 1426.1,
+          "z": 88.7
+        },
+        {
+          "x": 5070.0,
+          "y": 1420.0,
+          "z": 95.0
+        },
+        {
+          "x": 5102.1,
+          "y": 1412.1,
+          "z": 101.8
+        },
+        {
+          "x": 5134.6,
+          "y": 1402.6,
+          "z": 109.4
+        },
+        {
+          "x": 5167.3,
+          "y": 1391.7,
+          "z": 117.5
+        },
+        {
+          "x": 5199.9,
+          "y": 1379.5,
+          "z": 126.1
+        },
+        {
+          "x": 5232.2,
+          "y": 1366.2,
+          "z": 135.0
+        },
+        {
+          "x": 5263.7,
+          "y": 1351.7,
+          "z": 144.2
+        },
+        {
+          "x": 5294.4,
+          "y": 1336.2,
+          "z": 153.4
+        },
+        {
+          "x": 5323.8,
+          "y": 1319.9,
+          "z": 162.6
+        },
+        {
+          "x": 5351.8,
+          "y": 1302.9,
+          "z": 171.7
+        },
+        {
+          "x": 5378.0,
+          "y": 1285.2,
+          "z": 180.4
+        },
+        {
+          "x": 5402.2,
+          "y": 1266.9,
+          "z": 188.8
+        },
+        {
+          "x": 5424.1,
+          "y": 1248.2,
+          "z": 196.5
+        },
+        {
+          "x": 5443.5,
+          "y": 1229.2,
+          "z": 203.7
+        },
+        {
+          "x": 5460.0,
+          "y": 1210.0,
+          "z": 210.0
+        },
+        {
+          "x": 5473.8,
+          "y": 1190.1,
+          "z": 215.9
+        },
+        {
+          "x": 5485.5,
+          "y": 1169.1,
+          "z": 221.8
+        },
+        {
+          "x": 5494.9,
+          "y": 1147.0,
+          "z": 227.5
+        },
+        {
+          "x": 5502.4,
+          "y": 1124.2,
+          "z": 233.1
+        },
+        {
+          "x": 5507.9,
+          "y": 1100.6,
+          "z": 238.4
+        },
+        {
+          "x": 5511.7,
+          "y": 1076.4,
+          "z": 243.3
+        },
+        {
+          "x": 5513.8,
+          "y": 1051.9,
+          "z": 247.8
+        },
+        {
+          "x": 5514.2,
+          "y": 1027.0,
+          "z": 251.8
+        },
+        {
+          "x": 5513.2,
+          "y": 1002.0,
+          "z": 255.1
+        },
+        {
+          "x": 5510.9,
+          "y": 977.1,
+          "z": 257.8
+        },
+        {
+          "x": 5507.3,
+          "y": 952.2,
+          "z": 259.7
+        },
+        {
+          "x": 5502.5,
+          "y": 927.7,
+          "z": 260.8
+        },
+        {
+          "x": 5496.7,
+          "y": 903.5,
+          "z": 260.9
+        },
+        {
+          "x": 5490.0,
+          "y": 880.0,
+          "z": 260.0
+        },
+        {
+          "x": 5482.3,
+          "y": 856.2,
+          "z": 257.9
+        },
+        {
+          "x": 5473.3,
+          "y": 831.6,
+          "z": 254.4
+        },
+        {
+          "x": 5463.1,
+          "y": 806.3,
+          "z": 249.9
+        },
+        {
+          "x": 5451.7,
+          "y": 780.6,
+          "z": 244.3
+        },
+        {
+          "x": 5438.9,
+          "y": 754.7,
+          "z": 238.0
+        },
+        {
+          "x": 5424.8,
+          "y": 729.0,
+          "z": 231.0
+        },
+        {
+          "x": 5409.4,
+          "y": 703.8,
+          "z": 223.4
+        },
+        {
+          "x": 5392.5,
+          "y": 679.1,
+          "z": 215.6
+        },
+        {
+          "x": 5374.2,
+          "y": 655.4,
+          "z": 207.5
+        },
+        {
+          "x": 5354.4,
+          "y": 632.9,
+          "z": 199.4
+        },
+        {
+          "x": 5333.2,
+          "y": 611.9,
+          "z": 191.5
+        },
+        {
+          "x": 5310.3,
+          "y": 592.5,
+          "z": 183.8
+        },
+        {
+          "x": 5286.0,
+          "y": 575.1,
+          "z": 176.6
+        },
+        {
+          "x": 5260.0,
+          "y": 560.0,
+          "z": 170.0
+        },
+        {
+          "x": 5231.7,
+          "y": 546.8,
+          "z": 163.5
+        },
+        {
+          "x": 5200.8,
+          "y": 535.0,
+          "z": 156.7
+        },
+        {
+          "x": 5167.4,
+          "y": 524.7,
+          "z": 149.6
+        },
+        {
+          "x": 5132.0,
+          "y": 515.7,
+          "z": 142.3
+        },
+        {
+          "x": 5094.9,
+          "y": 507.9,
+          "z": 135.0
+        },
+        {
+          "x": 5056.4,
+          "y": 501.5,
+          "z": 127.7
+        },
+        {
+          "x": 5016.9,
+          "y": 496.2,
+          "z": 120.6
+        },
+        {
+          "x": 4976.7,
+          "y": 492.2,
+          "z": 113.8
+        },
+        {
+          "x": 4936.1,
+          "y": 489.3,
+          "z": 107.4
+        },
+        {
+          "x": 4895.6,
+          "y": 487.4,
+          "z": 101.5
+        },
+        {
+          "x": 4855.3,
+          "y": 486.6,
+          "z": 96.2
+        },
+        {
+          "x": 4815.8,
+          "y": 486.8,
+          "z": 91.6
+        },
+        {
+          "x": 4777.2,
+          "y": 487.9,
+          "z": 87.8
+        },
+        {
+          "x": 4740.0,
+          "y": 490.0,
+          "z": 85.0
+        },
+        {
+          "x": 4703.2,
+          "y": 493.2,
+          "z": 83.1
+        },
+        {
+          "x": 4665.7,
+          "y": 497.8,
+          "z": 81.9
+        },
+        {
+          "x": 4627.7,
+          "y": 503.6,
+          "z": 81.4
+        },
+        {
+          "x": 4589.6,
+          "y": 510.6,
+          "z": 81.6
+        },
+        {
+          "x": 4551.3,
+          "y": 518.8,
+          "z": 82.3
+        },
+        {
+          "x": 4513.3,
+          "y": 528.0,
+          "z": 83.6
+        },
+        {
+          "x": 4475.6,
+          "y": 538.1,
+          "z": 85.3
+        },
+        {
+          "x": 4438.5,
+          "y": 549.2,
+          "z": 87.4
+        },
+        {
+          "x": 4402.3,
+          "y": 561.1,
+          "z": 89.9
+        },
+        {
+          "x": 4367.0,
+          "y": 573.7,
+          "z": 92.6
+        },
+        {
+          "x": 4332.9,
+          "y": 587.0,
+          "z": 95.5
+        },
+        {
+          "x": 4300.2,
+          "y": 600.8,
+          "z": 98.6
+        },
+        {
+          "x": 4269.2,
+          "y": 615.2,
+          "z": 101.8
+        },
+        {
+          "x": 4240.0,
+          "y": 630.0,
+          "z": 105.0
+        },
+        {
+          "x": 4212.1,
+          "y": 645.5,
+          "z": 108.9
+        },
+        {
+          "x": 4184.9,
+          "y": 662.0,
+          "z": 114.2
+        },
+        {
+          "x": 4158.6,
+          "y": 679.3,
+          "z": 120.4
+        },
+        {
+          "x": 4133.1,
+          "y": 697.5,
+          "z": 127.3
+        },
+        {
+          "x": 4108.6,
+          "y": 716.4,
+          "z": 134.7
+        },
+        {
+          "x": 4085.3,
+          "y": 736.0,
+          "z": 142.3
+        },
+        {
+          "x": 4063.1,
+          "y": 756.2,
+          "z": 149.7
+        },
+        {
+          "x": 4042.3,
+          "y": 777.1,
+          "z": 156.7
+        },
+        {
+          "x": 4022.8,
+          "y": 798.4,
+          "z": 163.1
+        },
+        {
+          "x": 4004.9,
+          "y": 820.1,
+          "z": 168.5
+        },
+        {
+          "x": 3988.5,
+          "y": 842.2,
+          "z": 172.7
+        },
+        {
+          "x": 3973.8,
+          "y": 864.6,
+          "z": 175.3
+        },
+        {
+          "x": 3961.0,
+          "y": 887.2,
+          "z": 176.2
+        },
+        {
+          "x": 3950.0,
+          "y": 910.0,
+          "z": 175.0
+        },
+        {
+          "x": 3941.0,
+          "y": 933.8,
+          "z": 171.4
+        },
+        {
+          "x": 3933.9,
+          "y": 959.2,
+          "z": 165.5
+        },
+        {
+          "x": 3928.7,
+          "y": 986.0,
+          "z": 157.6
+        },
+        {
+          "x": 3925.2,
+          "y": 1013.7,
+          "z": 148.0
+        },
+        {
+          "x": 3923.2,
+          "y": 1042.1,
+          "z": 137.2
+        },
+        {
+          "x": 3922.8,
+          "y": 1070.8,
+          "z": 125.5
+        },
+        {
+          "x": 3923.8,
+          "y": 1099.4,
+          "z": 113.1
+        },
+        {
+          "x": 3926.0,
+          "y": 1127.6,
+          "z": 100.6
+        },
+        {
+          "x": 3929.4,
+          "y": 1155.1,
+          "z": 88.1
+        },
+        {
+          "x": 3933.8,
+          "y": 1181.6,
+          "z": 76.2
+        },
+        {
+          "x": 3939.2,
+          "y": 1206.6,
+          "z": 65.0
+        },
+        {
+          "x": 3945.5,
+          "y": 1229.9,
+          "z": 55.0
+        },
+        {
+          "x": 3952.4,
+          "y": 1251.2,
+          "z": 46.6
+        },
+        {
+          "x": 3960.0,
+          "y": 1270.0,
+          "z": 40.0
+        },
+        {
+          "x": 3968.4,
+          "y": 1286.7,
+          "z": 35.0
+        },
+        {
+          "x": 3977.8,
+          "y": 1301.7,
+          "z": 30.8
+        },
+        {
+          "x": 3988.3,
+          "y": 1315.2,
+          "z": 27.6
+        },
+        {
+          "x": 3999.9,
+          "y": 1327.4,
+          "z": 25.0
+        },
+        {
+          "x": 4012.5,
+          "y": 1338.3,
+          "z": 23.1
+        },
+        {
+          "x": 4026.0,
+          "y": 1348.1,
+          "z": 21.8
+        },
+        {
+          "x": 4040.6,
+          "y": 1356.9,
+          "z": 20.9
+        },
+        {
+          "x": 4056.2,
+          "y": 1364.8,
+          "z": 20.4
+        },
+        {
+          "x": 4072.8,
+          "y": 1371.9,
+          "z": 20.2
+        },
+        {
+          "x": 4090.3,
+          "y": 1378.3,
+          "z": 20.2
+        },
+        {
+          "x": 4108.8,
+          "y": 1384.2,
+          "z": 20.2
+        },
+        {
+          "x": 4128.3,
+          "y": 1389.7,
+          "z": 20.3
+        },
+        {
+          "x": 4148.7,
+          "y": 1395.0,
+          "z": 20.2
+        },
+        {
+          "x": 4170.0,
+          "y": 1400.0,
+          "z": 20.0
+        }
+      ]
+    },
+    "zoo": {
+      "id": "wildlife_garden",
+      "sprite": {
+        "src": "/assets/whisperwind_hd/fairground_v1/wildlife_animals.png",
+        "sourceRects": {
+          "deer": [
+            55,
+            10,
+            460,
+            875
+          ],
+          "capybara": [
+            610,
+            15,
+            600,
+            850
+          ],
+          "owl": [
+            1250,
+            15,
+            450,
+            850
+          ]
+        }
+      },
+      "pens": [
+        {
+          "id": "deer_meadow",
+          "name": "Deer Meadow",
+          "animal": "deer",
+          "x": 350,
+          "y": 6350,
+          "w": 420,
+          "h": 460,
+          "seed": 1
+        },
+        {
+          "id": "capybara_pool",
+          "name": "Capybara Pool",
+          "animal": "capybara",
+          "x": 955,
+          "y": 6350,
+          "w": 420,
+          "h": 460,
+          "seed": 3
+        },
+        {
+          "id": "owl_grove",
+          "name": "Owl Grove",
+          "animal": "owl",
+          "x": 1440,
+          "y": 6350,
+          "w": 420,
+          "h": 460,
+          "seed": 5
+        }
+      ]
+    }
+  },
   "districts": [
     {
       "id": "lantern",
@@ -17030,6 +17017,16 @@
       "y": 2590
     },
     {
+      "name": "Lantern Run Fairground",
+      "x": 4005,
+      "y": 1550
+    },
+    {
+      "name": "Wildlife Garden",
+      "x": 1300,
+      "y": 7020
+    },
+    {
       "name": "Lantern Hill",
       "x": 1800,
       "y": 1650
@@ -17070,6 +17067,18 @@
       "id": "playground",
       "x": 1760,
       "y": 2650,
+      "face": "up"
+    },
+    {
+      "id": "fair",
+      "x": 4005,
+      "y": 1550,
+      "face": "up"
+    },
+    {
+      "id": "zoo",
+      "x": 1300,
+      "y": 7020,
       "face": "up"
     },
     {
