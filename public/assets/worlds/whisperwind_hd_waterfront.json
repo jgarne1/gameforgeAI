@@ -856,7 +856,7 @@
     {
       "id": "shade_4",
       "asset": "wwhd_tree",
-      "x": 380,
+      "x": 200,
       "y": 2180,
       "layer": "props",
       "collide": [
@@ -1798,7 +1798,7 @@
     {
       "id": "grove_19",
       "asset": "wwhd_tree_willow",
-      "x": 340,
+      "x": 120,
       "y": 2470,
       "scale": 1.12,
       "layer": "props",
@@ -2783,19 +2783,6 @@
       "layer": "props"
     },
     {
-      "id": "garden_climber",
-      "asset": "wwhd_climbing_frame",
-      "x": 470,
-      "y": 2120,
-      "layer": "props",
-      "collide": [
-        -65,
-        -45,
-        130,
-        50
-      ]
-    },
-    {
       "id": "garden_seesaw",
       "asset": "wwhd_seesaw",
       "x": 620,
@@ -2806,6 +2793,53 @@
         -22,
         130,
         26
+      ]
+    },
+    {
+      "id": "garden_climber",
+      "asset": "wwhd_playground_jungle_gym",
+      "x": 470,
+      "y": 2120,
+      "layer": "props"
+    },
+    {
+      "id": "park_slide",
+      "asset": "wwhd_playground_slide",
+      "x": 420,
+      "y": 2290,
+      "layer": "props"
+    },
+    {
+      "id": "park_swing",
+      "asset": "wwhd_playground_swing",
+      "x": 590,
+      "y": 1995,
+      "layer": "props"
+    },
+    {
+      "id": "park_gate_left",
+      "asset": "wwhd_playground_entrance_left",
+      "x": 375,
+      "y": 2350,
+      "layer": "props",
+      "collide": [
+        -35,
+        -12,
+        70,
+        18
+      ]
+    },
+    {
+      "id": "park_gate_right",
+      "asset": "wwhd_playground_entrance_right",
+      "x": 605,
+      "y": 2350,
+      "layer": "props",
+      "collide": [
+        -35,
+        -12,
+        70,
+        18
       ]
     }
   ],
@@ -4779,6 +4813,12 @@
       "id": "from_inn",
       "x": 3567,
       "y": 2050
+    },
+    {
+      "id": "playground",
+      "x": 490,
+      "y": 2390,
+      "face": "up"
     }
   ],
   "paint": {
@@ -5013,6 +5053,97 @@
       ],
       "radius": 225
     }
+  ],
+  "collisions": [
+    {
+      "id": "park_support_0",
+      "x": 390,
+      "y": 2104,
+      "w": 18,
+      "h": 18
+    },
+    {
+      "id": "park_support_1",
+      "x": 522,
+      "y": 2104,
+      "w": 18,
+      "h": 18
+    },
+    {
+      "id": "park_support_2",
+      "x": 416,
+      "y": 2058,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "id": "park_support_3",
+      "x": 492,
+      "y": 2058,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "id": "park_support_4",
+      "x": 506,
+      "y": 1973,
+      "w": 18,
+      "h": 20
+    },
+    {
+      "id": "park_support_5",
+      "x": 658,
+      "y": 1973,
+      "w": 18,
+      "h": 20
+    },
+    {
+      "id": "park_support_6",
+      "x": 355,
+      "y": 2270,
+      "w": 18,
+      "h": 18
+    },
+    {
+      "id": "park_support_7",
+      "x": 405,
+      "y": 2252,
+      "w": 18,
+      "h": 18
+    },
+    {
+      "id": "park_support_8",
+      "x": 474,
+      "y": 2275,
+      "w": 18,
+      "h": 18
+    }
+  ],
+  "groundPatches": [
+    {
+      "id": "playground_sand",
+      "points": [
+        [
+          325,
+          1890
+        ],
+        [
+          690,
+          1890
+        ],
+        [
+          690,
+          2365
+        ],
+        [
+          325,
+          2365
+        ]
+      ],
+      "material": {
+        "src": "/assets/whisperwind_hd/playground_completion_v1/playground_sand_source.png",
+        "tileSize": 256
+      }
+    }
   ]
 }
-

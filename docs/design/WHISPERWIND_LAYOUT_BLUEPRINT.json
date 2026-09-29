@@ -1,0 +1,723 @@
+{
+  "id": "whisperwind_expanded_layout_v1",
+  "status": "layout blueprint; not live scene",
+  "concept": "Whisperwind-Layered-Town-Concept-v2.png",
+  "size": {
+    "w": 9200,
+    "h": 7400
+  },
+  "housing": {
+    "preservePlayerPlotIds": [
+      "town_home_01",
+      "town_home_02",
+      "town_home_03",
+      "town_home_04",
+      "town_home_05",
+      "town_home_06",
+      "town_home_07",
+      "town_home_08",
+      "town_home_09",
+      "town_home_10",
+      "town_home_11",
+      "town_home_12",
+      "town_home_13",
+      "town_home_14",
+      "town_home_15",
+      "town_home_16",
+      "town_home_17",
+      "town_home_18",
+      "town_home_19",
+      "town_home_20",
+      "town_home_21",
+      "town_home_22",
+      "town_home_23",
+      "town_home_24"
+    ],
+    "minimumPlayerHomes": 8,
+    "plannedPlayerHomes": 24,
+    "npcHomes": 6,
+    "npcHomesBuyable": false,
+    "ownershipMigration": "Keep existing plot IDs, owners, listings, decoration and residence selection; change only scene placements."
+  },
+  "districts": [
+    {
+      "id": "orchard",
+      "name": "Orchard Gardens and Playground",
+      "bounds": [
+        400,
+        400,
+        3500,
+        2000
+      ],
+      "level": "upper_west"
+    },
+    {
+      "id": "lantern_hill",
+      "name": "Lantern Hill Homes",
+      "bounds": [
+        500,
+        400,
+        3600,
+        1450
+      ],
+      "level": "upper_west"
+    },
+    {
+      "id": "commonlight",
+      "name": "Commonlight Square",
+      "bounds": [
+        2300,
+        2750,
+        2100,
+        1700
+      ],
+      "level": "civic"
+    },
+    {
+      "id": "market",
+      "name": "Market and Craft Lane",
+      "bounds": [
+        650,
+        3000,
+        1600,
+        2000
+      ],
+      "level": "civic"
+    },
+    {
+      "id": "quay",
+      "name": "Reedwater Quay",
+      "bounds": [
+        650,
+        4900,
+        3500,
+        1900
+      ],
+      "level": "quay"
+    },
+    {
+      "id": "east_homes",
+      "name": "Eastbank Homes and Apartments",
+      "bounds": [
+        5850,
+        2900,
+        3050,
+        2050
+      ],
+      "level": "eastbank"
+    },
+    {
+      "id": "south_gardens",
+      "name": "South Garden Homes",
+      "bounds": [
+        5700,
+        5250,
+        3150,
+        1700
+      ],
+      "level": "eastbank"
+    },
+    {
+      "id": "lake",
+      "name": "Orchard Lake and Manor Trail",
+      "bounds": [
+        5950,
+        350,
+        3050,
+        2400
+      ],
+      "level": "lake"
+    },
+    {
+      "id": "games_lane",
+      "name": "Games Hall and New Shops",
+      "bounds": [
+        1800,
+        1900,
+        1800,
+        850
+      ],
+      "level": "upper_west"
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "plaza",
+      "name": "Commonlight Square",
+      "x": 3350,
+      "y": 3550
+    },
+    {
+      "id": "playground",
+      "name": "Playground open entrance",
+      "x": 1700,
+      "y": 2200
+    },
+    {
+      "id": "construction",
+      "name": "Future house construction",
+      "x": 2400,
+      "y": 2700
+    },
+    {
+      "id": "lake_pier",
+      "name": "Lake public fishing pier",
+      "x": 7050,
+      "y": 2670
+    },
+    {
+      "id": "mansion",
+      "name": "Mansion approach",
+      "x": 8000,
+      "y": 1000
+    },
+    {
+      "id": "quay",
+      "name": "Public fishing quay",
+      "x": 2700,
+      "y": 6150
+    }
+  ],
+  "bridges": [
+    {
+      "id": "north_bridge",
+      "from": [
+        4200,
+        2400
+      ],
+      "to": [
+        6000,
+        2400
+      ],
+      "surface": "bridge_north",
+      "kind": "stone",
+      "walkableWidth": 180
+    },
+    {
+      "id": "civic_bridge",
+      "from": [
+        4150,
+        3800
+      ],
+      "to": [
+        5850,
+        3800
+      ],
+      "surface": "bridge_civic",
+      "kind": "stone",
+      "walkableWidth": 220
+    },
+    {
+      "id": "quay_bridge",
+      "from": [
+        4000,
+        5650
+      ],
+      "to": [
+        5800,
+        5650
+      ],
+      "surface": "bridge_quay",
+      "kind": "timber",
+      "walkableWidth": 180
+    }
+  ],
+  "publicPassages": [
+    {
+      "id": "inn_front_back",
+      "building": "Lantern Inn",
+      "front": [
+        6100,
+        4700
+      ],
+      "back": [
+        6100,
+        4380
+      ],
+      "public": true,
+      "outdoorAlternative": true
+    },
+    {
+      "id": "quay_underpass",
+      "entry": [
+        3400,
+        4700
+      ],
+      "exit": [
+        3650,
+        4200
+      ],
+      "lowerSurface": "quay",
+      "overheadSurface": "civic",
+      "public": true,
+      "outdoorAlternative": true
+    }
+  ],
+  "rules": [
+    "Every home entrance and return point on a connected route.",
+    "No critical public route through a private player home.",
+    "NPC housing uses separate IDs and no plotId.",
+    "Water blocked except explicit bridge deck surface.",
+    "Bridge rails and wall faces block; stairs have contiguous lower and upper landings.",
+    "Overlapping tunnel/bridge floor projections require distinct movement surfaces.",
+    "Manor/lake reachable through public exterior trails even before quests open."
+  ],
+  "homes": [
+    {
+      "id": "town_home_01",
+      "x": 700,
+      "y": 1000,
+      "occupant": "player",
+      "doorApproach": [
+        800,
+        1120
+      ]
+    },
+    {
+      "id": "town_home_02",
+      "x": 1600,
+      "y": 1000,
+      "occupant": "player",
+      "doorApproach": [
+        1700,
+        1120
+      ]
+    },
+    {
+      "id": "town_home_03",
+      "x": 2500,
+      "y": 1000,
+      "occupant": "player",
+      "doorApproach": [
+        2600,
+        1120
+      ]
+    },
+    {
+      "id": "town_home_04",
+      "x": 3400,
+      "y": 1000,
+      "occupant": "player",
+      "doorApproach": [
+        3500,
+        1120
+      ]
+    },
+    {
+      "id": "town_home_05",
+      "x": 700,
+      "y": 1700,
+      "occupant": "player",
+      "doorApproach": [
+        800,
+        1820
+      ]
+    },
+    {
+      "id": "town_home_06",
+      "x": 1600,
+      "y": 1700,
+      "occupant": "player",
+      "doorApproach": [
+        1700,
+        1820
+      ]
+    },
+    {
+      "id": "town_home_07",
+      "x": 2500,
+      "y": 1700,
+      "occupant": "player",
+      "doorApproach": [
+        2600,
+        1820
+      ]
+    },
+    {
+      "id": "town_home_08",
+      "x": 3400,
+      "y": 1700,
+      "occupant": "player",
+      "doorApproach": [
+        3500,
+        1820
+      ]
+    },
+    {
+      "id": "town_home_09",
+      "x": 6300,
+      "y": 3300,
+      "occupant": "player",
+      "doorApproach": [
+        6400,
+        3420
+      ]
+    },
+    {
+      "id": "town_home_10",
+      "x": 7050,
+      "y": 3300,
+      "occupant": "player",
+      "doorApproach": [
+        7150,
+        3420
+      ]
+    },
+    {
+      "id": "town_home_11",
+      "x": 7800,
+      "y": 3300,
+      "occupant": "player",
+      "doorApproach": [
+        7900,
+        3420
+      ]
+    },
+    {
+      "id": "town_home_12",
+      "x": 8550,
+      "y": 3300,
+      "occupant": "player",
+      "doorApproach": [
+        8650,
+        3420
+      ]
+    },
+    {
+      "id": "town_home_13",
+      "x": 6300,
+      "y": 4150,
+      "occupant": "player",
+      "doorApproach": [
+        6400,
+        4270
+      ]
+    },
+    {
+      "id": "town_home_14",
+      "x": 7050,
+      "y": 4150,
+      "occupant": "player",
+      "doorApproach": [
+        7150,
+        4270
+      ]
+    },
+    {
+      "id": "town_home_15",
+      "x": 7800,
+      "y": 4150,
+      "occupant": "player",
+      "doorApproach": [
+        7900,
+        4270
+      ]
+    },
+    {
+      "id": "town_home_16",
+      "x": 8550,
+      "y": 4150,
+      "occupant": "player",
+      "doorApproach": [
+        8650,
+        4270
+      ]
+    },
+    {
+      "id": "town_home_17",
+      "x": 6200,
+      "y": 5550,
+      "occupant": "player",
+      "doorApproach": [
+        6300,
+        5670
+      ]
+    },
+    {
+      "id": "town_home_18",
+      "x": 6950,
+      "y": 5550,
+      "occupant": "player",
+      "doorApproach": [
+        7050,
+        5670
+      ]
+    },
+    {
+      "id": "town_home_19",
+      "x": 7700,
+      "y": 5550,
+      "occupant": "player",
+      "doorApproach": [
+        7800,
+        5670
+      ]
+    },
+    {
+      "id": "town_home_20",
+      "x": 8450,
+      "y": 5550,
+      "occupant": "player",
+      "doorApproach": [
+        8550,
+        5670
+      ]
+    },
+    {
+      "id": "town_home_21",
+      "x": 6200,
+      "y": 6350,
+      "occupant": "player",
+      "doorApproach": [
+        6300,
+        6470
+      ]
+    },
+    {
+      "id": "town_home_22",
+      "x": 6950,
+      "y": 6350,
+      "occupant": "player",
+      "doorApproach": [
+        7050,
+        6470
+      ]
+    },
+    {
+      "id": "town_home_23",
+      "x": 7700,
+      "y": 6350,
+      "occupant": "player",
+      "doorApproach": [
+        7800,
+        6470
+      ]
+    },
+    {
+      "id": "town_home_24",
+      "x": 8450,
+      "y": 6350,
+      "occupant": "player",
+      "doorApproach": [
+        8550,
+        6470
+      ]
+    }
+  ],
+  "npcHomes": [
+    {
+      "id": "npc_home_1",
+      "x": 900,
+      "y": 3800,
+      "occupant": "npc",
+      "buyable": false
+    },
+    {
+      "id": "npc_home_2",
+      "x": 1900,
+      "y": 3800,
+      "occupant": "npc",
+      "buyable": false
+    },
+    {
+      "id": "npc_home_3",
+      "x": 2900,
+      "y": 3800,
+      "occupant": "npc",
+      "buyable": false
+    },
+    {
+      "id": "npc_home_4",
+      "x": 900,
+      "y": 4650,
+      "occupant": "npc",
+      "buyable": false
+    },
+    {
+      "id": "npc_home_5",
+      "x": 1900,
+      "y": 4650,
+      "occupant": "npc",
+      "buyable": false
+    },
+    {
+      "id": "npc_home_6",
+      "x": 2900,
+      "y": 4650,
+      "occupant": "npc",
+      "buyable": false
+    }
+  ],
+  "routeSpine": [
+    [
+      [
+        500,
+        2300
+      ],
+      [
+        3800,
+        2300
+      ],
+      [
+        4200,
+        2400
+      ]
+    ],
+    [
+      [
+        4200,
+        2400
+      ],
+      [
+        6000,
+        2400
+      ],
+      [
+        6600,
+        2700
+      ],
+      [
+        7050,
+        2670
+      ]
+    ],
+    [
+      [
+        3800,
+        2300
+      ],
+      [
+        3800,
+        3550
+      ],
+      [
+        3350,
+        3550
+      ],
+      [
+        4150,
+        3800
+      ]
+    ],
+    [
+      [
+        4150,
+        3800
+      ],
+      [
+        5850,
+        3800
+      ],
+      [
+        6100,
+        4700
+      ],
+      [
+        8750,
+        4700
+      ]
+    ],
+    [
+      [
+        3350,
+        3550
+      ],
+      [
+        2700,
+        4600
+      ],
+      [
+        2700,
+        6150
+      ],
+      [
+        4000,
+        5650
+      ]
+    ],
+    [
+      [
+        4000,
+        5650
+      ],
+      [
+        5800,
+        5650
+      ],
+      [
+        8800,
+        5650
+      ]
+    ],
+    [
+      [
+        6000,
+        2400
+      ],
+      [
+        6000,
+        900
+      ],
+      [
+        8000,
+        900
+      ],
+      [
+        8000,
+        1000
+      ]
+    ],
+    [
+      [
+        6100,
+        4700
+      ],
+      [
+        6100,
+        6850
+      ],
+      [
+        8750,
+        6850
+      ]
+    ],
+    [
+      [
+        500,
+        2300
+      ],
+      [
+        1700,
+        2200
+      ]
+    ],
+    [
+      [
+        500,
+        2300
+      ],
+      [
+        500,
+        750
+      ],
+      [
+        3600,
+        750
+      ]
+    ],
+    [
+      [
+        6500,
+        4700
+      ],
+      [
+        6500,
+        3000
+      ],
+      [
+        8750,
+        3000
+      ]
+    ]
+  ]
+}

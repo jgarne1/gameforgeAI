@@ -1,0 +1,359 @@
+{
+  "packId": "playground_completion_v1",
+  "status": "static art; climb/occlusion layers require authored masks; routes untested",
+  "assets": [
+    {
+      "id": "wwhd_playground_slide",
+      "file": "playground_slide_source.png",
+      "name": "Timber slide",
+      "size": [
+        1254,
+        1254
+      ],
+      "sourceRect": {
+        "x": 96,
+        "y": 166,
+        "w": 1085,
+        "h": 941
+      },
+      "solidBounds": [
+        104,
+        174,
+        1069,
+        925
+      ],
+      "displaySize": {
+        "w": 162.395,
+        "h": 140.842
+      },
+      "solidDisplaySize": {
+        "w": 160,
+        "h": 138.447
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9914984059511158
+      },
+      "sourcePlacementAnchor": [
+        638.5,
+        1099
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.14967259120673526,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.7059807340593037,
+      "sha256": "5d9958f99f3a9f4549d7bcb5392d38d0e0f8b928298d5acc651a4d61b1578577",
+      "collisionNotes": "Do not block whole image rectangle. Use support feet/structural ground contacts; central aisles and interactions remain explicit runtime surfaces."
+    },
+    {
+      "id": "wwhd_playground_jungle_gym",
+      "file": "playground_jungle_gym_source.png",
+      "name": "Cubic timber jungle gym",
+      "size": [
+        1355,
+        1161
+      ],
+      "sourceRect": {
+        "x": 241,
+        "y": 164,
+        "w": 880,
+        "h": 868
+      },
+      "solidBounds": [
+        249,
+        172,
+        864,
+        852
+      ],
+      "displaySize": {
+        "w": 178.241,
+        "h": 175.81
+      },
+      "solidDisplaySize": {
+        "w": 175,
+        "h": 172.569
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9907834101382489
+      },
+      "sourcePlacementAnchor": [
+        681.0,
+        1024
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.2025462962962963,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.6742882932705296,
+      "sha256": "af03d404121168ad6bcfa5d860f30b31798daf0f39f431932b0dc73b8f249d64",
+      "collisionNotes": "Do not block whole image rectangle. Use support feet/structural ground contacts; central aisles and interactions remain explicit runtime surfaces."
+    },
+    {
+      "id": "wwhd_playground_swing",
+      "file": "playground_swing_source.png",
+      "name": "Empty single-seat swing",
+      "size": [
+        1330,
+        1182
+      ],
+      "sourceRect": {
+        "x": 142,
+        "y": 187,
+        "w": 1057,
+        "h": 837
+      },
+      "solidBounds": [
+        150,
+        195,
+        1041,
+        821
+      ],
+      "displaySize": {
+        "w": 182.767,
+        "h": 144.726
+      },
+      "solidDisplaySize": {
+        "w": 180,
+        "h": 141.96
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9904420549581839
+      },
+      "sourcePlacementAnchor": [
+        670.5,
+        1016
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.1729106628242075,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.7621134053407631,
+      "sha256": "d215597f4aa495602495cbab13c2c38113cbc959281b448dd763cd78c60c4a34",
+      "collisionNotes": "Do not block whole image rectangle. Use support feet/structural ground contacts; central aisles and interactions remain explicit runtime surfaces."
+    },
+    {
+      "id": "wwhd_playground_fence_panel",
+      "file": "playground_entrance_source.png",
+      "name": "Fence panel",
+      "size": [
+        1920,
+        819
+      ],
+      "sourceRect": {
+        "x": 54,
+        "y": 342,
+        "w": 613,
+        "h": 367
+      },
+      "solidBounds": [
+        62,
+        350,
+        597,
+        351
+      ],
+      "displaySize": {
+        "w": 164.288,
+        "h": 98.358
+      },
+      "solidDisplaySize": {
+        "w": 160,
+        "h": 94.07
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9782016348773842
+      },
+      "sourcePlacementAnchor": [
+        360.5,
+        701
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.26800670016750416,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.8047669922669922,
+      "sha256": "528bdce63ec1cf60eab8d989bd4c3f9f698b8a6d6fdbd59c6b78884c5a34a4bd",
+      "collisionNotes": "Do not block whole image rectangle. Use support feet/structural ground contacts; central aisles and interactions remain explicit runtime surfaces."
+    },
+    {
+      "id": "wwhd_playground_entrance_left",
+      "file": "playground_entrance_source.png",
+      "name": "Entrance left arm",
+      "size": [
+        1920,
+        819
+      ],
+      "sourceRect": {
+        "x": 780,
+        "y": 348,
+        "w": 381,
+        "h": 325
+      },
+      "solidBounds": [
+        788,
+        356,
+        365,
+        309
+      ],
+      "displaySize": {
+        "w": 73.068,
+        "h": 62.329
+      },
+      "solidDisplaySize": {
+        "w": 70,
+        "h": 59.26
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9753846153846154
+      },
+      "sourcePlacementAnchor": [
+        970.5,
+        665
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.1917808219178082,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.8047669922669922,
+      "sha256": "528bdce63ec1cf60eab8d989bd4c3f9f698b8a6d6fdbd59c6b78884c5a34a4bd",
+      "collisionNotes": "Do not block whole image rectangle. Use support feet/structural ground contacts; central aisles and interactions remain explicit runtime surfaces."
+    },
+    {
+      "id": "wwhd_playground_entrance_right",
+      "file": "playground_entrance_source.png",
+      "name": "Entrance right arm",
+      "size": [
+        1920,
+        819
+      ],
+      "sourceRect": {
+        "x": 1494,
+        "y": 343,
+        "w": 388,
+        "h": 376
+      },
+      "solidBounds": [
+        1502,
+        351,
+        372,
+        360
+      ],
+      "displaySize": {
+        "w": 73.011,
+        "h": 70.753
+      },
+      "solidDisplaySize": {
+        "w": 70,
+        "h": 67.742
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9787234042553191
+      },
+      "sourcePlacementAnchor": [
+        1688.0,
+        711
+      ],
+      "scaleWorldUnitsPerSourcePixel": 0.1881720430107527,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "fullyTransparentFraction": 0.8047669922669922,
+      "sha256": "528bdce63ec1cf60eab8d989bd4c3f9f698b8a6d6fdbd59c6b78884c5a34a4bd",
+      "collisionNotes": "Do not block whole image rectangle. Use support feet/structural ground contacts; central aisles and interactions remain explicit runtime surfaces."
+    }
+  ],
+  "entranceAssembly": {
+    "leftArmId": "wwhd_playground_entrance_left",
+    "leftAnchorOffsetWorld": [
+      -115,
+      0
+    ],
+    "rightArmId": "wwhd_playground_entrance_right",
+    "rightAnchorOffsetWorld": [
+      115,
+      0
+    ],
+    "minimumClearWidthWorld": 160,
+    "totalSolidWidthWorld": 300,
+    "openCorridorProposal": [
+      [
+        -80,
+        -80
+      ],
+      [
+        80,
+        -80
+      ],
+      [
+        80,
+        80
+      ],
+      [
+        -80,
+        80
+      ]
+    ],
+    "notes": "Place each 70-wide arm with bottom center at +/-115. Source generated arm pair gap is too narrow if combined; select and place arms separately. Join exterior ends to existing fence. No blocker or leaf across central160-unit gap."
+  },
+  "sand": {
+    "file": "playground_sand_source.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "sourceRect": {
+      "x": 0,
+      "y": 0,
+      "w": 1254,
+      "h": 1254
+    },
+    "displaySize": {
+      "w": 256,
+      "h": 256
+    },
+    "placeOrigin": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "alphaExtrema": [
+      255,
+      255
+    ],
+    "repeat": true,
+    "seamMeasurements": {
+      "leftRightEdgeMAE": 7.862041467304625,
+      "topBottomEdgeMAE": 9.485911749069643,
+      "internalHorizontalLag8MAE": 10.782169502749042,
+      "internalVerticalLag8MAE": 11.059646690782113,
+      "edgesPixelIdentical": false
+    },
+    "notes": "Opaque ground tile. Repeat full source at256 units. Visually review repeated joins; edges are not pixel-identical, do not claim exact periodic pixel matching."
+  },
+  "layering": {
+    "slide": {
+      "topSurface": "Raised platform and sloping chute are elevated interaction art, not blanket ground blockers. Ladder approach and landing must stay free.",
+      "occlusion": "Requires silhouette masks for near platform rail/post and chute side rail when a child occupies it. A horizontal rectangular cut would slice diagonal chute; no pre-split layer PNG supplied.",
+      "groundBlockers": "Small support/post bases only; manually validate under-platform opening and chute landing."
+    },
+    "jungleGym": {
+      "topSurface": "Open overhead rung grid, not a solid walkable roof/deck. Climb graph should follow explicit rungs rather than teleport onto a plane.",
+      "occlusion": "Back/far rungs below actors; near/front posts and rungs above a child inside. Requires authored masks, not one image depth sort.",
+      "groundBlockers": "Corner post feet; do not turn transparent cage interior into a rectangular wall."
+    },
+    "swing": {
+      "topSurface": "Static seat and rope art, no swing animation or rider pose provided.",
+      "groundBlockers": "A-frame foot contacts only. Keep center approach and swing clearance open."
+    }
+  }
+}

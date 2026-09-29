@@ -496,7 +496,7 @@
     },
     {
       "id": "wwhd_tavern",
-      "name": "Driftwood Tavern — HD",
+      "name": "Driftwood Tavern \u2014 HD",
       "src": "/assets/whisperwind_hd/v1/tavern.png",
       "category": "building",
       "sourceRect": {
@@ -1411,7 +1411,7 @@
     },
     {
       "id": "wwhd_cottage_roof_slate",
-      "name": "Cottage — Slate Roof",
+      "name": "Cottage \u2014 Slate Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1431,7 +1431,7 @@
     },
     {
       "id": "wwhd_cottage_roof_moss",
-      "name": "Cottage — Moss Roof",
+      "name": "Cottage \u2014 Moss Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1451,7 +1451,7 @@
     },
     {
       "id": "wwhd_cottage_roof_plum",
-      "name": "Cottage — Plum Roof",
+      "name": "Cottage \u2014 Plum Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1471,7 +1471,7 @@
     },
     {
       "id": "wwhd_apartment_roof_slate",
-      "name": "Apartment — Slate Roof",
+      "name": "Apartment \u2014 Slate Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1491,7 +1491,7 @@
     },
     {
       "id": "wwhd_apartment_roof_moss",
-      "name": "Apartment — Moss Roof",
+      "name": "Apartment \u2014 Moss Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1511,7 +1511,7 @@
     },
     {
       "id": "wwhd_apartment_roof_plum",
-      "name": "Apartment — Plum Roof",
+      "name": "Apartment \u2014 Plum Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1531,7 +1531,7 @@
     },
     {
       "id": "wwhd_bakery_roof_slate",
-      "name": "Bakery — Slate Roof",
+      "name": "Bakery \u2014 Slate Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1551,7 +1551,7 @@
     },
     {
       "id": "wwhd_bakery_roof_moss",
-      "name": "Bakery — Moss Roof",
+      "name": "Bakery \u2014 Moss Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1571,7 +1571,7 @@
     },
     {
       "id": "wwhd_bakery_roof_plum",
-      "name": "Bakery — Plum Roof",
+      "name": "Bakery \u2014 Plum Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -2413,6 +2413,156 @@
       },
       "orientation": "right",
       "roofVariantsCompatible": false
+    },
+    {
+      "id": "wwhd_playground_slide",
+      "name": "Timber slide",
+      "sourceRect": {
+        "x": 96,
+        "y": 166,
+        "w": 1085,
+        "h": 941
+      },
+      "displaySize": {
+        "w": 162.395,
+        "h": 140.842
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9914984059511158
+      },
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/playground_completion_v1/playground_slide_source.png",
+      "tags": [
+        "whisperwind",
+        "playground",
+        "static"
+      ]
+    },
+    {
+      "id": "wwhd_playground_jungle_gym",
+      "name": "Cubic timber jungle gym",
+      "sourceRect": {
+        "x": 241,
+        "y": 164,
+        "w": 880,
+        "h": 868
+      },
+      "displaySize": {
+        "w": 178.241,
+        "h": 175.81
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9907834101382489
+      },
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/playground_completion_v1/playground_jungle_gym_source.png",
+      "tags": [
+        "whisperwind",
+        "playground",
+        "static"
+      ]
+    },
+    {
+      "id": "wwhd_playground_swing",
+      "name": "Empty single-seat swing",
+      "sourceRect": {
+        "x": 142,
+        "y": 187,
+        "w": 1057,
+        "h": 837
+      },
+      "displaySize": {
+        "w": 182.767,
+        "h": 144.726
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9904420549581839
+      },
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/playground_completion_v1/playground_swing_source.png",
+      "tags": [
+        "whisperwind",
+        "playground",
+        "static"
+      ]
+    },
+    {
+      "id": "wwhd_playground_fence_panel",
+      "name": "Fence panel",
+      "sourceRect": {
+        "x": 54,
+        "y": 342,
+        "w": 613,
+        "h": 367
+      },
+      "displaySize": {
+        "w": 164.288,
+        "h": 98.358
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9782016348773842
+      },
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/playground_completion_v1/playground_entrance_source.png",
+      "tags": [
+        "whisperwind",
+        "playground",
+        "static"
+      ]
+    },
+    {
+      "id": "wwhd_playground_entrance_left",
+      "name": "Entrance left arm",
+      "sourceRect": {
+        "x": 780,
+        "y": 348,
+        "w": 381,
+        "h": 325
+      },
+      "displaySize": {
+        "w": 73.068,
+        "h": 62.329
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9753846153846154
+      },
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/playground_completion_v1/playground_entrance_source.png",
+      "tags": [
+        "whisperwind",
+        "playground",
+        "static"
+      ]
+    },
+    {
+      "id": "wwhd_playground_entrance_right",
+      "name": "Entrance right arm",
+      "sourceRect": {
+        "x": 1494,
+        "y": 343,
+        "w": 388,
+        "h": 376
+      },
+      "displaySize": {
+        "w": 73.011,
+        "h": 70.753
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9787234042553191
+      },
+      "category": "prop",
+      "src": "/assets/whisperwind_hd/playground_completion_v1/playground_entrance_source.png",
+      "tags": [
+        "whisperwind",
+        "playground",
+        "static"
+      ]
     }
   ]
 }
