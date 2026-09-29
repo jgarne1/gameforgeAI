@@ -1,5 +1,6 @@
 const http=require('node:http'), fs=require('node:fs'), path=require('node:path'), crypto=require('node:crypto');
 const {DatabaseSync}=require('node:sqlite');
+const {ShareSignaling}=require('./share-signaling.cjs');
 const UUID=/^[a-f0-9-]{36}$/i, MAX_BODY=8*1024*1024, MAX_FILE=25*1024*1024+28;
 const RETENTION_MS=48*60*60*1000;
 function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
@@ -41,14 +42,16 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
   for(const c of db.prepare('SELECT id FROM chats WHERE ended_at <= ?').all(cutoff)){for(const f of db.prepare('SELECT id FROM file_chats WHERE chat_id=?').all(c.id))fs.rmSync(path.join(dir,'files',f.id),{force:true});db.prepare('DELETE FROM file_chats WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM messages WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_members WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_reads WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chats WHERE id=?').run(c.id);}
   for(const name of fs.readdirSync(path.join(dir,'files'))){const file=path.join(dir,'files',name);if(fs.statSync(file).mtimeMs<=cutoff)fs.unlinkSync(file);}
   for(const [id,p] of peers)if(now()-p.last>=65000)peers.delete(id);
+  share?.prune();
  }
- prune();const cleanup=setInterval(prune,15*60*1000);cleanup.unref();
+ let share;prune();const cleanup=setInterval(prune,15*60*1000);cleanup.unref();
  function events(after,chat,user) {
   const rows=db.prepare('SELECT seq, id, frame, user_id, received_at,mutation_target,mutation_kind,target_seq FROM messages WHERE seq > ? AND received_at > ? AND chat_id=? ORDER BY seq LIMIT 100').all(Math.max(after,member(chat,user)?.after_seq||0),now()-RETENTION_MS,chat);
   let size=0;const packets=[]; for(const row of rows){if(row.mutation_target&&row.target_seq<=member(chat,user).after_seq)continue;size+=row.frame.length;if(size>MAX_BODY&&packets.length)break;packets.push(row);}
   const conversations=chats(user);return {epoch,cursor:packets.length?packets.at(-1).seq:after,packets,online:online(),people:people(),chats:conversations,activity:Math.max(0,...conversations.map(c=>c.latest?.seq||0))};
  }
  const wake=()=>{for(const job of [...waiting])job();};
+ share=new ShareSignaling({now,onEvent:wake});
  const server=http.createServer(async(req,res)=> {
   try {
    const url=new URL(req.url,'http://localhost');
@@ -68,6 +71,17 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
    db.prepare('INSERT INTO people(user_id,name,last_seen) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET name=excluded.name,last_seen=excluded.last_seen').run(userId,name,now());
    peers.set(device,{name,last:now(),userId});
    if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,roomSecret:secret,people:people(),chats:chats(userId)});}
+   if(req.method==='GET'&&url.pathname==='/share/ice'){
+    const callId=url.searchParams.get('callId');if(!UUID.test(callId||'')||!share.callFor(callId,userId))return finish(res,403,{error:'Share is unavailable'});
+    return finish(res,200,{iceServers:[{urls:'stun:stun.cloudflare.com:3478'}],turnReady:false});
+   }
+   if(req.method==='GET'&&url.pathname==='/share/events'){
+    const after=Number(url.searchParams.get('after')||0);if(!Number.isSafeInteger(after)||after<0)return finish(res,400,{error:'Invalid cursor'});
+    const reply=()=>{const items=share.eventsFor(userId,after);finish(res,200,{events:items,cursor:items.at(-1)?.seq||after});};
+    if(share.eventsFor(userId,after).length||url.searchParams.get('wait')==='0')return reply();
+    let timer;const complete=()=>{clearTimeout(timer);waiting.delete(complete);reply();};waiting.add(complete);timer=setTimeout(complete,20000);res.on('close',()=>{clearTimeout(timer);waiting.delete(complete);});return;
+   }
+   if(req.method==='POST'&&url.pathname==='/share/end-all'){share.endUser(userId);return finish(res,200,{ok:true});}
    if(req.method==='POST'&&url.pathname==='/chats'){
     const body=JSON.parse((await read(req,8192)).toString()),ids=[...new Set([userId,...(Array.isArray(body.members)?body.members:[])])];
     if(ids.length<2||ids.some(id=>!allowedIds.has(id)))return finish(res,400,{error:'Select an available family member'});
@@ -78,11 +92,20 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
     if(operation==='rename'){if(typeof body.name!=='string'||!body.name.trim()||body.name.length>64)return finish(res,400,{error:'Name must be 1–64 characters'});db.prepare('UPDATE chats SET name=?,custom_name=1 WHERE id=?').run(body.name.trim(),id);}
     if(operation==='add'){if(!allowedIds.has(body.userId)||typeof body.shareHistory!=='boolean')return finish(res,400,{error:'Invalid member or history choice'});const seq=body.shareHistory?0:db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM messages').get().seq;db.prepare('INSERT OR IGNORE INTO chat_members(chat_id,user_id,after_seq) VALUES (?,?,?)').run(id,body.userId,seq);}
     if(operation==='moderator'){if(c.owner_id!==userId)return finish(res,403,{error:'Only the chat owner can assign moderators'});if(body.userId===c.owner_id||!member(id,body.userId)||typeof body.enabled!=='boolean')return finish(res,400,{error:'Invalid moderator'});db.prepare('UPDATE chat_members SET moderator=? WHERE chat_id=? AND user_id=?').run(body.enabled?1:0,id,body.userId);}
-    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);db.prepare('DELETE FROM chat_reads WHERE chat_id=? AND user_id=?').run(id,body.userId);}
-    if(operation==='end')db.prepare('UPDATE chats SET ended_at=? WHERE id=?').run(now(),id);wake();return finish(res,200,{chats:chats(userId)});
+    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);db.prepare('DELETE FROM chat_reads WHERE chat_id=? AND user_id=?').run(id,body.userId);share.endChat(id);}
+    if(operation==='end'){db.prepare('UPDATE chats SET ended_at=? WHERE id=?').run(now(),id);share.endChat(id);}wake();return finish(res,200,{chats:chats(userId)});
    }
    const chat=req.headers['x-chat']||'family',membership=member(chat,userId),conversation=db.prepare('SELECT * FROM chats WHERE id=?').get(chat);
    if(!conversation||!membership)return finish(res,403,{error:'Chat access denied'});
+   if(req.method==='POST'&&url.pathname==='/share/start'){
+    const participants=chat==='family'?[]:db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(chat).map(row=>row.user_id);
+    if(conversation.ended_at||participants.length!==2||!participants.includes(userId))return finish(res,403,{error:'Open an active private chat to share your screen'});
+    const target=participants.find(id=>id!==userId);try{const call=share.start(chat,userId,target);return finish(res,200,{callId:call.id,target});}catch(e){return finish(res,409,{error:e.message});}
+   }
+   if(req.method==='POST'&&url.pathname==='/share/signal'){
+    const body=JSON.parse((await read(req,20000)).toString());if(!UUID.test(body.callId||'')||typeof body.kind!=='string')return finish(res,400,{error:'Invalid share signal'});
+    try{share.send(body.callId,chat,userId,body.kind,body.payload);return finish(res,200,{ok:true});}catch(e){return finish(res,403,{error:e.message});}
+   }
    if(req.method==='POST'&&url.pathname==='/read'){
     const body=JSON.parse((await read(req,128)).toString());if(!Number.isSafeInteger(body.seq)||body.seq<0)return finish(res,400,{error:'Invalid read position'});
     const latest=db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM messages WHERE chat_id=? AND mutation_target IS NULL').get(chat).seq;
@@ -126,7 +149,7 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
    finish(res,404,{error:'Not found'});
   } catch(e) {finish(res,e.status||500,{error:e.status===413?'Maximum size exceeded':e.status===507?'FamilyWire storage is full; try again after older content expires':'Request failed'});}
  });
- server.pruneNow=prune;server.requestTimeout=120000; server.on('close',()=>{clearInterval(cleanup);for(const job of waiting)job();db.close();});
+ server.pruneNow=prune;server.requestTimeout=120000; server.on('close',()=>{clearInterval(cleanup);for(const job of waiting)job();share.close();db.close();});
  return server;
 }
 if(require.main===module&&process.env.BACKEND_URL){require('./proxy.cjs').createProxy(process.env.BACKEND_URL).listen(Number(process.env.PORT||45831),'0.0.0.0');}
