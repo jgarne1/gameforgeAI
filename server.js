@@ -5711,6 +5711,7 @@ const townServices=require('./lib/town_routes')({app,DATA,root:__dirname,users,p
 // -----------------------------
 // Multiplayer overworld support
 // -----------------------------
+const worldSocial=require('./lib/world_social')();
 const worldPlayers=new Map(); // socket -> public world state
 function worldRoomName(sceneId){return 'world:' + String(sceneId||'shadow_woods_dock').replace(/[^a-zA-Z0-9_:\-]/g,'_');}
 function worldPlayerPublic(ws){
@@ -5719,6 +5720,7 @@ function worldPlayerPublic(ws){
     id:ws.worldId||'',
     username:ws.username||st.username||'Wanderer',
     displayName:(st.appearance&&st.appearance.displayName)||ws.displayName||ws.username||st.username||'Wanderer',
+    color:st.color,
     sceneId:st.sceneId||'shadow_woods_dock',
     x:Number(st.x||0),
     y:Number(st.y||0),
@@ -5883,7 +5885,8 @@ wss.on('connection',(ws,request)=>{
 
 
     if(m.type==='worldJoin'){
-      let username=String(m.username||ws.username||'').trim()||'Wanderer';
+      const authenticated=townServices.identity(request);
+      let username=authenticated||String(m.username||ws.username||'').trim().slice(0,40)||'Wanderer';
       ws.displayName=String(m.displayName||(m.appearance&&m.appearance.displayName)||username).trim().slice(0,40)||username;
       const sceneId=String(m.sceneId||'shadow_woods_dock').trim()||'shadow_woods_dock';
       if(sceneId.startsWith('home__')){const actor=townServices.homeAccess(request,sceneId.slice(6));if(!actor){ws.send(JSON.stringify({type:'error',code:'home_access',message:'This home is private or unavailable.'}));return;}username=actor;}
@@ -5895,8 +5898,10 @@ wss.on('connection',(ws,request)=>{
       ws.location='World';
       ws.worldId=ws.worldId||('wp_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4));
       ws.worldRoom=worldRoomName(sceneId);
-      worldPlayers.set(ws,{username,sceneId,x:Number(m.x||0),y:Number(m.y||0),face:m.face||'down',moving:!!m.moving,mode:m.mode||'explore',appearance:m.appearance||{},updatedAt:Date.now()});
-      ws.send(JSON.stringify({type:'worldWelcome',id:ws.worldId,sceneId,peers:worldPeersFor(sceneId,ws)}));
+      const color=worldSocial.color(authenticated||ws.worldId);
+      worldPlayers.set(ws,{username,sceneId,color,x:Number(m.x||0),y:Number(m.y||0),face:m.face||'down',moving:!!m.moving,mode:m.mode||'explore',appearance:m.appearance||{},updatedAt:Date.now()});
+      ws.send(JSON.stringify({type:'worldWelcome',id:ws.worldId,sceneId,color,username,canChat:!!authenticated,peers:worldPeersFor(sceneId,ws)}));
+      ws.send(JSON.stringify({type:'chat',sceneId,chat:worldSocial.messages(sceneId)}));
       broadcastWorld(sceneId,{type:'worldJoin',player:worldPlayerPublic(ws)},ws);
       pushPresence();
       return;
@@ -6409,6 +6414,15 @@ wss.on('connection',(ws,request)=>{
     }
 
     if(m.type==='chat'){
+      const state=worldPlayers.get(ws);
+      if(state){
+        const actor=townServices.identity(request);
+        if(!actor||actor!==state.username){ws.send(JSON.stringify({type:'error',code:'world_chat',message:'Please sign in again to send town chat.'}));return;}
+        if(state.sceneId.startsWith('home__')&&!townServices.homeAccess(request,state.sceneId.slice(6))){leaveWorld(ws);ws.send(JSON.stringify({type:'error',code:'home_access',message:'Home access has changed.'}));return;}
+        const now=Date.now();if(now-(ws.lastWorldChat||0)<800){ws.send(JSON.stringify({type:'error',code:'world_chat',message:'Please wait a moment before sending again.'}));return;}
+        const chat=worldSocial.append(state.sceneId,actor,m.text,now);if(!chat)return;
+        ws.lastWorldChat=now;broadcastWorld(state.sceneId,{type:'chat',sceneId:state.sceneId,chat});return;
+      }
       let r=rooms[ws.roomId];
 
       if(r&&m.text){
@@ -6512,4 +6526,3 @@ wss.on('connection',(ws,request)=>{
 });
 
 server.listen(PORT,()=>console.log('GameForge running on '+PORT));
-

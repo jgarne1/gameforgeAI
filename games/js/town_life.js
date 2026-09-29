@@ -76,7 +76,14 @@ function drawAmbient(c,E,time){
   }
   for(const a of E.scene.ambient||[]){
     if(a.type==='lampGlow'){c.fillStyle='rgba(255,208,98,'+(reduced?.12:.12+Math.sin(time*1.7+a.y)*.025)+')';c.beginPath();c.ellipse(a.x,a.y,14,10,0,0,7);c.fill();}
-    if(a.type==='fountain'){c.save();if(!reduced){for(const [x1,y1,x2,y2] of a.streams||[]){c.strokeStyle='rgba(174,230,238,.65)';c.lineWidth=2;c.beginPath();c.moveTo(a.x+x1,a.y+y1);c.lineTo(a.x+x2+Math.sin(time*3+x1)*1.5,a.y+y2);c.stroke();for(let i=0;i<4;i++){const p=(time*1.8+i/4)%1;c.fillStyle='rgba(233,255,255,.8)';c.fillRect(a.x+x1+(x2-x1)*p,a.y+y1+(y2-y1)*p,2,3);}}}c.strokeStyle='rgba(210,250,245,.4)';c.lineWidth=1;for(let i=0;i<3;i++){const phase=reduced?.5:(time*.4+i/3)%1;c.globalAlpha=1-phase;c.beginPath();c.ellipse(a.x,a.y,14+phase*34,4+phase*10,0,0,7);c.stroke();}c.restore();}
+    if(a.type==='fountain'){
+      // Keep animation inside the basin; the sprite already contains the falling streams.
+      const fountain=(E.scene.objects||[]).find(o=>o.id==='heart_fountain'),asset=fountain&&E.catalog[fountain.asset];
+      if(fountain&&asset){const w=asset.displaySize.w,h=asset.displaySize.h,bx=fountain.x,by=fountain.y-h*.405;
+        c.save();c.beginPath();c.ellipse(bx,by,w*.37,h*.082,0,0,Math.PI*2);c.clip();c.strokeStyle='rgba(220,255,255,.5)';c.lineWidth=1;
+        for(const offset of [-w*.205,w*.205])for(let i=0;i<3;i++){const phase=reduced?.5:(time*.65+i/3)%1;c.globalAlpha=(1-phase)*.65;c.beginPath();c.ellipse(bx+offset,by+5,4+phase*22,2+phase*5,0,0,Math.PI*2);c.stroke();}c.restore();
+      }
+    }
     if(a.type==='smoke'&&!reduced){for(let i=0;i<4;i++){const age=(time*.25+i*.24)%1;c.fillStyle='rgba(211,213,194,'+(.18*(1-age))+')';c.beginPath();c.ellipse(a.x+Math.sin(age*5+i)*7,a.y-age*75,5+age*10,3+age*8,0,0,7);c.fill();}}
     if(a.type==='windowPet'){
       const skin=E.npcSkins?.pets?.[a.pet],im=skin&&E.assets[skin.src];if(!im)continue;
@@ -92,4 +99,3 @@ function drawAmbient(c,E,time){
 }
 window.TownLife={prepare,tools,home,interact,update,drawNpc,drawAmbient,exterior};
 })();
-

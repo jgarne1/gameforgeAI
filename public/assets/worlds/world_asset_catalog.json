@@ -496,7 +496,7 @@
     },
     {
       "id": "wwhd_tavern",
-      "name": "Driftwood Tavern \u2014 HD",
+      "name": "Driftwood Tavern — HD",
       "src": "/assets/whisperwind_hd/v1/tavern.png",
       "category": "building",
       "sourceRect": {
@@ -1411,7 +1411,7 @@
     },
     {
       "id": "wwhd_cottage_roof_slate",
-      "name": "Cottage \u2014 Slate Roof",
+      "name": "Cottage — Slate Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1431,7 +1431,7 @@
     },
     {
       "id": "wwhd_cottage_roof_moss",
-      "name": "Cottage \u2014 Moss Roof",
+      "name": "Cottage — Moss Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1451,7 +1451,7 @@
     },
     {
       "id": "wwhd_cottage_roof_plum",
-      "name": "Cottage \u2014 Plum Roof",
+      "name": "Cottage — Plum Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1471,7 +1471,7 @@
     },
     {
       "id": "wwhd_apartment_roof_slate",
-      "name": "Apartment \u2014 Slate Roof",
+      "name": "Apartment — Slate Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1491,7 +1491,7 @@
     },
     {
       "id": "wwhd_apartment_roof_moss",
-      "name": "Apartment \u2014 Moss Roof",
+      "name": "Apartment — Moss Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1511,7 +1511,7 @@
     },
     {
       "id": "wwhd_apartment_roof_plum",
-      "name": "Apartment \u2014 Plum Roof",
+      "name": "Apartment — Plum Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1531,7 +1531,7 @@
     },
     {
       "id": "wwhd_bakery_roof_slate",
-      "name": "Bakery \u2014 Slate Roof",
+      "name": "Bakery — Slate Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1551,7 +1551,7 @@
     },
     {
       "id": "wwhd_bakery_roof_moss",
-      "name": "Bakery \u2014 Moss Roof",
+      "name": "Bakery — Moss Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -1571,7 +1571,7 @@
     },
     {
       "id": "wwhd_bakery_roof_plum",
-      "name": "Bakery \u2014 Plum Roof",
+      "name": "Bakery — Plum Roof",
       "src": "/assets/whisperwind_hd/v1/roof_variants.png",
       "category": "building",
       "sourceRect": {
@@ -2188,7 +2188,231 @@
       },
       "src": "/assets/whisperwind_hd/v1/nature_playground.png",
       "category": "props"
+    },
+    {
+      "id": "wwhd_cottage_right",
+      "name": "Right-facing cottage",
+      "src": "/assets/whisperwind_hd/buildings_right_v1/cottage_right_source.png",
+      "category": "buildings",
+      "sourceRect": {
+        "x": 188,
+        "y": 102,
+        "w": 989,
+        "h": 974
+      },
+      "displaySize": {
+        "w": 365.92,
+        "h": 360.37
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9917864476386037
+      },
+      "door": {
+        "thresholdSource": [
+          940,
+          955
+        ],
+        "normalizedToSourceRect": [
+          0.7603640040444893,
+          0.8757700205338809
+        ],
+        "thresholdOffsetWorld": [
+          95.272,
+          -41.809
+        ],
+        "approachOffsetWorld": [
+          167.272,
+          22.191
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "orientation": "right",
+      "roofVariantsCompatible": false
+    },
+    {
+      "id": "wwhd_family_house_right",
+      "name": "Right-facing family house",
+      "src": "/assets/whisperwind_hd/buildings_right_v1/family_house_right_source.png",
+      "category": "buildings",
+      "sourceRect": {
+        "x": 98,
+        "y": 73,
+        "w": 1092,
+        "h": 1038
+      },
+      "displaySize": {
+        "w": 405.948,
+        "h": 385.874
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9922928709055877
+      },
+      "door": {
+        "thresholdSource": [
+          925,
+          960
+        ],
+        "normalizedToSourceRect": [
+          0.7573260073260073,
+          0.8545279383429673
+        ],
+        "thresholdOffsetWorld": [
+          104.461,
+          -53.16
+        ],
+        "approachOffsetWorld": [
+          176.461,
+          10.84
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "orientation": "right",
+      "roofVariantsCompatible": false
+    },
+    {
+      "id": "wwhd_apartment_inn_right",
+      "name": "Right-facing apartment / inn",
+      "src": "/assets/whisperwind_hd/buildings_right_v1/apartment_inn_right_source.png",
+      "category": "buildings",
+      "sourceRect": {
+        "x": 98,
+        "y": 101,
+        "w": 1046,
+        "h": 1042
+      },
+      "displaySize": {
+        "w": 385.903,
+        "h": 384.427
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9923224568138196
+      },
+      "door": {
+        "thresholdSource": [
+          867,
+          998
+        ],
+        "normalizedToSourceRect": [
+          0.7351816443594646,
+          0.8608445297504799
+        ],
+        "thresholdOffsetWorld": [
+          90.757,
+          -50.544
+        ],
+        "approachOffsetWorld": [
+          162.757,
+          13.456
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "orientation": "right",
+      "roofVariantsCompatible": false
+    },
+    {
+      "id": "wwhd_fishing_shop_right",
+      "name": "Right-facing fishing shop",
+      "src": "/assets/whisperwind_hd/buildings_right_v1/fishing_shop_right_source.png",
+      "category": "buildings",
+      "sourceRect": {
+        "x": 82,
+        "y": 46,
+        "w": 1209,
+        "h": 1066
+      },
+      "displaySize": {
+        "w": 435.767,
+        "h": 384.225
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9924953095684803
+      },
+      "door": {
+        "thresholdSource": [
+          980,
+          990
+        ],
+        "normalizedToSourceRect": [
+          0.7427626137303557,
+          0.8855534709193246
+        ],
+        "thresholdOffsetWorld": [
+          105.788,
+          -41.09
+        ],
+        "approachOffsetWorld": [
+          177.788,
+          22.91
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "orientation": "right",
+      "roofVariantsCompatible": false
+    },
+    {
+      "id": "wwhd_tavern_right",
+      "name": "Right-facing tavern",
+      "src": "/assets/whisperwind_hd/buildings_right_v1/tavern_right_source.png",
+      "category": "buildings",
+      "sourceRect": {
+        "x": 93,
+        "y": 61,
+        "w": 1139,
+        "h": 1115
+      },
+      "displaySize": {
+        "w": 527.409,
+        "h": 516.296
+      },
+      "placeOrigin": {
+        "x": 0.5,
+        "y": 0.9928251121076234
+      },
+      "door": {
+        "thresholdSource": [
+          900,
+          1035
+        ],
+        "normalizedToSourceRect": [
+          0.7085162423178226,
+          0.873542600896861
+        ],
+        "thresholdOffsetWorld": [
+          109.973,
+          -61.585
+        ],
+        "approachOffsetWorld": [
+          181.973,
+          2.415
+        ],
+        "approachVectorWorld": [
+          72,
+          64
+        ],
+        "accuracy": "visual upper-step estimate, about +/-5 world units; route and step collisions require parent review"
+      },
+      "orientation": "right",
+      "roofVariantsCompatible": false
     }
   ]
 }
-
