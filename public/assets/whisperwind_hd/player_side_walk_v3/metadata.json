@@ -1,0 +1,291 @@
+{
+  "packId": "player_side_walk_v3",
+  "status": "Selected four-pose side cycles pass facing, contact parity, support-leg swap and fixed-sole local preview; runtime review required",
+  "directions": {
+    "left": [
+      {
+        "file": "left_initial_repeated_contact.png",
+        "pose": "contact A: near leg forward",
+        "sourceRect": {
+          "x": 62,
+          "y": 63,
+          "w": 344,
+          "h": 620
+        },
+        "displaySize": {
+          "w": 45.26315789473684,
+          "h": 81.57894736842105
+        },
+        "placeOrigin": {
+          "x": 0.502906976744186,
+          "y": 0.9903225806451613
+        },
+        "sourceSoleAnchor": [
+          235,
+          677
+        ],
+        "scale": 0.13157894736842105,
+        "solidBounds": [
+          68,
+          69,
+          400,
+          677
+        ],
+        "sourceSize": [
+          2172,
+          724
+        ]
+      },
+      {
+        "file": "left_initial_repeated_contact.png",
+        "pose": "passing A: near support, far lifted",
+        "sourceRect": {
+          "x": 646,
+          "y": 63,
+          "w": 303,
+          "h": 620
+        },
+        "displaySize": {
+          "w": 39.868421052631575,
+          "h": 81.57894736842105
+        },
+        "placeOrigin": {
+          "x": 0.44224422442244227,
+          "y": 0.9903225806451613
+        },
+        "sourceSoleAnchor": [
+          780,
+          677
+        ],
+        "scale": 0.13157894736842105,
+        "solidBounds": [
+          652,
+          69,
+          943,
+          677
+        ],
+        "sourceSize": [
+          2172,
+          724
+        ]
+      },
+      {
+        "file": "left_contact_b_candidate.png",
+        "pose": "contact B: near leg trails, far forward",
+        "sourceRect": {
+          "x": 244,
+          "y": 87,
+          "w": 639,
+          "h": 1221
+        },
+        "displaySize": {
+          "w": 43.33432400302604,
+          "h": 82.80314492596995
+        },
+        "placeOrigin": {
+          "x": 0.4945226917057903,
+          "y": 0.995085995085995
+        },
+        "sourceSoleAnchor": [
+          560,
+          1302
+        ],
+        "scale": 0.0678158435102129,
+        "solidBounds": [
+          250,
+          93,
+          877,
+          1302
+        ],
+        "sourceSize": [
+          1122,
+          1402
+        ]
+      },
+      {
+        "file": "left_passing_b_candidate.png",
+        "pose": "passing B: far support, near lifted",
+        "sourceRect": {
+          "x": 215,
+          "y": 91,
+          "w": 654,
+          "h": 1217
+        },
+        "displaySize": {
+          "w": 44.351561655679234,
+          "h": 82.5318815519291
+        },
+        "placeOrigin": {
+          "x": 0.5275229357798165,
+          "y": 0.9950698438783895
+        },
+        "sourceSoleAnchor": [
+          560,
+          1302
+        ],
+        "scale": 0.0678158435102129,
+        "solidBounds": [
+          221,
+          97,
+          863,
+          1302
+        ],
+        "sourceSize": [
+          1122,
+          1402
+        ]
+      }
+    ],
+    "right": [
+      {
+        "file": "right_initial_repeated_contact.png",
+        "pose": "contact A: near leg forward",
+        "sourceRect": {
+          "x": 113,
+          "y": 77,
+          "w": 325,
+          "h": 571
+        },
+        "displaySize": {
+          "w": 46.42857142857142,
+          "h": 81.57142857142857
+        },
+        "placeOrigin": {
+          "x": 0.4676923076923077,
+          "y": 0.989492119089317
+        },
+        "sourceSoleAnchor": [
+          265,
+          642
+        ],
+        "scale": 0.14285714285714285,
+        "solidBounds": [
+          119,
+          83,
+          432,
+          642
+        ],
+        "sourceSize": [
+          2172,
+          724
+        ]
+      },
+      {
+        "file": "right_initial_repeated_contact.png",
+        "pose": "passing A: near support, far lifted",
+        "sourceRect": {
+          "x": 682,
+          "y": 76,
+          "w": 281,
+          "h": 572
+        },
+        "displaySize": {
+          "w": 40.14285714285714,
+          "h": 81.71428571428571
+        },
+        "placeOrigin": {
+          "x": 0.4804270462633452,
+          "y": 0.9895104895104895
+        },
+        "sourceSoleAnchor": [
+          817,
+          642
+        ],
+        "scale": 0.14285714285714285,
+        "solidBounds": [
+          688,
+          82,
+          957,
+          642
+        ],
+        "sourceSize": [
+          2172,
+          724
+        ]
+      },
+      {
+        "file": "right_contact_b_candidate.png",
+        "pose": "contact B: near leg trails, far forward",
+        "sourceRect": {
+          "x": 310,
+          "y": 87,
+          "w": 642,
+          "h": 1111
+        },
+        "displaySize": {
+          "w": 45.13902205177372,
+          "h": 78.11441355065516
+        },
+        "placeOrigin": {
+          "x": 0.5295950155763239,
+          "y": 0.9945994599459946
+        },
+        "sourceSoleAnchor": [
+          650,
+          1192
+        ],
+        "scale": 0.07031000319590923,
+        "solidBounds": [
+          316,
+          93,
+          946,
+          1192
+        ],
+        "sourceSize": [
+          1261,
+          1247
+        ]
+      },
+      {
+        "file": "right_passing_b_candidate.png",
+        "pose": "passing B: far support, near lifted",
+        "sourceRect": {
+          "x": 342,
+          "y": 101,
+          "w": 636,
+          "h": 1097
+        },
+        "displaySize": {
+          "w": 47.59183673469388,
+          "h": 82.08843537414965
+        },
+        "placeOrigin": {
+          "x": 0.48427672955974843,
+          "y": 0.9945305378304466
+        },
+        "sourceSoleAnchor": [
+          650,
+          1192
+        ],
+        "scale": 0.07482993197278912,
+        "solidBounds": [
+          348,
+          107,
+          972,
+          1192
+        ],
+        "sourceSize": [
+          1238,
+          1271
+        ]
+      }
+    ]
+  },
+  "normalization": "Uniform per-source scale matched by head size to the original row; never independently stretch crop width/height. Sole baseline is world y=0. Source images unchanged.",
+  "qaNotes": [
+    "Each direction has A contact / A passing / B contact / B passing. Initial row frame 3 and frame 4 are excluded.",
+    "Contact B visibly places lighter near leg behind hip and dark far leg ahead. Passing B lifts lighter near leg while dark far leg supports.",
+    "All sources retain true alpha and original pixels; selection uses sourceRect, with uniform scale and sole anchor.",
+    "Head-size landmarks, not independent crop-height fitting, determine scale. Left row scale is80/608 and right row80/560. Separate B sources match reference head landmarks.",
+    "Independent generation introduces slight torso/hip/arm and silhouette differences. Final normalized solid heights are roughly77-82 units; this is a bounded four-pose improvement, not pixel-identical animation cleanup.",
+    "Browser local canvas at3x: all four selections inspected; sole y is fixed, opposite legs alternate, facing remains consistent. Runtime rendering and pace not verified here."
+  ],
+  "sourceHashes": {
+    "right_contact_b_candidate.png": "fad5290047c9ace9ff14024d2a7718f5fcf21ab6c394ea2d83859c4723ab5ca5",
+    "right_initial_repeated_contact.png": "769b91bc1c44c9d2684548a9052df7d2c9a7181d7feac23a1d75a9ea28f7b16a",
+    "right_passing_b_candidate.png": "35831a4871600bf34e15e69c573d1546d7d4549ca949f66b84fdb645a9cadc3f",
+    "left_passing_b_candidate.png": "afbcaaafd8147aaa84cbaf2c84e8d2ad10b96587a2fcbe1ecc679276811dd1f9",
+    "left_contact_b_candidate.png": "e15b1e09030569e4468273e8568512a1b7787925e8fd790cd2462118e456b614",
+    "left_initial_repeated_contact.png": "52e21619d3f8120303698127e43db1cc53180b86466a460719166ccd154d1e5d"
+  }
+}

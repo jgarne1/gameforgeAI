@@ -31,10 +31,10 @@ test('atlas sources and every registered rectangle are valid PNG pixel bounds',(
     const w=bytes.readUInt32BE(16),h=bytes.readUInt32BE(20),r=a.sourceRect;
     assert.ok(r.x>=0&&r.y>=0&&r.w>0&&r.h>0&&r.x+r.w<=w&&r.y+r.h<=h,a.id);
   }
-  const walk=manifest.player.walk,bytes=fs.readFileSync(path.join(root,'public',walk.src));
+  const walk=manifest.player.walk;
   for(const frames of Object.values(walk.directions)){
     assert.equal(frames.length,4);
-    for(const r of frames)assert.ok(r.x+r.w<=bytes.readUInt32BE(16)&&r.y+r.h<=bytes.readUInt32BE(20));
+    for(const frame of frames){const r=frame.sourceRect||frame,bytes=fs.readFileSync(path.join(root,'public',frame.src||walk.src));assert.ok(r.x>=0&&r.y>=0&&r.x+r.w<=bytes.readUInt32BE(16)&&r.y+r.h<=bytes.readUInt32BE(20));}
   }
 });
 test('shared renderer selects a single atlas rectangle at its world anchor',()=>{
@@ -96,12 +96,16 @@ test('contact shadow overlaps the sole and walk frames follow traveled distance'
   const s=manifest.player.motion.shadow;
   assert.ok(s.y-s.ry<=0&&s.y+s.ry>=0);
   assert.equal(ellipses[0][1],1);
-  const walk=manifest.player.walk;api.E.assets[walk.src]={};
+  const walk=manifest.player.walk;api.E.assets[walk.src]={};for(const frame of walk.directions.left)if(frame.src)api.E.assets[frame.src]={};
   for(let frame=0;frame<4;frame++){
     api.drawPackCharacter({},'left',true,frame*manifest.player.motion.cycleDistance/4+.01);
-    assert.deepEqual(draws.at(-1)[2].sourceRect,walk.directions.left[frame]);
-    const r=walk.directions.left[frame],origin=draws.at(-1)[2].placeOrigin;
-    assert.ok((1-origin.y)*walk.height<1,'sole must remain within one unit of the ground');
-    assert.ok(r.y>=334&&r.y+r.h<=638,'no clipped boot or previous-row fragment');
+    const f=walk.directions.left[frame],r=f.sourceRect||f,a=draws.at(-1)[2];assert.deepEqual(a.sourceRect,r);
+    assert.ok((1-a.placeOrigin.y)*a.displaySize.h<1,'sole must remain within one unit of the ground');
+    assert.ok(Math.abs(a.displaySize.w/a.displaySize.h-r.w/r.h)<1e-9,'pose must keep uniform scale');
   }
+});
+test('selected side poses preserve immutable originals and distinct opposite contacts',()=>{
+ const crypto=require('node:crypto'),dir=path.join(root,'public/assets/whisperwind_hd/player_side_walk_v3'),meta=JSON.parse(fs.readFileSync(path.join(dir,'metadata.json'),'utf8'));
+ for(const [file,sha]of Object.entries(meta.sourceHashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(dir,file))).digest('hex'),sha);
+ for(const side of ['left','right']){const frames=manifest.player.walk.directions[side];assert.notEqual(frames[0].src,frames[2].src);assert.notEqual(frames[1].src,frames[3].src);for(let i=0;i<4;i++)assert.deepEqual(frames[i].sourceRect,meta.directions[side][i].sourceRect);}
 });

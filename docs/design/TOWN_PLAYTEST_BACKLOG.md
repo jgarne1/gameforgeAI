@@ -111,3 +111,5 @@ Still pending: lake catch gameplay, mansion quest, playground children/activity 
 - Walking: horizontal models glide with one foot extended; vertical frames close but change too slowly. Review actual alternating contacts/passing frames and distance-to-frame cadence together.
 
 - Side-facing walking clarification: arms animate, legs mostly hold the same pose.
+
+September 29 side-walk update: main player now uses opposite foot contacts and passing poses in both horizontal directions. Browser-tested left/right crossing; 50 targeted checks pass. Slight generated body-shape variation remains; NPC/outfit animation matching is still open.

@@ -57,3 +57,5 @@ Every pack retains original alpha PNGs, measured source rectangles/anchors, exac
 ## Asset task delivery requirements
 
 Use built-in image generation, referencing the existing shipped art and expanded concept. Preserve generated originals and alpha; do not overwrite working files. Deliver each bounded pack with exact prompts, source sizes, measured source rectangles, display sizes, placement/door/deck anchors, proposed collision/opening notes and a light/dark-floor visual review. Separate foreground and background parts where occlusion demands it. Do not edit repository, saved layouts, player data, active sprites or deployment. Mark animation failures explicitly and keep rejected variants out of integration folders. Finish one priority pack at a time and report it for integration. Production-ready art does not mean route/collision verification is complete.
+
+Player horizontal cycle: player_side_walk_v3 is integrated with four selected poses per side and measured uniform scale/sole origins. NPC-specific and clothing-matched cycles remain needed; do not apply this base character art to all residents.
