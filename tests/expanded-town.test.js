@@ -13,7 +13,9 @@ test('fairground station, zoo walk, and enclosed animal pens stay connected',()=
  const {sc,canStand}=world(),ride=sc.attractions.coaster,zoo=sc.attractions.zoo;
  assert.ok(M.route(sc.spawn,ride.boarding,canStand,sc.size).length,'station approach');
  assert.ok(canStand(ride.boarding.x,ride.boarding.y),'boarding point');
+ assert.ok(Math.hypot(ride.boarding.x-sc.spawnPoints.find(p=>p.id==='fair').x,ride.boarding.y-sc.spawnPoints.find(p=>p.id==='fair').y)<80,'fair spawn exposes boarding');
  assert.ok(canStand(ride.exit.x,ride.exit.y),'safe disembark');
+ const art=ride.stationSprite;assert.ok(ride.track.every(p=>p.x<=art.x+30||p.x>=art.x+art.w-50||p.y-p.z<=art.y+30||p.y-p.z>=art.y+art.h-35),'track does not cut through station roof');
  assert.ok(M.route(sc.spawn,{x:1300,y:7020},canStand,sc.size).length,'zoo walk');
  assert.equal(zoo.pens.length,3);
  for(const pen of zoo.pens){assert.equal(canStand(pen.x+pen.w/2,pen.y+pen.h/2),true,'animal ground is terrain');assert.equal(canStand(pen.x+pen.w/2,pen.y+pen.h),false,pen.id+' fence');assert.ok(sc.paths.every(p=>p.points.every(([x,y])=>x<=pen.x-p.width/2||x>=pen.x+pen.w+p.width/2||y<=pen.y-p.width/2||y>=pen.y+pen.h+p.width/2)),pen.id+' path cuts through pen');}
