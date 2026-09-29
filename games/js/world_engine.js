@@ -195,8 +195,10 @@ function drawTerraces(c,sc){for(const t of sc.paint?.terraces||[]){if(t.height){
 function drawWater(c,sc,time){for(const wat of sc.terrain?.water||[]){if(sc.waterMaterial&&E.assets[sc.waterMaterial.src]){WhisperwindAssets.water(c,E.assets[sc.waterMaterial.src],wat.points,time,{...sc.waterMaterial,...wat.material});continue;}path(c,wat.points);c.fillStyle='#15536c';c.fill();c.save();c.clip();for(let i=0;i<16;i++){c.strokeStyle=i%2?'rgba(190,240,255,.18)':'rgba(95,200,220,.16)';c.lineWidth=2;c.beginPath();let y=(i*60+time*28)%520+720;for(let x=-80;x<(sc.size?.w||1700)+80;x+=40){let yy=y+Math.sin((x+i*70)*.012+time)*8;if(x===-80)c.moveTo(x,yy);else c.lineTo(x,yy)}c.stroke()}c.restore();c.strokeStyle='rgba(118,225,221,.45)';c.lineWidth=4;c.stroke()}}
 function pavingPattern(c){if(E.pavingPattern)return E.pavingPattern;const a=E.catalog.wwhd_paving,im=a&&E.assets[a.src];if(!im)return null;const tile=document.createElement('canvas');tile.width=tile.height=128;const r=a.sourceRect;tile.getContext('2d').drawImage(im,r.x,r.y,r.w,r.h,0,0,128,128);return E.pavingPattern=c.createPattern(tile,'repeat');}
 function drawPaths(c,sc,time){
-  // One opaque, world-aligned material keeps intersecting streets seamless.
+  // Lay verges first, then one opaque paving pass so junctions have no seams.
   c.save();c.lineCap='round';c.lineJoin='round';const material=pavingPattern(c)||'#9b8761';
+  for(const plaza of sc.plazas||[]){path(c,plaza.points);c.strokeStyle='rgba(61,53,34,.28)';c.lineWidth=18;c.stroke();}
+  for(const p of sc.paths||[]){if(p.id?.endsWith('_crossing'))continue;const pts=p.points||[];if(pts.length<2)continue;c.beginPath();pts.forEach((pt,i)=>i?c.lineTo(pt[0],pt[1]):c.moveTo(pt[0],pt[1]));c.strokeStyle='rgba(45,54,31,.34)';c.lineWidth=(p.width||80)+24;c.stroke();c.strokeStyle='rgba(130,112,73,.46)';c.lineWidth=(p.width||80)+12;c.stroke();}
   for(const plaza of sc.plazas||[]){path(c,plaza.points);c.fillStyle=material;c.fill();}
   for(const p of sc.paths||[]){const pts=p.points||[];if(pts.length<2)continue;c.strokeStyle=material;c.lineWidth=p.width||80;c.beginPath();pts.forEach((pt,i)=>i?c.lineTo(pt[0],pt[1]):c.moveTo(pt[0],pt[1]));c.stroke();}
   // No per-road translucent stripes or shadows across a joined intersection.

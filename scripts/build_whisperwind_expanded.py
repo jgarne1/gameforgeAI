@@ -21,8 +21,28 @@ def smooth(points,steps=10):
   for n in range(steps):
    t=n/steps;out.append([round(.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t*t+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t*t*t),1) for k in [0,1]])
  return out+[list(points[-1])]
+def planned_street(points,width):
+ """Straight runs with short, intentional corner easements; no spline overshoot."""
+ if len(points)<2:return [list(p) for p in points]
+ knots=[list(points[0])]
+ for a,b,c in zip(points,points[1:],points[2:]):
+  incoming=[b[0]-a[0],b[1]-a[1]];outgoing=[c[0]-b[0],c[1]-b[1]]
+  il=math.hypot(*incoming);ol=math.hypot(*outgoing)
+  if not il or not ol:continue
+  u=[v/il for v in incoming];v=[q/ol for q in outgoing]
+  if u[0]*v[0]+u[1]*v[1]>.997:knots.append(list(b));continue
+  r=min(width*.55,95,il*.22,ol*.22)
+  start=[b[k]-u[k]*r for k in (0,1)];end=[b[k]+v[k]*r for k in (0,1)]
+  knots.append(start)
+  for t in (.25,.5,.75,1):knots.append([(1-t)**2*start[k]+2*(1-t)*t*b[k]+t*t*end[k] for k in (0,1)])
+ knots.append(list(points[-1]))
+ out=[]
+ for a,b in zip(knots,knots[1:]):
+  n=max(1,math.ceil(math.dist(a,b)/85))
+  out.extend([[round(a[k]+(b[k]-a[k])*i/n,1) for k in (0,1)] for i in range(n)])
+ return out+[[round(q,1) for q in knots[-1]]]
 def road(id,points,width=150):
- sc['paths'].append({'id':id,'points':smooth(points),'width':width,'kind':'lane'})
+ sc['paths'].append({'id':id,'points':planned_street(points,width),'width':width,'kind':'lane'})
 def ellipse(cx,cy,rx,ry,n=40):return [[round(cx+rx*math.cos(i*math.tau/n),1),round(cy+ry*math.sin(i*math.tau/n),1)] for i in range(n)]
 def hot(id,x,y,label,message='',**extra):
  h=dict(id=id,x=x,y=y,label=label,r=85,message=message,**extra);h.setdefault('type','message');sc['hotspots'].append(h);return h
@@ -45,18 +65,30 @@ for name,y in [('north',3000),('market',4800),('quay',6300)]:
  line=[[x+px,y+py] for px,py in assembly['centerlineLocal']]
  road(name+'_crossing',[[line[0][0]-180,line[0][1]],*line,[line[-1][0]+180,line[-1][1]]],162)
 sc['plazas']=[{'id':'commonlight','points':ellipse(3300,3550,650,490),'center':[3300,3550],'radius':315}]
-road('western_spine',[(1700,1100),(1850,1650),(1800,2200),(2350,2800),(3150,3200),(3300,3550),(3200,4200),(2700,4950),(2300,5650),(2300,6350)],200)
-road('market_loop',[(3300,3550),(2200,3700),(1250,4000),(1350,4650),(2200,5000),(3200,4200),(3900,4100),(4270,4650),(riverx(4800)-1194,4979.275)],180)
-road('west_riverwalk',[(riverx(3000)-1194,3179.275),(4100,3500),(4100,4100),(riverx(4800)-1194,4979.275),(4050,5450),(riverx(6300)-1194,6479.275),(2700,6600),(2300,6350)],155)
-road('north_connection',[(3300,3550),(4000,3350),(riverx(3000)-1194,3179.275)],210)
-road('east_riverwalk',[(riverx(3000)+1201,3179.275),(5700,3400),(5650,3750),(5800,4200),(riverx(4800)+1201,4979.275),(5650,5500),(riverx(6300)+1201,6479.275),(6000,6750)],165)
-road('east_loop',[(riverx(3000)+1201,3179.275),(6500,3040),(7650,3270),(8680,3850),(8600,4550),(8220,5150),(8720,6000),(8500,6880),(7500,7090),(6500,6830),(riverx(6300)+1201,6479.275)],165)
-road('east_middle',[(5800,4200),(6600,4650),(7450,5000),(8420,4870)],160)
-road('east_home_lane',[(5880,3830),(6650,3880),(7420,3900),(8280,3900),(8560,3700)],140)
-road('east_south',[(5650,5500),(6410,6000),(7500,6000),(8220,5150)],160)
-road('lake_mansion_trail',[(riverx(3000)+1201,3179.275),(6200,2750),(7500,2750),(8500,2300),(8640,1550),(8220,1120)],120)
-road('orchard_loop',[(1700,1100),(1000,1300),(650,1900),(1050,2550),(1850,2570),(2350,2800)],135)
-road('upper_home_lane',[(600,1150),(1300,1260),(2150,1190),(2950,1250),(3540,1550),(3150,1780),(2300,1800),(1850,1650)],135)
+# Each district has a legible loop and a shortcut; bridge approaches meet flat toes.
+wn=(riverx(3000)-1194,3179.275);wm=(riverx(4800)-1194,4979.275);wq=(riverx(6300)-1194,6479.275)
+en=(riverx(3000)+1201,3179.275);em=(riverx(4800)+1201,4979.275);eq=(riverx(6300)+1201,6479.275)
+road('hill_homes_loop',[(600,1220),(1500,1250),(3000,1250),(3300,1480),(3150,1720),(1800,1720),(600,1720),(600,1220)],140)
+road('lantern_stair_lane',[(1700,1100),(1800,1720),(1800,2250),(1760,2570)],155)
+road('orchard_park_loop',[(1800,2250),(1180,2250),(1050,2440),(1300,2700),(1800,2750),(2350,2800),(1760,2570),(1800,2250)],125)
+road('park_to_civic_stairs',[(2350,2800),(2850,2740),(3300,2790),(3300,3304),(3300,3550)],175)
+road('market_high_street',[(3300,3550),(2400,3800),(1200,3900),(1100,4650),(1800,5100),(2600,5100),(3300,4450),(3300,3550)],185)
+road('market_west_passage',[(1200,3900),(850,3650),(1050,3550),(1700,3600),(2400,3800)],135)
+road('market_to_quay',[(1800,5100),(1700,5500),(2300,5650),(2300,6350),(2350,6950)],160)
+road('market_south_shortcut',[(2600,5100),(2300,5650),(2300,6350)],140)
+road('west_riverwalk',[wn,(3850,3800),(3800,4450),wm,(3650,5650),wq],160)
+road('north_connection',[(3300,3550),(3150,3300),(3200,3179),wn],185)
+road('market_bridge_lane',[(3300,4450),wm],150)
+road('quay_bridge_lane',[(2300,6350),wq],160)
+road('east_riverwalk',[en,(5700,3750),(5700,4300),em,(5600,5550),(5600,6150),eq],160)
+road('east_garden_ring',[en,(7600,3130),(8750,3550),(8750,5200),(8750,6300),(8400,7040),(6400,7040),eq],165)
+road('east_north_homes',[(5700,3950),(6800,3950),(7500,3980),(8300,4310),(8750,4450)],145)
+road('east_market_homes',[em,(6800,4990),(7600,4990),(8300,5250),(8750,5250)],145)
+road('east_south_homes',[(5600,6100),(6800,6120),(7600,6120),(8400,6290),(8750,6300)],145)
+road('east_quay_homes',[eq,(6000,6800),(6700,6900),(7600,7000),(8400,7040)],145)
+road('east_garden_walk',[(6900,4990),(7120,5400),(7350,5750),(7600,6120)],105)
+road('south_orchard_walk',[(6800,6120),(7180,6600),(7600,7000)],100)
+road('lake_mansion_trail',[en,(6200,2700),(7500,2700),(8400,2400),(8600,1600),(8220,1120)],120)
 home_positions=[(800,1030),(1480,1110),(2180,980),(2900,1100),(800,1610),(1440,1740),(2360,1590),(3050,1670), (6100,3560),(6820,3420),(7500,3600),(8300,3950),(6250,4400),(6980,4600),(7690,4460),(8270,4850), (6100,5520),(6830,5640),(7560,5480),(8270,5860),(6010,6420),(6800,6600),(7550,6460),(8300,6700)]
 for i,(x,y) in enumerate(home_positions,1):
  source=copy.deepcopy(next(o for o in old['objects'] if o.get('plotId')==f'town_home_{i:02d}'))
