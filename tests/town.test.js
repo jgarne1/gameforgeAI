@@ -58,6 +58,14 @@ test('estate expansion preserves existing ownership and is idempotent',()=>{
   assert.equal(data.neighborhoods[0].plots.length,25);assert.equal(data.neighborhoods[0].plots[0].owner,'Existing');assert.deepEqual(data.neighborhoods[0].plots[0].decoration,{old:true});
 });
 function world(){const ctx=vm.createContext({window:{},document:{}});vm.runInContext(read('games/js/world_engine.js').replace('window.WorldForgerEngine={start,loadScene,loadWorldContext};','window.WorldForgerEngine={start,loadScene,loadWorldContext};window.test={E,canStand};'),ctx);const sc=JSON.parse(read('public/assets/worlds/whisperwind_hd_waterfront.json'));ctx.window.test.E.scene=sc;return {sc,canStand:ctx.window.test.canStand};}
+
+test('playground gate and equipment approaches stay reachable while supports block',()=>{
+ const {sc,canStand}=world();
+ for(const p of [{x:490,y:2350},{x:470,y:2110},{x:590,y:1985},{x:520,y:2290}])assert.ok(M.route(sc.spawn,p,canStand,sc.size).length,JSON.stringify(p));
+ assert.equal(canStand(398,2112),false);
+ assert.ok(sc.objects.some(o=>o.asset==='wwhd_playground_slide'));
+ assert.ok(sc.groundPatches.some(p=>p.id==='playground_sand'));
+});
 test('hillside stair break remains walkable while the retaining wall blocks walking',()=>{
   const {sc,canStand}=world();assert.ok(sc.paint.terraces.some(t=>t.height>0));
   assert.equal(canStand(2600,1020),false);assert.equal(canStand(3000,1020),true);
@@ -108,4 +116,3 @@ test('lake shore and mansion are reachable while lake water is blocked',()=>{
  const {sc,canStand}=world();assert.equal(canStand(5570,1950),false);
  for(const id of ['old_mansion_door','orchard_lake_shore']){const h=sc.hotspots.find(h=>h.id===id);assert.equal(canStand(h.x,h.y),true,id);assert.ok(M.route(sc.spawn,h,canStand,sc.size).length,id);}
 });
-
