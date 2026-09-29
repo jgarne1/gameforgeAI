@@ -6,7 +6,7 @@ DIR=ROOT/'public/assets/worlds'
 baseline=ROOT/'docs/design/archive/whisperwind_waterfront_v1.json'
 old=json.loads((baseline if baseline.exists() else DIR/'whisperwind_hd_waterfront.json').read_text(encoding='utf-8-sig'))
 cat={a['id']:a for a in json.loads((DIR/'world_asset_catalog.json').read_text())['assets']}
-bridge=json.loads((ROOT/'public/assets/whisperwind_hd/stone_bridge_integrated_v2/metadata.json').read_text(encoding='utf-8'))
+bridge=json.loads((ROOT/'public/assets/whisperwind_hd/stone_bridge_integrated_v3/metadata.json').read_text(encoding='utf-8'))
 sc={k:copy.deepcopy(old[k]) for k in ['playerPack','time','lighting','groundSkin','groundMaterial','waterMaterial']}
 sc.update(id='whisperwind_hd_expanded',townId='whisperwind_hd_waterfront',name='Whisperwind · River and Lanterns',layoutVersion=2,previewOnly=True,size={'w':9200,'h':7400},spawn={'x':3300,'y':3700,'face':'up'},objects=[],hotspots=[],paths=[],plazas=[],blockers=[],collisions=[],npcs=[],ambient=[],groundPatches=[],paint={'terraces':[],'groundDabs':[]},terrain={'water':[],'crossings':[]},walkable=[{'id':'town','points':[[180,250],[8980,250],[8980,7250],[180,7250]]}])
 sc['layers']=[{'id':id,'label':id.title(),'visible':True} for id in ['terrain','structures','buildings','props','canopy','foreground','gameplay']]
@@ -36,11 +36,8 @@ def riverx(y):
 for name,y in [('north',3000),('market',4800),('quay',6300)]:
  x=riverx(y)
  assembly=bridge['assembly']
- sc['terrain']['crossings'].append({'id':name+'_bridge','origin':[x,y],'points':[[x+px,y+py] for px,py in assembly['floorPolygonLocal']],'assembly':'stone_bridge_integrated_v2'})
+ sc['terrain']['crossings'].append({'id':name+'_bridge','origin':[x,y],'points':[[x+px,y+py] for px,py in assembly['floorPolygonLocal']],'assembly':'stone_bridge_integrated_v3'})
  obj(name+'_integrated_bridge',bridge['assets'][0]['id'],x,y,layer='structures')
- for side in ['west','east']:
-  dx,dy=bridge['thresholdAssembly'][side+'PositionLocal']
-  obj(name+'_'+side+'_threshold','wwhd_shore_threshold_v2',x+dx,y+dy,layer='structures',flipX=side=='west')
  for rail in assembly['railLinesLocal']:
   for i,(p,q) in enumerate(zip(rail['points'],rail['points'][1:])):
    dx,dy=q[0]-p[0],q[1]-p[1];length=math.hypot(dx,dy);nx,ny=-dy/length*18,dx/length*18

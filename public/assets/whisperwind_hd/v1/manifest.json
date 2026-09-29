@@ -2176,6 +2176,32 @@
         "bridge",
         "integrated-ramps"
       ]
+    },
+    {
+      "id": "wwhd_stone_bridge_integrated_v3",
+      "sourceRect": {
+        "x": 10,
+        "y": 94,
+        "w": 2151,
+        "h": 524
+      },
+      "displaySize": {
+        "w": 2172.51,
+        "h": 529.24
+      },
+      "placeOrigin": {
+        "x": 0.500232450023245,
+        "y": 0.3788167938931298
+      },
+      "src": "/assets/whisperwind_hd/stone_bridge_integrated_v3/bridge_source.png",
+      "name": "Integrated Cobble Bridge",
+      "category": "structures",
+      "tags": [
+        "whisperwind",
+        "bridge",
+        "integrated-ramps",
+        "cobble-toes"
+      ]
     }
   ],
   "player": {

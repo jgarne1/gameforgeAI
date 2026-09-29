@@ -37,7 +37,7 @@ test('window pets remain hidden between peeks and retreat behind their clip',()=
 
 test('new nature, bridge and terrace catalog entries retain original source hashes and bounds',()=>{
  const crypto=require('node:crypto'),catalog=JSON.parse(fs.readFileSync(path.join(root,'public/assets/worlds/world_asset_catalog.json'),'utf8')).assets;
- for(const pack of ['nature_details_v1','stone_bridge_v1','stone_bridge_approaches_v1','stone_bridge_integrated_v2','terrace_kit_v1','construction_kit_v1']){
+ for(const pack of ['nature_details_v1','stone_bridge_v1','stone_bridge_approaches_v1','stone_bridge_integrated_v2','stone_bridge_integrated_v3','terrace_kit_v1','construction_kit_v1']){
   const meta=JSON.parse(fs.readFileSync(path.join(root,'public/assets/whisperwind_hd',pack,'metadata.json'),'utf8'));
   for(const a of meta.assets){const entry=catalog.find(e=>e.id===a.id);assert.ok(entry,a.id);assert.deepEqual(entry.sourceRect,a.sourceRect);const bytes=fs.readFileSync(path.join(root,'public',entry.src));assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),a.sha256);const r=entry.sourceRect;assert.ok(r.x>=0&&r.y>=0&&r.x+r.w<=bytes.readUInt32BE(16)&&r.y+r.h<=bytes.readUInt32BE(20),a.id+' crop');assert.ok(entry.placeOrigin.x>=0&&entry.placeOrigin.x<=1&&entry.placeOrigin.y>=0&&entry.placeOrigin.y<=1);}
  }
@@ -46,9 +46,9 @@ test('terrace stairs connect both landings while retaining walls block shortcuts
  const {sc,canStand}=world();for(const [x,y] of [[1800,1860],[3300,2910]]){assert.ok(canStand(x,y-120));assert.ok(canStand(x,y+320));assert.ok(M.route({x,y:y-120},{x,y:y+320},canStand,sc.size).length);assert.equal(canStand(x-240,y),false);}
 });
 test('integrated bridges have continuous bank-to-bank routes and solid ramp rails',()=>{
- const {sc,canStand}=world(),meta=JSON.parse(fs.readFileSync(path.join(root,'public/assets/whisperwind_hd/stone_bridge_integrated_v2/metadata.json'),'utf8'));
- assert.equal(sc.objects.filter(o=>o.asset==='wwhd_stone_bridge_integrated_v2').length,3);
- assert.equal(sc.objects.filter(o=>o.asset.startsWith('wwhd_stone_bridge_approach_')||o.asset==='wwhd_stone_bridge_deck').length,0);
+ const {sc,canStand}=world(),meta=JSON.parse(fs.readFileSync(path.join(root,'public/assets/whisperwind_hd/stone_bridge_integrated_v3/metadata.json'),'utf8'));
+ assert.equal(sc.objects.filter(o=>o.asset==='wwhd_stone_bridge_integrated_v3').length,3);
+ assert.equal(sc.objects.filter(o=>o.asset.startsWith('wwhd_stone_bridge_approach_')||['wwhd_stone_bridge_deck','wwhd_stone_bridge_integrated_v2','wwhd_shore_threshold_v2'].includes(o.asset)).length,0);
  for(const deck of sc.terrain.crossings){const [x,y]=deck.origin,line=meta.assembly.centerlineLocal;for(let segment=0;segment<line.length-1;segment++){const p=line[segment],q=line[segment+1];for(let i=0;i<=40;i++)assert.ok(canStand(x+p[0]+(q[0]-p[0])*i/40,y+p[1]+(q[1]-p[1])*i/40),deck.id+' segment '+segment+' step '+i);}
  for(const rail of meta.assembly.railLinesLocal)for(let i=0;i<rail.points.length-1;i++){const p=rail.points[i],q=rail.points[i+1];assert.equal(canStand(x+(p[0]+q[0])/2,y+(p[1]+q[1])/2),false,deck.id+' '+rail.side);}
  const west={x:x+line[0][0]-80,y:y+line[0][1]},east={x:x+line.at(-1)[0]+80,y:y+line.at(-1)[1]};assert.ok(canStand(west.x,west.y));assert.ok(canStand(east.x,east.y));assert.ok(M.route(west,east,canStand,sc.size).length,deck.id+' route');}

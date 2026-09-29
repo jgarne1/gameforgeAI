@@ -1,0 +1,290 @@
+{
+  "packId": "stone_bridge_integrated_v3",
+  "status": "art and local geometry QA ready; runtime routes and road junction unverified",
+  "assets": [
+    {
+      "id": "wwhd_stone_bridge_integrated_v3",
+      "file": "bridge_source.png",
+      "sourceRect": {
+        "x": 10,
+        "y": 94,
+        "w": 2151,
+        "h": 524
+      },
+      "displaySize": {
+        "w": 2172.51,
+        "h": 529.24
+      },
+      "placeOrigin": {
+        "x": 0.500232450023245,
+        "y": 0.3788167938931298
+      },
+      "sourcePlacementAnchor": [
+        1086,
+        292.5
+      ],
+      "scale": 1.01,
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "solidBounds": [
+        15,
+        99,
+        2141,
+        514
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "be9c0391e8553966775bb813e1d6afb483f284932e147649c8524e3d3f856119"
+    }
+  ],
+  "assembly": {
+    "originDescription": "Center of unobstructed central deck, world screen-plane units at uniform1.01scale",
+    "floorPolygonLocal": [
+      [
+        -1011.01,
+        98.475
+      ],
+      [
+        -389.86,
+        -100.495
+      ],
+      [
+        387.84,
+        -100.495
+      ],
+      [
+        1012.02,
+        98.475
+      ],
+      [
+        1034.24,
+        259.065
+      ],
+      [
+        387.84,
+        105.545
+      ],
+      [
+        -389.86,
+        105.545
+      ],
+      [
+        -1030.2,
+        259.065
+      ]
+    ],
+    "floorPolygonSource": [
+      [
+        85,
+        390
+      ],
+      [
+        700,
+        193
+      ],
+      [
+        1470,
+        193
+      ],
+      [
+        2088,
+        390
+      ],
+      [
+        2110,
+        549
+      ],
+      [
+        1470,
+        397
+      ],
+      [
+        700,
+        397
+      ],
+      [
+        66,
+        549
+      ]
+    ],
+    "centerlineLocal": [
+      [
+        -1020.605,
+        178.77
+      ],
+      [
+        -389.86,
+        2.525
+      ],
+      [
+        387.84,
+        2.525
+      ],
+      [
+        1023.13,
+        178.77
+      ]
+    ],
+    "centerlineSource": [
+      [
+        75.5,
+        469.5
+      ],
+      [
+        700,
+        295
+      ],
+      [
+        1470,
+        295
+      ],
+      [
+        2099,
+        469.5
+      ]
+    ],
+    "railLinesLocal": [
+      {
+        "side": "far",
+        "points": [
+          [
+            -1016.06,
+            82.315
+          ],
+          [
+            -410.06,
+            -114.635
+          ],
+          [
+            408.04,
+            -114.635
+          ],
+          [
+            1018.08,
+            82.315
+          ]
+        ],
+        "segments": [
+          {
+            "start": [
+              -1016.06,
+              82.315
+            ],
+            "end": [
+              -410.06,
+              -114.635
+            ]
+          },
+          {
+            "start": [
+              -410.06,
+              -114.635
+            ],
+            "end": [
+              408.04,
+              -114.635
+            ]
+          },
+          {
+            "start": [
+              408.04,
+              -114.635
+            ],
+            "end": [
+              1018.08,
+              82.315
+            ]
+          }
+        ],
+        "collisionHalfWidthProposal": 18
+      },
+      {
+        "side": "near",
+        "points": [
+          [
+            -1061.51,
+            278.255
+          ],
+          [
+            -427.23,
+            132.815
+          ],
+          [
+            425.21,
+            132.815
+          ],
+          [
+            1064.54,
+            278.255
+          ]
+        ],
+        "segments": [
+          {
+            "start": [
+              -1061.51,
+              278.255
+            ],
+            "end": [
+              -427.23,
+              132.815
+            ]
+          },
+          {
+            "start": [
+              -427.23,
+              132.815
+            ],
+            "end": [
+              425.21,
+              132.815
+            ]
+          },
+          {
+            "start": [
+              425.21,
+              132.815
+            ],
+            "end": [
+              1064.54,
+              278.255
+            ]
+          }
+        ],
+        "collisionHalfWidthProposal": 18
+      }
+    ],
+    "shoreToeAnchorsLocal": {
+      "west": [
+        -1020.605,
+        178.77
+      ],
+      "east": [
+        1023.13,
+        178.77
+      ]
+    },
+    "centralClearFloorDepth": 206.04,
+    "toeClearFloorDepth": 160.59,
+    "centralDeckLength": 777.7,
+    "overallWidth": 2162.41,
+    "archClearGapAtY600": 449.45,
+    "rendering": "One complete placeable structures entity. Built-in cobbled shore toes replace v2 external threshold instances. Keep actor feet within inset floor polygon behind low near rim.",
+    "notes": [
+      "All dimensions are 2D screen-plane measurements, not elevation.",
+      "Both last approx200sourcepx of ramps are interlocking small warm cobbles; outer tips meet town path directly.",
+      "No external shore threshold should be drawn.",
+      "Central safe corridor approx206units; toes narrow to161units.",
+      "Measured arch alpha gap at source y600 is445px (449.45world) near its feet; higher opening is narrower.",
+      "Source generated as a targeted edit of v2; central architecture preserved visually, but generated pixels are not bit-identical."
+    ]
+  },
+  "qaNotes": [
+    "True transparent arch at source1086,550; alpha0.",
+    "Actual128-alpha solid bounds measured from source.",
+    "Light/dark canvas and floor overlay should be checked before runtime integration."
+  ]
+}
