@@ -28,9 +28,16 @@ test('Lantern Run pauses for boarding and returns to the same station',()=>{
  assert.equal(waiting.docked,true);assert.equal(moving.docked,false);assert.equal(returned.docked,true);
  assert.ok(moving.z>20,'course gains elevation');assert.equal(waiting.x,returned.x);assert.equal(waiting.y,returned.y);
  assert.ok(ride.track.length>100);assert.equal(ride.track[0].x,ride.track.at(-1).x);assert.equal(ride.track[0].y,ride.track.at(-1).y);
- assert.ok(Math.max(...ride.track.map(p=>p.z))>450,'the course reaches its loop crest');
+ assert.ok(Math.max(...ride.track.map(p=>p.z))>180,'the course reaches its lift crest');
  const speeds=ride._segments.map((weight,i)=>Math.hypot(ride.track[i+1].x-ride.track[i].x,ride.track[i+1].y-ride.track[i].y)/weight).filter(Number.isFinite);
  assert.ok(Math.max(...speeds)>Math.min(...speeds)*2,'climb, drop and braking use distinct travel speeds');
+ const projected=ride.track.map(p=>[p.x,p.y-p.z]),cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+ for(let i=0;i<projected.length-1;i++)for(let j=i+3;j<projected.length-1;j++){
+  if(i===0&&j===projected.length-2)continue;
+  const a=projected[i],b=projected[i+1],c=projected[j],d=projected[j+1];
+  if(Math.max(a[0],b[0])<Math.min(c[0],d[0])||Math.max(c[0],d[0])<Math.min(a[0],b[0]))continue;
+  assert.ok(!(cross(a,b,c)*cross(a,b,d)<-1e-4&&cross(c,d,a)*cross(c,d,b)<-1e-4),`track crosses itself at ${i}/${j}`);
+ }
 });
 test('crossing decks allow walking over water while rail and open river block',()=>{
  const {sc,canStand}=world();assert.equal(sc.terrain.crossings.length,3);
