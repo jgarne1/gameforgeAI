@@ -1,0 +1,3 @@
+# Side walk rear-lift poses
+
+These two original transparent PNGs add a rear-leg lift to the left and right four-frame walk cycles. The first three frames remain in `player_side_walk_v3`; frame four points here from `v1/manifest.json`. The source rectangles are measured around the visible character. Keep the source PNGs immutable and retain uniform display scaling and a consistent boot baseline. Test both directions at normal game zoom, including idle-to-walk and walk-to-idle transitions. The pose is deliberately more distinct than the old fourth frame; further contact frames need separate art review.

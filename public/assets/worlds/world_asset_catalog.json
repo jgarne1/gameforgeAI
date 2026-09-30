@@ -3221,23 +3221,23 @@
     },
     {
       "sourceRect": {
-        "x": 215,
-        "y": 91,
-        "w": 654,
-        "h": 1217
+        "x": 478,
+        "y": 50,
+        "w": 534,
+        "h": 914
       },
       "displaySize": {
-        "w": 44.351561655679234,
-        "h": 82.5318815519291
+        "w": 47.615973741794306,
+        "h": 81.5
       },
       "placeOrigin": {
-        "x": 0.5275229357798165,
-        "y": 0.9950698438783895
+        "x": 0.5,
+        "y": 0.995
       },
       "id": "wwhd_player_side_left_3",
-      "name": "Player left passing B: far support, near lifted",
+      "name": "Player left passing B: rear leg lifted",
       "category": "characters",
-      "src": "/assets/whisperwind_hd/player_side_walk_v3/left_passing_b_candidate.png",
+      "src": "/assets/whisperwind_hd/player_side_walk_v4/left_rear_lift.png",
       "tags": [
         "whisperwind",
         "player",
@@ -3325,23 +3325,23 @@
     },
     {
       "sourceRect": {
-        "x": 342,
-        "y": 101,
-        "w": 636,
-        "h": 1097
+        "x": 496,
+        "y": 46,
+        "w": 518,
+        "h": 919
       },
       "displaySize": {
-        "w": 47.59183673469388,
-        "h": 82.08843537414965
+        "w": 45.937976060935796,
+        "h": 81.5
       },
       "placeOrigin": {
-        "x": 0.48427672955974843,
-        "y": 0.9945305378304466
+        "x": 0.5,
+        "y": 0.995
       },
       "id": "wwhd_player_side_right_3",
-      "name": "Player right passing B: far support, near lifted",
+      "name": "Player right passing B: rear leg lifted",
       "category": "characters",
-      "src": "/assets/whisperwind_hd/player_side_walk_v3/right_passing_b_candidate.png",
+      "src": "/assets/whisperwind_hd/player_side_walk_v4/right_rear_lift.png",
       "tags": [
         "whisperwind",
         "player",
