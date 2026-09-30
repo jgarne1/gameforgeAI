@@ -4323,11 +4323,11 @@
       ]
     },
     {
-      "id": "nature_tree_1463",
-      "asset": "wwhd_tree_oak",
-      "x": 7489,
-      "y": 2492,
-      "scale": 0.9676795249371107,
+      "id": "nature_tree_1464",
+      "asset": "wwhd_tree_willow",
+      "x": 2105,
+      "y": 4720,
+      "scale": 0.9544199822523547,
       "layer": "props",
       "sway": true,
       "collide": [
@@ -5409,14 +5409,6 @@
       "asset": "wwhd_nature_riverplants",
       "x": 7753,
       "y": 2410,
-      "scale": 1,
-      "layer": "props"
-    },
-    {
-      "id": "lake_bank_6",
-      "asset": "wwhd_shoreline_rocks",
-      "x": 7570,
-      "y": 2487,
       "scale": 1,
       "layer": "props"
     },
@@ -6842,7 +6834,7 @@
       "y": 1130,
       "r": 65,
       "label": "Old lakeside mansion",
-      "message": "The door is boarded shut. A faded notice asks visitors to leave the house undisturbed until its missing records are recovered. A light flickers in the attic."
+      "message": "The Fen house is closed while the town repairs its floors. Ada Fen once kept the ferry flood maps here; the lakeside shelter behind it was open to anyone stranded after dark."
     },
     {
       "id": "town_board",
@@ -6868,7 +6860,16 @@
       "y": 2730,
       "label": "Orchard Lake",
       "r": 85,
-      "message": "Small fish flicker among the reeds. River Tackle can guide you to the working fishing dock; lake catches will come later.",
+      "message": "The quiet lake was the old river overflow. The first gardeners planted its dry bank. Small fish flicker among the reeds; River Tackle can guide you to the working fishing dock. Lake catches will come later.",
+      "type": "message"
+    },
+    {
+      "id": "fen_lake_marker",
+      "x": 7520,
+      "y": 2530,
+      "label": "The lakeside marker",
+      "r": 85,
+      "message": "A weathered notch shows how high the spring flood climbed. Below it: A. Fen measured the water; the town shared the catch.",
       "type": "message"
     },
     {
@@ -6915,6 +6916,15 @@
       "label": "The square inscription",
       "r": 85,
       "message": "One stone, one welcome. Each household brought a stone to rebuild this square after the flood. There is still room for yours.",
+      "type": "message"
+    },
+    {
+      "id": "quay_flood_mark",
+      "x": 2600,
+      "y": 6590,
+      "label": "The quay waterline",
+      "r": 85,
+      "message": "The river once reached this mark. Stranded ferry families kept a slate of who needed supper, then built a town around it.",
       "type": "message"
     },
     {
@@ -14656,7 +14666,7 @@
       "storyIntro": true,
       "chatter": [
         "The river is running clear today.",
-        "Fresh supplies at River Tackle."
+        "Ada Fen marked the old flood line at the quay."
       ],
       "chatterOffset": 7.4,
       "message": "The new fishing outfitter is open, and the path to Shadow Woods is clear. Bring your catches home. See that hammer mark by the quay? The old builders left us more than sturdy stone.",
@@ -14781,7 +14791,7 @@
       "face": "down",
       "storyIntro": false,
       "chatter": [
-        "The flowers like this river soil.",
+        "These trees grew after the flood.",
         "An apple for the road?"
       ],
       "chatterOffset": 18.5,

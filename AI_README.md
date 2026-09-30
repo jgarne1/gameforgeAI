@@ -54,6 +54,7 @@ Home editor decorations accept only approved catalog IDs and constrained coordin
 Read [Town Character and Roofs](docs/art/TOWN_CHARACTER_AND_ROOFS.md) before editing the hillside layout, landscape sprites, guide destinations or home roof colors. Keep plot IDs and saved ownership stable.
 
 The story-led town pass extends DDS section 4 with Whisperwind's history and named district purposes. See docs/art/TOWN_CHARACTER_AND_ROOFS.md for clean path joins, the event plaza, lake/mansion landmarks, new movable furnishings and persistent Composer overrides. Character prototype sources have explicit limitations; wardrobe functionality, lake fishing and playground gameplay remain planned.
+The DDS section 4 also defines the flood slate, Ada Fen's lake house, and two optional local stories. The expanded town scene exposes a few read-only clues through hotspots; these are atmosphere, not completed quests. Keep lake fishing, the mansion interior and the side-story rewards behind their actual validated implementations.
 
 ### Town HUD and fountain editing
 The World Forger HUD lives in `games/js/world_engine.js`. Keep navigation inside the initially collapsed `#wfTools` menu; the minimap is top left. Controls appear for five seconds after the first scene finishes loading and can be recalled from Controls / Help. Location names appear briefly at top center without a subtitle. Escape dismisses a modal/backpack or toggles the menu; Return to Home Page is the explicit exit.
