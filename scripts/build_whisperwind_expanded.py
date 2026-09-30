@@ -151,6 +151,8 @@ for id,(x,y) in landmarks.items():
  for h0 in old['hotspots']:
   if (id=='old_lake_mansion' and h0['id']=='old_mansion_door') or h0['id']=={'lantern_inn':'inn_door','echo_hall':'echo_hall_door'}.get(id,id+'_door'):
    h=copy.deepcopy(h0);h['x']+=dx;h['y']+=dy
+   if h['id']=='old_mansion_door':
+    h['message']='The Fen house is closed while the town repairs its floors. Ada Fen once kept the ferry flood maps here; the lakeside shelter behind it was open to anyone stranded after dark.'
    if right:offset=cat[right]['door']['approachOffsetWorld'];h.update(x=x+offset[0],y=y+offset[1])
    sc['hotspots'].append(h)
    public=[p for p in sc['paths'] if not p['id'].startswith('home_approach') and not p['id'].endswith('_approach')]
@@ -192,12 +194,14 @@ for id,x0,x1,y,gap in [('lantern',550,3530,1860,1800),('civic',2620,4020,2910,33
  obj(id+'_lower_landing','wwhd_terrace_landing',gap,lower_y+20,layer='structures')
  road(id+'_stairs_landings',[(gap,upper_y-80),(gap,lower_y+110)],195)
  for x in [gap-145,gap+110]:sc['blockers'].append({'id':id+'_rail_'+str(x),'x':x,'y':upper_y-25,'w':35,'h':lower_y-upper_y+45})
-obj('lake_pier','wwhd_timber_pier',7140,2640,layer='structures');hot('orchard_lake_shore',7100,2730,'Orchard Lake','Small fish flicker among the reeds. River Tackle can guide you to the working fishing dock; lake catches will come later.')
+obj('lake_pier','wwhd_timber_pier',7140,2640,layer='structures');hot('orchard_lake_shore',7100,2730,'Orchard Lake','The quiet lake was the old river overflow. The first gardeners planted its dry bank. Small fish flicker among the reeds; River Tackle can guide you to the working fishing dock. Lake catches will come later.')
+hot('fen_lake_marker',7520,2530,'The lakeside marker','A weathered notch shows how high the spring flood climbed. Below it: A. Fen measured the water; the town shared the catch.')
 obj('dock','wwhd_dock',2350,6930,layer='structures');hot('woods_path',2350,6950,'Go Fishing · Shadow Woods',type='door',targetScene='shadow_woods_dock');road('fishing_dock',[(2300,6350),(2350,6690),(2350,6950)],180)
 hot('old_mark',2520,6700,'The old dock mark','The broken-circle hammer mark was carved before the flood. The builders still use it when they set the first stone of a new home.')
 hot('upper_garden',1850,1500,'Lantern Hill overlook','This hill sheltered the ferry families during the flood. The lantern path still leads their children home.')
 hot('orchard_letter',1000,2100,'An orchard letter','We planted the trees when the river took our first garden. If you are beginning again, take an apple and stay awhile.')
 hot('commonlight_history',2980,3720,'The square inscription','One stone, one welcome. Each household brought a stone to rebuild this square after the flood. There is still room for yours.')
+hot('quay_flood_mark',2600,6590,'The quay waterline','The river once reached this mark. Stranded ferry families kept a slate of who needed supper, then built a town around it.')
 hot('construction_site',2600,2800,'A future address','The builders have marked the ground for a new home. This address is not available for purchase yet.')
 obj('construction_board','wwhd_noticeboard',2600,2760,collide=[-40,-25,80,22])
 obj('future_house_frame','wwhd_construction_timber_frame',2520,2610,layer='buildings',collide=[-258,-140,425,138],futureAddress=True)
@@ -207,7 +211,7 @@ people=[('npc_mira','Mira','mira',2350,3520,True),('npc_toma','Toma','toma',1740
 for id,name,skin,x,y,intro in people:
  original=next((n for n in old['npcs'] if n['id']==id),{})
  points=[{'x':x,'y':y,'wait':5},{'x':x+160,'y':y+15,'wait':7},{'x':x+140,'y':y+100,'wait':5},{'x':x,'y':y+90,'wait':6}]
- chatter={'npc_mira':['The bread is still warm.','Have you seen the lake this morning?'],'npc_toma':['The park gate is always open.','That little dog knows everyone.'],'npc_dockmaster':['The river is running clear today.','Fresh supplies at River Tackle.'],'npc_builder':['This beam needs another brace.','A sturdy home for the next family.'],'npc_gardener':['The flowers like this river soil.','An apple for the road?']}.get(id,['Good morning, neighbor.','The lanterns will be lit by supper.'])
+ chatter={'npc_mira':['The bread is still warm.','Have you seen the lake this morning?'],'npc_toma':['The park gate is always open.','That little dog knows everyone.'],'npc_dockmaster':['The river is running clear today.','Ada Fen marked the old flood line at the quay.'],'npc_builder':['This beam needs another brace.','A sturdy home for the next family.'],'npc_gardener':['These trees grew after the flood.','An apple for the road?']}.get(id,['Good morning, neighbor.','The lanterns will be lit by supper.'])
  sc['npcs'].append(dict(id=id,name=name,label='Talk to '+name,skinId=skin,x=x,y=y,r=85,face='down',storyIntro=intro,chatter=chatter,chatterOffset=len(sc['npcs'])*3.7,message=original.get('message','The river brings new faces every season. We are making room for the next family.'),routine={'speed':48,'points':points}))
 # Natural banks and curated plant groups. Keep all trunks clear of roads/doors.
 def inside(p,poly):

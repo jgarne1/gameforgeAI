@@ -1,7 +1,7 @@
 # GameForge Narrative, Progression & Website Integration Design Specification
 ## The World Remembers
 
-**Canonical living DDS — version 1.0 — 2026-09-28**
+**Canonical living DDS — version 1.1 — 2026-09-30**
 
 Status: approved narrative foundation expanded into design requirements; implementation remains staged. Owner: GameForge project owner. Audience: narrative authors, engineers, artists, QA, and AI agents. Repository baseline: `7d0a2fc350cc971410e488a37b69247068a4d726` on `main`. Documentation changes do not imply shipped functionality.
 
@@ -172,7 +172,27 @@ The town's heart is **Commonlight Square**, a generous, ornate gathering place a
 
 The Anchor beneath Driftwood predates the visible town. Its custodians once understood that ordinary acts of care sustain continuity; later generations retained the bell ceremony while forgetting its purpose. A faint broken-circle hammer in an old wall, a letter tucked in a garden, and a riverside viewpoint can invite curiosity before the C1 mystery. Preserve the existing spindle, Orin, Mara and cellar sequence. New discoveries may provide flavor until their validated quest dependencies exist.
 
-**Orchard Lake and the old mansion.** Beyond the fruit gardens, a sheltered lake offers a quiet shore and a potential fishing destination. A narrow path follows its reeds toward a weathered mansion partly hidden by mature trees. The house is an optional future-story landmark, not a new main-campaign gate. Its history and quest remain to be authored; an inaccessible door gives an in-world explanation. Lake catches must use the existing validated fishing and fish-record services before fishing is presented as active.
+**Orchard Lake and the old mansion.** Beyond the fruit gardens, a sheltered lake offers a quiet shore and a potential fishing destination. A narrow path follows its reeds toward a weathered mansion partly hidden by mature trees. The house is an optional future-story landmark, not a new main-campaign gate. Its history and optional story are specified below; an inaccessible door gives an in-world explanation until that story is built. Lake catches must use the existing validated fishing and fish-record services before fishing is presented as active.
+
+#### The lake that kept the town
+
+The spring flood did not merely strand Whisperwind's first ferry passengers. It cut their route home for weeks. They hauled boats above the waterline, cooked the fish they could catch, and marked each household's need on a slate rather than letting the strongest claim the catch. When the water fell, the ferry families stayed. Their slate became the Commonlight custom: everyone contributes what they can, and everyone has a place at supper. This is a civic story, not a secret account of the World Forge.
+
+Orchard Lake was an old overflow basin, connected to the river through reeds and a narrow run. The first gardeners planted fruit trees along its dry bank. Fishers still distinguish the fast river from the still lake: river catches speak of travel; lake catches speak of patience. These habitats should eventually have distinct, attainable fish entries, weather or time flavor, and a visible place to cast. No rare catch is required to hear the local story.
+
+The mansion was the home of **Ada Fen**, a ferry surveyor who kept the original flood maps and catch slate. She was neither a Forger nor a villain. After the town moved uphill, she stayed near the lake to measure the water and maintain a small public shelter for anyone stranded on the far bank. As she aged, the route grew over and the house closed. People began calling it a haunted estate because lantern light sometimes shows in the upstairs window. The mundane explanation is a caretaker's old lamp mechanism catching the wind; whether a later Anchor disturbance can also echo an earlier evening remains an optional, later reveal. Do not turn Ada into a hidden mastermind or make her records a required shortcut through C1.
+
+The house has a **front path from Orchard Gardens** and a **rear service path to the lakeside shelter**. When its interior is implemented, both exits must return to distinct, reachable exterior landings. The rear route is a reward for exploration, not the only way to reach the lake. A public notice at the gate explains that the building is closed pending repairs. Ownership, purchase, and decoration of player homes remain separate from this civic landmark.
+
+#### A town heard in passing
+
+Story should arrive as small discoveries while the player walks, not a sequence of lectures. The square inscription remembers each family's stone. Rowan's building site is a promise of a future address, not a shop already open. Elin cares for the orchard because its first trees were planted after the flood. At the quay, a weathered waterline and Ada's measuring notch show how high the river once climbed. At the lake, reeds, a repaired marker, and the mansion gate make a short visual trail. An NPC can mention one piece, then return to ordinary work. On later visits, lines may change with chapter progress, but a player who ignores the mystery should still meet warm neighbors and find a good fishing town.
+
+Optional local story **`ss_whisperwind_flood_slate` — The Names on the Slate**: after C0's welcome, inspect the square inscription, ask a quay resident about the flood mark, then find the lakeside marker. The player learns why the town shares its catch. Reward a Chronicle entry and modest home decoration or cosmetic; no coin or plot ownership gate. The three clues can be found in any order and remain available after completion. This is proposed content, not a shipped quest.
+
+Optional later story **`ss_whisperwind_fen_house` — A Light Across the Lake**: once C1's cellar is resolved and the mansion interior and two exits exist, Mara asks for a safe survey. The player checks the gate, follows the public shore path, and enters with a caretaker's permission. Inside are Ada's flood map, the catch slate, and evidence that several families used the shelter. The apparent haunting resolves first through the lamp mechanism. A faint duplicated entry may later gain meaning after the player knows the Unwritten; it must not spoil Lyra, Bellweather, or the Closure Protocol in Whisperwind. The player chooses where copies of the records are displayed (Chronicle Board or shelter), while the originals remain communal property. Reward an optional furnishing and new NPC lines. No exclusive fish, main-story unlock, or irreversible world choice.
+
+The playable sequence should be **square → quay → orchard → lake → mansion gate → homeward route**. Offer cross-links through lanes and bridges so it feels like a town, not one winding corridor. Each stop needs a reason to exist without the quest: an event space, working dock, homes and trees, fishing shore, and weathered landmark. The old mansion's mystery adds a question to the landscape; the answer should strengthen the player's attachment to the people who live here.
 
 The exploration promise is beauty first, then curiosity: glimpses of a flowering terrace beyond a doorway, a lane disappearing beneath willows, a quiet fishing nook, or a small story left by a resident. Each district has a recognizable landmark, an ordinary daily purpose, and something worth finding. Avoid scattering objects across open grass. Place benches where someone would rest, trees where gardens or riverbanks support them, and stairs where the terrain visibly changes. Paths merge cleanly, vary width by importance, and end at actual thresholds.
 
@@ -772,9 +792,12 @@ Design precedence: explicit project-owner direction → this living narrative DD
 
 Town design expansion, 2026-09-28: added Whisperwind settlement history, named district purposes, story-led elevation, exploration direction and planned playground atmosphere in section 4. Owner prioritized beautiful town exploration. Existing chapter order and quest contracts are unchanged.
 
+World-story expansion, 2026-09-30: authored the flood slate, Orchard Lake ecology, Ada Fen's mansion history, two optional local stories, and an explorable clue route. These are design contracts and do not change the campaign quest order or claim shipped mansion/lake functionality.
+
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-09-28 | Initial comprehensive campaign, world/cast bible, website unlock model, 33-quest progression matrix, shared-state contracts, audit, and staged AI roadmap |
+| 1.1 | 2026-09-30 | Whisperwind flood history, lake and mansion lore, optional side stories, and player-facing clue route |
 
 ### Implementation status at publication
 
