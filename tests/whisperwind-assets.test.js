@@ -113,5 +113,7 @@ test('contact shadow overlaps the sole and walk frames follow traveled distance'
 test('selected side poses preserve immutable originals and distinct opposite contacts',()=>{
  const crypto=require('node:crypto'),dir=path.join(root,'public/assets/whisperwind_hd/player_side_walk_v3'),meta=JSON.parse(fs.readFileSync(path.join(dir,'metadata.json'),'utf8'));
  for(const [file,sha]of Object.entries(meta.sourceHashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(dir,file))).digest('hex'),sha);
- for(const side of ['left','right']){const frames=manifest.player.walk.directions[side];assert.notEqual(frames[0].src,frames[2].src);assert.notEqual(frames[1].src,frames[3].src);for(let i=0;i<4;i++)assert.deepEqual(frames[i].sourceRect,meta.directions[side][i].sourceRect);}
+ const nextDir=path.join(root,'public/assets/whisperwind_hd/player_side_walk_v4'),next=JSON.parse(fs.readFileSync(path.join(nextDir,'metadata.json'),'utf8'));
+ for(const [file,sha]of Object.entries(next.sourceHashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(nextDir,file))).digest('hex'),sha);
+ for(const side of ['left','right']){const frames=manifest.player.walk.directions[side];assert.notEqual(frames[0].src,frames[2].src);assert.notEqual(frames[1].src,frames[3].src);for(let i=0;i<3;i++)assert.deepEqual(frames[i].sourceRect,meta.directions[side][i].sourceRect);assert.deepEqual(frames[3].sourceRect,next.directions[side].sourceRect);assert.deepEqual(frames[3].displaySize,next.directions[side].displaySize);assert.deepEqual(frames[3].placeOrigin,next.directions[side].placeOrigin);}
 });

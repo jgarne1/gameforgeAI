@@ -1,0 +1,10 @@
+{
+  "sourceHashes": {
+    "left_rear_lift.png": "131887eb3195ea8c0104b6b47aaf7ce7a5395c9db9fc30abe07cc45b8ebcdea7",
+    "right_rear_lift.png": "9bff02d42dfa48478d66d8c2ecdff3b0f1791106ee007082b2644d8ee4016ed9"
+  },
+  "directions": {
+    "left": {"sourceRect": {"x": 478, "y": 50, "w": 534, "h": 914}, "displaySize": {"w": 47.615973741794306, "h": 81.5}, "placeOrigin": {"x": 0.5, "y": 0.995}},
+    "right": {"sourceRect": {"x": 496, "y": 46, "w": 518, "h": 919}, "displaySize": {"w": 45.937976060935796, "h": 81.5}, "placeOrigin": {"x": 0.5, "y": 0.995}}
+  }
+}
