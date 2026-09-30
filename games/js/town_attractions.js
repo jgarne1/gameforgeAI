@@ -30,12 +30,12 @@ function stroke(c,points,color,width,closed=false){c.beginPath();points.forEach(
 function pill(c,x,y,w,h,fill,edge){c.beginPath();c.roundRect(x,y,w,h,Math.min(18,h/3));c.fillStyle=fill;c.fill();if(edge){c.strokeStyle=edge;c.lineWidth=3;c.stroke();}}
 function title(c,text,x,y,size=26){c.font=`bold ${size}px Georgia,serif`;c.textAlign='center';c.lineWidth=5;c.strokeStyle='#14291d';c.strokeText(text,x,y);c.fillStyle='#f7dfa0';c.fillText(text,x,y);}
 
-function drawCoasterGround(c,ride,stationImage){
+function drawCoasterGround(c,ride,stationImage,railOnly=false){
   const points=ride.track;
   if(!points?.length)return;
   c.save();c.lineCap='round';c.lineJoin='round';
   // Paired timber legs and cross-braces keep the raised section grounded.
-  for(let i=0;i<points.length;i+=9){const p=points[i];if(p.z<35)continue;
+  for(let i=0;!railOnly&&i<points.length;i+=9){const p=points[i];if(p.z<35)continue;
     c.fillStyle='rgba(7,22,14,.26)';c.beginPath();c.ellipse(p.x+18,p.y+13,32,12,0,0,Math.PI*2);c.fill();
     stroke(c,[[p.x-19,p.y-4],[p.x-13,p.y-p.z]],'#493020',8);
     stroke(c,[[p.x+19,p.y-4],[p.x+13,p.y-p.z]],'#493020',8);
@@ -52,6 +52,7 @@ function drawCoasterGround(c,ride,stationImage){
     const rail=points.map((p,i)=>{const a=points[Math.max(0,i-1)],b=points[Math.min(points.length-1,i+1)],dx=b.x-a.x,dy=(b.y-b.z)-(a.y-a.z),len=Math.hypot(dx,dy)||1;return [p.x-dy/len*side*13,p.y-p.z+dx/len*side*13];});
     stroke(c,rail,'#3b3029',8);stroke(c,rail,'#d1b583',3);
   }
+  if(railOnly){c.restore();return;}
   const s=ride.station;
   if(stationImage&&ride.stationSprite){const art=ride.stationSprite;c.drawImage(stationImage,art.x,art.y,art.w,art.h);}
   else{pill(c,s.x-205,s.y-52,430,170,'#70523a','#d9af6d');for(let i=0;i<7;i++)stroke(c,[[s.x-188+i*65,s.y-50],[s.x-188+i*65,s.y+116]],'rgba(34,25,21,.22)',3);pill(c,s.x-185,s.y+95,390,20,'#312c24','#ebc980');}
@@ -125,7 +126,6 @@ function drawAnimal(c,pen,now,sprite,image){
 function drawCart(c,pos,occupants,drawRider,cartImage){
   if(!pos)return;
   const tunnel=pos.ride.tunnel;
-  if(tunnel&&Math.abs(pos.x-tunnel.x)<tunnel.rx*.85&&Math.abs(pos.y-pos.z-tunnel.y)<tunnel.ry*.8)return;
   c.save();c.translate(pos.x,pos.y-pos.z);c.rotate(pos.angle);
   c.fillStyle='rgba(0,0,0,.26)';c.beginPath();c.ellipse(8,28,68,15,0,0,Math.PI*2);c.fill();
   if(cartImage){const spec=pos.ride.cartSprite;c.drawImage(cartImage,-spec.w/2,-spec.h/2,spec.w,spec.h);}
@@ -134,10 +134,23 @@ function drawCart(c,pos,occupants,drawRider,cartImage){
     stroke(c,[[-48,10],[35,10]],'#dba661',8);stroke(c,[[-48,10],[35,10]],'#f6d489',2);
   }
   c.restore();
-  if(occupants?.length){c.save();title(c,occupants.join(' · '),pos.x,pos.y-pos.z-95,18);c.restore();}
+  if(occupants?.length&&(!tunnel||Math.abs(pos.x-tunnel.x)>tunnel.w/2)){c.save();title(c,occupants.join(' · '),pos.x,pos.y-pos.z-95,18);c.restore();}
 }
 
 function drawGround(c,scene,stationImage){const a=scene?.attractions;if(!a)return;if(a.coaster)drawCoasterGround(c,a.coaster,stationImage);if(a.zoo)drawZooGround(c,a.zoo);}
-function drawDynamic(c,scene,now,occupants,drawRider,animalImage,cartImage,tunnelImage){const a=scene?.attractions;if(!a)return;if(a.zoo)for(const pen of a.zoo.pens||[])drawAnimal(c,pen,now,a.zoo.sprite,animalImage);if(a.coaster){drawCart(c,coasterAt(scene,now),occupants,drawRider,cartImage);const t=a.coaster.tunnel;if(t&&tunnelImage)c.drawImage(tunnelImage,t.x-t.w/2,t.y-t.h*.51,t.w,t.h);}}
+function drawDynamic(c,scene,now,occupants,drawRider,animalImage,cartImage,tunnelImage){const a=scene?.attractions;if(!a)return;if(a.zoo)for(const pen of a.zoo.pens||[])drawAnimal(c,pen,now,a.zoo.sprite,animalImage);if(a.coaster){
+  const pos=coasterAt(scene,now),t=a.coaster.tunnel;
+  drawCart(c,pos,occupants,drawRider,cartImage);
+  if(t&&tunnelImage){
+    c.drawImage(tunnelImage,t.x-t.w/2,t.y-t.h*.51,t.w,t.h);
+    // The grotto art has inset mouths. Reveal only the two approach strips
+    // over its rocky facade, then clip the cart at the same mouth edges.
+    const left=t.mouthLeftX??t.x-t.w*.35,right=t.mouthRightX??t.x+t.w*.35;
+    c.save();c.beginPath();c.rect(t.x-t.w/2-8,t.y-t.h,left-(t.x-t.w/2)+17,t.h*2);c.rect(right-9,t.y-t.h,t.x+t.w/2-right+17,t.h*2);c.clip();
+    drawCoasterGround(c,a.coaster,null,true);
+    drawCart(c,pos,null,drawRider,cartImage);
+    c.restore();
+  }
+}}
 window.TownAttractions={coasterAt,drawGround,drawDynamic};
 })();
