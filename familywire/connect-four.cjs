@@ -152,13 +152,13 @@ function createConnectFourStore(db, { now = Date.now, canAccessChat, isOnline, o
     const rows = db.prepare('SELECT g.* FROM fw_games g JOIN fw_game_players p ON p.game_id=g.id WHERE p.user_id=? ORDER BY g.updated_at DESC LIMIT 50').all(userId);
     const games = rows.filter(row => canAccessChat(row.chat_id, userId)).map(row => {
       const participants = players(row.id).map(player => ({ userId: player.user_id, accepted: !!player.accepted }));
-      return { id: row.id, chatId: row.chat_id, kind: row.kind, status: row.status, state: row.kind === 'poker' ? pokerView(JSON.parse(row.state), userId) : JSON.parse(row.state), players: participants, score: row.kind === 'connect4' ? scoreFor(participants.map(p => p.userId)) : null };
+      return { id: row.id, chatId: row.chat_id, kind: row.kind, status: row.status, state: ['poker','eights','checkers'].includes(row.kind) ? pokerView(JSON.parse(row.state), userId, row.kind, participants.map(p => p.userId)) : JSON.parse(row.state), players: participants, score: row.kind === 'connect4' ? scoreFor(participants.map(p => p.userId)) : null };
     });
     const events = db.prepare('SELECT e.* FROM fw_game_events e JOIN fw_game_players p ON p.game_id=e.game_id WHERE p.user_id=? AND e.seq>? ORDER BY e.seq LIMIT 100').all(userId, after).filter(row => canAccessChat(row.chat_id, userId)).map(row => ({ seq: row.seq, gameId: row.game_id, chatId: row.chat_id, kind: row.kind, actorId: row.actor_id, detail: row.detail ? JSON.parse(row.detail) : null, time: row.created_at }));
     return { games, events, cursor: events.at(-1)?.seq || after };
   }
   function prune(cutoff) {
-    const expired = db.prepare("SELECT id FROM fw_games WHERE updated_at<=? AND (status IN ('closed','finished') OR kind='connect4')").all(cutoff);
+    const expired = db.prepare("SELECT id FROM fw_games WHERE updated_at<=? AND (status IN ('closed','finished') OR kind IN ('connect4','checkers','eights'))").all(cutoff);
     for (const row of expired) {
       db.prepare('DELETE FROM fw_game_events WHERE game_id=?').run(row.id);
       db.prepare('DELETE FROM fw_game_players WHERE game_id=?').run(row.id);
@@ -170,3 +170,4 @@ function createConnectFourStore(db, { now = Date.now, canAccessChat, isOnline, o
 }
 
 module.exports = { COLUMNS, ROWS, emptyBoard, drop, createConnectFourStore };
+

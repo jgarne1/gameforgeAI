@@ -4,6 +4,7 @@ const {ShareSignaling}=require('./share-signaling.cjs');
 const {createChipWallet}=require('./chip-wallet.cjs');
 const {createConnectFourStore}=require('./connect-four.cjs');
 const {createPokerStore}=require('./poker.cjs');
+const {createClassicGamesStore}=require('./classic-games.cjs');
 const UUID=/^[a-f0-9-]{36}$/i, MAX_BODY=8*1024*1024, MAX_FILE=25*1024*1024+28;
 const RETENTION_MS=48*60*60*1000;
 function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
@@ -42,11 +43,12 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
  const people=()=>{const active=new Set(online().map(p=>p.userId));return db.prepare('SELECT user_id, name, last_seen FROM people ORDER BY name COLLATE NOCASE').all().filter(p=>allowedIds.has(p.user_id)).map(p=>({userId:p.user_id,name:p.name,lastSeen:p.last_seen,online:active.has(p.user_id)}));};
  const member=(chat,user)=>chat==='family'?{after_seq:0}:db.prepare('SELECT after_seq,moderator FROM chat_members WHERE chat_id=? AND user_id=?').get(chat,user);
  const chats=user=>db.prepare('SELECT * FROM chats ORDER BY rowid').all().filter(c=>member(c.id,user)).map(c=>{const after=member(c.id,user).after_seq,readSeq=db.prepare('SELECT last_seq FROM chat_reads WHERE chat_id=? AND user_id=?').get(c.id,user)?.last_seq||0;return {...c,canManage:c.id!=='family'&&(c.owner_id===user||!!member(c.id,user).moderator),moderators:db.prepare('SELECT user_id FROM chat_members WHERE chat_id=? AND moderator=1').all(c.id).map(p=>p.user_id),latest:db.prepare('SELECT seq,user_id,received_at FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL ORDER BY seq DESC LIMIT 1').get(c.id,after,now()-RETENTION_MS)||null,unread:db.prepare('SELECT COUNT(*) AS n FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL AND deleted=0 AND user_id!=?').get(c.id,Math.max(after,readSeq),now()-RETENTION_MS,user).n,members:c.id==='family'?people().map(p=>p.userId):db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(c.id).map(p=>p.user_id).filter(id=>allowedIds.has(id))};});
- let poker;
+ let poker,classic;
  const gameAccess=(chat,user)=>allowedIds.has(user)&&!!member(chat,user);
  const gameOnline=user=>online().some(person=>person.userId===user);
- const games=createConnectFourStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake(),pokerView:(state,user)=>poker.view(state,user)});
+ const games=createConnectFourStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake(),pokerView:(state,user,kind,ids)=>kind==='eights'||kind==='checkers'?classic.view(kind,state,user,ids):poker.view(state,user)});
  poker=createPokerStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,wallet:chipWallet,onEvent:()=>wake()});
+ classic=createClassicGamesStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake()});
  function prune(){const cutoff=now()-RETENTION_MS;poker.expire(cutoff);games.prune(cutoff);db.prepare('DELETE FROM messages WHERE received_at <= ?').run(cutoff);db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
   db.prepare('DELETE FROM fw_game_events WHERE created_at <= ?').run(cutoff);
   for(const c of db.prepare('SELECT id FROM chats WHERE ended_at <= ?').all(cutoff)){for(const f of db.prepare('SELECT id FROM file_chats WHERE chat_id=?').all(c.id))fs.rmSync(path.join(dir,'files',f.id),{force:true});db.prepare('DELETE FROM file_chats WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM messages WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_members WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_reads WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chats WHERE id=?').run(c.id);}
@@ -83,6 +85,12 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
    if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,roomSecret:secret,people:people(),chats:chats(userId)});}
    if(req.method==='GET'&&url.pathname==='/chips')return finish(res,200,chipWallet.account(userId));
    if(req.method==='POST'&&url.pathname==='/chips/reset'){try{return finish(res,200,chipWallet.reset(userId));}catch(e){return finish(res,409,{error:e.message});}}
+   if(req.method==='POST'&&url.pathname==='/games/classic/invite'){
+    const body=JSON.parse((await read(req,2048)).toString());try{return finish(res,200,classic.create(body.kind,body.chatId,userId,body.targetIds));}catch(e){return finish(res,409,{error:e.message});}
+   }
+   const classicAction=url.pathname.match(/^\/games\/classic\/([a-f0-9-]{36})\/(accept|start|act|close)$/i);
+   if(req.method==='POST'&&classicAction){const [,id,action]=classicAction,body=JSON.parse((await read(req,2048)).toString()||'{}');
+    try{return finish(res,200,action==='accept'?classic.accept(id,userId):action==='start'?classic.start(id,userId):action==='act'?classic.act(id,userId,body):classic.close(id,userId));}catch(e){return finish(res,e.message==='Game access denied'?403:409,{error:e.message});}}
    if(req.method==='POST'&&url.pathname==='/games/poker/invite'){
     const body=JSON.parse((await read(req,2048)).toString());try{return finish(res,200,poker.create(body.chatId,userId,body.targetIds));}catch(e){return finish(res,409,{error:e.message});}
    }
@@ -116,8 +124,8 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
     if(operation==='rename'){if(typeof body.name!=='string'||!body.name.trim()||body.name.length>64)return finish(res,400,{error:'Name must be 1–64 characters'});db.prepare('UPDATE chats SET name=?,custom_name=1 WHERE id=?').run(body.name.trim(),id);}
     if(operation==='add'){if(!allowedIds.has(body.userId)||typeof body.shareHistory!=='boolean')return finish(res,400,{error:'Invalid member or history choice'});const seq=body.shareHistory?0:db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM messages').get().seq;db.prepare('INSERT OR IGNORE INTO chat_members(chat_id,user_id,after_seq) VALUES (?,?,?)').run(id,body.userId,seq);}
     if(operation==='moderator'){if(c.owner_id!==userId)return finish(res,403,{error:'Only the chat owner can assign moderators'});if(body.userId===c.owner_id||!member(id,body.userId)||typeof body.enabled!=='boolean')return finish(res,400,{error:'Invalid moderator'});db.prepare('UPDATE chat_members SET moderator=? WHERE chat_id=? AND user_id=?').run(body.enabled?1:0,id,body.userId);}
-    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});poker.endForChat(id,userId);db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);db.prepare('DELETE FROM chat_reads WHERE chat_id=? AND user_id=?').run(id,body.userId);share.endChat(id);games.endForChat(id,userId);}
-    if(operation==='end'){poker.endForChat(id,userId);db.prepare('UPDATE chats SET ended_at=? WHERE id=?').run(now(),id);share.endChat(id);games.endForChat(id,userId);}wake();return finish(res,200,{chats:chats(userId)});
+    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});poker.endForChat(id,userId);classic.endForChat(id,userId);db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);db.prepare('DELETE FROM chat_reads WHERE chat_id=? AND user_id=?').run(id,body.userId);share.endChat(id);games.endForChat(id,userId);}
+    if(operation==='end'){poker.endForChat(id,userId);classic.endForChat(id,userId);db.prepare('UPDATE chats SET ended_at=? WHERE id=?').run(now(),id);share.endChat(id);games.endForChat(id,userId);}wake();return finish(res,200,{chats:chats(userId)});
    }
    const chat=req.headers['x-chat']||'family',membership=member(chat,userId),conversation=db.prepare('SELECT * FROM chats WHERE id=?').get(chat);
    if(!conversation||!membership)return finish(res,403,{error:'Chat access denied'});
@@ -179,3 +187,4 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
 if(require.main===module&&process.env.BACKEND_URL){require('./proxy.cjs').createProxy(process.env.BACKEND_URL).listen(Number(process.env.PORT||45831),'0.0.0.0');}
 else if(require.main===module){const server=createRelay({secret:process.env.ROOM_SECRET,invites:(process.env.INVITE_CODES||'').split(',').map(s=>s.trim()).filter(Boolean),dir:process.env.DATA_DIR||path.join(__dirname,'data')});server.listen(Number(process.env.PORT||45831),'0.0.0.0',()=>console.log('FamilyWire relay listening'));}
 module.exports={createRelay};
+
