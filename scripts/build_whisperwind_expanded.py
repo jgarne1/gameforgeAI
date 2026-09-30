@@ -102,25 +102,15 @@ def coaster_track(knots,steps=14):
   for n in range(steps):
    t=n/steps
    out.append(dict(zip(('x','y','z'),[round(.5*(2*b[k]+(-a[k]+c[k])*t+(2*a[k]-5*b[k]+4*c[k]-d[k])*t*t+(-a[k]+3*b[k]-3*c[k]+d[k])*t*t*t),1) for k in range(3)])))
- # The east crest makes one complete elevated ring before continuing along
- # the lake-facing descent. Keep it in the sampled course so cart and rails agree.
- ring_start=4*steps
- anchor=out[ring_start]
- ring=[]
- for n in range(1,41):
-  angle=math.pi/2-2*math.pi*n/40
-  ring.append({'x':round(anchor['x']+175*math.cos(angle),1),
-               'y':round(anchor['y']-175+175*math.sin(angle),1),
-               'z':round(anchor['z']+210*math.sin(math.pi*n/40)**2,1)})
- return out[:ring_start+1]+ring+out[ring_start+1:]+[out[0].copy()]
+ return out+[out[0].copy()]
 
 sc['attractions']={
  'coaster':{'id':'lantern_run','name':'Lantern Run','station':{'x':4380,'y':1360},'stationSprite':{'src':'/assets/whisperwind_hd/fairground_v1/lantern_run_station.png','x':3650,'y':1045,'w':720,'h':475},'queue':{'x':3790,'y':1350,'w':270,'h':225},
             'boarding':{'x':4160,'y':1600},'exit':{'x':4250,'y':1680},'dwellSeconds':8,'travelSeconds':23,
             'cartSprite':{'src':'/assets/whisperwind_hd/fairground_v2/lantern_cart.png','w':160,'h':108},
-            'tunnel':{'x':4590,'y':430,'rx':250,'ry':125,'sprite':'/assets/whisperwind_hd/fairground_v3/two_mouth_grotto.png','w':420,'h':225},
-            'track':coaster_track([(x+250,y-170,z) for x,y,z in [(4130,1530,20),(4320,1580,30),(4820,1590,95),(5210,1380,210),(5240,1050,260),(5010,730,170),(4490,660,85),(3990,800,105),(3900,1050,160),(4400,1100,120),(4700,1550,50),(4430,1610,30)]])},
- 'zoo':{'id':'wildlife_garden','sprite':{'src':'/assets/whisperwind_hd/fairground_v1/wildlife_animals.png','sourceRects':{'deer':[55,10,460,875],'capybara':[610,15,600,850],'owl':[1250,15,450,850]}},'pens':[
+            'tunnel':{'x':4610,'y':425,'rx':290,'ry':145,'sprite':'/assets/whisperwind_hd/fairground_v3/two_mouth_grotto.png','w':600,'h':295},
+            'track':coaster_track([(4380,1360,25),(4700,1390,35),(5060,1470,70),(5390,1280,135),(5480,900,205),(5320,620,170),(4950,545,115),(4820,540,115),(4400,540,115),(4120,600,115),(3930,800,135),(3990,950,125),(4320,990,105),(4560,980,90),(4700,1070,70),(4600,1140,50),(4400,1230,30)])},
+ 'zoo':{'id':'wildlife_garden','sprite':{'src':'/assets/whisperwind_hd/fairground_v1/wildlife_animals.png','sourceRects':{'deer':[0,0,590,887],'capybara':[590,0,640,887],'owl':[1230,0,544,887]}},'pens':[
    {'id':'deer_meadow','name':'Deer Meadow','animal':'deer','x':350,'y':6350,'w':420,'h':460,'seed':1},
    {'id':'capybara_pool','name':'Capybara Pool','animal':'capybara','x':955,'y':6350,'w':420,'h':460,'seed':3},
    {'id':'owl_grove','name':'Owl Grove','animal':'owl','x':1440,'y':6350,'w':420,'h':460,'seed':5}]}}
@@ -275,7 +265,7 @@ for i,p in enumerate(sc['paths']):
   obj('street_lamp_'+str(i)+'_'+str(j),'wwhd_lamp',round(x),round(y),collide=[-8,-8,16,12])
 sc['districts']=[{'id':id,'name':name,'bounds':bounds} for id,name,bounds in [('lantern','Lantern Hill',[400,400,3400,1500]),('orchard','Orchard Gardens',[500,1900,1900,900]),('commonlight','Commonlight Square',[2600,3000,1500,1200]),('market','Market Lanes',[600,3100,2300,2000]),('lake','Orchard Lake',[5600,850,3100,2150]),('eastbank','Eastbank Homes',[5700,3200,3100,1800]),('southgardens','South Gardens',[5500,5300,3300,1700]),('quay','Fishing Quay',[1700,5800,2500,1300])]]
 sc['guidePlaces']=[{'name':name,'x':x,'y':y} for name,x,y in [('Commonlight Square',3300,3700),('Orchard Playground',1760,2590),('Lantern Run Fairground',4005,1550),('Wildlife Garden',1300,7020),('Lantern Hill',1800,1650),('River Tackle',2075,6280),('Lake Shore',7100,2730),('Old Mansion',8150,1130),('North Bridge',riverx(3200)-500,3200),('Market Bridge',riverx(4800)-500,4800),('Quay Bridge',riverx(6300)-500,6300)]]
-sc['spawnPoints']=[{'id':id,'x':x,'y':y,'face':'up'} for id,x,y in [('playground',1760,2650),('fair',4160,1620),('zoo',1300,7020),('lake',7100,2730),('mansion',8150,1200),('bridge',riverx(4800)-1100,4977.5),('hill',1800,2000)]]
+sc['spawnPoints']=[{'id':id,'x':x,'y':y,'face':'up'} for id,x,y in [('playground',1760,2650),('fair',4160,1620),('cave',4610,755),('zoo',850,6800),('lake',7100,2730),('mansion',8150,1200),('bridge',riverx(4800)-1100,4977.5),('hill',1800,2000)]]
 for id,(x,y) in landmarks.items():
  name={'lantern_inn':'inn','echo_hall':'echo_hall','pet_center':'pet_center','fishing_shop':'fishing_shop','bakery':'market','tavern':'tavern'}.get(id)
  if name:
