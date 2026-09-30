@@ -32,6 +32,12 @@ test('Lantern Run pauses for boarding and returns to the same station',()=>{
  const speeds=ride._segments.map((weight,i)=>Math.hypot(ride.track[i+1].x-ride.track[i].x,ride.track[i+1].y-ride.track[i].y)/weight).filter(Number.isFinite);
  assert.ok(Math.max(...speeds)>Math.min(...speeds)*2,'climb, drop and braking use distinct travel speeds');
  const projected=ride.track.map(p=>[p.x,p.y-p.z]),cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+ const tunnel=ride.tunnel;
+ for(const x of [tunnel.mouthLeftX,tunnel.mouthRightX]){
+  const p=ride.track.reduce((closest,next)=>Math.abs(next.x-x)<Math.abs(closest.x-x)?next:closest);
+  assert.ok(Math.abs(p.x-x)<8&&Math.abs(p.y-p.z-465)<8,`rail reaches cave opening at ${x}`);
+ }
+ assert.ok(tunnel.mouthLeftX>tunnel.x-tunnel.w/2&&tunnel.mouthRightX<tunnel.x+tunnel.w/2);
  for(let i=0;i<projected.length-1;i++)for(let j=i+3;j<projected.length-1;j++){
   if(i===0&&j===projected.length-2)continue;
   const a=projected[i],b=projected[i+1],c=projected[j],d=projected[j+1];

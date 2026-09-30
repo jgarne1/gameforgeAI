@@ -108,8 +108,8 @@ sc['attractions']={
  'coaster':{'id':'lantern_run','name':'Lantern Run','station':{'x':4380,'y':1360},'stationSprite':{'src':'/assets/whisperwind_hd/fairground_v1/lantern_run_station.png','x':3650,'y':1045,'w':720,'h':475},'queue':{'x':3790,'y':1350,'w':270,'h':225},
             'boarding':{'x':4160,'y':1600},'exit':{'x':4250,'y':1680},'dwellSeconds':8,'travelSeconds':23,
             'cartSprite':{'src':'/assets/whisperwind_hd/fairground_v2/lantern_cart.png','w':160,'h':108},
-            'tunnel':{'x':4610,'y':425,'rx':290,'ry':145,'sprite':'/assets/whisperwind_hd/fairground_v3/two_mouth_grotto.png','w':600,'h':295},
-            'track':coaster_track([(4380,1360,25),(4700,1390,35),(5060,1470,70),(5390,1280,135),(5480,900,205),(5320,620,170),(4950,545,115),(4820,540,115),(4400,540,115),(4120,600,115),(3930,800,135),(3990,950,125),(4320,990,105),(4560,980,90),(4700,1070,70),(4600,1140,50),(4400,1230,30)])},
+            'tunnel':{'x':4610,'y':425,'rx':290,'ry':145,'mouthLeftX':4400,'mouthRightX':4820,'sprite':'/assets/whisperwind_hd/fairground_v3/two_mouth_grotto.png','w':600,'h':295},
+            'track':coaster_track([(4380,1360,25),(4700,1390,35),(5060,1470,70),(5390,1280,135),(5480,900,205),(5320,620,170),(4950,545,75),(4820,540,75),(4400,540,75),(4120,600,115),(3930,800,135),(3990,950,125),(4320,990,105),(4560,980,90),(4700,1070,70),(4600,1140,50),(4400,1230,30)])},
  'zoo':{'id':'wildlife_garden','sprite':{'src':'/assets/whisperwind_hd/fairground_v1/wildlife_animals.png','sourceRects':{'deer':[0,0,590,887],'capybara':[590,0,640,887],'owl':[1230,0,544,887]}},'pens':[
    {'id':'deer_meadow','name':'Deer Meadow','animal':'deer','x':350,'y':6350,'w':420,'h':460,'seed':1},
    {'id':'capybara_pool','name':'Capybara Pool','animal':'capybara','x':955,'y':6350,'w':420,'h':460,'seed':3},
