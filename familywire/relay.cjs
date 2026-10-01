@@ -15,6 +15,7 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
  const hash=code=>crypto.createHash('sha256').update('FamilyWire-access:'+code).digest('hex');
  const members=new Map((invites.length?invites:[secret]).map(code=>{const token=hash(code),h=token.slice(0,32);return [token,`${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`];}));
  const db=new DatabaseSync(path.join(dir,'messages.sqlite'));
+ require('./migration-backup.cjs').backupBeforeLearning(db,dir);
  const chipWallet=createChipWallet(db);
  db.exec('PRAGMA journal_mode=WAL; PRAGMA secure_delete=ON; CREATE TABLE IF NOT EXISTS messages (seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT UNIQUE NOT NULL, frame TEXT NOT NULL, user_id TEXT, received_at INTEGER NOT NULL DEFAULT 0); CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY,value TEXT);');
  if(!db.prepare('PRAGMA table_info(messages)').all().some(c=>c.name==='user_id'))db.exec('ALTER TABLE messages ADD COLUMN user_id TEXT');
@@ -43,10 +44,10 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
  const people=()=>{const active=new Set(online().map(p=>p.userId));return db.prepare('SELECT user_id, name, last_seen FROM people ORDER BY name COLLATE NOCASE').all().filter(p=>allowedIds.has(p.user_id)).map(p=>({userId:p.user_id,name:p.name,lastSeen:p.last_seen,online:active.has(p.user_id)}));};
  const member=(chat,user)=>chat==='family'?{after_seq:0}:db.prepare('SELECT after_seq,moderator FROM chat_members WHERE chat_id=? AND user_id=?').get(chat,user);
  const chats=user=>db.prepare('SELECT * FROM chats ORDER BY rowid').all().filter(c=>member(c.id,user)).map(c=>{const after=member(c.id,user).after_seq,readSeq=db.prepare('SELECT last_seq FROM chat_reads WHERE chat_id=? AND user_id=?').get(c.id,user)?.last_seq||0;return {...c,canManage:c.id!=='family'&&(c.owner_id===user||!!member(c.id,user).moderator),moderators:db.prepare('SELECT user_id FROM chat_members WHERE chat_id=? AND moderator=1').all(c.id).map(p=>p.user_id),latest:db.prepare('SELECT seq,user_id,received_at FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL ORDER BY seq DESC LIMIT 1').get(c.id,after,now()-RETENTION_MS)||null,unread:db.prepare('SELECT COUNT(*) AS n FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL AND deleted=0 AND user_id!=?').get(c.id,Math.max(after,readSeq),now()-RETENTION_MS,user).n,members:c.id==='family'?people().map(p=>p.userId):db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(c.id).map(p=>p.user_id).filter(id=>allowedIds.has(id))};});
- let poker,classic;
+ const learning=require('./learning.cjs').createLearningStore(db,{now});let poker,classic;
  const gameAccess=(chat,user)=>allowedIds.has(user)&&!!member(chat,user);
  const gameOnline=user=>online().some(person=>person.userId===user);
- const games=createConnectFourStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake(),pokerView:(state,user,kind,ids)=>kind==='eights'||kind==='checkers'?classic.view(kind,state,user,ids):poker.view(state,user)});
+ const games=createConnectFourStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake(),pokerView:(state,user,kind,ids)=>['eights','checkers','signal','words','algebra'].includes(kind)?classic.view(kind,state,user,ids):poker.view(state,user)});
  poker=createPokerStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,wallet:chipWallet,onEvent:()=>wake()});
  classic=createClassicGamesStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake()});
  function prune(){const cutoff=now()-RETENTION_MS;poker.expire(cutoff);games.prune(cutoff);db.prepare('DELETE FROM messages WHERE received_at <= ?').run(cutoff);db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
@@ -57,10 +58,10 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
   share?.prune();
  }
  let share;prune();const cleanup=setInterval(prune,15*60*1000);cleanup.unref();
- function events(after,chat,user,gameAfter=0) {
+ function events(after,chat,user,gameAfter=0,features='') {
   const rows=db.prepare('SELECT seq, id, frame, user_id, received_at,mutation_target,mutation_kind,target_seq FROM messages WHERE seq > ? AND received_at > ? AND chat_id=? ORDER BY seq LIMIT 100').all(Math.max(after,member(chat,user)?.after_seq||0),now()-RETENTION_MS,chat);
   let size=0;const packets=[]; for(const row of rows){if(row.mutation_target&&row.target_seq<=member(chat,user).after_seq)continue;size+=row.frame.length;if(size>MAX_BODY&&packets.length)break;packets.push(row);}
-  const conversations=chats(user),gameData=games.list(user,gameAfter);return {epoch,cursor:packets.length?packets.at(-1).seq:after,packets,online:online(),people:people(),chats:conversations,activity:Math.max(0,...conversations.map(c=>c.latest?.seq||0)),games:gameData.games,gameEvents:gameData.events,gameCursor:gameData.cursor};
+  const conversations=chats(user),gameData=games.list(user,gameAfter,features==='learning-games-v1'?['connect4','poker','checkers','eights','signal','words','algebra']:['connect4','poker','checkers','eights']);return {epoch,cursor:packets.length?packets.at(-1).seq:after,packets,online:online(),people:people(),chats:conversations,activity:Math.max(0,...conversations.map(c=>c.latest?.seq||0)),games:gameData.games,gameEvents:gameData.events,gameCursor:gameData.cursor};
  }
  const wake=()=>{for(const job of [...waiting])job();};
  share=new ShareSignaling({now,onEvent:wake});
@@ -83,6 +84,9 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
    db.prepare('INSERT INTO people(user_id,name,last_seen) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET name=excluded.name,last_seen=excluded.last_seen').run(userId,name,now());
    peers.set(device,{name,last:now(),userId});
    if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,roomSecret:secret,people:people(),chats:chats(userId)});}
+   if(req.method==='GET'&&url.pathname==='/learning'){try{return finish(res,200,learning.get(userId,Number(url.searchParams.get('offset')||0)));}catch(e){return finish(res,409,{error:e.message});}}
+   const learningAction=url.pathname.match(/^\/learning\/(spanish\/(start|answer|next|review)|algebra\/(start|act))$/);
+   if(req.method==='POST'&&learningAction){const body=JSON.parse((await read(req,4096)).toString()||'{}');try{return finish(res,200,learning.dispatch(userId,learningAction[1],body));}catch(e){return finish(res,409,{error:e.message});}}
    if(req.method==='GET'&&url.pathname==='/chips')return finish(res,200,chipWallet.account(userId));
    if(req.method==='POST'&&url.pathname==='/chips/reset'){try{return finish(res,200,chipWallet.reset(userId));}catch(e){return finish(res,409,{error:e.message});}}
    if(req.method==='POST'&&url.pathname==='/games/classic/invite'){
@@ -90,7 +94,7 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
    }
    const classicAction=url.pathname.match(/^\/games\/classic\/([a-f0-9-]{36})\/(accept|start|act|close)$/i);
    if(req.method==='POST'&&classicAction){const [,id,action]=classicAction,body=JSON.parse((await read(req,2048)).toString()||'{}');
-    try{return finish(res,200,action==='accept'?classic.accept(id,userId):action==='start'?classic.start(id,userId):action==='act'?classic.act(id,userId,body):classic.close(id,userId));}catch(e){return finish(res,e.message==='Game access denied'?403:409,{error:e.message});}}
+    try{return finish(res,200,action==='accept'?classic.accept(id,userId):action==='start'?classic.start(id,userId,body):action==='act'?classic.act(id,userId,body):classic.close(id,userId));}catch(e){return finish(res,e.message==='Game access denied'?403:409,{error:e.message});}}
    if(req.method==='POST'&&url.pathname==='/games/poker/invite'){
     const body=JSON.parse((await read(req,2048)).toString());try{return finish(res,200,poker.create(body.chatId,userId,body.targetIds));}catch(e){return finish(res,409,{error:e.message});}
    }
@@ -151,8 +155,8 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
     const resync=url.searchParams.get('epoch')!==epoch;if(resync)after=0;
     const joined=!peers.has(device);peers.set(device,{name,last:now(),userId});
     if(joined||prior?.name!==name)wake();
-    const data=events(after,chat,userId,gameAfter);if(data.packets.length||data.gameEvents.length||joined||resync||data.activity>Number(url.searchParams.get('activity')||0))return finish(res,200,data);
-    let timer;const complete=()=>{clearTimeout(timer);waiting.delete(complete);if(!allowedIds.has(userId)||!member(chat,userId))return finish(res,403,{error:'Chat access denied'});finish(res,200,events(after,chat,userId,gameAfter));};
+    const data=events(after,chat,userId,gameAfter,req.headers['x-familywire-features']);if(data.packets.length||data.gameEvents.length||joined||resync||data.activity>Number(url.searchParams.get('activity')||0))return finish(res,200,data);
+    let timer;const complete=()=>{clearTimeout(timer);waiting.delete(complete);if(!allowedIds.has(userId)||!member(chat,userId))return finish(res,403,{error:'Chat access denied'});finish(res,200,events(after,chat,userId,gameAfter,req.headers['x-familywire-features']));};
     waiting.add(complete);timer=setTimeout(complete,25000);res.on('close',()=>{clearTimeout(timer);waiting.delete(complete);});return;
    }
    const mutation=url.pathname.match(/^\/messages\/([a-f0-9-]{36})\/(edit|delete)$/i);
@@ -187,4 +191,3 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
 if(require.main===module&&process.env.BACKEND_URL){require('./proxy.cjs').createProxy(process.env.BACKEND_URL).listen(Number(process.env.PORT||45831),'0.0.0.0');}
 else if(require.main===module){const server=createRelay({secret:process.env.ROOM_SECRET,invites:(process.env.INVITE_CODES||'').split(',').map(s=>s.trim()).filter(Boolean),dir:process.env.DATA_DIR||path.join(__dirname,'data')});server.listen(Number(process.env.PORT||45831),'0.0.0.0',()=>console.log('FamilyWire relay listening'));}
 module.exports={createRelay};
-
