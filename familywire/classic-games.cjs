@@ -1,7 +1,9 @@
 const crypto = require('node:crypto');
 const { startEights, playEights, startCheckers, playCheckers, options } = require('./classic-rules.cjs');
 
-const kinds = new Set(['checkers', 'eights']);
+const {startFamily,playFamily,familyView}=require('./family-rules.cjs');
+const {startAlgebra,playAlgebra,algebraView}=require('./algebra-rules.cjs');
+const kinds = new Set(['checkers', 'eights', 'signal', 'words', 'algebra']);
 
 function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, onEvent = () => {} }) {
   const game = id => db.prepare('SELECT * FROM fw_games WHERE id=?').get(id);
@@ -38,10 +40,11 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
       return { id };
     });
   }
-  function start(id, userId) {
+  function start(id, userId, body={}) {
     const row = requirePlayer(id, userId), ps = players(id);
     if (!['invited','finished'].includes(row.status) || ps.some(p => !p.accepted || !isOnline(p.user_id))) throw new Error('All players must join and be online');
-    const ids = ps.map(p => p.user_id), state = row.kind === 'eights' ? startEights(ids) : startCheckers(ids);
+    const ids = ps.map(p => p.user_id), state = row.kind === 'eights' ? startEights(ids) : row.kind === 'checkers' ? startCheckers(ids) : row.kind==='algebra'?startAlgebra(ids,body.difficulty||'foundations'):startFamily(row.kind,ids);
+    if(row.status==='finished')state.revision=JSON.parse(row.state).revision+1;
     return transaction(() => {
       db.prepare("UPDATE fw_games SET status='active',state=?,updated_at=? WHERE id=?").run(JSON.stringify(state), now(), id);
       record(row, `${row.kind}-start`, userId);
@@ -53,7 +56,7 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
     if (row.status !== 'active') throw new Error('Game is not active');
     const state = JSON.parse(row.state), ids = players(id).map(p => p.user_id);
     if (body.revision !== state.revision) throw new Error('Board changed; try again');
-    const next = row.kind === 'eights' ? playEights(state, ids, userId, body.action, body.card, body.suit) : playCheckers(state, ids, userId, body.from, body.to);
+    const next = row.kind === 'eights' ? playEights(state, ids, userId, body.action, body.card, body.suit) : row.kind === 'checkers' ? playCheckers(state, ids, userId, body.from, body.to) : row.kind==='algebra'?playAlgebra(state,ids,userId,body):playFamily(row.kind,state,ids,userId,body);
     return transaction(() => {
       db.prepare('UPDATE fw_games SET status=?,state=?,updated_at=? WHERE id=?').run(next.winner ? 'finished' : 'active', JSON.stringify(next), now(), id);
       record(row, next.winner === 'draw' ? `${row.kind}-draw` : next.winner ? `${row.kind}-win` : `${row.kind}-turn`, userId, next.last);
@@ -70,11 +73,13 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
     });
   }
   function endForChat(chatId, actorId) {
-    const rows = db.prepare("SELECT * FROM fw_games WHERE chat_id=? AND kind IN ('checkers','eights') AND status IN ('invited','active')").all(chatId);
+    const rows = db.prepare("SELECT * FROM fw_games WHERE chat_id=? AND kind IN ('checkers','eights','signal','words','algebra') AND status IN ('invited','active')").all(chatId);
     if (!rows.length) return;
     transaction(() => { for (const row of rows) { db.prepare("UPDATE fw_games SET status='closed',updated_at=? WHERE id=?").run(now(), row.id); record(row, `${row.kind}-close`, actorId); } });
   }
   function view(kind, state, userId, ids = []) {
+    if(kind==='algebra')return algebraView(state);
+    if (kind === 'signal' || kind === 'words') return familyView(kind,state,userId,ids);
     if (kind === 'checkers') return { ...state, legal: state.turn === userId ? options(state.board, ids, userId, state.forcedFrom) : [] };
     if (kind !== 'eights') return state;
     const { hands, deck, ...publicState } = state;
@@ -84,4 +89,3 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
 }
 
 module.exports = { createClassicGamesStore };
-
