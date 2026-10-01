@@ -4,7 +4,7 @@ const { deck: shuffledDeck, settle } = require('./poker-rules.cjs');
 function createPokerStore(db, { now = Date.now, canAccessChat, isOnline, wallet, onEvent = () => {}, makeDeck = shuffledDeck }) {
   const get = id => db.prepare("SELECT * FROM fw_games WHERE id=? AND kind='poker'").get(id);
   const memberIds = chatId => db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(chatId).map(row => row.user_id);
-  const tx = work => { db.exec('BEGIN IMMEDIATE'); try { const value = work(); db.exec('COMMIT'); onEvent(); return value; } catch (error) { db.exec('ROLLBACK'); throw error; } };
+  const tx = work => { if(db.isTransaction)return work();db.exec('BEGIN IMMEDIATE'); try { const value = work(); db.exec('COMMIT'); onEvent(); return value; } catch (error) { db.exec('ROLLBACK'); throw error; } };
   const event = (row, kind, actor, detail) => db.prepare('INSERT INTO fw_game_events(game_id,chat_id,kind,actor_id,detail,created_at) VALUES (?,?,?,?,?,?)')
     .run(row.id, row.chat_id, `poker-${kind}`, actor, detail ? JSON.stringify(detail) : null, now());
   const save = (row, status, state) => db.prepare('UPDATE fw_games SET status=?,state=?,updated_at=? WHERE id=?').run(status, JSON.stringify(state), now(), row.id);
@@ -173,6 +173,7 @@ function createPokerStore(db, { now = Date.now, canAccessChat, isOnline, wallet,
   function endForChat(chatId, actorId) {
     for (const row of db.prepare("SELECT * FROM fw_games WHERE chat_id=? AND kind='poker' AND status!='closed'").all(chatId)) closeRow(row, JSON.parse(row.state), actorId);
   }
+  function endForMember(userId,actorId){for(const row of db.prepare("SELECT g.* FROM fw_games g JOIN fw_game_players p ON p.game_id=g.id WHERE p.user_id=? AND g.kind='poker' AND g.status!='closed'").all(userId))closeRow(row,JSON.parse(row.state),actorId);}
   function expire(cutoff) {
     for (const row of db.prepare("SELECT * FROM fw_games WHERE kind='poker' AND status!='closed' AND updated_at<=?").all(cutoff)) closeRow(row, JSON.parse(row.state), 'system');
   }
@@ -180,7 +181,7 @@ function createPokerStore(db, { now = Date.now, canAccessChat, isOnline, wallet,
     const showdown = state.phase === 'finished' && state.board.length === 5;
     return { ...state, deck: undefined, seats: state.seats.map(seat => ({ ...seat, cards: seat.userId === userId || (showdown && !seat.folded) ? seat.cards : seat.cards.map(() => null) })) };
   }
-  return { create, accept, add, start, act, close, endForChat, expire, view };
+  return { create, accept, add, start, act, close, endForChat, endForMember, expire, view };
 }
 
 module.exports = { createPokerStore };
