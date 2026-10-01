@@ -6,6 +6,7 @@ const {startAlgebra,playAlgebra,algebraView}=require('./algebra-rules.cjs');
 const kinds = new Set(['checkers', 'eights', 'signal', 'words', 'algebra']);
 
 function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, onEvent = () => {} }) {
+  const fleet=require('./fleet-duel.cjs').createFleetStore(db,{now,canAccessChat,onEvent});
   const game = id => db.prepare('SELECT * FROM fw_games WHERE id=?').get(id);
   const players = id => db.prepare('SELECT user_id,accepted FROM fw_game_players WHERE game_id=? ORDER BY rowid').all(id);
   const record = (row, kind, actor, detail = null) => db.prepare('INSERT INTO fw_game_events(game_id,chat_id,kind,actor_id,detail,created_at) VALUES (?,?,?,?,?,?)').run(row.id, row.chat_id, kind, actor, detail ? JSON.stringify(detail) : null, now());
@@ -16,6 +17,7 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
     return row;
   }
   function create(kind, chatId, userId, targetIds) {
+    if(kind==='fleet')return fleet.create(chatId,userId,targetIds);
     if (!kinds.has(kind) || chatId === 'family' || !Array.isArray(targetIds) || targetIds.length < 1 || targetIds.length > (kind === 'checkers' ? 1 : 3) || new Set([userId, ...targetIds]).size !== targetIds.length + 1) throw new Error('Choose eligible players');
     const ids = [userId, ...targetIds];
     const chat = db.prepare('SELECT ended_at FROM chats WHERE id=?').get(chatId);
@@ -52,6 +54,7 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
     });
   }
   function act(id, userId, body) {
+    if(game(id)?.kind==='fleet')return fleet.act(id,userId,body);
     const row = requirePlayer(id, userId);
     if (row.status !== 'active') throw new Error('Game is not active');
     const state = JSON.parse(row.state), ids = players(id).map(p => p.user_id);
@@ -73,11 +76,13 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
     });
   }
   function endForChat(chatId, actorId) {
+    fleet.endForChat(chatId,actorId);
     const rows = db.prepare("SELECT * FROM fw_games WHERE chat_id=? AND kind IN ('checkers','eights','signal','words','algebra') AND status IN ('invited','active')").all(chatId);
     if (!rows.length) return;
     transaction(() => { for (const row of rows) { db.prepare("UPDATE fw_games SET status='closed',updated_at=? WHERE id=?").run(now(), row.id); record(row, `${row.kind}-close`, actorId); } });
   }
   function view(kind, state, userId, ids = []) {
+    if(kind==='fleet')return fleet.view(state,userId,ids);
     if(kind==='algebra')return algebraView(state);
     if (kind === 'signal' || kind === 'words') return familyView(kind,state,userId,ids);
     if (kind === 'checkers') return { ...state, legal: state.turn === userId ? options(state.board, ids, userId, state.forcedFrom) : [] };
