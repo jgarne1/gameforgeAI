@@ -32,6 +32,7 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
       return { id };
     });
   }
+  function add(id,userId,targetId){return transaction(()=>{const row=requirePlayer(id,userId),ps=players(id);if(!['eights','signal','words','algebra'].includes(row.kind))throw new Error('This is a two-player game');if(!['invited','finished'].includes(row.status))throw new Error('Invite players between rounds');if(ps.length>=4)throw new Error('All four places are filled');if(!canAccessChat(row.chat_id,targetId)||ps.some(p=>p.user_id===targetId))throw new Error('Choose another member of this chat');db.prepare('INSERT INTO fw_game_players(game_id,user_id,accepted) VALUES (?,?,0)').run(id,targetId);const revision=(JSON.parse(row.state).revision||0)+1;db.prepare("UPDATE fw_games SET status='invited',state=?,updated_at=? WHERE id=?").run(JSON.stringify({turn:null,revision}),now(),id);record(row,row.kind+'-invite',userId);return {id};});}
   function accept(id, userId) {
     const row = requirePlayer(id, userId);
     if (row.status !== 'invited') throw new Error('Invitation is no longer open');
@@ -90,7 +91,7 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
     const { hands, deck, ...publicState } = state;
     return { ...publicState, hand: hands[userId] || [], counts: Object.fromEntries(Object.entries(hands).map(([id, cards]) => [id, cards.length])), deckCount: deck.length };
   }
-  return { create, accept, start, act, close, endForChat, view };
+  return { create, add, accept, start, act, close, endForChat, view };
 }
 
 module.exports = { createClassicGamesStore };
