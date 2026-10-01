@@ -47,7 +47,7 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
  const learning=require('./learning.cjs').createLearningStore(db,{now});let poker,classic;
  const gameAccess=(chat,user)=>allowedIds.has(user)&&!!member(chat,user);
  const gameOnline=user=>online().some(person=>person.userId===user);
- const games=createConnectFourStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake(),pokerView:(state,user,kind,ids)=>['eights','checkers','signal','words','algebra'].includes(kind)?classic.view(kind,state,user,ids):poker.view(state,user)});
+ const games=createConnectFourStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake(),pokerView:(state,user,kind,ids)=>['eights','checkers','signal','words','algebra','fleet'].includes(kind)?classic.view(kind,state,user,ids):poker.view(state,user)});
  poker=createPokerStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,wallet:chipWallet,onEvent:()=>wake()});
  classic=createClassicGamesStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake()});
  function prune(){const cutoff=now()-RETENTION_MS;poker.expire(cutoff);games.prune(cutoff);db.prepare('DELETE FROM messages WHERE received_at <= ?').run(cutoff);db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
@@ -61,7 +61,7 @@ function createRelay({secret,dir,invites=[],now=Date.now,quotaBytes=Infinity}) {
  function events(after,chat,user,gameAfter=0,features='') {
   const rows=db.prepare('SELECT seq, id, frame, user_id, received_at,mutation_target,mutation_kind,target_seq FROM messages WHERE seq > ? AND received_at > ? AND chat_id=? ORDER BY seq LIMIT 100').all(Math.max(after,member(chat,user)?.after_seq||0),now()-RETENTION_MS,chat);
   let size=0;const packets=[]; for(const row of rows){if(row.mutation_target&&row.target_seq<=member(chat,user).after_seq)continue;size+=row.frame.length;if(size>MAX_BODY&&packets.length)break;packets.push(row);}
-  const conversations=chats(user),gameData=games.list(user,gameAfter,features==='learning-games-v1'?['connect4','poker','checkers','eights','signal','words','algebra']:['connect4','poker','checkers','eights']);return {epoch,cursor:packets.length?packets.at(-1).seq:after,packets,online:online(),people:people(),chats:conversations,activity:Math.max(0,...conversations.map(c=>c.latest?.seq||0)),games:gameData.games,gameEvents:gameData.events,gameCursor:gameData.cursor};
+  const conversations=chats(user),gameData=games.list(user,gameAfter,features==='fleet-duel-v1'?['connect4','poker','checkers','eights','signal','words','algebra','fleet']:features==='learning-games-v1'?['connect4','poker','checkers','eights','signal','words','algebra']:['connect4','poker','checkers','eights']);return {epoch,cursor:packets.length?packets.at(-1).seq:after,packets,online:online(),people:people(),chats:conversations,activity:Math.max(0,...conversations.map(c=>c.latest?.seq||0)),games:gameData.games,gameEvents:gameData.events,gameCursor:gameData.cursor};
  }
  const wake=()=>{for(const job of [...waiting])job();};
  share=new ShareSignaling({now,onEvent:wake});
