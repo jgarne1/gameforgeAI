@@ -88,7 +88,7 @@ function createClassicGamesStore(db, { now = Date.now, canAccessChat, isOnline, 
     if (kind === 'signal' || kind === 'words') return familyView(kind,state,userId,ids);
     if (kind === 'checkers') return { ...state, legal: state.turn === userId ? options(state.board, ids, userId, state.forcedFrom) : [] };
     if (kind !== 'eights') return state;
-    const { hands, deck, ...publicState } = state;
+    const { hands = {}, deck = [], ...publicState } = state;
     return { ...publicState, hand: hands[userId] || [], counts: Object.fromEntries(Object.entries(hands).map(([id, cards]) => [id, cards.length])), deckCount: deck.length };
   }
   return { create, add, accept, start, act, close, endForChat, view };
