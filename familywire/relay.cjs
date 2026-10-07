@@ -7,17 +7,18 @@ const {createPokerStore}=require('./poker.cjs');
 const {createClassicGamesStore}=require('./classic-games.cjs');
 const UUID=/^[a-f0-9-]{36}$/i, MAX_BODY=8*1024*1024, MAX_FILE=25*1024*1024+28;
 const RETENTION_MS=48*60*60*1000;
-function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaBytes=Infinity}) {
+function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaBytes=Infinity,browserEnabled=false,browserFixtureOrigin=null}) {
  if(!secret || secret.length<16) throw new Error('ROOM_SECRET must contain at least 16 characters');
  fs.mkdirSync(path.join(dir,'files'),{recursive:true});
  const storageSize=()=>{let total=0;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const location=path.join(dir,entry.name);if(entry.isFile())total+=fs.statSync(location).size;else if(entry.isDirectory()&&entry.name==='files')for(const file of fs.readdirSync(location))total+=fs.statSync(path.join(location,file)).size;}return total;};
  const capacity=extra=>{if(storageSize()+extra>quotaBytes){const e=new Error('Storage full');e.status=507;throw e;}};
  const hash=code=>crypto.createHash('sha256').update('FamilyWire-access:'+code).digest('hex');
  const members=new Map((invites.length?invites:[secret]).map(code=>{const token=hash(code),h=token.slice(0,32);return [token,`${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`];}));
+ const existingDatabase=fs.existsSync(path.join(dir,'messages.sqlite'));
  const db=new DatabaseSync(path.join(dir,'messages.sqlite'));
- require('./migration-backup.cjs').backupBeforeLearning(db,dir);
+ require('./migration-backup.cjs').backupBeforeLearning(db,dir,{now});
  const chipWallet=createChipWallet(db);
- db.exec('PRAGMA journal_mode=WAL; PRAGMA secure_delete=ON; CREATE TABLE IF NOT EXISTS messages (seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT UNIQUE NOT NULL, frame TEXT NOT NULL, user_id TEXT, received_at INTEGER NOT NULL DEFAULT 0); CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY,value TEXT);');
+ db.exec('PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA secure_delete=ON; CREATE TABLE IF NOT EXISTS messages (seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT UNIQUE NOT NULL, frame TEXT NOT NULL, user_id TEXT, received_at INTEGER NOT NULL DEFAULT 0); CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY,value TEXT);');
  if(!db.prepare('PRAGMA table_info(messages)').all().some(c=>c.name==='user_id'))db.exec('ALTER TABLE messages ADD COLUMN user_id TEXT');
  if(!db.prepare('PRAGMA table_info(messages)').all().some(c=>c.name==='received_at'))db.exec('ALTER TABLE messages ADD COLUMN received_at INTEGER NOT NULL DEFAULT 0');
  db.prepare("INSERT OR IGNORE INTO metadata VALUES ('epoch', ?)").run(crypto.randomUUID());
@@ -36,8 +37,8 @@ function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaByt
   db.exec("INSERT OR IGNORE INTO chat_reads(chat_id,user_id,last_seq) SELECT 'family',p.user_id,COALESCE((SELECT MAX(seq) FROM messages WHERE chat_id='family' AND mutation_target IS NULL),0) FROM people p; INSERT OR IGNORE INTO chat_reads(chat_id,user_id,last_seq) SELECT cm.chat_id,cm.user_id,COALESCE((SELECT MAX(seq) FROM messages WHERE chat_id=cm.chat_id AND mutation_target IS NULL),0) FROM chat_members cm; INSERT INTO metadata(key,value) VALUES ('chat_reads_initialized','1')");
  }
  for(const [token,user] of members){db.prepare('INSERT OR IGNORE INTO invite_claims(token,user_id) VALUES (?,?)').run(token,user);members.set(token,db.prepare('SELECT user_id FROM invite_claims WHERE token=?').get(token).user_id);}
- require('./members-backup.cjs').backupBeforeMembers(db,dir);
- const invitations=require('./invitations.cjs').createInvitations(db,{secret,codes:invites.length?invites:[secret],ownerUserId,now,onDeleteMember:(id,actor)=>{poker.endForMember(id,actor);share.endUser(id);},onChange:()=>{refreshInvites();wake();}});
+ require('./members-backup.cjs').backupBeforeMembers(db,dir,{now});
+ const invitations=require('./invitations.cjs').createInvitations(db,{secret,codes:invites.length?invites:[secret],ownerUserId,now,onDeleteMember:(id,actor)=>{whiteboards.revokeMember(id);poker.endForMember(id,actor);share.endUser(id);},onChange:()=>{refreshInvites();wake();}});
  const allowedIds=new Set();
  function refreshInvites(){members.clear();allowedIds.clear();for(const [token,id] of invitations.allowed()){members.set(token,id);allowedIds.add(id);}}
  refreshInvites();
@@ -50,22 +51,25 @@ function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaByt
  const chats=user=>db.prepare('SELECT * FROM chats ORDER BY rowid').all().filter(c=>member(c.id,user)).map(c=>{const after=member(c.id,user).after_seq,readSeq=db.prepare('SELECT last_seq FROM chat_reads WHERE chat_id=? AND user_id=?').get(c.id,user)?.last_seq||0;return {...c,canManage:c.id!=='family'&&(c.owner_id===user||!!member(c.id,user).moderator),moderators:db.prepare('SELECT user_id FROM chat_members WHERE chat_id=? AND moderator=1').all(c.id).map(p=>p.user_id),latest:db.prepare('SELECT seq,user_id,received_at FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL ORDER BY seq DESC LIMIT 1').get(c.id,after,now()-RETENTION_MS)||null,unread:db.prepare('SELECT COUNT(*) AS n FROM messages WHERE chat_id=? AND seq>? AND received_at>? AND mutation_target IS NULL AND deleted=0 AND user_id!=?').get(c.id,Math.max(after,readSeq),now()-RETENTION_MS,user).n,members:c.id==='family'?people().map(p=>p.userId):db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(c.id).map(p=>p.user_id).filter(id=>allowedIds.has(id))};});
  const learning=require('./learning.cjs').createLearningStore(db,{now});let poker,classic;
  const gameAccess=(chat,user)=>allowedIds.has(user)&&!!member(chat,user);
+ const browser=browserEnabled?new(require('./browser-rooms.cjs').BrowserRooms)({now,access:gameAccess,active:chat=>{const c=db.prepare('SELECT ended_at FROM chats WHERE id=?').get(chat);return !!c&&!c.ended_at;},profile:user=>invitations.account(user)?.name||db.prepare('SELECT name FROM people WHERE user_id=?').get(user)?.name||'Participant',fixtureOrigin:browserFixtureOrigin}):null;
  const gameOnline=user=>online().some(person=>person.userId===user);
  const games=createConnectFourStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake(),pokerView:(state,user,kind,ids)=>['eights','checkers','signal','words','algebra','fleet'].includes(kind)?classic.view(kind,state,user,ids):poker.view(state,user)});
  poker=createPokerStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,wallet:chipWallet,onEvent:()=>wake()});
  classic=createClassicGamesStore(db,{now,canAccessChat:gameAccess,isOnline:gameOnline,onEvent:()=>wake()});
- function prune(){const cutoff=now()-RETENTION_MS;poker.expire(cutoff);games.prune(cutoff);db.prepare('DELETE FROM messages WHERE received_at <= ?').run(cutoff);db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
+ require('./whiteboard-backup.cjs').backupBeforeWhiteboard(db,dir,existingDatabase,{now});
+ const whiteboards=require('./whiteboard.cjs').createWhiteboardStore(db,{now,capacity,filesDir:path.join(dir,'files'),canAccess:gameAccess,chatEnded:chat=>!!db.prepare('SELECT ended_at FROM chats WHERE id=?').get(chat)?.ended_at,admission:(chat,user)=>member(chat,user)?.after_seq,chatMembers:chat=>chat==='family'?people().map(person=>person.userId):db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(chat).map(row=>row.user_id)});
+ function prune(){require('./recovery-copies.cjs').cleanupRecoveryCopies(dir,{now});const cutoff=now()-RETENTION_MS;whiteboards.prune();poker.expire(cutoff);games.prune(cutoff);db.prepare('DELETE FROM messages WHERE received_at <= ?').run(cutoff);db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
   db.prepare('DELETE FROM fw_game_events WHERE created_at <= ?').run(cutoff);
   for(const c of db.prepare('SELECT id FROM chats WHERE ended_at <= ?').all(cutoff)){for(const f of db.prepare('SELECT id FROM file_chats WHERE chat_id=?').all(c.id))fs.rmSync(path.join(dir,'files',f.id),{force:true});db.prepare('DELETE FROM file_chats WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM messages WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_members WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chat_reads WHERE chat_id=?').run(c.id);db.prepare('DELETE FROM chats WHERE id=?').run(c.id);}
   for(const name of fs.readdirSync(path.join(dir,'files'))){const file=path.join(dir,'files',name);if(fs.statSync(file).mtimeMs<=cutoff)fs.unlinkSync(file);}
   for(const [id,p] of peers)if(now()-p.last>=65000)peers.delete(id);
-  share?.prune();
+  share?.prune();browser?.prune();
  }
  let share;prune();const cleanup=setInterval(prune,15*60*1000);cleanup.unref();
  function events(after,chat,user,gameAfter=0,features='') {
   const rows=db.prepare('SELECT seq, id, frame, user_id, received_at,mutation_target,mutation_kind,target_seq FROM messages WHERE seq > ? AND received_at > ? AND chat_id=? ORDER BY seq LIMIT 100').all(Math.max(after,member(chat,user)?.after_seq||0),now()-RETENTION_MS,chat);
   let size=0;const packets=[]; for(const row of rows){if(row.mutation_target&&row.target_seq<=member(chat,user).after_seq)continue;size+=row.frame.length;if(size>MAX_BODY&&packets.length)break;packets.push(row);}
-  const conversations=chats(user),gameData=games.list(user,gameAfter,features==='fleet-duel-v1'?['connect4','poker','checkers','eights','signal','words','algebra','fleet']:features==='learning-games-v1'?['connect4','poker','checkers','eights','signal','words','algebra']:['connect4','poker','checkers','eights']);return {epoch,cursor:packets.length?packets.at(-1).seq:after,packets,online:online(),people:people(),name:invitations.account(user)?.name,admin:!!invitations.account(user)?.admin,owner:!!invitations.account(user)?.owner,chats:conversations,activity:Math.max(0,...conversations.map(c=>c.latest?.seq||0)),games:gameData.games,gameEvents:gameData.events,gameCursor:gameData.cursor};
+  const conversations=chats(user),gameData=games.list(user,gameAfter,features==='fleet-duel-v1'?['connect4','poker','checkers','eights','signal','words','algebra','fleet']:features==='learning-games-v1'?['connect4','poker','checkers','eights','signal','words','algebra']:['connect4','poker','checkers','eights']);return {epoch,cursor:packets.length?packets.at(-1).seq:after,packets,online:online(),people:people(),name:invitations.account(user)?.name,admin:!!invitations.account(user)?.admin,owner:!!invitations.account(user)?.owner,browserReady:!!browser,chats:conversations,activity:Math.max(0,...conversations.map(c=>c.latest?.seq||0)),games:gameData.games,gameEvents:gameData.events,gameCursor:gameData.cursor};
  }
  const wake=()=>{for(const job of [...waiting])job();};
  share=new ShareSignaling({now,onEvent:wake});
@@ -89,7 +93,22 @@ function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaByt
    name=invitations.name(userId,name);const prior=db.prepare('SELECT name FROM people WHERE user_id=?').get(userId);
    db.prepare('INSERT INTO people(user_id,name,last_seen) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET name=excluded.name,last_seen=excluded.last_seen').run(userId,name,now());
    peers.set(device,{name,last:now(),userId});
-   if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,name,admin:!!invitations.account(userId)?.admin,owner:!!invitations.account(userId)?.owner,roomSecret:secret,people:people(),chats:chats(userId)});}
+   if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,name,admin:!!invitations.account(userId)?.admin,owner:!!invitations.account(userId)?.owner,browserReady:!!browser,roomSecret:secret,people:people(),chats:chats(userId)});}
+   if(url.pathname.startsWith('/browser/')){
+    if(!browser)return finish(res,404,{error:'Shared browser unavailable'});
+    const route=url.pathname.match(/^\/browser\/([a-f0-9-]{36})\/(state|join|act|input|pending|accept|capture|leave|end|connection|signals|signal|document)$/i);
+    try{
+     if(req.method==='GET'&&url.pathname==='/browser/rooms')return finish(res,200,browser.list(url.searchParams.get('chatId')||'family',userId));
+     if(req.method==='POST'){
+      const body=JSON.parse((await authenticatedRead(8192)).toString()||'{}');if(!stillAuthenticated())return finish(res,403,{error:'Invitation revoked'});refreshInvites();
+      if(url.pathname==='/browser/start')return finish(res,200,browser.start(body.chatId,userId));
+      if(!route)return finish(res,404,{error:'Shared browser action unavailable'});const [,id,op]=route;
+      const result=op==='document'?browser.document(id,userId,body):op==='signal'?browser.signal(id,userId,body):op==='join'?browser.join(id,userId):op==='act'?browser.act(id,userId,body):op==='input'?browser.queue(id,userId,body):op==='accept'?browser.accept(id,userId,body.ticketId):op==='capture'?browser.capture(id,userId,body.tabId,body.metadata):op==='leave'?browser.leave(id,userId):op==='end'?browser.end(id,userId):null;if(!result)return finish(res,404,{error:'Shared browser action unavailable'});return finish(res,200,result);
+     }
+     if(req.method==='GET'&&route){const [,id,op]=route;if(op==='connection')return finish(res,200,{connection:browser.connection(id,userId)});if(op==='signals')return finish(res,200,browser.signals(id,userId,Number(url.searchParams.get('after')||0)));if(op==='state')return finish(res,200,browser.snapshot(id,userId));if(op==='pending')return finish(res,200,browser.pendingFor(id,userId));}
+     return finish(res,404,{error:'Shared browser action unavailable'});
+    }catch(e){return finish(res,e.status||409,{error:e.message});}
+   }
    if(req.method==='GET'&&url.pathname==='/admin/members')return finish(res,200,invitations.list(userId));
    if(req.method==='POST'&&(url.pathname.startsWith('/admin/')||url.pathname==='/profile/name')){
     const body=JSON.parse((await authenticatedRead(4096)).toString()||'{}');try{let result;
@@ -144,15 +163,36 @@ function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaByt
     const id=crypto.randomUUID(),title=typeof body.name==='string'?body.name.trim().slice(0,64):'Private chat';db.prepare('INSERT INTO chats(id,name,owner_id) VALUES (?,?,?)').run(id,title||'Private chat',userId);for(const person of ids)db.prepare('INSERT INTO chat_members(chat_id,user_id) VALUES (?,?)').run(id,person);wake();return finish(res,200,{id,chats:chats(userId)});
    }
    const action=url.pathname.match(/^\/chats\/([a-f0-9-]{36})\/(rename|add|remove|moderator|end)$/i);
-   if(req.method==='POST'&&action){const [,id,operation]=action,c=db.prepare('SELECT * FROM chats WHERE id=?').get(id);if(!c||!member(id,userId))return finish(res,403,{error:'Chat access denied'});if(c.ended_at)return finish(res,409,{error:'Chat has ended'});if(c.owner_id!==userId&&!member(id,userId).moderator)return finish(res,403,{error:'Chat owner or moderator required'});const body=JSON.parse((await authenticatedRead(8192)).toString());
+   if(req.method==='POST'&&action){const [,id,operation]=action;let c=db.prepare('SELECT * FROM chats WHERE id=?').get(id);if(!c||!member(id,userId))return finish(res,403,{error:'Chat access denied'});if(c.ended_at)return finish(res,409,{error:'Chat has ended'});if(c.owner_id!==userId&&!member(id,userId).moderator)return finish(res,403,{error:'Chat owner or moderator required'});const body=JSON.parse((await authenticatedRead(8192)).toString());
+    // Body uploads can yield while the owner ends the chat or revokes this role.
+    // Re-read current authority immediately before the synchronous mutations.
+    c=db.prepare('SELECT * FROM chats WHERE id=?').get(id);const liveMembership=member(id,userId);
+    if(!stillAuthenticated()||!c||!liveMembership)return finish(res,403,{error:'Chat access denied'});
+    if(c.ended_at)return finish(res,409,{error:'Chat has ended'});
+    if(c.owner_id!==userId&&!liveMembership.moderator)return finish(res,403,{error:'Chat owner or moderator required'});
     if(operation==='rename'){if(typeof body.name!=='string'||!body.name.trim()||body.name.length>64)return finish(res,400,{error:'Name must be 1–64 characters'});db.prepare('UPDATE chats SET name=?,custom_name=1 WHERE id=?').run(body.name.trim(),id);}
     if(operation==='add'){if(!allowedIds.has(body.userId)||typeof body.shareHistory!=='boolean')return finish(res,400,{error:'Invalid member or history choice'});const seq=body.shareHistory?0:db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM messages').get().seq;db.prepare('INSERT OR IGNORE INTO chat_members(chat_id,user_id,after_seq) VALUES (?,?,?)').run(id,body.userId,seq);}
     if(operation==='moderator'){if(c.owner_id!==userId)return finish(res,403,{error:'Only the chat owner can assign moderators'});if(body.userId===c.owner_id||!member(id,body.userId)||typeof body.enabled!=='boolean')return finish(res,400,{error:'Invalid moderator'});db.prepare('UPDATE chat_members SET moderator=? WHERE chat_id=? AND user_id=?').run(body.enabled?1:0,id,body.userId);}
-    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});poker.endForChat(id,userId);classic.endForChat(id,userId);db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);db.prepare('DELETE FROM chat_reads WHERE chat_id=? AND user_id=?').run(id,body.userId);share.endChat(id);games.endForChat(id,userId);}
+    if(operation==='remove'){const target=member(id,body.userId);if(!target||body.userId===c.owner_id||(target.moderator&&c.owner_id!==userId))return finish(res,403,{error:'The owner is protected; only the owner can remove a moderator'});poker.endForChat(id,userId);classic.endForChat(id,userId);db.prepare('DELETE FROM chat_members WHERE chat_id=? AND user_id=?').run(id,body.userId);whiteboards.revoke(id,body.userId);db.prepare('DELETE FROM chat_reads WHERE chat_id=? AND user_id=?').run(id,body.userId);share.endChat(id);games.endForChat(id,userId);}
     if(operation==='end'){poker.endForChat(id,userId);classic.endForChat(id,userId);db.prepare('UPDATE chats SET ended_at=? WHERE id=?').run(now(),id);share.endChat(id);games.endForChat(id,userId);}wake();return finish(res,200,{chats:chats(userId)});
    }
    const chat=req.headers['x-chat']||'family',membership=member(chat,userId),conversation=db.prepare('SELECT * FROM chats WHERE id=?').get(chat);
    if(!conversation||!membership)return finish(res,403,{error:'Chat access denied'});
+   if(url.pathname.startsWith('/boards/')){
+    try{
+     if(req.method==='POST'&&url.pathname==='/boards/open'){await authenticatedRead(128);return finish(res,200,whiteboards.open(chat,userId));}
+     const boardRoute=url.pathname.match(/^\/boards\/([a-f0-9-]{36})\/(operations|invite|leave|recover|assets\/([a-f0-9-]{36}))$/i);
+     if(!boardRoute)return finish(res,404,{error:'Whiteboard route not found'});const [,boardId,operation,assetId]=boardRoute;
+     if(operation==='operations'&&req.method==='GET')return finish(res,200,whiteboards.list(boardId,chat,userId,Number(url.searchParams.get('after')||0)));
+     if(operation==='operations'&&req.method==='POST'){const body=JSON.parse((await authenticatedRead(196608)).toString());return finish(res,200,whiteboards.append(boardId,chat,userId,body));}
+     if(operation==='recover'&&req.method==='POST'){const body=JSON.parse((await authenticatedRead(256)).toString());return finish(res,200,whiteboards.recover(boardId,chat,userId,body));}
+     if(operation==='invite'&&req.method==='POST'){const body=JSON.parse((await authenticatedRead(4096)).toString());return finish(res,200,whiteboards.invite(boardId,chat,userId,body.userIds));}
+     if(operation==='leave'&&req.method==='POST'){const body=JSON.parse((await authenticatedRead(256)).toString());return finish(res,200,whiteboards.leave(boardId,chat,userId,body.transferTo));}
+     if(assetId&&req.method==='PUT'){const bytes=await authenticatedRead(2*1024*1024+28);return finish(res,200,whiteboards.putAsset(boardId,chat,userId,assetId,bytes));}
+     if(assetId&&req.method==='GET'){const file=whiteboards.getAsset(boardId,chat,userId,assetId);res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Length':fs.statSync(file).size,'Cache-Control':'no-store'});fs.createReadStream(file).pipe(res);return;}
+     return finish(res,405,{error:'Unsupported whiteboard action'});
+    }catch(error){return finish(res,error.status||400,{error:error.status?error.message:'Invalid whiteboard request'});}
+   }
    if(req.method==='POST'&&url.pathname==='/share/start'){
     const participants=chat==='family'?[]:db.prepare('SELECT user_id FROM chat_members WHERE chat_id=?').all(chat).map(row=>row.user_id);
     if(conversation.ended_at||participants.length!==2||!participants.includes(userId))return finish(res,403,{error:'Open an active private chat to share your screen'});
@@ -205,7 +245,7 @@ function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaByt
    finish(res,404,{error:'Not found'});
   } catch(e) {finish(res,e.status||500,{error:e.status===413?'Maximum size exceeded':e.status===507?'FamilyWire storage is full; try again after older content expires':'Request failed'});}
  });
- server.pruneNow=prune;server.requestTimeout=120000; server.on('close',()=>{clearInterval(cleanup);for(const job of waiting)job();share.close();db.close();});
+ server.pruneNow=prune;server.requestTimeout=120000; server.on('close',()=>{clearInterval(cleanup);for(const job of waiting)job();share.close();browser?.close();db.close();});
  return server;
 }
 if(require.main===module&&process.env.BACKEND_URL){require('./proxy.cjs').createProxy(process.env.BACKEND_URL).listen(Number(process.env.PORT||45831),'0.0.0.0');}

@@ -29,7 +29,7 @@ function playEights(state, ids, userId, action, card, chosenSuit) {
     if (typeof card !== 'string' || !hand.includes(card)) throw new Error('Choose a card in your hand');
     const top = state.pile.at(-1);
     if (card[0] !== '8' && card[0] !== top[0] && card[1] !== state.suit) throw new Error('Match the rank or suit, or play an eight');
-    if (card[0] === '8' && !suits.includes(chosenSuit)) throw new Error('Choose a suit for the eight');
+    if (card[0] === '8' && (typeof chosenSuit !== 'string' || chosenSuit.length !== 1 || !suits.includes(chosenSuit))) throw new Error('Choose a suit for the eight');
     next.hands[userId].splice(next.hands[userId].indexOf(card), 1);
     next.pile.push(card); next.suit = card[0] === '8' ? chosenSuit : card[1];
     next.passes = 0;
