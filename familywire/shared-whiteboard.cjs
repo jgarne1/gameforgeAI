@@ -2,7 +2,7 @@
 const crypto=require('node:crypto'),zlib=require('node:zlib');
 const WIDTH=1600,HEIGHT=1000,TTL=48*60*60*1000;
 const LIMITS=Object.freeze({objects:300,points:512,operations:2000,frame:96*1024,imageBytes:2*1024*1024,imageSide:2048,assets:12,images:4});
-const COLORS=['#243746','#d64545','#2367b3','#218354','#8b50a5','#b36b13'];
+const COLORS=['#243746','#d64545','#2367b3','#218354','#8b50a5','#b36b13','#000000','#ffffff','#008b8b','#e35e9a','#e6ba19','#808080'];
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const demand=(ok,message)=>{if(!ok)throw Error(message);};
 function plain(value,keys){demand(value&&typeof value==='object'&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype,'Invalid whiteboard object');demand(Object.keys(value).every(key=>keys.includes(key)),'Unknown whiteboard field');}

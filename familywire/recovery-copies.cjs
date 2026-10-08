@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const NAMES=Object.freeze(['messages-before-1.1.0.sqlite','messages-before-1.3.0.sqlite','messages-before-whiteboard-v1.sqlite']);
+const NAMES=Object.freeze(['messages-before-1.1.0.sqlite','messages-before-1.3.0.sqlite','messages-before-whiteboard-v1.sqlite','messages-before-collaboration-v1.sqlite','messages-before-collaboration-admission-v1.sqlite','messages-before-collaboration-admission-v2.sqlite','messages-before-whiteboard-palette-v2.sqlite']);
 const OWNER='FamilyWire-managed-recovery-v1',DEFAULT_HOURS=48;
 function retentionHours(value=process.env.FAMILYWIRE_RECOVERY_RETENTION_HOURS||DEFAULT_HOURS){const hours=Number(value);if(!Number.isInteger(hours)||hours<1||hours>168)throw Error('Recovery retention must be 1-168 whole hours');return hours;}
 function folderFor(dir,{create=false}={}){const root=fs.realpathSync(dir),folder=path.join(root,'backups');if(create)fs.mkdirSync(folder,{recursive:true});if(!fs.existsSync(folder))return null;if(fs.lstatSync(folder).isSymbolicLink()||fs.realpathSync(folder)!==folder)throw Error('Recovery folder must stay inside the relay data directory');return folder;}
