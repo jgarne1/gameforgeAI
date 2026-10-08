@@ -14,7 +14,7 @@ function createRecoveryCopy(db,dir,name,{now=Date.now,hours=retentionHours(),lab
  const bytes=fs.statSync(pending).size,createdAt=now();if(!Number.isSafeInteger(createdAt)||createdAt<0)throw Error('Invalid recovery creation time');
  const metadata={schema:1,createdBy:OWNER,file:name,createdAt,expiresAt:createdAt+hours*3600000,hours,bytes,sha256:digest(pending)};
  // Seal ownership/hash before atomic no-overwrite installation. A sealed pending copy
- // has the same bounded lifecycle; an unmarked interrupted copy requires inspection.
+ // is preserved after recorded expiry; an unmarked interrupted copy requires inspection.
  fs.writeFileSync(marker,JSON.stringify(metadata)+'\n',{flag:'wx',mode:0o600});
  fs.linkSync(pending,target);fs.unlinkSync(pending);return target;
 }
@@ -27,7 +27,8 @@ function cleanupRecoveryCopies(dir,{now=Date.now}={}){
   if(clock<metadata.expiresAt){results.push({file:name,status:'retained',expiresAt:metadata.expiresAt});continue;}
   const candidates=[target,target+'.pending'].filter(file=>fs.existsSync(file));
   if(candidates.some(file=>{const stat=fs.lstatSync(file);return!stat.isFile()||stat.isSymbolicLink()||stat.size!==metadata.bytes||digest(file)!==metadata.sha256;})){results.push({file:name,status:'changed-copy-preserved'});continue;}
-  try{for(const file of candidates)fs.unlinkSync(file);fs.unlinkSync(marker);results.push({file:name,status:'expired-managed-copy-removed'});}catch{results.push({file:name,status:'cleanup-retry-needed'});}
+  // Expiry is a review status. Automatic startup/timer checks never destroy a recovery copy.
+  results.push({file:name,status:'expired-managed-copy-preserved',expiresAt:metadata.expiresAt});
  }
  return results;
 }
