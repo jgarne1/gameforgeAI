@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const NAMES=Object.freeze(['messages-before-1.1.0.sqlite','messages-before-1.3.0.sqlite','messages-before-whiteboard-v1.sqlite']);
+const NAMES=Object.freeze(['messages-before-1.1.0.sqlite','messages-before-1.3.0.sqlite','messages-before-whiteboard-v1.sqlite','messages-before-collaboration-v1.sqlite','messages-before-collaboration-admission-v1.sqlite','messages-before-collaboration-admission-v2.sqlite','messages-before-whiteboard-palette-v2.sqlite']);
 const OWNER='FamilyWire-managed-recovery-v1',DEFAULT_HOURS=48;
 function retentionHours(value=process.env.FAMILYWIRE_RECOVERY_RETENTION_HOURS||DEFAULT_HOURS){const hours=Number(value);if(!Number.isInteger(hours)||hours<1||hours>168)throw Error('Recovery retention must be 1-168 whole hours');return hours;}
 function folderFor(dir,{create=false}={}){const root=fs.realpathSync(dir),folder=path.join(root,'backups');if(create)fs.mkdirSync(folder,{recursive:true});if(!fs.existsSync(folder))return null;if(fs.lstatSync(folder).isSymbolicLink()||fs.realpathSync(folder)!==folder)throw Error('Recovery folder must stay inside the relay data directory');return folder;}
@@ -14,7 +14,7 @@ function createRecoveryCopy(db,dir,name,{now=Date.now,hours=retentionHours(),lab
  const bytes=fs.statSync(pending).size,createdAt=now();if(!Number.isSafeInteger(createdAt)||createdAt<0)throw Error('Invalid recovery creation time');
  const metadata={schema:1,createdBy:OWNER,file:name,createdAt,expiresAt:createdAt+hours*3600000,hours,bytes,sha256:digest(pending)};
  // Seal ownership/hash before atomic no-overwrite installation. A sealed pending copy
- // has the same bounded lifecycle; an unmarked interrupted copy requires inspection.
+ // is preserved after recorded expiry; an unmarked interrupted copy requires inspection.
  fs.writeFileSync(marker,JSON.stringify(metadata)+'\n',{flag:'wx',mode:0o600});
  fs.linkSync(pending,target);fs.unlinkSync(pending);return target;
 }
@@ -27,7 +27,8 @@ function cleanupRecoveryCopies(dir,{now=Date.now}={}){
   if(clock<metadata.expiresAt){results.push({file:name,status:'retained',expiresAt:metadata.expiresAt});continue;}
   const candidates=[target,target+'.pending'].filter(file=>fs.existsSync(file));
   if(candidates.some(file=>{const stat=fs.lstatSync(file);return!stat.isFile()||stat.isSymbolicLink()||stat.size!==metadata.bytes||digest(file)!==metadata.sha256;})){results.push({file:name,status:'changed-copy-preserved'});continue;}
-  try{for(const file of candidates)fs.unlinkSync(file);fs.unlinkSync(marker);results.push({file:name,status:'expired-managed-copy-removed'});}catch{results.push({file:name,status:'cleanup-retry-needed'});}
+  // Expiry is a review status. Automatic startup/timer checks never destroy a recovery copy.
+  results.push({file:name,status:'expired-managed-copy-preserved',expiresAt:metadata.expiresAt});
  }
  return results;
 }
