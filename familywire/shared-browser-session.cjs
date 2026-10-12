@@ -18,10 +18,10 @@ function browserURL(raw,{fixtureOrigin=null}={}){
  return url.href;
 }
 class BrowserSession {
- constructor({chatId,creator,now=Date.now,fixtureOrigin=null}){
+ constructor({chatId,creator,now=Date.now,fixtureOrigin=null,hostInputVersion=0}){
   if(typeof chatId!=='string'||!chatId)throw Error('Active chat required');
   this.id=crypto.randomUUID();this.chatId=chatId;this.hostId=creator.userId;this.ownerId=creator.userId;this.now=now;this.fixtureOrigin=fixtureOrigin;
-  this.epoch=1;this.sequence=0;this.closed=false;this.events=[];this.tabs=new Map();this.captures=new Map();this.members=new Map();this.requests=new Set();this.rate=new Map();this.issuedInputs=new WeakSet();
+  this.inputVersion=hostInputVersion===1?1:0;this.epoch=1;this.sequence=0;this.closed=false;this.events=[];this.tabs=new Map();this.captures=new Map();this.members=new Map();this.requests=new Set();this.rate=new Map();this.issuedInputs=new WeakSet();
   this.join(creator);this.members.get(creator.userId).approved=true;
  }
  member(actor){if(this.closed)throw Error('Browser session ended');const member=this.members.get(actor);if(!member)throw Error('Browser access denied');return member;}
@@ -81,9 +81,9 @@ class BrowserSession {
  }
  input(actor,{epoch,tabId,tabEpoch,event}){
   const {member,tab}=this.authorizeInput(actor,{epoch,tabId,tabEpoch});
-  if(!event||!['mouseDown','mouseUp','mouseMove','mouseWheel','keyDown','keyUp','char'].includes(event.type))throw Error('Invalid browser input');
+  if(!event||!['mouseDown','mouseUp','mouseMove','mouseWheel','mouseClick','keyDown','keyUp','char'].includes(event.type))throw Error('Invalid browser input');
   const clean={type:event.type};
-  if(event.type.startsWith('mouse')){for(const key of ['x','y']){if(typeof event[key]!=='number'||!Number.isFinite(event[key])||event[key]<0||event[key]>1)throw Error('Invalid browser coordinates');clean[key]=event[key];}if(event.type==='mouseDown'||event.type==='mouseUp'){if(!['left','middle','right'].includes(event.button))throw Error('Invalid browser button');clean.button=event.button;}if(event.type==='mouseWheel'){for(const key of ['deltaX','deltaY']){if(!Number.isFinite(event[key])||Math.abs(event[key])>5000)throw Error('Invalid browser scroll');clean[key]=event[key];}}}
+  if(event.type.startsWith('mouse')){for(const key of ['x','y']){if(typeof event[key]!=='number'||!Number.isFinite(event[key])||event[key]<0||event[key]>1)throw Error('Invalid browser coordinates');clean[key]=event[key];}if(event.type==='mouseDown'||event.type==='mouseUp'||event.type==='mouseClick'){if(!['left','middle','right'].includes(event.button))throw Error('Invalid browser button');clean.button=event.button;}if(event.type==='mouseWheel'){for(const key of ['deltaX','deltaY']){if(!Number.isFinite(event[key])||Math.abs(event[key])>5000)throw Error('Invalid browser scroll');clean[key]=event[key];}}}
   else{if(typeof event.keyCode!=='string'||event.keyCode.length<1||event.keyCode.length>32||/[\x00-\x1f]/.test(event.keyCode))throw Error('Invalid browser key');if(event.modifiers!==undefined&&(!Array.isArray(event.modifiers)||event.modifiers.length>1||event.modifiers.some(value=>value!=='shift')))throw Error('Clipboard and desktop shortcuts are unavailable');clean.keyCode=event.keyCode;clean.modifiers=Object.freeze([...(event.modifiers||[])]);}
   this.inputBudget(actor);
   const ticket=Object.freeze({actor,epoch:this.epoch,tabId,tabEpoch:tab.epoch,event:Object.freeze(clean),sequence:++this.sequence});this.issuedInputs.add(ticket);return ticket;
@@ -93,6 +93,6 @@ class BrowserSession {
  }
  remove(actor){if(actor===this.hostId){this.end('Browser host left');return;}if(!this.members.has(actor))return;this.members.delete(actor);this.requests.delete(actor);this.rate.delete(actor);for(const tab of this.tabs.values()){tab.grants.delete(actor);if(tab.ownerId===actor){tab.ownerId=this.ownerId===actor?this.hostId:this.ownerId;tab.epoch++;}}if(this.ownerId===actor)this.ownerId=this.hostId;for(const m of this.members.values())if(m.view.follow===actor)m.view={mode:'live',tabId:null,follow:null};this.changed('participant-left',{userId:actor,releaseInputs:true});}
  end(reason){if(this.closed)return;this.closed=true;this.epoch++;this.emit('ended',{reason,releaseInputs:true});this.tabs.clear();this.captures.clear();this.requests.clear();this.rate.clear();}
- snapshot(actor){const m=this.member(actor);return{id:this.id,chatId:this.chatId,hostId:this.hostId,ownerId:this.ownerId,epoch:this.epoch,sequence:this.sequence,limits:LIMITS,self:{approved:m.approved,paused:m.paused,view:JSON.parse(JSON.stringify(m.view)),views:JSON.parse(JSON.stringify(m.views))},participants:[...this.members.values()].map(({seen,cursor,...value})=>({...value,view:JSON.parse(JSON.stringify(value.view)),views:JSON.parse(JSON.stringify(value.views))})),requests:[...this.requests],tabs:[...this.tabs.values()].map(({grants,...tab})=>({...tab,grants:[...grants],capture:tab.capture?{...tab.capture}:null}))};}
+ snapshot(actor){const m=this.member(actor);return{id:this.id,chatId:this.chatId,inputVersion:this.inputVersion,hostId:this.hostId,ownerId:this.ownerId,epoch:this.epoch,sequence:this.sequence,limits:LIMITS,self:{approved:m.approved,paused:m.paused,view:JSON.parse(JSON.stringify(m.view)),views:JSON.parse(JSON.stringify(m.views))},participants:[...this.members.values()].map(({seen,cursor,...value})=>({...value,view:JSON.parse(JSON.stringify(value.view)),views:JSON.parse(JSON.stringify(value.views))})),requests:[...this.requests],tabs:[...this.tabs.values()].map(({grants,...tab})=>({...tab,grants:[...grants],capture:tab.capture?{...tab.capture}:null}))};}
 }
 module.exports={BrowserSession,LIMITS,identity,browserURL};
