@@ -125,19 +125,20 @@ function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaByt
    peers.set(device,{name,last:now(),userId});
    if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,name,admin:!!invitations.account(userId)?.admin,owner:!!invitations.account(userId)?.owner,browserReady:!!browser,collaborationVersion:1,taskAccessVersion:collaboration.accessVersion(),ownAway:collaboration.away(userId),roomSecret:secret,people:people(),chats:chats(userId)});}
    if(url.pathname.startsWith('/browser/')){
-    if(!browser)return finish(res,404,{error:'Shared browser unavailable'});
-    const route=url.pathname.match(/^\/browser\/([a-f0-9-]{36})\/(state|join|act|input|pending|accept|capture|leave|end|connection|signals|signal|document|live-frame)$/i);
+    const reply=(status,value)=>finish(res,status,{...value,serverNow:now()});
+    if(!browser)return reply(404,{error:'Shared browser unavailable'});
+    const route=url.pathname.match(/^\/browser\/([a-f0-9-]{36})\/(state|join|act|input|pending|accept|capture|leave|end|connection|signals|signal|document|live-frame|live-stop)$/i);
     try{
-     if(req.method==='GET'&&url.pathname==='/browser/rooms')return finish(res,200,browser.list(url.searchParams.get('chatId')||'family',userId));
+     if(req.method==='GET'&&url.pathname==='/browser/rooms')return reply(200,browser.list(url.searchParams.get('chatId')||'family',userId));
      if(req.method==='POST'){
-      const body=JSON.parse((await authenticatedRead(route?.[2]==='live-frame'?3*1024*1024+8192:8192)).toString()||'{}');if(!stillAuthenticated())return finish(res,403,{error:'Invitation revoked'});refreshInvites();
-      if(url.pathname==='/browser/start')return finish(res,200,browser.start(body.chatId,userId,body.hostInputVersion));
-      if(!route)return finish(res,404,{error:'Shared browser action unavailable'});const [,id,op]=route;
-      const result=op==='live-frame'?browser.livePublish(id,userId,body):op==='document'?browser.document(id,userId,body):op==='signal'?browser.signal(id,userId,body):op==='join'?browser.join(id,userId):op==='act'?browser.act(id,userId,body):op==='input'?browser.queue(id,userId,body):op==='accept'?browser.accept(id,userId,body.ticketId):op==='capture'?browser.capture(id,userId,body.tabId,body.metadata):op==='leave'?browser.leave(id,userId):op==='end'?browser.end(id,userId):null;if(!result)return finish(res,404,{error:'Shared browser action unavailable'});return finish(res,200,result);
+      const body=JSON.parse((await authenticatedRead(route?.[2]==='live-frame'?3*1024*1024+8192:8192)).toString()||'{}');if(!stillAuthenticated())return reply(403,{error:'Invitation revoked'});refreshInvites();
+      if(url.pathname==='/browser/start')return reply(200,browser.start(body.chatId,userId,body.hostInputVersion,body.hostLiveVersion));
+      if(!route)return reply(404,{error:'Shared browser action unavailable'});const [,id,op]=route;
+      const result=op==='live-stop'?browser.liveStop(id,userId):op==='live-frame'?browser.livePublish(id,userId,body):op==='document'?browser.document(id,userId,body):op==='signal'?browser.signal(id,userId,body):op==='join'?browser.join(id,userId,body.hostLiveVersion):op==='act'?browser.act(id,userId,body):op==='input'?browser.queue(id,userId,body):op==='accept'?browser.accept(id,userId,body.ticketId,body.noticeEnvelope):op==='capture'?browser.capture(id,userId,body.tabId,body.metadata):op==='leave'?browser.leave(id,userId):op==='end'?browser.end(id,userId):null;if(!result)return reply(404,{error:'Shared browser action unavailable'});return reply(200,result);
      }
-     if(req.method==='GET'&&route){const [,id,op]=route;if(op==='live-frame')return finish(res,200,browser.liveGet(id,userId,url.searchParams.get('tabId')));if(op==='connection')return finish(res,200,{connection:browser.connection(id,userId)});if(op==='signals')return finish(res,200,browser.signals(id,userId,Number(url.searchParams.get('after')||0)));if(op==='state')return finish(res,200,browser.snapshot(id,userId));if(op==='pending')return finish(res,200,browser.pendingFor(id,userId));}
-     return finish(res,404,{error:'Shared browser action unavailable'});
-    }catch(e){return finish(res,e.status||409,{error:e.message});}
+     if(req.method==='GET'&&route){const [,id,op]=route;if(op==='live-frame'){const tabId=url.searchParams.get('tabId');if(url.searchParams.has('afterSequence'))await browser.liveWait(id,userId,tabId,Number(url.searchParams.get('afterSequence')));if(!stillAuthenticated())return reply(403,{error:'Invitation revoked'});refreshInvites();return reply(200,browser.liveGet(id,userId,tabId));}if(op==='connection')return reply(200,{connection:browser.connection(id,userId)});if(op==='signals')return reply(200,browser.signals(id,userId,Number(url.searchParams.get('after')||0)));if(op==='state')return reply(200,browser.snapshot(id,userId));if(op==='pending'){if(url.searchParams.get('wait')==='1')await browser.pendingWait(id,userId);if(!stillAuthenticated())return reply(403,{error:'Invitation revoked'});refreshInvites();return reply(200,browser.pendingFor(id,userId));}}
+     return reply(404,{error:'Shared browser action unavailable'});
+    }catch(e){return reply(e.status||409,{error:e.message});}
    }
    if(req.method==='GET'&&url.pathname==='/admin/members')return finish(res,200,invitations.list(userId));
    if(req.method==='POST'&&(url.pathname.startsWith('/admin/')||url.pathname==='/profile/name')){
