@@ -126,16 +126,16 @@ function createRelay({secret,dir,invites=[],ownerUserId='',now=Date.now,quotaByt
    if(req.method==='GET'&&url.pathname==='/join'){peers.set(device,{name,last:now(),userId});wake();return finish(res,200,{protocol:2,userId,name,admin:!!invitations.account(userId)?.admin,owner:!!invitations.account(userId)?.owner,browserReady:!!browser,collaborationVersion:1,taskAccessVersion:collaboration.accessVersion(),ownAway:collaboration.away(userId),roomSecret:secret,people:people(),chats:chats(userId)});}
    if(url.pathname.startsWith('/browser/')){
     if(!browser)return finish(res,404,{error:'Shared browser unavailable'});
-    const route=url.pathname.match(/^\/browser\/([a-f0-9-]{36})\/(state|join|act|input|pending|accept|capture|leave|end|connection|signals|signal|document)$/i);
+    const route=url.pathname.match(/^\/browser\/([a-f0-9-]{36})\/(state|join|act|input|pending|accept|capture|leave|end|connection|signals|signal|document|live-frame)$/i);
     try{
      if(req.method==='GET'&&url.pathname==='/browser/rooms')return finish(res,200,browser.list(url.searchParams.get('chatId')||'family',userId));
      if(req.method==='POST'){
-      const body=JSON.parse((await authenticatedRead(8192)).toString()||'{}');if(!stillAuthenticated())return finish(res,403,{error:'Invitation revoked'});refreshInvites();
+      const body=JSON.parse((await authenticatedRead(route?.[2]==='live-frame'?3*1024*1024+8192:8192)).toString()||'{}');if(!stillAuthenticated())return finish(res,403,{error:'Invitation revoked'});refreshInvites();
       if(url.pathname==='/browser/start')return finish(res,200,browser.start(body.chatId,userId,body.hostInputVersion));
       if(!route)return finish(res,404,{error:'Shared browser action unavailable'});const [,id,op]=route;
-      const result=op==='document'?browser.document(id,userId,body):op==='signal'?browser.signal(id,userId,body):op==='join'?browser.join(id,userId):op==='act'?browser.act(id,userId,body):op==='input'?browser.queue(id,userId,body):op==='accept'?browser.accept(id,userId,body.ticketId):op==='capture'?browser.capture(id,userId,body.tabId,body.metadata):op==='leave'?browser.leave(id,userId):op==='end'?browser.end(id,userId):null;if(!result)return finish(res,404,{error:'Shared browser action unavailable'});return finish(res,200,result);
+      const result=op==='live-frame'?browser.livePublish(id,userId,body):op==='document'?browser.document(id,userId,body):op==='signal'?browser.signal(id,userId,body):op==='join'?browser.join(id,userId):op==='act'?browser.act(id,userId,body):op==='input'?browser.queue(id,userId,body):op==='accept'?browser.accept(id,userId,body.ticketId):op==='capture'?browser.capture(id,userId,body.tabId,body.metadata):op==='leave'?browser.leave(id,userId):op==='end'?browser.end(id,userId):null;if(!result)return finish(res,404,{error:'Shared browser action unavailable'});return finish(res,200,result);
      }
-     if(req.method==='GET'&&route){const [,id,op]=route;if(op==='connection')return finish(res,200,{connection:browser.connection(id,userId)});if(op==='signals')return finish(res,200,browser.signals(id,userId,Number(url.searchParams.get('after')||0)));if(op==='state')return finish(res,200,browser.snapshot(id,userId));if(op==='pending')return finish(res,200,browser.pendingFor(id,userId));}
+     if(req.method==='GET'&&route){const [,id,op]=route;if(op==='live-frame')return finish(res,200,browser.liveGet(id,userId,url.searchParams.get('tabId')));if(op==='connection')return finish(res,200,{connection:browser.connection(id,userId)});if(op==='signals')return finish(res,200,browser.signals(id,userId,Number(url.searchParams.get('after')||0)));if(op==='state')return finish(res,200,browser.snapshot(id,userId));if(op==='pending')return finish(res,200,browser.pendingFor(id,userId));}
      return finish(res,404,{error:'Shared browser action unavailable'});
     }catch(e){return finish(res,e.status||409,{error:e.message});}
    }
