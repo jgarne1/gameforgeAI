@@ -21,7 +21,7 @@ class BrowserSession {
  constructor({chatId,creator,now=Date.now,fixtureOrigin=null,hostInputVersion=0}){
   if(typeof chatId!=='string'||!chatId)throw Error('Active chat required');
   this.id=crypto.randomUUID();this.chatId=chatId;this.hostId=creator.userId;this.ownerId=creator.userId;this.now=now;this.fixtureOrigin=fixtureOrigin;
-  this.inputVersion=hostInputVersion===1?1:0;this.epoch=1;this.sequence=0;this.closed=false;this.events=[];this.tabs=new Map();this.captures=new Map();this.members=new Map();this.requests=new Set();this.rate=new Map();this.issuedInputs=new WeakSet();
+  this.inputVersion=hostInputVersion===1?1:0;this.documentVersion=1;this.epoch=1;this.sequence=0;this.closed=false;this.events=[];this.tabs=new Map();this.captures=new Map();this.members=new Map();this.requests=new Set();this.rate=new Map();this.issuedInputs=new WeakSet();
   this.join(creator);this.members.get(creator.userId).approved=true;
  }
  member(actor){if(this.closed)throw Error('Browser session ended');const member=this.members.get(actor);if(!member)throw Error('Browser access denied');return member;}
@@ -50,7 +50,7 @@ class BrowserSession {
     this.remember(member);if(!member.approved||member.paused)throw Error('Approved active control required to create a tab');if(this.tabs.size>=LIMITS.tabs)throw Error('Browser tab limit reached');
     const url=browserURL(command.url,{fixtureOrigin:this.fixtureOrigin}),tab={id:crypto.randomUUID(),ownerId:actor,url,title:'New tab',epoch:1,navigation:1,grants:new Set(),capture:null};this.tabs.set(tab.id,tab);member.view={mode:'live',tabId:tab.id,follow:null};this.changed('tab-created',{tabId:tab.id,ownerId:actor,url});break;
    }
-   case 'navigate-tab':{const {tab}=this.authorizeInput(actor,{epoch:command.epoch,tabId:command.tabId,tabEpoch:command.tabEpoch});tab.url=browserURL(command.url,{fixtureOrigin:this.fixtureOrigin});tab.title='Loading';tab.capture=null;tab.navigation++;tab.epoch++;this.changed('tab-navigated',{tabId:tab.id,releaseInputs:true});break;}
+   case 'navigate-tab':{const {tab}=this.authorizeInput(actor,{epoch:command.epoch,tabId:command.tabId,tabEpoch:command.tabEpoch});tab.url=browserURL(command.url,{fixtureOrigin:this.fixtureOrigin});tab.title='Loading';tab.capture=null;tab.documentId=null;tab.navigation++;tab.epoch++;this.changed('tab-navigated',{tabId:tab.id,releaseInputs:true});break;}
    case 'grant-tab':case 'revoke-tab':case 'transfer-tab':case 'close-tab':{
     const tab=this.tab(command.tabId);this.manageTab(actor,tab);
     if(command.op==='close-tab'){this.tabs.delete(tab.id);for(const [id,c]of this.captures)if(c.tabId===tab.id)this.captures.delete(id);for(const m of this.members.values()){delete m.views[tab.id];if(m.view.tabId===tab.id)m.view={mode:'live',tabId:null,follow:null};}this.changed('tab-closed',{tabId:tab.id,releaseInputs:true});break;}
@@ -64,7 +64,18 @@ class BrowserSession {
   }
   return this.snapshot(actor);
  }
- document(actor,metadata){this.member(actor);if(actor!==this.hostId)throw Error('Browser host required');if(!metadata||metadata.epoch!==this.epoch)throw Error('Stale browser document');const tab=this.tab(metadata.tabId);if(metadata.tabEpoch!==tab.epoch||typeof metadata.title!=='string'||metadata.title.length>160||/[\x00-\x1f]/.test(metadata.title))throw Error('Invalid browser document');const url=browserURL(metadata.url,{fixtureOrigin:this.fixtureOrigin});if(url===tab.url&&metadata.title===tab.title)return this.snapshot(actor);tab.url=url;tab.title=metadata.title||new URL(url).hostname;tab.capture=null;tab.epoch++;this.changed('document-changed',{tabId:tab.id,releaseInputs:true});return this.snapshot(actor);}
+ document(actor,metadata){
+  this.member(actor);if(actor!==this.hostId)throw Error('Browser host required');if(!metadata||metadata.epoch!==this.epoch)throw Error('Stale browser document');const tab=this.tab(metadata.tabId);
+  if(metadata.tabEpoch!==tab.epoch||typeof metadata.title!=='string'||metadata.title.length>160||/[\x00-\x1f]/.test(metadata.title))throw Error('Invalid browser document');
+  const url=browserURL(metadata.url,{fixtureOrigin:this.fixtureOrigin}),id=metadata.documentId;
+  if(id!==undefined&&(typeof id!=='string'||! /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)))throw Error('Invalid browser document identity');
+  const sameDocument=id!==undefined&&id===tab.documentId;
+  if(sameDocument&&new URL(url).origin!==new URL(tab.url).origin)throw Error('Browser document identity cannot change origin');
+  if(url===tab.url&&metadata.title===tab.title&&(id===undefined||sameDocument))return this.snapshot(actor);
+  tab.url=url;tab.title=metadata.title||new URL(url).hostname;
+  if(sameDocument){this.emit('document-metadata',{tabId:tab.id});return this.snapshot(actor);}
+  tab.documentId=id||null;tab.capture=null;tab.epoch++;this.changed('document-changed',{tabId:tab.id,releaseInputs:true});return this.snapshot(actor);
+ }
  capture(actor,tabId,metadata){
   this.member(actor);if(actor!==this.hostId)throw Error('Browser host required');const tab=this.tab(tabId);
   if(!metadata||metadata.cropped!==undefined&&typeof metadata.cropped!=='boolean'||typeof metadata.id!=='string'||!metadata.id||metadata.id.length>128||!Number.isSafeInteger(metadata.bytes)||metadata.bytes<1||metadata.bytes>8*1024*1024||!Number.isSafeInteger(metadata.width)||metadata.width<1||metadata.width>8192||!Number.isSafeInteger(metadata.height)||metadata.height<1||metadata.height>8192||!['viewport','loaded-document'].includes(metadata.extent)||!/^[a-f0-9]{64}$/.test(metadata.sha256))throw Error('Invalid captured content');
@@ -93,6 +104,6 @@ class BrowserSession {
  }
  remove(actor){if(actor===this.hostId){this.end('Browser host left');return;}if(!this.members.has(actor))return;this.members.delete(actor);this.requests.delete(actor);this.rate.delete(actor);for(const tab of this.tabs.values()){tab.grants.delete(actor);if(tab.ownerId===actor){tab.ownerId=this.ownerId===actor?this.hostId:this.ownerId;tab.epoch++;}}if(this.ownerId===actor)this.ownerId=this.hostId;for(const m of this.members.values())if(m.view.follow===actor)m.view={mode:'live',tabId:null,follow:null};this.changed('participant-left',{userId:actor,releaseInputs:true});}
  end(reason){if(this.closed)return;this.closed=true;this.epoch++;this.emit('ended',{reason,releaseInputs:true});this.tabs.clear();this.captures.clear();this.requests.clear();this.rate.clear();}
- snapshot(actor){const m=this.member(actor);return{id:this.id,chatId:this.chatId,inputVersion:this.inputVersion,hostId:this.hostId,ownerId:this.ownerId,epoch:this.epoch,sequence:this.sequence,limits:LIMITS,self:{approved:m.approved,paused:m.paused,view:JSON.parse(JSON.stringify(m.view)),views:JSON.parse(JSON.stringify(m.views))},participants:[...this.members.values()].map(({seen,cursor,...value})=>({...value,view:JSON.parse(JSON.stringify(value.view)),views:JSON.parse(JSON.stringify(value.views))})),requests:[...this.requests],tabs:[...this.tabs.values()].map(({grants,...tab})=>({...tab,grants:[...grants],capture:tab.capture?{...tab.capture}:null}))};}
+ snapshot(actor){const m=this.member(actor);return{id:this.id,chatId:this.chatId,inputVersion:this.inputVersion,documentVersion:this.documentVersion,hostId:this.hostId,ownerId:this.ownerId,epoch:this.epoch,sequence:this.sequence,limits:LIMITS,self:{approved:m.approved,paused:m.paused,view:JSON.parse(JSON.stringify(m.view)),views:JSON.parse(JSON.stringify(m.views))},participants:[...this.members.values()].map(({seen,cursor,...value})=>({...value,view:JSON.parse(JSON.stringify(value.view)),views:JSON.parse(JSON.stringify(value.views))})),requests:[...this.requests],tabs:[...this.tabs.values()].map(({grants,...tab})=>({...tab,grants:[...grants],capture:tab.capture?{...tab.capture}:null}))};}
 }
 module.exports={BrowserSession,LIMITS,identity,browserURL};
