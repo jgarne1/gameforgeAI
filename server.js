@@ -255,9 +255,9 @@ function syncLivePetDataFromRepo(options={}){
   return {ok:true,skipped:false,results};
 }
 
-// Keep Render persistent pet data aligned with the GitHub/repo JSON on every deploy.
-// This prevents stale live species/move data from surviving redeploys forever.
-syncLivePetDataFromRepo({force:false,reason:'startup'});
+// FamilyWire rollout safeguard: retain the two existing persistent pet files byte-for-byte.
+// Backups are immutable; an implicit host restart must not refresh game data from the repo.
+if(HAS_PERSIST)require('./familywire/preserve-host-data.cjs').preserve(PERSIST_ROOT);
 
 function games(){return readJSON(gamesFile,[])}
 
